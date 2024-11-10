@@ -29,10 +29,15 @@
             width: 90%;
         }
 
+        h1, .link-button {
+            transition: all 0.3s ease;
+        }
+
         h1 {
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 2.5rem;
+            cursor: pointer;
         }
 
         .link-button {
@@ -48,7 +53,9 @@
             border: 2px solid #000;
             border-radius: 16px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
         .link-button:hover {
@@ -67,16 +74,97 @@
                 font-size: 0.9rem;
             }
         }
+
+        /* Braille styling */
+        .braille {
+            font-family: "Noto Sans Symbols", sans-serif;
+            /* Fallback font if Braille font is not available */
+            unicode-bidi: bidi-override;
+            direction: rtl;
+        }
+
+        /* Ensure original text is accessible to screen readers */
+        .link-button::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: transparent;
+            background-color: transparent;
+            pointer-events: none;
+        }
     </style>
+    <!-- Include a Braille-compatible font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>D&D 5e 2024 Handbook Directory</h1>
-        <a href="DND_5e_Rulebook_Part_1.pdf" target="_blank" class="link-button">Part 1: Player's Introduction</a>
-        <a href="DND_5e_Rulebook_Part_2.pdf" target="_blank" class="link-button">Part 2: Character Creation</a>
-        <a href="DND_5e_Rulebook_Part_3.pdf" target="_blank" class="link-button">Part 3: Classes & Abilities</a>
-        <a href="DND_5e_Rulebook_Part_4.pdf" target="_blank" class="link-button">Part 4: Equipment & Tools</a>
-        <a href="DND_5e_Rulebook_Part_5.pdf" target="_blank" class="link-button">Part 5: Spells & Magic</a>
+        <h1 id="title" data-text="D&D 5e 2024 Handbook Directory">D&D 5e 2024 Handbook Directory</h1>
+        <a href="DND_5e_Rulebook_Part_1.pdf" target="_blank" class="link-button" data-text="Part 1: Player's Introduction">Part 1: Player's Introduction</a>
+        <a href="DND_5e_Rulebook_Part_2.pdf" target="_blank" class="link-button" data-text="Part 2: Character Creation">Part 2: Character Creation</a>
+        <a href="DND_5e_Rulebook_Part_3.pdf" target="_blank" class="link-button" data-text="Part 3: Classes & Abilities">Part 3: Classes & Abilities</a>
+        <a href="DND_5e_Rulebook_Part_4.pdf" target="_blank" class="link-button" data-text="Part 4: Equipment & Tools">Part 4: Equipment & Tools</a>
+        <a href="DND_5e_Rulebook_Part_5.pdf" target="_blank" class="link-button" data-text="Part 5: Spells & Magic">Part 5: Spells & Magic</a>
     </div>
+
+    <script>
+        // Mapping of English characters to Braille Unicode
+        const brailleMap = {
+            'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑',
+            'f': '⠋', 'g': '⠛', 'h': '⠓', 'i': '⠊', 'j': '⠚',
+            'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕',
+            'p': '⠏', 'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞',
+            'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭', 'y': '⠽',
+            'z': '⠵', ' ': ' ', '1': '⠼⠁', '2': '⠼⠃', '3': '⠼⠉',
+            '4': '⠼⠙', '5': '⠼⠑', '6': '⠼⠋', '7': '⠼⠛', '8': '⠼⠓',
+            '9': '⠼⠊', '0': '⠼⠚',
+            "'": '⠄', '"': '⠶', '-': '⠤', ':': '⠐⠒', ';': '⠰',
+            '!': '⠮', '?': '⠦', '.': '⠲', ',': '⠂', '(': '⠶', ')': '⠶',
+            '&': '⠯', '#': '⠼⠓', '@': '⠈⠕', '/': '⠌', '\\': '⠡'
+            // Add more mappings as needed
+        };
+
+        // Function to convert text to Braille
+        function textToBraille(text) {
+            return text.split('').map(char => {
+                const lowerChar = char.toLowerCase();
+                return brailleMap[lowerChar] || char;
+            }).join('');
+        }
+
+        // Apply Braille conversion
+        document.addEventListener('DOMContentLoaded', () => {
+            // Convert and set Braille for the title
+            const title = document.getElementById('title');
+            title.textContent = textToBraille(title.getAttribute('data-text'));
+
+            // Convert and set Braille for all link buttons
+            const buttons = document.querySelectorAll('.link-button');
+            buttons.forEach(button => {
+                button.textContent = textToBraille(button.getAttribute('data-text'));
+            });
+
+            // Add event listeners for hover to toggle text
+            const toggleBraille = (element, isHover) => {
+                if (isHover) {
+                    element.textContent = element.getAttribute('data-text');
+                } else {
+                    element.textContent = textToBraille(element.getAttribute('data-text'));
+                }
+            };
+
+            // Title hover
+            title.addEventListener('mouseenter', () => toggleBraille(title, true));
+            title.addEventListener('mouseleave', () => toggleBraille(title, false));
+
+            // Buttons hover
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => toggleBraille(button, true));
+                button.addEventListener('mouseleave', () => toggleBraille(button, false));
+            });
+        });
+    </script>
 </body>
 </html>
