@@ -15,18 +15,22 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: #fef3c7;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .card {
             background: linear-gradient(to bottom right, #fffbeb, #fef3c7);
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            width: 100%;
-            max-width: 400px;
+            height: fit-content;
         }
 
         .card-header {
@@ -54,6 +58,10 @@
             margin-bottom: 24px;
         }
 
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
         label {
             display: block;
             color: #78350f;
@@ -77,28 +85,23 @@
             box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
         }
 
-        .conversion-rates {
-            background: #fef3c7;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 24px;
-        }
-
-        .conversion-rates h3 {
-            color: #78350f;
+        .conversion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
             font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 8px;
         }
 
-        .conversion-rates ul {
-            list-style: none;
+        .conversion-table th, .conversion-table td {
+            padding: 6px 8px;
+            text-align: center;
+            border: 1px solid #fcd34d;
             color: #92400e;
-            font-size: 0.875rem;
         }
 
-        .conversion-rates li {
-            margin-bottom: 4px;
+        .conversion-table th {
+            background: #fde68a;
+            font-weight: 600;
         }
 
         .reset-btn {
@@ -115,70 +118,184 @@
             background: rgba(245, 158, 11, 0.1);
         }
 
+        .usd-note {
+            margin-top: 12px;
+            color: #92400e;
+            text-align: center;
+            padding: 8px;
+            background: #fde68a;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .coin-icon {
             color: #f59e0b;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">
-                <svg class="coin-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="8"/>
-                    <path d="M9.5 9a2.5 2.5 0 0 1 5 0v6a2.5 2.5 0 0 1-5 0V9z"/>
-                </svg>
-                D&D Currency Converter
+    <div class="container">
+        <!-- Converter Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <svg class="coin-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="8"/>
+                        <path d="M9.5 9a2.5 2.5 0 0 1 5 0v6a2.5 2.5 0 0 1-5 0V9z"/>
+                    </svg>
+                    Currency Converter
+                </div>
+                <button class="reset-btn" onclick="resetValues()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                </button>
             </div>
-            <button class="reset-btn" onclick="resetValues()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                    <path d="M3 3v5h5"/>
-                </svg>
-            </button>
+            <div class="card-content">
+                <div class="input-group">
+                    <label for="pp">Platinum Pieces (PP)</label>
+                    <input type="number" id="pp" placeholder="Enter PP amount" oninput="convertFromPp(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label for="gp">Gold Pieces (GP)</label>
+                    <input type="number" id="gp" placeholder="Enter GP amount" oninput="convertFromGp(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label for="ep">Electrum Pieces (EP)</label>
+                    <input type="number" id="ep" placeholder="Enter EP amount" oninput="convertFromEp(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label for="sp">Silver Pieces (SP)</label>
+                    <input type="number" id="sp" placeholder="Enter SP amount" oninput="convertFromSp(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label for="cp">Copper Pieces (CP)</label>
+                    <input type="number" id="cp" placeholder="Enter CP amount" oninput="convertFromCp(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label for="usd">US Dollars (USD)</label>
+                    <input type="number" id="usd" placeholder="Enter USD amount" oninput="convertFromUsd(this.value)">
+                </div>
+            </div>
         </div>
-        <div class="card-content">
-            <div class="input-group">
-                <label for="gp">Gold Pieces (GP)</label>
-                <input type="number" id="gp" placeholder="Enter GP amount" oninput="convertFromGp(this.value)">
-            </div>
 
-            <div class="input-group">
-                <label for="sp">Silver Pieces (SP)</label>
-                <input type="number" id="sp" placeholder="Enter SP amount" oninput="convertFromSp(this.value)">
+        <!-- Exchange Rates Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <svg class="coin-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    Exchange Rates
+                </div>
             </div>
-
-            <div class="input-group">
-                <label for="cp">Copper Pieces (CP)</label>
-                <input type="number" id="cp" placeholder="Enter CP amount" oninput="convertFromCp(this.value)">
-            </div>
-
-            <div class="input-group">
-                <label for="usd">US Dollars (USD)</label>
-                <input type="number" id="usd" placeholder="Enter USD amount" oninput="convertFromUsd(this.value)">
-            </div>
-
-            <div class="conversion-rates">
-                <h3>Conversion Rates:</h3>
-                <ul>
-                    <li>1 GP = 10 SP = 100 CP = $104 USD</li>
-                    <li>1 SP = 10 CP = $10.40 USD</li>
-                    <li>1 CP = $1.04 USD</li>
-                </ul>
+            <div class="card-content">
+                <table class="conversion-table">
+                    <tr>
+                        <th>Coin</th>
+                        <th>CP</th>
+                        <th>SP</th>
+                        <th>EP</th>
+                        <th>GP</th>
+                        <th>PP</th>
+                    </tr>
+                    <tr>
+                        <td>1 CP =</td>
+                        <td>1</td>
+                        <td>1/10</td>
+                        <td>1/50</td>
+                        <td>1/100</td>
+                        <td>1/1000</td>
+                    </tr>
+                    <tr>
+                        <td>1 SP =</td>
+                        <td>10</td>
+                        <td>1</td>
+                        <td>1/5</td>
+                        <td>1/10</td>
+                        <td>1/100</td>
+                    </tr>
+                    <tr>
+                        <td>1 EP =</td>
+                        <td>50</td>
+                        <td>5</td>
+                        <td>1</td>
+                        <td>1/2</td>
+                        <td>1/20</td>
+                    </tr>
+                    <tr>
+                        <td>1 GP =</td>
+                        <td>100</td>
+                        <td>10</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>1/10</td>
+                    </tr>
+                    <tr>
+                        <td>1 PP =</td>
+                        <td>1000</td>
+                        <td>100</td>
+                        <td>50</td>
+                        <td>10</td>
+                        <td>1</td>
+                    </tr>
+                </table>
+                <div class="usd-note">
+                    1 GP = $104 USD
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        function convertFromPp(platinumAmount) {
+            if (!platinumAmount || isNaN(platinumAmount)) {
+                resetValues();
+                return;
+            }
+            const pp = parseFloat(platinumAmount);
+            document.getElementById('gp').value = (pp * 10).toFixed(2);
+            document.getElementById('ep').value = (pp * 50).toFixed(2);
+            document.getElementById('sp').value = (pp * 100).toFixed(2);
+            document.getElementById('cp').value = (pp * 1000).toFixed(2);
+            document.getElementById('usd').value = (pp * 1040).toFixed(2);
+        }
+
         function convertFromGp(goldAmount) {
             if (!goldAmount || isNaN(goldAmount)) {
                 resetValues();
                 return;
             }
-            const gold = parseInt(goldAmount);
-            document.getElementById('cp').value = (gold * 100).toFixed(0);
-            document.getElementById('sp').value = (gold * 10).toFixed(1);
-            document.getElementById('usd').value = (gold * 104).toFixed(2);
+            const gp = parseFloat(goldAmount);
+            document.getElementById('pp').value = (gp / 10).toFixed(2);
+            document.getElementById('ep').value = (gp * 2).toFixed(2);
+            document.getElementById('sp').value = (gp * 10).toFixed(2);
+            document.getElementById('cp').value = (gp * 100).toFixed(2);
+            document.getElementById('usd').value = (gp * 104).toFixed(2);
+        }
+
+        function convertFromEp(electrumAmount) {
+            if (!electrumAmount || isNaN(electrumAmount)) {
+                resetValues();
+                return;
+            }
+            const ep = parseFloat(electrumAmount);
+            document.getElementById('pp').value = (ep / 20).toFixed(2);
+            document.getElementById('gp').value = (ep / 2).toFixed(2);
+            document.getElementById('sp').value = (ep * 5).toFixed(2);
+            document.getElementById('cp').value = (ep * 50).toFixed(2);
+            document.getElementById('usd').value = (ep * 52).toFixed(2);
         }
 
         function convertFromSp(silverAmount) {
@@ -186,10 +303,12 @@
                 resetValues();
                 return;
             }
-            const silver = parseInt(silverAmount);
-            document.getElementById('cp').value = (silver * 10).toFixed(0);
-            document.getElementById('gp').value = (silver / 10).toFixed(1);
-            document.getElementById('usd').value = (silver * 10.40).toFixed(2);
+            const sp = parseFloat(silverAmount);
+            document.getElementById('pp').value = (sp / 100).toFixed(2);
+            document.getElementById('gp').value = (sp / 10).toFixed(2);
+            document.getElementById('ep').value = (sp / 5).toFixed(2);
+            document.getElementById('cp').value = (sp * 10).toFixed(2);
+            document.getElementById('usd').value = (sp * 10.40).toFixed(2);
         }
 
         function convertFromCp(copperAmount) {
@@ -197,10 +316,12 @@
                 resetValues();
                 return;
             }
-            const copper = parseInt(copperAmount);
-            document.getElementById('sp').value = (copper / 10).toFixed(1);
-            document.getElementById('gp').value = (copper / 100).toFixed(1);
-            document.getElementById('usd').value = (copper * 1.04).toFixed(2);
+            const cp = parseFloat(copperAmount);
+            document.getElementById('pp').value = (cp / 1000).toFixed(2);
+            document.getElementById('gp').value = (cp / 100).toFixed(2);
+            document.getElementById('ep').value = (cp / 50).toFixed(2);
+            document.getElementById('sp').value = (cp / 10).toFixed(2);
+            document.getElementById('usd').value = (cp * 1.04).toFixed(2);
         }
 
         function convertFromUsd(usdAmount) {
@@ -208,16 +329,20 @@
                 resetValues();
                 return;
             }
-            const dollars = parseFloat(usdAmount);
-            document.getElementById('gp').value = (dollars / 104).toFixed(2);
-            document.getElementById('sp').value = (dollars / 10.40).toFixed(1);
-            document.getElementById('cp').value = (dollars / 1.04).toFixed(0);
+            const usd = parseFloat(usdAmount);
+            document.getElementById('pp').value = (usd / 1040).toFixed(2);
+            document.getElementById('gp').value = (usd / 104).toFixed(2);
+            document.getElementById('ep').value = (usd / 52).toFixed(2);
+            document.getElementById('sp').value = (usd / 10.40).toFixed(2);
+            document.getElementById('cp').value = (usd / 1.04).toFixed(2);
         }
 
         function resetValues() {
-            document.getElementById('cp').value = '';
-            document.getElementById('sp').value = '';
+            document.getElementById('pp').value = '';
             document.getElementById('gp').value = '';
+            document.getElementById('ep').value = '';
+            document.getElementById('sp').value = '';
+            document.getElementById('cp').value = '';
             document.getElementById('usd').value = '';
         }
     </script>
