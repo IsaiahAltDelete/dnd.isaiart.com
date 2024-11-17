@@ -24,6 +24,7 @@
             min-height: 100vh;
             background-color: #fff;
             color: #000;
+            overflow: hidden; /* Prevent scrolling when modal is open */
         }
 
         .container {
@@ -31,6 +32,12 @@
             padding: 2rem;
             max-width: 500px;
             width: 90%;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .container.visible {
+            opacity: 1;
         }
 
         h1, .link-button {
@@ -55,7 +62,7 @@
             color: #000;
             background-color: #fff;
             border: 2px solid #000;
-            border-radius: 16px;
+            border-radius: 16px; /* Rounded corners */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             cursor: pointer;
             position: relative;
@@ -99,13 +106,130 @@
             background-color: transparent;
             pointer-events: none;
         }
+
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 20px; /* Generous rounded corners */
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: slideDown 0.5s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-content input[type="password"] {
+            width: 80%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 2px solid #000;
+            border-radius: 12px; /* Rounded corners */
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .modal-content button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #000;
+            background-color: #000;
+            color: #fff;
+            border-radius: 12px; /* Rounded corners */
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-weight: 600;
+        }
+
+        .error-message.active {
+            opacity: 1;
+        }
+
+        /* Shake animation for error */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.3s ease;
+        }
     </style>
     
     <!-- Include a Braille-compatible font -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <!-- Password Modal -->
+    <div class="modal" id="passwordModal" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <h2 id="modalTitle">Enter Password</h2>
+            <input type="password" id="passwordInput" placeholder="Password" aria-label="Password">
+            <br>
+            <button id="submitPassword">Submit</button>
+            <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent">
         <h1 id="title" data-text="D&D 5e 2024 Handbook Directory">D&D 5e 2024 Handbook Directory</h1>
         <a href="DND_5e_Rulebook_Part_1.pdf" target="_blank" class="link-button" data-text="Part 1: Player's Introduction">Part 1: Player's Introduction</a>
         <a href="DND_5e_Rulebook_Part_2.pdf" target="_blank" class="link-button" data-text="Part 2: Character Creation">Part 2: Character Creation</a>
@@ -168,6 +292,77 @@
             buttons.forEach(button => {
                 button.addEventListener('mouseenter', () => toggleBraille(button, true));
                 button.addEventListener('mouseleave', () => toggleBraille(button, false));
+            });
+        });
+
+        // Password Protection Script
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('passwordModal');
+            const submitBtn = document.getElementById('submitPassword');
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const mainContent = document.getElementById('mainContent');
+
+            // Show modal on page load
+            modal.classList.add('active');
+
+            // Hashed password (SHA-256)
+            const hashedPassword = "274dfec6e079fb08d6b5771537c54d3f0bd36c64c3d8ed0a4e6d2f201b489274";
+
+            // Function to convert ArrayBuffer to hex string
+            function bufferToHex(buffer) {
+                const hexCodes = [];
+                const view = new DataView(buffer);
+                for (let i = 0; i < view.byteLength; i++) {
+                    const byte = view.getUint8(i);
+                    const hex = byte.toString(16).padStart(2, '0');
+                    hexCodes.push(hex);
+                }
+                return hexCodes.join('');
+            }
+
+            // Function to hash the password
+            async function hashPassword(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashHex = bufferToHex(hashBuffer);
+                return hashHex;
+            }
+
+            // Function to handle password submission
+            async function handlePassword() {
+                const enteredPassword = passwordInput.value;
+                if (!enteredPassword) return;
+
+                const enteredHash = await hashPassword(enteredPassword);
+                
+                if (enteredHash === hashedPassword) {
+                    // Correct password
+                    modal.classList.remove('active');
+                    mainContent.classList.add('visible');
+                    // Allow scrolling after modal is closed
+                    document.body.style.overflow = 'auto';
+                } else {
+                    // Incorrect password
+                    errorMessage.classList.add('active');
+                    // Add shake animation
+                    modal.querySelector('.modal-content').classList.add('shake');
+                    // Remove shake class after animation
+                    setTimeout(() => {
+                        modal.querySelector('.modal-content').classList.remove('shake');
+                    }, 300);
+                }
+            }
+
+            // Event listener for submit button
+            submitBtn.addEventListener('click', handlePassword);
+
+            // Event listener for Enter key
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handlePassword();
+                }
             });
         });
     </script>
