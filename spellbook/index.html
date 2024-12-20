@@ -612,22 +612,19 @@
             localStorage.setItem('spellbook', JSON.stringify(state.spellbook));
         }
 
-        // Tab Switching with Animation
+        // Tab Switching with Fixed Logic
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const oldContent = document.querySelector('.content.active');
+                // Remove 'active' class from all nav buttons
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                // Remove 'active' class from all content sections
+                document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                
+                // Add 'active' class to the clicked nav button
+                btn.classList.add('active');
+                // Add 'active' class to the corresponding content section
                 const newContent = document.getElementById(btn.dataset.tab);
-
-                oldContent.style.opacity = '0';
-                oldContent.style.transform = 'translateY(20px)';
-
-                setTimeout(() => {
-                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-                    
-                    btn.classList.add('active');
-                    newContent.classList.add('active');
-                }, 300);
+                newContent.classList.add('active');
             });
         });
 
