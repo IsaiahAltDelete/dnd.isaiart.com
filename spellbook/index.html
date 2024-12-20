@@ -433,17 +433,100 @@
             animation: float 3s ease infinite;
         }
 
+        /* Hamburger Menu Icon for Mobile */
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Mobile Navigation Menu */
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .mobile-nav.active {
+            display: flex;
+        }
+
+        /* Media Queries for Mobile Optimization */
         @media (max-width: 768px) {
+            /* Display Hamburger Menu */
+            .hamburger {
+                display: block;
+            }
+
+            /* Hide Desktop Navigation */
+            .nav {
+                display: none;
+            }
+
+            /* Show Mobile Navigation when active */
+            .mobile-nav {
+                display: none;
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .mobile-nav.active {
+                display: flex;
+            }
+
+            /* Adjust Header Section Layout */
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            /* Adjust Rest Buttons */
+            .rest-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .rest-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Stack Navigation and Rest Buttons */
+            .header-section > * {
+                width: 100%;
+            }
+
+            /* Adjust Spell Form */
             .spell-form {
                 flex-direction: column;
             }
-            
+
             .spell-select {
                 width: 100%;
             }
-            
-            .rest-btn span {
-                display: none;
+
+            /* Adjust Spell Items */
+            .spell-info span, .spell-info .text-sm {
+                font-size: 1rem;
+            }
+
+            /* Adjust Buttons for Touch */
+            .nav-btn, .rest-btn, .spell-btn, .slot-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            /* Show Navigation in Mobile Nav */
+            .mobile-nav .nav-btn {
+                width: 100%;
+            }
+
+            /* Ensure Proper Spacing */
+            .header-section {
+                gap: 1rem;
             }
         }
     </style>
@@ -454,8 +537,25 @@
     <div class="container">
         <!-- Combined Navigation and Rest Buttons Section -->
         <section class="header-section">
-            <!-- Navigation -->
+            <!-- Hamburger Menu for Mobile -->
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <!-- Desktop Navigation -->
             <nav class="nav">
+                <button class="nav-btn active" data-tab="slots">
+                    <i class="fas fa-scroll"></i>
+                    <span>Spell Slots</span>
+                </button>
+                <button class="nav-btn" data-tab="spellbook">
+                    <i class="fas fa-book-open"></i>
+                    <span>Spellbook</span>
+                </button>
+            </nav>
+
+            <!-- Mobile Navigation Menu -->
+            <nav class="mobile-nav" id="mobile-nav">
                 <button class="nav-btn active" data-tab="slots">
                     <i class="fas fa-scroll"></i>
                     <span>Spell Slots</span>
@@ -536,6 +636,7 @@
         </div>
     </div>
 
+    <!-- Particle.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
         // Particles.js configuration
@@ -619,6 +720,14 @@
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 // Remove 'active' class from all content sections
                 document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                // Remove 'active' class from mobile navigation if active
+                const mobileNav = document.getElementById('mobile-nav');
+                if (mobileNav.classList.contains('active')) {
+                    mobileNav.classList.remove('active');
+                }
+                // Remove 'active' class from hamburger menu if active
+                const hamburger = document.getElementById('hamburger');
+                hamburger.classList.remove('active');
                 
                 // Add 'active' class to the clicked nav button
                 btn.classList.add('active');
@@ -626,6 +735,14 @@
                 const newContent = document.getElementById(btn.dataset.tab);
                 newContent.classList.add('active');
             });
+        });
+
+        // Hamburger Menu Toggle
+        document.getElementById('hamburger').addEventListener('click', () => {
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.classList.toggle('active');
+            const hamburger = document.getElementById('hamburger');
+            hamburger.classList.toggle('active');
         });
 
         function renderSpellSlots() {
