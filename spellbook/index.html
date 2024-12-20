@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcane Spellbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #fbbf24;
+            --primary-glow: rgba(251, 191, 36, 0.3);
+            --bg-primary: rgb(127, 29, 29);
+            --bg-secondary: rgb(69, 10, 10);
+            --glass-bg: rgba(127, 29, 29, 0.2);
+            --glass-border: rgba(251, 191, 36, 0.15);
+            --glass-hover: rgba(127, 29, 29, 0.3);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--primary-glow); }
+            50% { box-shadow: 0 0 20px var(--primary-glow); }
+            100% { box-shadow: 0 0 5px var(--primary-glow); }
+        }
+
+        @keyframes magicalAppear {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #7f1d1d, #450a0a, #991b1b, #7f1d1d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--primary);
+            padding: 1.5rem;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass:hover {
+            background: var(--glass-hover);
+            border-color: var(--primary-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
+        }
+
+        /* Navigation and Rest Buttons Combined */
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Adjust spacing between nav and rest-buttons */
+            margin-bottom: 2rem; /* Space below the combined section */
+            animation: magicalAppear 0.8s ease-out;
+        }
+
+        @media (min-width: 769px) {
+            .header-section {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .nav-btn i {
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .nav-btn.active {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.2);
+            border-color: var(--primary);
+            animation: glow 2s infinite;
+        }
+
+        /* Rest Buttons */
+        .rest-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .rest-btn {
+            flex: 1;
+            padding: 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .rest-btn:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(251, 191, 36, 0.15);
+            border-color: var(--primary);
+        }
+
+        .rest-btn i {
+            transition: all 0.3s ease;
+        }
+
+        .rest-btn:hover i {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* Content Transitions */
+        .content {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: magicalAppear 0.6s ease-out;
+        }
+
+        .card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Spell Slots */
+        .spell-slot {
+            background: var(--glass-bg);
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spell-slot:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
+            border-color: var(--primary-glow);
+        }
+
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .slot-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slot-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--glass-border);
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .slot-btn:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+            background: var(--glass-hover);
+        }
+
+        .slot-count {
+            min-width: 2.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .slot-circles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .slot-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .slot-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .slot-circle.used {
+            border-color: var(--glass-border);
+            background: transparent;
+        }
+
+        .slot-circle:not(.used) {
+            background: var(--primary);
+            animation: glow 2s infinite;
+        }
+
+        .slot-circle:not(.used)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        /* Spellbook */
+        .spell-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .spell-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            color: var(--primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .spell-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .spell-select {
+            width: 140px;
+            padding: 1rem 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .spell-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .spell-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spell-item:hover {
+            background: var(--glass-hover);
+            transform: translateX(5px);
+            border-color: var(--primary-glow);
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.1);
+        }
+
+        .spell-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .spell-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .spell-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spell-btn:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+        }
+
+        .spell-btn.prepared {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: var(--primary);
+            animation: glow 2s infinite;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+        }
+
+        .section-title i {
+            font-size: 1.4rem;
+            opacity: 0.9;
+        }
+
+        .sparkle {
+            color: var(--primary);
+            opacity: 0.4;
+            transition: all 0.4s ease;
+            font-size: 1.2rem;
+        }
+
+        .sparkle.active {
+            opacity: 1;
+            animation: float 3s ease infinite;
+        }
+
+        @media (max-width: 768px) {
+            .spell-form {
+                flex-direction: column;
+            }
+            
+            .spell-select {
+                width: 100%;
+            }
+            
+            .rest-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <!-- Combined Navigation and Rest Buttons Section -->
+        <section class="header-section">
+            <!-- Navigation -->
+            <nav class="nav">
+                <button class="nav-btn active" data-tab="slots">
+                    <i class="fas fa-scroll"></i>
+                    <span>Spell Slots</span>
+                </button>
+                <button class="nav-btn" data-tab="spellbook">
+                    <i class="fas fa-book-open"></i>
+                    <span>Spellbook</span>
+                </button>
+            </nav>
+
+            <!-- Rest Buttons -->
+            <div class="rest-buttons">
+                <button class="rest-btn" data-rest="short">
+                    <i class="fas fa-moon"></i>
+                    <span>Short Rest</span>
+                </button>
+                <button class="rest-btn" data-rest="long">
+                    <i class="fas fa-sun"></i>
+                    <span>Long Rest</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Spell Slots Tab -->
+        <div id="slots" class="content active">
+            <div class="card glass">
+                <div class="section-title">
+                    <i class="fas fa-scroll"></i>
+                    <span>Spell Slots</span>
+                </div>
+                <div id="spell-slots-container"></div>
+            </div>
+        </div>
+
+        <!-- Spellbook Tab -->
+        <div id="spellbook" class="content">
+            <div class="card glass">
+                <div class="section-title">
+                    <i class="fas fa-book-open"></i>
+                    <span>Spellbook</span>
+                </div>
+                
+                <!-- Add Spell Form -->
+                <div class="spell-form">
+                    <input type="text" class="spell-input" id="spell-name" placeholder="New spell name">
+                    <select class="spell-select" id="spell-level">
+                        <option value="0">Cantrip</option>
+                        <option value="1">Level 1</option>
+                        <option value="2">Level 2</option>
+                        <option value="3">Level 3</option>
+                        <option value="4">Level 4</option>
+                        <option value="5">Level 5</option>
+                        <option value="6">Level 6</option>
+                        <option value="7">Level 7</option>
+                        <option value="8">Level 8</option>
+                        <option value="9">Level 9</option>
+                    </select>
+                    <button class="spell-btn" id="add-spell">
+                        <i class="fas fa-plus"></i>
+                        <span>Add</span>
+                    </button>
+                </div>
+
+                <!-- Cantrips Section -->
+                <div class="section-title">
+                    <i class="fas fa-bolt"></i>
+                    <span>Cantrips</span>
+                </div>
+                <div id="cantrips-container"></div>
+
+                <!-- Spells Section -->
+                <div class="section-title">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Spells</span>
+                </div>
+                <div id="spells-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Particles.js configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#fbbf24' },
+                shape: { type: 'circle' },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    animation: { enable: true, speed: 1, min: 0.1, sync: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    animation: { enable: true, speed: 2, min: 0.1, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#fbbf24',
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'repulse' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // State Management
+        const state = {
+            spellSlots: JSON.parse(localStorage.getItem('spellSlots')) || {
+                1: { total: 2, used: [] },
+                2: { total: 0, used: [] },
+                3: { total: 0, used: [] },
+                4: { total: 0, used: [] },
+                5: { total: 0, used: [] },
+                6: { total: 0, used: [] },
+                7: { total: 0, used: [] },
+                8: { total: 0, used: [] },
+                9: { total: 0, used: [] }
+            },
+            spellbook: JSON.parse(localStorage.getItem('spellbook')) || [
+                { name: 'Fire Bolt', level: 0, prepared: true },
+                { name: 'Mage Hand', level: 0, prepared: true },
+                { name: 'Magic Missile', level: 1, prepared: true },
+                { name: 'Shield', level: 1, prepared: true }
+            ]
+        };
+
+        function saveState() {
+            localStorage.setItem('spellSlots', JSON.stringify(state.spellSlots));
+            localStorage.setItem('spellbook', JSON.stringify(state.spellbook));
+        }
+
+        // Tab Switching with Animation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const oldContent = document.querySelector('.content.active');
+                const newContent = document.getElementById(btn.dataset.tab);
+
+                oldContent.style.opacity = '0';
+                oldContent.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    newContent.classList.add('active');
+                }, 300);
+            });
+        });
+
+        function renderSpellSlots() {
+            const container = document.getElementById('spell-slots-container');
+            container.innerHTML = '';
+
+            Object.entries(state.spellSlots).forEach(([level, { total, used }]) => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'spell-slot';
+                
+                slotDiv.innerHTML = `
+                    <div class="slot-header">
+                        <div>Level ${level}</div>
+                        <div class="slot-controls">
+                            <button class="slot-btn" onclick="adjustSlots(${level}, false)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="slot-count">${total}</span>
+                            <button class="slot-btn" onclick="adjustSlots(${level}, true)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="slot-circles">
+                        ${Array(total).fill().map((_, i) => `
+                            <div class="slot-circle ${used.includes(i) ? 'used' : ''}"
+                                 onclick="toggleSlot(${level}, ${i})"></div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(slotDiv);
+            });
+        }
+
+        function renderSpellbook() {
+            const cantripsContainer = document.getElementById('cantrips-container');
+            const spellsContainer = document.getElementById('spells-container');
+            
+            cantripsContainer.innerHTML = '';
+            spellsContainer.innerHTML = '';
+
+            state.spellbook.forEach(spell => {
+                const spellDiv = document.createElement('div');
+                spellDiv.className = 'spell-item';
+                
+                spellDiv.innerHTML = `
+                    <div class="spell-info">
+                        <i class="fas fa-magic sparkle ${spell.prepared ? 'active' : ''}"></i>
+                        <span>${spell.name}</span>
+                        ${spell.level > 0 ? `<span class="text-sm opacity-75">Level ${spell.level}</span>` : ''}
+                    </div>
+                    <div class="spell-actions">
+                        <button class="spell-btn ${spell.prepared ? 'prepared' : ''}" 
+                                onclick="togglePrepared('${spell.name}')">
+                            <i class="fas fa-${spell.prepared ? 'check' : 'book'}"></i>
+                            ${spell.level === 0 ? 
+                                (spell.prepared ? 'Known' : 'Learn') : 
+                                (spell.prepared ? 'Prepared' : 'Prepare')}
+                        </button>
+                        <button class="spell-btn" onclick="removeSpell('${spell.name}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+
+                if (spell.level === 0) {
+                    cantripsContainer.appendChild(spellDiv);
+                } else {
+                    spellsContainer.appendChild(spellDiv);
+                }
+            });
+        }
+
+        // Spell Slots Functions
+        function adjustSlots(level, increment) {
+            const slots = state.spellSlots[level];
+            const newTotal = Math.max(0, slots.total + (increment ? 1 : -1));
+            state.spellSlots[level] = {
+                total: newTotal,
+                used: slots.used.filter(i => i < newTotal)
+            };
+            saveState();
+            renderSpellSlots();
+        }
+
+        function toggleSlot(level, index) {
+            const slots = state.spellSlots[level];
+            if (slots.used.includes(index)) {
+                slots.used = slots.used.filter(i => i !== index);
+            } else {
+                slots.used.push(index);
+            }
+            saveState();
+            renderSpellSlots();
+        }
+
+        // Spellbook Functions
+        function addSpell() {
+            const nameInput = document.getElementById('spell-name');
+            const levelInput = document.getElementById('spell-level');
+            
+            const name = nameInput.value.trim();
+            const level = parseInt(levelInput.value);
+
+            if (name && !state.spellbook.some(spell => spell.name === name)) {
+                state.spellbook.push({
+                    name,
+                    level,
+                    prepared: false
+                });
+                nameInput.value = '';
+                saveState();
+                renderSpellbook();
+            }
+        }
+
+        function togglePrepared(spellName) {
+            state.spellbook = state.spellbook.map(spell =>
+                spell.name === spellName
+                    ? { ...spell, prepared: !spell.prepared }
+                    : spell
+            );
+            saveState();
+            renderSpellbook();
+        }
+
+        function removeSpell(spellName) {
+            state.spellbook = state.spellbook.filter(spell => spell.name !== spellName);
+            saveState();
+            renderSpellbook();
+        }
+
+        function longRest() {
+            Object.keys(state.spellSlots).forEach(level => {
+                state.spellSlots[level].used = [];
+            });
+            saveState();
+            renderSpellSlots();
+            
+            const btn = document.querySelector('[data-rest="long"]');
+            btn.style.transform = 'scale(1.1)';
+            setTimeout(() => btn.style.transform = 'scale(1)', 300);
+        }
+
+        // Event Listeners
+        document.getElementById('add-spell').addEventListener('click', addSpell);
+        document.querySelector('[data-rest="long"]').addEventListener('click', longRest);
+        document.getElementById('spell-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addSpell();
+        });
+
+        // Initial Render
+        renderSpellSlots();
+        renderSpellbook();
+    </script>
+</body>
+</html>
