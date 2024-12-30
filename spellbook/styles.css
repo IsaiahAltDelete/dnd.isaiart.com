@@ -148,7 +148,7 @@ body {
 }
 
 .nav-btn {
-  position: relative; /* For tooltip positioning */
+  position: relative;
   flex: 1;
   padding: 1.25rem;
   background: var(--glass-bg);
@@ -162,7 +162,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Remove gap since text is hidden */
 }
 
 .nav-btn i {
@@ -192,7 +191,7 @@ body {
   padding: 0.5rem 0.75rem;
   position: absolute;
   z-index: 100;
-  bottom: 120%; /* Position above the button */
+  bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
@@ -204,7 +203,7 @@ body {
 .nav-btn .tooltip::after {
   content: "";
   position: absolute;
-  top: 100%; /* At the bottom of the tooltip */
+  top: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
@@ -345,7 +344,6 @@ body {
   gap: 0.5rem;
 }
 
-/* SPARKLE */
 .sparkle {
   color: var(--primary);
   opacity: 0.4;
@@ -375,26 +373,28 @@ body {
 .proficiency {
   flex: 1 1 200px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .ability-scores .ability label,
 .levels .level label,
 .race-class .race label,
-.race-class .class label,
-.proficiencies .proficiency label {
+.race-class .class label {
   font-weight: 400;
   font-size: 0.95rem;
-  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  justify-content: space-between;
+  width: 100%;
 }
 
-.ability-scores .ability .modifier {
+.ability-scores .ability .modifier,
+.proficiency .skill-mod {
   font-size: 1rem;
   color: var(--primary-glow);
+  min-width: 30px;
+  text-align: center;
 }
 
 /* HP & AC */
@@ -479,60 +479,44 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* PROFICIENCIES */
+/* PROFICIENCIES (checkboxes and modifiers) */
 .proficiency {
-  cursor: pointer;
-  position: relative;
-  user-select: none;
-}
-
-.proficiency input {
-  display: none;
-}
-
-.proficiency .custom-checkbox {
-  width: 20px;
-  height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: var(--glass-bg);
-  border: 2px solid var(--glass-border);
-  border-radius: 50%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--glass-border);
   transition: all 0.3s ease;
-  margin-right: 0.5rem;
-  position: relative;
 }
 
-.proficiency .custom-checkbox::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--primary);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-  display: none;
-}
-
-.proficiency input:checked + .custom-checkbox::after {
-  display: block;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.proficiency:hover .custom-checkbox {
+.proficiency:hover {
   background: var(--glass-hover);
   border-color: var(--primary-glow);
-  box-shadow: 0 0 10px var(--primary-glow);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
 }
 
-.proficiency .proficiency-label {
+.proficiency label {
+  font-weight: 500;
   font-size: 1rem;
-  color: var(--primary);
-  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  cursor: pointer;
 }
 
-.proficiency:hover .proficiency-label {
+.proficiency input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.skill-mod {
+  font-weight: 600;
+  font-size: 1rem;
   color: var(--primary-glow);
 }
 
@@ -1113,10 +1097,3 @@ body {
 #import-btn {
   /* Inherit styles from .rest-btn */
 }
-
-/* Tooltip Styling */
-.tooltip {
-  /* Already styled above */
-}
-
-/* Additional styles for import/export can be added here if needed */
