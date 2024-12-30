@@ -1,1089 +1,693 @@
-/* PARTICLES BACKGROUND */
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 80, density: { enable: true, value_area: 800 } },
-    color: { value: "#fbbf24" },
-    shape: { type: "circle" },
-    opacity: {
-      value: 0.5,
-      random: true,
-      animation: { enable: true, speed: 1, min: 0.1, sync: false },
-    },
-    size: {
-      value: 3,
-      random: true,
-      animation: { enable: true, speed: 2, min: 0.1, sync: false },
-    },
-    line_linked: {
-      enable: true,
-      distance: 150,
-      color: "#fbbf24",
-      opacity: 0.2,
-      width: 1,
-    },
-    move: {
-      enable: true,
-      speed: 1,
-      direction: "none",
-      random: true,
-      straight: false,
-      out_mode: "out",
-      bounce: false,
-    },
-  },
-  interactivity: {
-    detect_on: "canvas",
-    events: {
-      onhover: { enable: true, mode: "repulse" },
-      onclick: { enable: true, mode: "push" },
-      resize: true,
-    },
-    modes: {
-      repulse: { distance: 100, duration: 0.4 },
-      push: { particles_nb: 4 },
-    },
-  },
-  retina_detect: true,
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Character Sheet</title>
+  <!-- Fonts & Icons -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ctext x='0' y='14' font-size='14'%3E⭐%3C/text%3E%3C/svg%3E" type="image/svg+xml">
 
-/* GLOBAL STATE */
-const state = {
-spellSlots: JSON.parse(localStorage.getItem("spellSlots")) || {
-  1: { total: 2, used: [] },
-  2: { total: 0, used: [] },
-  3: { total: 0, used: [] },
-  4: { total: 0, used: [] },
-  5: { total: 0, used: [] },
-  6: { total: 0, used: [] },
-  7: { total: 0, used: [] },
-  8: { total: 0, used: [] },
-  9: { total: 0, used: [] },
-},
-spellbook: JSON.parse(localStorage.getItem("spellbook")) || [
-  { name: "Fire Bolt", level: 0, prepared: true },
-  { name: "Mage Hand", level: 0, prepared: true },
-  { name: "Magic Missile", level: 1, prepared: true },
-  { name: "Shield", level: 1, prepared: true },
-  { name: "Arcane Warding", level: 2, prepared: false },
-],
-characterSheet: JSON.parse(localStorage.getItem("characterSheet")) || {
-  name: "Unnamed Character",
-  abilityScores: {
-    strength: 10,
-    dexterity: 10,
-    constitution: 10,
-    intelligence: 10,
-    wisdom: 10,
-    charisma: 10,
-  },
-  levels: {
-    level: 1,
-    experience: 0,
-  },
-  proficiencies: {
-    arcana: false,
-    history: false,
-    insight: false,
-    athletics: false,
-    acrobatics: false,
-    stealth: false,
-    perception: false,
-    investigation: false,
-    performance: false,
-    persuasion: false,
-    intimidation: false,
-  },
-  race: "",
-  class: "",
-  maxHP: 20,
-  currentHP: 20,
-  ac: 10,
-},
-diceRollHistory: JSON.parse(localStorage.getItem("diceRollHistory")) || [],
-inventory: JSON.parse(localStorage.getItem("inventory")) || [],
-notes: JSON.parse(localStorage.getItem("notes")) || [],
-coins: JSON.parse(localStorage.getItem("coins")) || {
-  platinum: 0,
-  gold: 0,
-  electrum: 0,
-  silver: 0,
-  copper: 0,
-},
-};
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Particles Background -->
+  <div id="particles-js"></div>
+  
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Navigation & Rest Buttons -->
+    <section class="header-section">
+      <!-- Hamburger (Mobile) -->
+      <div class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
 
-/* SAVE STATE */
-function saveState() {
-localStorage.setItem("spellSlots", JSON.stringify(state.spellSlots));
-localStorage.setItem("spellbook", JSON.stringify(state.spellbook));
-localStorage.setItem("characterSheet", JSON.stringify(state.characterSheet));
-localStorage.setItem(
-  "diceRollHistory",
-  JSON.stringify(state.diceRollHistory)
-);
-localStorage.setItem("inventory", JSON.stringify(state.inventory));
-localStorage.setItem("notes", JSON.stringify(state.notes));
-localStorage.setItem("coins", JSON.stringify(state.coins));
-}
-
-/* RENDER FUNCTIONS */
-function renderCharacterSheet() {
-// Name
-const nameInput = document.getElementById("character-name");
-nameInput.value = state.characterSheet.name;
-nameInput.oninput = () => {
-  state.characterSheet.name = nameInput.value;
-  saveState();
-};
-
-// Abilities & Modifiers
-const abilities = state.characterSheet.abilityScores;
-for (let ability in abilities) {
-  const input = document.getElementById(ability);
-  const modSpan = document.getElementById(`${ability}-mod`);
-  if (input && modSpan) {
-    input.value = abilities[ability];
-    const modifier = calculateModifier(abilities[ability]);
-    modSpan.textContent = `(${modifier >= 0 ? "+" : ""}${modifier})`;
-    input.oninput = () => {
-      const val = parseInt(input.value) || 0;
-      state.characterSheet.abilityScores[ability] = val;
-      const newMod = calculateModifier(val);
-      modSpan.textContent = `(${newMod >= 0 ? "+" : ""}${newMod})`;
-      saveState();
-    };
-  }
-}
-
-// Level & Experience
-const levelInput = document.getElementById("level");
-const expInput = document.getElementById("experience");
-if (levelInput) {
-  levelInput.value = state.characterSheet.levels.level;
-  levelInput.oninput = () => {
-    const val = parseInt(levelInput.value) || 1;
-    state.characterSheet.levels.level = val;
-    saveState();
-  };
-}
-if (expInput) {
-  expInput.value = state.characterSheet.levels.experience;
-  expInput.oninput = () => {
-    const val = parseInt(expInput.value) || 0;
-    state.characterSheet.levels.experience = val;
-    saveState();
-  };
-}
-
-// Race & Class
-const race = document.getElementById("race");
-const charClass = document.getElementById("class");
-if (race) {
-  race.value = state.characterSheet.race;
-  race.oninput = () => {
-    state.characterSheet.race = race.value;
-    saveState();
-  };
-}
-if (charClass) {
-  charClass.value = state.characterSheet.class;
-  charClass.oninput = () => {
-    state.characterSheet.class = charClass.value;
-    saveState();
-  };
-}
-
-// Proficiencies
-const profs = state.characterSheet.proficiencies;
-for (let p in profs) {
-  const checkbox = document.getElementById(p);
-  if (checkbox) {
-    checkbox.checked = profs[p];
-    checkbox.onchange = () => {
-      state.characterSheet.proficiencies[p] = checkbox.checked;
-      saveState();
-    };
-  }
-}
-
-// HP & AC
-const maxHPInput = document.getElementById("max-hp");
-const currentHPDisplay = document.getElementById("current-hp-display");
-const hpAnimate = document.getElementById("hp-animate");
-const hpMinusBtn = document.getElementById("hp-minus");
-const hpPlusBtn = document.getElementById("hp-plus");
-
-const acSlider = document.getElementById("ac");
-const acDisplay = document.getElementById("ac-display");
-
-if (maxHPInput && currentHPDisplay && hpAnimate) {
-  maxHPInput.value = state.characterSheet.maxHP;
-  currentHPDisplay.textContent = state.characterSheet.currentHP;
-
-  maxHPInput.oninput = () => {
-    const val = parseInt(maxHPInput.value) || 1;
-    state.characterSheet.maxHP = val;
-    // if currentHP > new maxHP, adjust
-    if (state.characterSheet.currentHP > val) {
-      state.characterSheet.currentHP = val;
-      currentHPDisplay.textContent = state.characterSheet.currentHP;
-      showHPChange(`HP adjusted down to ${val}`, hpAnimate);
-    }
-    saveState();
-  };
-
-  hpMinusBtn.onclick = () => {
-    if (state.characterSheet.currentHP > 0) {
-      state.characterSheet.currentHP--;
-      currentHPDisplay.textContent = state.characterSheet.currentHP;
-      showHPChange("-1 HP!", hpAnimate);
-      saveState();
-    }
-  };
-
-  hpPlusBtn.onclick = () => {
-    if (state.characterSheet.currentHP < state.characterSheet.maxHP) {
-      state.characterSheet.currentHP++;
-      currentHPDisplay.textContent = state.characterSheet.currentHP;
-      showHPChange("+1 HP!", hpAnimate);
-      saveState();
-    }
-  };
-}
-
-if (acSlider && acDisplay) {
-  acSlider.value = state.characterSheet.ac || 10;
-  acDisplay.textContent = acSlider.value;
-  acSlider.oninput = () => {
-    state.characterSheet.ac = parseInt(acSlider.value);
-    acDisplay.textContent = state.characterSheet.ac;
-    saveState();
-  };
-}
-}
-
-function showHPChange(text, hpAnimateDiv) {
-hpAnimateDiv.textContent = text;
-hpAnimateDiv.style.display = "block";
-// Force reflow
-hpAnimateDiv.classList.remove("hp-animation");
-void hpAnimateDiv.offsetWidth;
-hpAnimateDiv.classList.add("hp-animation");
-
-setTimeout(() => {
-  hpAnimateDiv.style.display = "none";
-}, 1000);
-}
-
-function calculateModifier(score) {
-return Math.floor((score - 10) / 2);
-}
-
-function renderSpellSlots() {
-const container = document.getElementById("spell-slots-container");
-if (!container) return;
-container.innerHTML = "";
-
-Object.entries(state.spellSlots).forEach(([lvl, { total, used }]) => {
-  const slotDiv = document.createElement("div");
-  slotDiv.className = "spell-slot";
-  slotDiv.id = `slot-level-${lvl}`;
-  slotDiv.innerHTML = `
-    <div class="slot-header">
-      <div><i class="fas fa-star"></i> Level ${lvl}</div>
-      <div class="slot-controls">
-        <button class="slot-btn" onclick="adjustSlots(${lvl}, false)">
-          <i class="fas fa-minus"></i>
+      <!-- Navigation (Desktop) -->
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="character-sheet">
+          <i class="fas fa-user"></i>
+          <span class="tooltip">Character Sheet</span>
         </button>
-        <span class="slot-count">${total}</span>
-        <button class="slot-btn" onclick="adjustSlots(${lvl}, true)">
-          <i class="fas fa-plus"></i>
+        <button class="nav-btn" data-tab="spellbook">
+          <i class="fas fa-book-open"></i>
+          <span class="tooltip">Spellbook</span>
         </button>
+        <button class="nav-btn" data-tab="slots">
+          <i class="fas fa-scroll"></i>
+          <span class="tooltip">Spell Slots</span>
+        </button>
+        <button class="nav-btn" data-tab="dice-roller">
+          <i class="fas fa-dice-d20"></i>
+          <span class="tooltip">Dice Roller</span>
+        </button>
+        <button class="nav-btn" data-tab="inventory">
+          <i class="fas fa-boxes"></i>
+          <span class="tooltip">Inventory</span>
+        </button>
+        <button class="nav-btn" data-tab="notes">
+          <i class="fas fa-sticky-note"></i>
+          <span class="tooltip">Notes</span>
+        </button>
+      </nav>
+
+      <!-- Navigation (Mobile) -->
+      <nav class="mobile-nav" id="mobile-nav">
+        <button class="nav-btn active" data-tab="character-sheet">
+          <i class="fas fa-user"></i>
+          <span class="tooltip">Character Sheet</span>
+        </button>
+        <button class="nav-btn" data-tab="spellbook">
+          <i class="fas fa-book-open"></i>
+          <span class="tooltip">Spellbook</span>
+        </button>
+        <button class="nav-btn" data-tab="slots">
+          <i class="fas fa-scroll"></i>
+          <span class="tooltip">Spell Slots</span>
+        </button>
+        <button class="nav-btn" data-tab="dice-roller">
+          <i class="fas fa-dice-d20"></i>
+          <span class="tooltip">Dice Roller</span>
+        </button>
+        <button class="nav-btn" data-tab="inventory">
+          <i class="fas fa-boxes"></i>
+          <span class="tooltip">Inventory</span>
+        </button>
+        <button class="nav-btn" data-tab="notes">
+          <i class="fas fa-sticky-note"></i>
+          <span class="tooltip">Notes</span>
+        </button>
+      </nav>
+
+      <!-- Rest Buttons & Import/Export -->
+      <div class="rest-buttons">
+        <button class="rest-btn" data-rest="long">
+          <i class="fas fa-bed"></i>
+          <span>Long Rest</span>
+        </button>
+        <!-- Export Button -->
+        <button class="rest-btn" id="export-btn">
+          <i class="fas fa-file-export"></i>
+          <span>Export</span>
+        </button>
+        <!-- Import Button -->
+        <button class="rest-btn" id="import-btn">
+          <i class="fas fa-file-import"></i>
+          <span>Import</span>
+        </button>
+        <!-- Hidden File Input for Import -->
+        <input type="file" id="import-file" accept=".json" style="display: none;" />
+      </div>
+    </section>
+
+    <!-- Character Sheet Tab -->
+    <div id="character-sheet" class="content active">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-user"></i>
+          <span>Character Sheet</span>
+        </div>
+
+        <!-- Character Name -->
+        <div class="sub-section">
+          <h3><i class="fas fa-id-card"></i> Character Name</h3>
+          <input
+            type="text"
+            id="character-name"
+            class="glass-input"
+            placeholder="Enter character name..."
+          />
+        </div>
+
+        <!-- Levels -->
+        <div class="sub-section">
+          <h3><i class="fas fa-level-up-alt"></i> Levels</h3>
+          <div class="levels">
+            <div class="level">
+              <label for="level"
+                ><i class="fas fa-trophy"></i> Level</label
+              >
+              <input
+                type="number"
+                id="level"
+                value="1"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="level">
+              <label for="experience"
+                ><i class="fas fa-medal"></i> Experience</label
+              >
+              <input
+                type="number"
+                id="experience"
+                value="0"
+                min="0"
+                class="glass-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Race & Class -->
+        <div class="sub-section">
+          <h3><i class="fas fa-dragon"></i> Race & Class</h3>
+          <div class="race-class">
+            <div class="race">
+              <label for="race"
+                ><i class="fas fa-paw"></i> Race</label
+              >
+              <input
+                type="text"
+                id="race"
+                class="glass-input"
+                placeholder="e.g., Elf"
+              />
+            </div>
+            <div class="class">
+              <label for="class"
+                ><i class="fas fa-crown"></i> Class</label
+              >
+              <input
+                type="text"
+                id="class"
+                class="glass-input"
+                placeholder="e.g., Wizard"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ability Scores -->
+        <div class="sub-section">
+          <h3><i class="fas fa-brain"></i> Ability Scores</h3>
+          <div class="ability-scores">
+            <div class="ability">
+              <label for="strength">
+                <i class="fas fa-dumbbell"></i> Strength
+                <span class="modifier" id="strength-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="strength"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="dexterity">
+                <i class="fas fa-running"></i> Dexterity
+                <span class="modifier" id="dexterity-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="dexterity"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="constitution">
+                <i class="fas fa-heartbeat"></i> Constitution
+                <span class="modifier" id="constitution-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="constitution"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="intelligence">
+                <i class="fas fa-flask"></i> Intelligence
+                <span class="modifier" id="intelligence-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="intelligence"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="wisdom">
+                <i class="fas fa-eye"></i> Wisdom
+                <span class="modifier" id="wisdom-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="wisdom"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="charisma">
+                <i class="fas fa-theater-masks"></i> Charisma
+                <span class="modifier" id="charisma-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="charisma"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- HP & AC -->
+        <div class="sub-section">
+          <h3><i class="fas fa-heart"></i> Hit Points &amp; AC</h3>
+          <div class="hp-ac-row">
+            <label for="max-hp" class="slider-label">Max HP:</label>
+            <input
+              type="number"
+              id="max-hp"
+              class="glass-input"
+              min="1"
+              value="20"
+            />
+          </div>
+          <div class="hp-ac-row">
+            <label for="current-hp" class="slider-label">Current HP:</label>
+            <div class="hp-controls">
+              <button class="hp-adjust-btn" id="hp-minus">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span id="current-hp-display"></span>
+              <button class="hp-adjust-btn" id="hp-plus">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="hp-animate" id="hp-animate"></div>
+          <div class="hp-ac-row">
+            <label for="ac" class="slider-label">AC:</label>
+            <input type="range" id="ac" min="1" max="30" value="10" />
+            <span id="ac-display"></span>
+          </div>
+        </div>
+
+        <!-- Skills/Proficiencies -->
+        <div class="sub-section">
+          <h3><i class="fas fa-tools"></i> Skills</h3>
+          <div class="proficiencies">
+            <div class="proficiency">
+              <label for="arcana"><i class="fas fa-hat-wizard"></i> Arcana</label>
+              <input type="checkbox" id="arcana-proficient" />
+              <span class="skill-mod" id="arcana-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="history"><i class="fas fa-landmark"></i> History</label>
+              <input type="checkbox" id="history-proficient" />
+              <span class="skill-mod" id="history-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="insight"><i class="fas fa-user-secret"></i> Insight</label>
+              <input type="checkbox" id="insight-proficient" />
+              <span class="skill-mod" id="insight-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="athletics"><i class="fas fa-dumbbell"></i> Athletics</label>
+              <input type="checkbox" id="athletics-proficient" />
+              <span class="skill-mod" id="athletics-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="acrobatics"><i class="fas fa-runner"></i> Acrobatics</label>
+              <input type="checkbox" id="acrobatics-proficient" />
+              <span class="skill-mod" id="acrobatics-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="stealth"><i class="fas fa-user-ninja"></i> Stealth</label>
+              <input type="checkbox" id="stealth-proficient" />
+              <span class="skill-mod" id="stealth-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="perception"><i class="fas fa-eye"></i> Perception</label>
+              <input type="checkbox" id="perception-proficient" />
+              <span class="skill-mod" id="perception-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="investigation"><i class="fas fa-search"></i> Investigation</label>
+              <input type="checkbox" id="investigation-proficient" />
+              <span class="skill-mod" id="investigation-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="performance"><i class="fas fa-music"></i> Performance</label>
+              <input type="checkbox" id="performance-proficient" />
+              <span class="skill-mod" id="performance-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="persuasion"><i class="fas fa-comments"></i> Persuasion</label>
+              <input type="checkbox" id="persuasion-proficient" />
+              <span class="skill-mod" id="persuasion-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="intimidation"><i class="fas fa-angry"></i> Intimidation</label>
+              <input type="checkbox" id="intimidation-proficient" />
+              <span class="skill-mod" id="intimidation-mod">+0</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="slot-circles">
-      ${Array(total)
-        .fill()
-        .map(
-          (_, i) => `
-        <div 
-            class="slot-circle ${used.includes(i) ? "used" : ""}"
-            onclick="toggleSlot(${lvl}, ${i})">
+
+    <!-- Spellbook Tab -->
+    <div id="spellbook" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-book-open"></i>
+          <span>Spellbook</span>
         </div>
-      `
-        )
-        .join("")}
+
+        <!-- Add Spell Form -->
+        <div class="spell-form">
+          <input
+            type="text"
+            class="spell-input"
+            id="spell-name"
+            placeholder="New spell name"
+          />
+          <select class="spell-select" id="spell-level">
+            <option value="0">Cantrip</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+            <option value="7">Level 7</option>
+            <option value="8">Level 8</option>
+            <option value="9">Level 9</option>
+          </select>
+          <button class="spell-btn" id="add-spell">
+            <i class="fas fa-plus"></i>
+            <span>Add</span>
+          </button>
+        </div>
+
+        <!-- Cantrips Section -->
+        <div class="section-title">
+          <i class="fas fa-snowflake"></i>
+          <span>Cantrips</span>
+        </div>
+        <div id="cantrips-container"></div>
+
+        <!-- Spells Section -->
+        <div class="section-title">
+          <i class="fas fa-fire"></i>
+          <span>Spells</span>
+        </div>
+        <div id="spells-container"></div>
+      </div>
     </div>
-  `;
-  container.appendChild(slotDiv);
-});
-}
 
-function renderSpellbook() {
-const cantripsContainer = document.getElementById("cantrips-container");
-const spellsContainer = document.getElementById("spells-container");
-if (!cantripsContainer || !spellsContainer) return;
-
-cantripsContainer.innerHTML = "";
-spellsContainer.innerHTML = "";
-
-state.spellbook.forEach((spell) => {
-  const spellDiv = document.createElement("div");
-  spellDiv.className = "spell-item";
-  spellDiv.innerHTML = `
-    <div class="spell-info">
-      <i class="fas fa-magic sparkle ${spell.prepared ? "active" : ""}"></i>
-      <span>${spell.name}</span>
-      ${
-        spell.level > 0
-          ? `<span class="text-sm opacity-75">Level ${spell.level}</span>`
-          : ""
-      }
+    <!-- Spell Slots Tab -->
+    <div id="slots" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-star"></i>
+          <span>Spell Slots</span>
+        </div>
+        <div id="spell-slots-container"></div>
+      </div>
     </div>
-    <div class="spell-actions">
-      <button class="spell-btn ${
-        spell.prepared ? "prepared" : ""
-      }" onclick="togglePrepared('${spell.name}')">
-        ${
-          spell.level === 0
-            ? spell.prepared
-              ? "Known"
-              : "Learn"
-            : spell.prepared
-            ? "Prepared"
-            : "Prepare"
-        }
-      </button>
-      <button class="spell-btn" onclick="useSpell('${spell.name}')">
-        <i class="fas fa-play"></i>
-        <span>Use</span>
-      </button>
-      <button class="spell-btn" onclick="removeSpell('${spell.name}')">
-        <i class="fas fa-trash-alt"></i>
-      </button>
+
+    <!-- Dice Roller Tab -->
+    <div id="dice-roller" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-dice-d20"></i>
+          <span>Dice Roller</span>
+        </div>
+
+        <div class="dice-form">
+          <div class="dice-input">
+            <label for="dice-count"
+              ><i class="fas fa-dice-six"></i> Number of Dice:</label
+            >
+            <input type="number" id="dice-count" min="1" value="1" />
+          </div>
+          <div class="dice-input">
+            <label for="dice-type"
+              ><i class="fas fa-dice"></i> Type of Dice:</label
+            >
+            <select id="dice-type">
+              <option value="4">d4</option>
+              <option value="6">d6</option>
+              <option value="8">d8</option>
+              <option value="10">d10</option>
+              <option value="12">d12</option>
+              <option value="20">d20</option>
+              <option value="100">d100</option>
+            </select>
+          </div>
+          <button class="spell-btn" id="roll-dice">
+            <i class="fas fa-play"></i>
+            <span>Roll</span>
+          </button>
+        </div>
+
+        <!-- Dice Roll History -->
+        <div class="section-title">
+          <i class="fas fa-history"></i>
+          <span>Roll History</span>
+        </div>
+        <div id="roll-history" class="roll-history">
+          <!-- Last 5 rolls will be displayed here -->
+        </div>
+
+        <div id="dice-results" class="dice-results">
+          <!-- Dice results will appear here -->
+        </div>
+      </div>
     </div>
-  `;
 
-  if (spell.level === 0) {
-    cantripsContainer.appendChild(spellDiv);
-  } else {
-    spellsContainer.appendChild(spellDiv);
-  }
-});
-}
+    <!-- Inventory Tab -->
+    <div id="inventory" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-boxes"></i>
+          <span>Inventory</span>
+        </div>
+        <button class="spell-btn" id="add-item-btn">
+          <i class="fas fa-plus"></i>
+          <span>Add Item</span>
+        </button>
 
-function renderInventory() {
-const grid = document.getElementById("inventory-grid");
-if (!grid) return;
-grid.innerHTML = "";
+        <!-- Grid for Minecraft-Style Items -->
+        <div class="inventory-grid" id="inventory-grid"></div>
+      </div>
 
-state.inventory.forEach((item, index) => {
-  const itemDiv = document.createElement("div");
-  itemDiv.className = "inventory-item";
-  itemDiv.dataset.index = index;
-  // Show the emoji and a hidden name that appears on hover
-  itemDiv.innerHTML = `
-    ${item.emoji}
-    <span class="item-name">${item.name}</span>
-    <div class="item-actions">
-      <button class="item-btn edit-btn">
-        <i class="fas fa-edit"></i>
-      </button>
-      <button class="item-btn delete-btn">
-        <i class="fas fa-trash-alt"></i>
-      </button>
+      <!-- Currency Management -->
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-coins"></i>
+          <span>Currency</span>
+        </div>
+        <div class="coins-container">
+          <div class="sub-section">
+            <label for="platinum" class="slider-label"
+              >Platinum (PP):</label
+            >
+            <input
+              type="number"
+              id="platinum"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="gold" class="slider-label">Gold (GP):</label>
+            <input
+              type="number"
+              id="gold"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="electrum" class="slider-label"
+              >Electrum (EP):</label
+            >
+            <input
+              type="number"
+              id="electrum"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="silver" class="slider-label">Silver (SP):</label>
+            <input
+              type="number"
+              id="silver"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="copper" class="slider-label">Copper (CP):</label>
+            <input
+              type="number"
+              id="copper"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+        </div>
+      </div>
     </div>
-  `;
-  grid.appendChild(itemDiv);
-});
-}
 
-function renderCoins() {
-const platinum = document.getElementById("platinum");
-const gold = document.getElementById("gold");
-const electrum = document.getElementById("electrum");
-const silver = document.getElementById("silver");
-const copper = document.getElementById("copper");
-
-if (platinum && gold && electrum && silver && copper) {
-  platinum.value = state.coins.platinum || 0;
-  gold.value = state.coins.gold || 0;
-  electrum.value = state.coins.electrum || 0;
-  silver.value = state.coins.silver || 0;
-  copper.value = state.coins.copper || 0;
-
-  platinum.oninput = () => {
-    state.coins.platinum = parseInt(platinum.value) || 0;
-    saveState();
-  };
-  gold.oninput = () => {
-    state.coins.gold = parseInt(gold.value) || 0;
-    saveState();
-  };
-  electrum.oninput = () => {
-    state.coins.electrum = parseInt(electrum.value) || 0;
-    saveState();
-  };
-  silver.oninput = () => {
-    state.coins.silver = parseInt(silver.value) || 0;
-    saveState();
-  };
-  copper.oninput = () => {
-    state.coins.copper = parseInt(copper.value) || 0;
-    saveState();
-  };
-}
-}
-
-function renderNotes() {
-const notesList = document.getElementById("notes-list");
-if (!notesList) return;
-notesList.innerHTML = "";
-
-state.notes.forEach((note, index) => {
-  const noteDiv = document.createElement("div");
-  noteDiv.className = "note-item";
-  noteDiv.dataset.index = index;
-  noteDiv.innerHTML = `
-    <div class="note-title">${note.title}</div>
-    <div class="note-content">${note.content}</div>
-    <div class="note-actions">
-      <button class="note-btn" onclick="editNote(${index})">
-        <i class="fas fa-edit"></i>
-      </button>
-      <button class="note-btn" onclick="deleteNote(${index})">
-        <i class="fas fa-trash-alt"></i>
-      </button>
+    <!-- Notes Tab -->
+    <div id="notes" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-sticky-note"></i>
+          <span>Notes</span>
+        </div>
+        <div class="notes-controls">
+          <button class="spell-btn" id="add-note-btn">
+            <i class="fas fa-plus"></i>
+            <span>Add Note</span>
+          </button>
+          <input type="text" id="search-notes" placeholder="Search notes..." />
+        </div>
+        <div class="notes-list" id="notes-list"></div>
+      </div>
     </div>
-  `;
-  notesList.appendChild(noteDiv);
-});
-}
-
-function renderRollHistory() {
-const historyContainer = document.getElementById("roll-history");
-if (!historyContainer) return;
-historyContainer.innerHTML = "";
-
-state.diceRollHistory.forEach((roll, index) => {
-  const rollEntry = document.createElement("p");
-  rollEntry.textContent = `${index + 1}. ${roll}`;
-  historyContainer.appendChild(rollEntry);
-});
-}
-
-function renderAll() {
-renderCharacterSheet();
-renderSpellSlots();
-renderSpellbook();
-renderInventory();
-renderCoins();
-renderNotes();
-renderRollHistory();
-}
-
-/* SPELL SLOTS */
-function adjustSlots(level, increment) {
-const slots = state.spellSlots[level];
-const newTotal = Math.max(0, slots.total + (increment ? 1 : -1));
-state.spellSlots[level] = {
-  total: newTotal,
-  used: slots.used.filter((i) => i < newTotal),
-};
-saveState();
-renderSpellSlots();
-}
-
-function toggleSlot(level, index) {
-const slots = state.spellSlots[level];
-if (slots.used.includes(index)) {
-  slots.used = slots.used.filter((i) => i !== index);
-} else {
-  if (slots.used.length >= slots.total) {
-    alert("No available spell slots at this level.");
-    return;
-  }
-  slots.used.push(index);
-  triggerBurstEffect(level); // Magical burst
-}
-saveState();
-renderSpellSlots();
-}
-
-/* SPELLBOOK */
-function addSpell() {
-const nameInput = document.getElementById("spell-name");
-const levelInput = document.getElementById("spell-level");
-if (!nameInput || !levelInput) return;
-
-const name = nameInput.value.trim();
-const level = parseInt(levelInput.value);
-
-if (
-  name &&
-  !state.spellbook.some((s) => s.name.toLowerCase() === name.toLowerCase())
-) {
-  state.spellbook.push({
-    name,
-    level,
-    prepared: false,
-  });
-  nameInput.value = "";
-  saveState();
-  renderSpellbook();
-} else {
-  alert("Spell name must be unique and not empty.");
-}
-}
-
-function togglePrepared(spellName) {
-state.spellbook = state.spellbook.map((spell) =>
-  spell.name === spellName ? { ...spell, prepared: !spell.prepared } : spell
-);
-saveState();
-renderSpellbook();
-}
-
-function removeSpell(spellName) {
-if (confirm(`Remove "${spellName}" from your spellbook?`)) {
-  state.spellbook = state.spellbook.filter((s) => s.name !== spellName);
-  saveState();
-  renderSpellbook();
-}
-}
-
-function useSpell(spellName) {
-const spell = state.spellbook.find((s) => s.name === spellName);
-if (!spell) return;
-
-if (spell.level === 0) {
-  alert(`${spell.name} used! Cantrips do not consume spell slots.`);
-  return;
-}
-
-const availableLevels = Object.keys(state.spellSlots)
-  .filter(
-    (l) =>
-      parseInt(l) >= spell.level &&
-      state.spellSlots[l].used.length < state.spellSlots[l].total
-  )
-  .map(Number);
-
-if (availableLevels.length === 0) {
-  alert("No available spell slots to cast this spell.");
-  return;
-}
-
-if (availableLevels.length === 1) {
-  const selectedLevel = availableLevels[0];
-  state.spellSlots[selectedLevel].used.push(
-    state.spellSlots[selectedLevel].used.length
-  );
-  triggerBurstEffect(selectedLevel);
-  saveState();
-  renderSpellSlots();
-  alert(`${spell.name} cast using a Level ${selectedLevel} slot.`);
-  return;
-}
-
-// Instead of prompt, show a custom modal
-showSpellSlotModal(spellName, availableLevels);
-}
-
-/* CUSTOM MODAL FOR SELECTING SPELL SLOT */
-function showSpellSlotModal(spellName, levels) {
-const modal = document.getElementById("spell-slot-modal");
-const closeBtn = document.getElementById("close-spell-slot-modal");
-const body = document.getElementById("spell-slot-modal-body");
-
-// Clear previous content
-body.innerHTML = "";
-levels.forEach((lvl) => {
-  const btn = document.createElement("button");
-  btn.className = "spell-btn";
-  btn.innerHTML = `<i class="fas fa-star"></i> Level ${lvl}`;
-  btn.onclick = () => {
-    state.spellSlots[lvl].used.push(state.spellSlots[lvl].used.length);
-    triggerBurstEffect(lvl);
-    saveState();
-    renderSpellSlots();
-    alert(`${spellName} cast using Level ${lvl}.`);
-    modal.style.display = "none";
-  };
-  body.appendChild(btn);
-});
-
-modal.style.display = "block";
-closeBtn.onclick = () => {
-  modal.style.display = "none";
-};
-window.onclick = (event) => {
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-};
-}
-
-/* MAGICAL BURST EFFECT */
-function triggerBurstEffect(level) {
-const slotDiv = document.getElementById(`slot-level-${level}`);
-if (!slotDiv) return;
-const burstDiv = document.createElement("div");
-burstDiv.className = "burst";
-slotDiv.appendChild(burstDiv);
-
-burstDiv.addEventListener("animationend", () => {
-  if (burstDiv.parentNode) {
-    burstDiv.parentNode.removeChild(burstDiv);
-  }
-});
-}
-
-/* REST */
-function longRest() {
-Object.keys(state.spellSlots).forEach((level) => {
-  state.spellSlots[level].used = [];
-});
-saveState();
-renderSpellSlots();
-
-const btn = document.querySelector('[data-rest="long"]');
-btn.style.transform = "scale(1.1)";
-setTimeout(() => (btn.style.transform = "scale(1)"), 300);
-}
-
-/* TAB SWITCH */
-document.querySelectorAll(".nav-btn").forEach((btn) => {
-btn.addEventListener("click", () => {
-  document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-  document.querySelectorAll(".content").forEach((c) => c.classList.remove("active"));
-  const mobileNav = document.getElementById("mobile-nav");
-  if (mobileNav.classList.contains("active")) {
-    mobileNav.classList.remove("active");
-  }
-  const hamburger = document.getElementById("hamburger");
-  hamburger.classList.remove("active");
-
-  btn.classList.add("active");
-  const newContent = document.getElementById(btn.dataset.tab);
-  if (newContent) newContent.classList.add("active");
-});
-});
-
-/* HAMBURGER TOGGLE */
-document.getElementById("hamburger").addEventListener("click", () => {
-const mobileNav = document.getElementById("mobile-nav");
-mobileNav.classList.toggle("active");
-document.getElementById("hamburger").classList.toggle("active");
-});
-
-/* DICE ROLLER */
-function rollDice() {
-const countInput = document.getElementById("dice-count");
-const typeSelect = document.getElementById("dice-type");
-const resultsContainer = document.getElementById("dice-results");
-if (!countInput || !typeSelect || !resultsContainer) return;
-
-const count = parseInt(countInput.value) || 1;
-const type = parseInt(typeSelect.value) || 6;
-if (count < 1) {
-  alert("Number of dice must be at least 1.");
-  return;
-}
-
-resultsContainer.innerHTML = "";
-const rollResults = [];
-
-for (let i = 0; i < count; i++) {
-  const resultDiv = document.createElement("div");
-  resultDiv.className = "dice-result";
-
-  // Enhanced 3D spin effect
-  const animationDiv = document.createElement("div");
-  animationDiv.className = "dice-animation rolling";
-  animationDiv.textContent = `?`;
-
-  const valueSpan = document.createElement("span");
-  valueSpan.textContent = "Rolling...";
-
-  resultDiv.appendChild(animationDiv);
-  resultDiv.appendChild(valueSpan);
-  resultsContainer.appendChild(resultDiv);
-
-  setTimeout(() => {
-    const rollVal = Math.floor(Math.random() * type) + 1;
-    animationDiv.classList.remove("rolling");
-    animationDiv.textContent = rollVal;
-    valueSpan.textContent = `d${type}: ${rollVal}`;
-    rollResults.push(`d${type}: ${rollVal}`);
-    if (rollResults.length === count) {
-      addToRollHistory(rollResults.join(", "));
-    }
-  }, 1000);
-}
-}
-
-function addToRollHistory(roll) {
-state.diceRollHistory.unshift(roll);
-if (state.diceRollHistory.length > 5) {
-  state.diceRollHistory.pop();
-}
-saveState();
-renderRollHistory();
-}
-
-/* INVENTORY */
-function addItemModal() {
-const form = document.getElementById("item-form");
-const modalTitle = document.getElementById("item-modal-title");
-const saveBtn = document.getElementById("save-item-btn");
-
-form.reset();
-modalTitle.textContent = "Add Item";
-saveBtn.innerHTML = '<i class="fas fa-save"></i><span>Add</span>';
-form.dataset.mode = "add";
-form.dataset.index = "";
-
-document.getElementById("item-modal").style.display = "block";
-}
-
-function closeItemModal() {
-document.getElementById("item-modal").style.display = "none";
-}
-
-function saveItem(e) {
-e.preventDefault();
-const form = e.target;
-const mode = form.dataset.mode;
-const index = form.dataset.index;
-
-const name = document.getElementById("item-name").value.trim();
-const emoji = document.getElementById("item-emoji").value.trim();
-const quantity = parseInt(document.getElementById("item-quantity").value) || 1;
-const description = document.getElementById("item-description").value.trim();
-
-if (!name || !emoji) {
-  alert("Please provide at least a name and emoji.");
-  return;
-}
-
-if (mode === "add") {
-  state.inventory.push({ name, emoji, description, quantity });
-} else if (mode === "edit") {
-  state.inventory[index] = { name, emoji, description, quantity };
-}
-
-saveState();
-renderInventory();
-closeItemModal();
-}
-
-function initInventoryActions() {
-const grid = document.getElementById("inventory-grid");
-grid.addEventListener("click", (e) => {
-  const editBtn = e.target.closest(".edit-btn");
-  const deleteBtn = e.target.closest(".delete-btn");
-  const itemDiv = e.target.closest(".inventory-item");
-
-  if (!itemDiv) return;
-  const idx = itemDiv.dataset.index;
-
-  if (editBtn) {
-    editItem(idx);
-  } else if (deleteBtn) {
-    deleteItem(idx);
-  } else {
-    // Show item view popup
-    showItemViewModal(idx);
-  }
-});
-}
-
-function editItem(index) {
-const form = document.getElementById("item-form");
-const modalTitle = document.getElementById("item-modal-title");
-const saveBtn = document.getElementById("save-item-btn");
-const item = state.inventory[index];
-
-if (!item) return;
-
-document.getElementById("item-name").value = item.name;
-document.getElementById("item-emoji").value = item.emoji;
-document.getElementById("item-description").value = item.description;
-document.getElementById("item-quantity").value = item.quantity;
-
-modalTitle.textContent = "Edit Item";
-saveBtn.innerHTML = '<i class="fas fa-save"></i><span>Save</span>';
-form.dataset.mode = "edit";
-form.dataset.index = index;
-
-document.getElementById("item-modal").style.display = "block";
-}
-
-function deleteItem(index) {
-if (confirm(`Delete "${state.inventory[index].name}" from inventory?`)) {
-  state.inventory.splice(index, 1);
-  saveState();
-  renderInventory();
-}
-}
-
-function showItemViewModal(index) {
-const item = state.inventory[index];
-if (!item) return;
-
-const modal = document.getElementById("item-view-modal");
-const closeBtn = document.getElementById("close-item-view-modal");
-
-document.getElementById("item-view-title").textContent = item.name;
-document.getElementById("item-view-emoji").textContent = item.emoji;
-document.getElementById("item-view-description").textContent = item.description;
-document.getElementById("item-view-quantity").textContent = item.quantity;
-
-modal.style.display = "block";
-
-closeBtn.onclick = () => {
-  modal.style.display = "none";
-};
-window.onclick = (event) => {
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-};
-}
-
-/* NOTES */
-function addNoteModal() {
-const form = document.getElementById("note-form");
-const modalTitle = document.getElementById("note-modal-title");
-const saveBtn = document.getElementById("save-note-btn");
-
-form.reset();
-modalTitle.textContent = "Add Note";
-saveBtn.innerHTML = '<i class="fas fa-save"></i><span>Add</span>';
-form.dataset.mode = "add";
-form.dataset.index = "";
-
-document.getElementById("note-modal").style.display = "block";
-}
-
-function closeNoteModal() {
-document.getElementById("note-modal").style.display = "none";
-}
-
-function saveNote(e) {
-e.preventDefault();
-const form = e.target;
-const mode = form.dataset.mode;
-const index = form.dataset.index;
-
-const title = document.getElementById("note-title").value.trim();
-const content = document.getElementById("note-content").value.trim();
-
-if (!title || !content) {
-  alert("Please fill out both title and content.");
-  return;
-}
-
-if (mode === "add") {
-  state.notes.push({ title, content });
-} else if (mode === "edit") {
-  state.notes[index] = { title, content };
-}
-
-saveState();
-renderNotes();
-closeNoteModal();
-}
-
-function editNote(index) {
-const note = state.notes[index];
-if (!note) return;
-
-const form = document.getElementById("note-form");
-const modalTitle = document.getElementById("note-modal-title");
-const saveBtn = document.getElementById("save-note-btn");
-
-document.getElementById("note-title").value = note.title;
-document.getElementById("note-content").value = note.content;
-
-modalTitle.textContent = "Edit Note";
-saveBtn.innerHTML = '<i class="fas fa-save"></i><span>Save</span>';
-form.dataset.mode = "edit";
-form.dataset.index = index;
-
-document.getElementById("note-modal").style.display = "block";
-}
-
-function deleteNote(index) {
-if (confirm(`Delete note "${state.notes[index].title}"?`)) {
-  state.notes.splice(index, 1);
-  saveState();
-  renderNotes();
-}
-}
-
-function searchNotes() {
-const query = document.getElementById("search-notes").value.toLowerCase();
-const notesList = document.getElementById("notes-list");
-notesList.innerHTML = "";
-
-const filtered = state.notes.filter(
-  (n) =>
-    n.title.toLowerCase().includes(query) ||
-    n.content.toLowerCase().includes(query)
-);
-
-filtered.forEach((note) => {
-  const actualIndex = state.notes.indexOf(note);
-  const noteDiv = document.createElement("div");
-  noteDiv.className = "note-item";
-  noteDiv.dataset.index = actualIndex;
-  noteDiv.innerHTML = `
-    <div class="note-title">${note.title}</div>
-    <div class="note-content">${note.content}</div>
-    <div class="note-actions">
-      <button class="note-btn" onclick="editNote(${actualIndex})">
-        <i class="fas fa-edit"></i>
-      </button>
-      <button class="note-btn" onclick="deleteNote(${actualIndex})">
-        <i class="fas fa-trash-alt"></i>
-      </button>
+  </div>
+
+  <!-- ITEM MODALS -->
+  <div id="item-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-item-modal">&times;</span>
+      <h2 id="item-modal-title" class="modal-title">Add Item</h2>
+      <form id="item-form">
+        <div class="form-group">
+          <label for="item-name">Item Name</label>
+          <input type="text" id="item-name" required />
+        </div>
+        <div class="form-group">
+          <label for="item-emoji">Emoji</label>
+          <select id="item-emoji" required>
+            <option>⚔️</option>
+            <option>🛡️</option>
+            <option>🏹</option>
+            <option>🪄</option>
+            <option>📜</option>
+            <option>🗡️</option>
+            <option>🪙</option>
+            <option>🧪</option>
+            <option>🗝️</option>
+            <option>📦</option>
+            <option>💎</option>
+            <option>🍖</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="item-quantity">Quantity</label>
+          <input type="number" id="item-quantity" min="1" value="1" required />
+        </div>
+        <div class="form-group">
+          <label for="item-description">Description</label>
+          <textarea id="item-description" rows="4" required></textarea>
+        </div>
+        <div class="button-group">
+          <button type="button" class="spell-btn" onclick="closeItemModal()">
+            <i class="fas fa-times"></i>
+            <span>Cancel</span>
+          </button>
+          <button type="submit" class="spell-btn" id="save-item-btn">
+            <i class="fas fa-save"></i>
+            <span>Add</span>
+          </button>
+        </div>
+      </form>
     </div>
-  `;
-  notesList.appendChild(noteDiv);
-});
-}
+  </div>
 
-/* EVENT LISTENERS (INVENTORY) */
-document.getElementById("add-item-btn").addEventListener("click", addItemModal);
-document
-.getElementById("close-item-modal")
-.addEventListener("click", closeItemModal);
-document.getElementById("item-form").addEventListener("submit", saveItem);
-initInventoryActions();
+  <!-- ITEM VIEW MODAL -->
+  <div id="item-view-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-item-view-modal">&times;</span>
+      <h2 id="item-view-title" class="modal-title">Item Details</h2>
+      <p id="item-view-emoji" style="font-size: 2rem; text-align: center;"></p>
+      <p id="item-view-description"></p>
+      <p>
+        <strong>Quantity:</strong>
+        <span id="item-view-quantity"></span>
+      </p>
+    </div>
+  </div>
 
-/* EVENT LISTENERS (ITEM VIEW MODAL) */
-document
-.getElementById("close-item-view-modal")
-.addEventListener("click", () => {
-  document.getElementById("item-view-modal").style.display = "none";
-});
+  <!-- NOTE MODALS -->
+  <div id="note-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-note-modal">&times;</span>
+      <h2 id="note-modal-title" class="modal-title">Add Note</h2>
+      <form id="note-form">
+        <div class="form-group">
+          <label for="note-title">Title</label>
+          <input type="text" id="note-title" required />
+        </div>
+        <div class="form-group">
+          <label for="note-content">Content</label>
+          <textarea id="note-content" rows="6" required></textarea>
+        </div>
+        <div class="button-group">
+          <button
+            type="button"
+            class="spell-btn"
+            onclick="closeNoteModal()"
+          >
+            <i class="fas fa-times"></i>
+            <span>Cancel</span>
+          </button>
+          <button type="submit" class="spell-btn" id="save-note-btn">
+            <i class="fas fa-save"></i>
+            <span>Add</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-/* EVENT LISTENERS (COINS) */
-document
-.getElementById("platinum")
-.addEventListener("input", () => saveState());
-document.getElementById("gold").addEventListener("input", () => saveState());
-document
-.getElementById("electrum")
-.addEventListener("input", () => saveState());
-document.getElementById("silver").addEventListener("input", () => saveState());
-document.getElementById("copper").addEventListener("input", () => saveState());
+  <!-- SPELL SLOT SELECTION MODAL -->
+  <div id="spell-slot-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-spell-slot-modal">&times;</span>
+      <h2 id="spell-slot-modal-title" class="modal-title">Cast Spell Slot</h2>
+      <div id="spell-slot-modal-body">
+        <!-- Dynamically generated buttons for available levels -->
+      </div>
+    </div>
+  </div>
 
-/* EVENT LISTENERS (NOTES) */
-document.getElementById("add-note-btn").addEventListener("click", addNoteModal);
-document
-.getElementById("close-note-modal")
-.addEventListener("click", closeNoteModal);
-document.getElementById("note-form").addEventListener("submit", saveNote);
-document.getElementById("search-notes").addEventListener("input", searchNotes);
-
-/* CLOSE MODALS ON BACKDROP CLICK (Slot selection / item view / etc.) */
-window.addEventListener("click", (e) => {
-const itemModal = document.getElementById("item-modal");
-const noteModal = document.getElementById("note-modal");
-const itemViewModal = document.getElementById("item-view-modal");
-const slotModal = document.getElementById("spell-slot-modal");
-
-if (e.target === itemModal) itemModal.style.display = "none";
-if (e.target === noteModal) noteModal.style.display = "none";
-if (e.target === itemViewModal) itemViewModal.style.display = "none";
-if (e.target === slotModal) slotModal.style.display = "none";
-});
-
-/* LONG REST BUTTON */
-document.querySelector('[data-rest="long"]').addEventListener("click", longRest);
-
-/* SPELL ADD BUTTON */
-document.getElementById("add-spell").addEventListener("click", addSpell);
-
-/* ROLL DICE BUTTON */
-document.getElementById("roll-dice").addEventListener("click", rollDice);
-
-/* IMPORT & EXPORT BUTTONS */
-document.getElementById("export-btn").addEventListener("click", exportCharacter);
-document.getElementById("import-btn").addEventListener("click", () => {
-document.getElementById("import-file").click();
-});
-document.getElementById("import-file").addEventListener("change", importCharacter);
-
-/* EXPORT CHARACTER FUNCTION */
-function exportCharacter() {
-const exportData = {
-  spellSlots: state.spellSlots,
-  spellbook: state.spellbook,
-  characterSheet: state.characterSheet,
-  diceRollHistory: state.diceRollHistory,
-  inventory: state.inventory,
-  notes: state.notes,
-  coins: state.coins,
-};
-
-const dataStr = JSON.stringify(exportData, null, 2);
-const blob = new Blob([dataStr], { type: "application/json" });
-const url = URL.createObjectURL(blob);
-
-const a = document.createElement("a");
-a.href = url;
-a.download = `${state.characterSheet.name || "character"}.json`;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-}
-
-/* IMPORT CHARACTER FUNCTION */
-function importCharacter(event) {
-const file = event.target.files[0];
-if (!file) return;
-
-const reader = new FileReader();
-reader.onload = function(e) {
-  try {
-    const importedData = JSON.parse(e.target.result);
-    
-    // Validate the imported data structure
-    if (
-      importedData.spellSlots &&
-      importedData.spellbook &&
-      importedData.characterSheet &&
-      importedData.diceRollHistory &&
-      importedData.inventory &&
-      importedData.notes &&
-      importedData.coins
-    ) {
-      // Update the state
-      state.spellSlots = importedData.spellSlots;
-      state.spellbook = importedData.spellbook;
-      state.characterSheet = importedData.characterSheet;
-      state.diceRollHistory = importedData.diceRollHistory;
-      state.inventory = importedData.inventory;
-      state.notes = importedData.notes;
-      state.coins = importedData.coins;
-
-      saveState();
-      renderAll();
-      alert("Character imported successfully!");
-    } else {
-      alert("Invalid character file.");
-    }
-  } catch (error) {
-    alert("Failed to import character. Please ensure the file is a valid JSON.");
-    console.error(error);
-  }
-};
-reader.readAsText(file);
-}
-
-/* INITIAL RENDER */
-renderAll();
+  <!-- Particle.js Library + Main Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
