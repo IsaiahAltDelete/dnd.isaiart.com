@@ -35,27 +35,27 @@
       <nav class="nav">
         <button class="nav-btn active" data-tab="character-sheet">
           <i class="fas fa-user"></i>
-          <span>Character Sheet</span>
+          <span class="tooltip">Character Sheet</span>
         </button>
         <button class="nav-btn" data-tab="spellbook">
           <i class="fas fa-book-open"></i>
-          <span>Spellbook</span>
+          <span class="tooltip">Spellbook</span>
         </button>
         <button class="nav-btn" data-tab="slots">
           <i class="fas fa-scroll"></i>
-          <span>Spell Slots</span>
+          <span class="tooltip">Spell Slots</span>
         </button>
         <button class="nav-btn" data-tab="dice-roller">
           <i class="fas fa-dice-d20"></i>
-          <span>Dice Roller</span>
+          <span class="tooltip">Dice Roller</span>
         </button>
         <button class="nav-btn" data-tab="inventory">
           <i class="fas fa-boxes"></i>
-          <span>Inventory</span>
+          <span class="tooltip">Inventory</span>
         </button>
         <button class="nav-btn" data-tab="notes">
           <i class="fas fa-sticky-note"></i>
-          <span>Notes</span>
+          <span class="tooltip">Notes</span>
         </button>
       </nav>
 
@@ -63,36 +63,48 @@
       <nav class="mobile-nav" id="mobile-nav">
         <button class="nav-btn active" data-tab="character-sheet">
           <i class="fas fa-user"></i>
-          <span>Character Sheet</span>
+          <span class="tooltip">Character Sheet</span>
         </button>
         <button class="nav-btn" data-tab="spellbook">
           <i class="fas fa-book-open"></i>
-          <span>Spellbook</span>
+          <span class="tooltip">Spellbook</span>
         </button>
         <button class="nav-btn" data-tab="slots">
           <i class="fas fa-scroll"></i>
-          <span>Spell Slots</span>
+          <span class="tooltip">Spell Slots</span>
         </button>
         <button class="nav-btn" data-tab="dice-roller">
           <i class="fas fa-dice-d20"></i>
-          <span>Dice Roller</span>
+          <span class="tooltip">Dice Roller</span>
         </button>
         <button class="nav-btn" data-tab="inventory">
           <i class="fas fa-boxes"></i>
-          <span>Inventory</span>
+          <span class="tooltip">Inventory</span>
         </button>
         <button class="nav-btn" data-tab="notes">
           <i class="fas fa-sticky-note"></i>
-          <span>Notes</span>
+          <span class="tooltip">Notes</span>
         </button>
       </nav>
 
-      <!-- Rest Buttons -->
+      <!-- Rest Buttons & Import/Export -->
       <div class="rest-buttons">
         <button class="rest-btn" data-rest="long">
           <i class="fas fa-bed"></i>
           <span>Long Rest</span>
         </button>
+        <!-- Export Button -->
+        <button class="rest-btn" id="export-btn">
+          <i class="fas fa-file-export"></i>
+          <span>Export</span>
+        </button>
+        <!-- Import Button -->
+        <button class="rest-btn" id="import-btn">
+          <i class="fas fa-file-import"></i>
+          <span>Import</span>
+        </button>
+        <!-- Hidden File Input for Import -->
+        <input type="file" id="import-file" accept=".json" style="display: none;" />
       </div>
     </section>
 
