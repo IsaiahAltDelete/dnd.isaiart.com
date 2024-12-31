@@ -18,6 +18,13 @@
             height: 100vh;
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .overlay {
@@ -105,6 +112,10 @@
         </nav>
     </div>
     <script>
+        window.onload = function() {
+            document.body.style.opacity = 1;
+        }
+        
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
