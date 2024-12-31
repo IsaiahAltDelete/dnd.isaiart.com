@@ -5,605 +5,687 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character Sheet - Faranthis Fousio</title>
     <style>
-        /* Reset some default styles */
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        /* Root variables for colors and spacing */
-        :root {
-            --bg-color: #fff;
-            --text-color: #000;
-            --shadow-color: rgba(0, 0, 0, 0.08);
-            --border-color: #000;
-            --padding: 2rem;
-            --gap: 1.5rem;
-            --border-radius: 16px;
-            --font-bold: 700;
-            --font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: var(--padding);
+            background-color: #fff;
+            color: #000;
+            line-height: 1.6;
+            padding: 2rem;
         }
 
+        /* Layout */
         .container {
-            max-width: 800px;
-            width: 100%;
-            padding: var(--padding);
-            background-color: var(--bg-color);
-            box-shadow: 0 4px 6px var(--shadow-color);
-            border-radius: var(--border-radius);
-            display: flex;
-            flex-direction: column;
-            gap: var(--gap);
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        h1, h2, h3 {
-            text-align: center;
-            font-weight: var(--font-bold);
-            margin-bottom: 0.5rem;
-        }
-
+        /* Typography */
         h1 {
             font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
         h2 {
-            font-size: 1.75rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         h3 {
-            font-size: 1.25rem;
-            margin-top: 1rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            border-bottom: 2px solid #000;
+            padding-bottom: 0.5rem;
         }
 
-        p {
-            line-height: 1.6;
+        h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
         }
 
-        ul, ol {
-            list-style: none;
-            padding-left: 1rem;
+        /* Card Styles */
+        .card {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
         }
 
-        ul li, ol li {
-            margin-bottom: 0.5rem;
-            position: relative;
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 1rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            z-index: 100;
+            border-bottom: 2px solid #000;
         }
 
-        ul li::before, ol li::before {
-            content: "•";
-            position: absolute;
-            left: -1rem;
-            color: var(--text-color);
+        .nav-button {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #000;
+            display: inline-block;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: var(--gap);
+        .nav-button:hover {
+            background: #000;
+            color: #fff;
+            text-decoration: none;
         }
 
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 0.75rem;
-            text-align: left;
+        /* Add padding to section targets to account for fixed nav */
+        section[id] {
+            scroll-margin-top: 100px;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .ability-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .ability-score {
+            padding: 1rem;
+            border: 2px solid #000;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ability-score h4 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .ability-score .score {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+        .ability-score .modifier {
+            font-size: 1.2rem;
             font-weight: 600;
         }
 
-        th {
-            background-color: #f9f9f9;
+        /* Lists */
+        .list {
+            list-style: none;
+            margin-bottom: 1.5rem;
         }
 
-        .section {
-            display: flex;
-            flex-direction: column;
-            gap: var(--gap);
+        .list li {
+            margin-bottom: 0.75rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #000;
+        }
+
+        /* Description Lists */
+        .desc-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .desc-list dt {
+            font-weight: 700;
+            margin-top: 0.75rem;
+        }
+
+        .desc-list dd {
+            margin-left: 1rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border: 2px solid #000;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            font-weight: 700;
         }
 
         /* Responsive Design */
-        @media (max-width: 600px) {
-            .container {
-                padding: 1.5rem;
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
             }
 
-            h1 {
-                font-size: 2rem;
+            .grid {
+                grid-template-columns: 1fr;
             }
 
-            h2 {
-                font-size: 1.5rem;
+            .nav {
+                padding: 1rem;
             }
 
-            h3 {
-                font-size: 1.1rem;
+            .nav-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
             }
+        }
+
+        /* Section Specific Styles */
+        .spell-level {
+            margin-bottom: 2rem;
+        }
+
+        .spell-card {
+            border: 1px solid #000;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card {
+            border: 1px solid #000;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-name {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Additional Styles */
+        .appearance-box {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .quote {
+            font-style: italic;
+            border-left: 4px solid #000;
+            padding-left: 1rem;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Character Sheet</h1>
+        <h1>Faranthis Fousio</h1>
+
+        <nav class="nav">
+            <a href="#basic-info" class="nav-button">Basic Info</a>
+            <a href="#abilities" class="nav-button">Abilities</a>
+            <a href="#combat" class="nav-button">Combat</a>
+            <a href="#spells" class="nav-button">Spells</a>
+            <a href="#features" class="nav-button">Features</a>
+            <a href="#equipment" class="nav-button">Equipment</a>
+            <a href="#background" class="nav-button">Background</a>
+            <a href="#family" class="nav-button">Family</a>
+        </nav>
 
         <!-- Basic Information -->
-        <section class="section">
+        <div class="card" id="basic-info">
             <h2>Basic Information</h2>
-            <ul>
-                <li><strong>Name:</strong> Faranthis Fousio</li>
-                <li><strong>Level:</strong> 3</li>
-                <li><strong>Race:</strong> High Elf</li>
-                <li><strong>Class:</strong> Wizard</li>
-                <li><strong>Background:</strong> Sage</li>
-                <li><strong>Alignment:</strong> Lawful Evil</li>
-                <li><strong>Age:</strong> 25 years</li>
-                <li><strong>Size:</strong> Medium (6'0")</li>
-                <li><strong>Speed:</strong> Average</li>
-                <li><strong>Appearance:</strong> Dark-skinned male with a short buzzcut. Tall and slim muscular build, wears all white robes with gold jewelry. Dark brown eyes, no facial hair. Young adult male.</li>
-            </ul>
-        </section>
+            
+            <div class="grid">
+                <div>
+                    <h3>Character Details</h3>
+                    <ul class="list">
+                        <li><strong>Level:</strong> 3</li>
+                        <li><strong>Race:</strong> High Elf</li>
+                        <li><strong>Class:</strong> Wizard</li>
+                        <li><strong>Background:</strong> Sage</li>
+                        <li><strong>Alignment:</strong> Lawful Evil</li>
+                        <li><strong>Age:</strong> 25 years</li>
+                        <li><strong>Size:</strong> Medium (6'0")</li>
+                        <li><strong>Speed:</strong> Average</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Appearance</h3>
+                    <div class="appearance-box">
+                        Dark-skinned male with a short buzzcut. Tall and slim muscular build, wears all white robes with gold jewelry. Dark brown eyes, no facial hair. Young adult male.
+                    </div>
+
+                    <h3>Languages</h3>
+                    <ul class="list">
+                        <li>Common</li>
+                        <li>Elvish</li>
+                        <li>Sylvan</li>
+                        <li>Celestial</li>
+                        <li>Draconic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         <!-- Ability Scores -->
-        <section class="section">
+        <div class="card" id="abilities">
             <h2>Ability Scores</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ability</th>
-                        <th>Score</th>
-                        <th>Modifier</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Strength (STR)</td>
-                        <td>8</td>
-                        <td>-1</td>
-                    </tr>
-                    <tr>
-                        <td>Dexterity (DEX)</td>
-                        <td>12</td>
-                        <td>+1</td>
-                    </tr>
-                    <tr>
-                        <td>Constitution (CON)</td>
-                        <td>13</td>
-                        <td>+1</td>
-                    </tr>
-                    <tr>
-                        <td>Intelligence (INT)</td>
-                        <td>15</td>
-                        <td>+2</td>
-                    </tr>
-                    <tr>
-                        <td>Wisdom (WIS)</td>
-                        <td>14</td>
-                        <td>+2</td>
-                    </tr>
-                    <tr>
-                        <td>Charisma (CHA)</td>
-                        <td>10</td>
-                        <td>+0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+            
+            <div class="ability-scores">
+                <div class="ability-score">
+                    <h4>STR</h4>
+                    <div class="score">8</div>
+                    <div class="modifier">-1</div>
+                </div>
+                <div class="ability-score">
+                    <h4>DEX</h4>
+                    <div class="score">12</div>
+                    <div class="modifier">+1</div>
+                </div>
+                <div class="ability-score">
+                    <h4>CON</h4>
+                    <div class="score">13</div>
+                    <div class="modifier">+1</div>
+                </div>
+                <div class="ability-score">
+                    <h4>INT</h4>
+                    <div class="score">15</div>
+                    <div class="modifier">+2</div>
+                </div>
+                <div class="ability-score">
+                    <h4>WIS</h4>
+                    <div class="score">14</div>
+                    <div class="modifier">+2</div>
+                </div>
+                <div class="ability-score">
+                    <h4>CHA</h4>
+                    <div class="score">10</div>
+                    <div class="modifier">+0</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div>
+                    <h3>Saving Throws</h3>
+                    <ul class="list">
+                        <li><strong>Intelligence Save:</strong> +4 (INT + Proficiency)</li>
+                        <li><strong>Wisdom Save:</strong> +4 (WIS + Proficiency)</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Proficiencies</h3>
+                    <h4>Skills</h4>
+                    <ul class="list">
+                        <li>Insight</li>
+                        <li>Investigation</li>
+                        <li>Arcana</li>
+                        <li>History</li>
+                    </ul>
+
+                    <h4>Other Proficiencies</h4>
+                    <ul class="list">
+                        <li><strong>Weapons:</strong> Daggers, Quarterstaff</li>
+                        <li><strong>Armor:</strong> None</li>
+                        <li><strong>Tools:</strong> None</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         <!-- Combat Stats -->
-        <section class="section">
+        <div class="card" id="combat">
             <h2>Combat Stats</h2>
-            <ul>
-                <li><strong>HP:</strong> 20
-                    <ul>
-                        <li>With Mage Armor: AC becomes 14 (13 Base from Mage Armor + 1 DEX)</li>
+            
+            <div class="grid">
+                <div>
+                    <h3>Core Stats</h3>
+                    <ul class="list">
+                        <li><strong>HP:</strong> 20</li>
+                        <li><strong>AC:</strong> 11 (10 Base + 1 DEX)</li>
+                        <li><strong>AC with Mage Armor:</strong> 14 (13 Base + 1 DEX)</li>
+                        <li><strong>Initiative:</strong> +1 (DEX)</li>
+                        <li><strong>Proficiency Bonus:</strong> +2</li>
                     </ul>
-                </li>
-                <li><strong>AC:</strong> 11 (10 Base + 1 DEX)</li>
-                <li><strong>Initiative:</strong> +1 (DEX)</li>
-                <li><strong>Spell Save DC:</strong> 12 (8 Base + 2 INT + 2 Proficiency)</li>
-                <li><strong>Spell Attack Modifier:</strong> +4 (INT + Proficiency)</li>
-                <li><strong>Proficiency Bonus:</strong> +2</li>
-            </ul>
-        </section>
+                </div>
 
-        <!-- Proficiencies -->
-        <section class="section">
-            <h2>Proficiencies</h2>
-            <ul>
-                <li><strong>Armor:</strong> None</li>
-                <li><strong>Weapons:</strong> Daggers, Quarterstaff</li>
-                <li><strong>Tools:</strong> None</li>
-                <li><strong>Skills:</strong>
-                    <ul>
-                        <li><strong>Wizard Proficiencies:</strong> Insight, Investigation</li>
-                        <li><strong>Sage Proficiencies:</strong> Arcana, History</li>
+                <div>
+                    <h3>Spellcasting</h3>
+                    <ul class="list">
+                        <li><strong>Spellcasting Ability:</strong> Intelligence</li>
+                        <li><strong>Spell Save DC:</strong> 12 (8 Base + 2 INT + 2 Proficiency)</li>
+                        <li><strong>Spell Attack Modifier:</strong> +4 (INT + Proficiency)</li>
                     </ul>
-                </li>
-            </ul>
-        </section>
+                </div>
+            </div>
+        </div>
 
-        <!-- Feats & Traits -->
-        <section class="section">
-            <h2>Feats &amp; Traits</h2>
-            <ul>
-                <li><strong>Magic Initiate (Sage 2024):</strong>
-                    <ul>
-                        <li>Cantrips: Choose 2 from Cleric, Druid, Wizard</li>
-                        <li>Spells: Choose 1 spell from the initiated class</li>
-                    </ul>
-                </li>
-                <li><strong>High Elf Traits (2024):</strong>
-                    <ul>
-                        <li>Cantrip: Prestidigitation</li>
-                    </ul>
-                </li>
-                <li><strong>Racial Feat (Xanathar's Guide to Everything):</strong>
-                    <ul>
-                        <li><strong>Fey Teleportation:</strong>
-                            <ul>
-                                <li>Increase Intelligence or Charisma by 1 (max 20)</li>
-                                <li>Learn to speak, read, and write Sylvan</li>
-                                <li>Learn the Misty Step spell, cast once without expending a spell slot (recharges on any rest)</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </section>
-
-        <!-- Spellcasting -->
-        <section class="section">
+        <!-- Spells -->
+        <div class="card" id="spells">
             <h2>Spellcasting</h2>
-            <ul>
-                <li><strong>Spellcasting Ability:</strong> Intelligence</li>
-                <li><strong>Spell Save DC:</strong> 12</li>
-                <li><strong>Spell Attack Modifier:</strong> +4 (INT + Proficiency)</li>
-            </ul>
-        </section>
-
-        <!-- Spellbook -->
-        <section class="section">
-            <h2>Spellbook</h2>
-            <p>A battered tome filled with pictographs that only Faranthis can understand</p>
-        </section>
-
-        <!-- Cantrips -->
-        <section class="section">
-            <h2>Cantrips</h2>
-            <ul>
-                <li>Prestidigitation (High Elf)</li>
-                <li>Fire Bolt</li>
-                <li>Mage Hand</li>
-                <li>Ray of Frost</li>
-                <li>Light</li>
-                <li>Message</li>
-                <li>Thaumaturgy (Cleric - Magic Initiate)</li>
-                <li>Mending (Cleric - Magic Initiate)</li>
-            </ul>
-        </section>
-
-        <!-- Level 1 Spells -->
-        <section class="section">
-            <h2>Level 1 Spells</h2>
-            <ul>
-                <li>Sanctuary (Cleric - Magic Initiate)</li>
-                <li>Mage Armor</li>
-                <li>Identify</li>
-                <li>Magic Missile</li>
-                <li>Detect Magic</li>
-                <li>Sleep</li>
-                <li>Unseen Servant</li>
-                <li>Find Familiar (Can be cast as a ritual without using a spell slot)</li>
-                <li>Shield</li>
-                <li>Charm Person</li>
-            </ul>
-        </section>
-
-        <!-- Level 2 Spells -->
-        <section class="section">
-            <h2>Level 2 Spells</h2>
-            <p>*(Add two new 2nd-level spells here when you select them)*</p>
-        </section>
-
-        <!-- Conditional One-Time Spells -->
-        <section class="section">
-            <h2>Conditional One-Time Spells</h2>
-            <ul>
-                <li>Misty Step (Fey Teleportation feat, recharges on any rest)</li>
-            </ul>
-        </section>
-
-        <!-- Arcane Recovery -->
-        <section class="section">
-            <h2>Arcane Recovery</h2>
-            <p>Once per day during a short rest, recover 1 spell slot.</p>
-        </section>
-
-        <!-- Arcane Tradition: Abjuration -->
-        <section class="section">
-            <h2>Arcane Tradition: Abjuration</h2>
-            <ul>
-                <li><strong>Arcane Ward:</strong>
-                    <ul>
-                        <li>When you cast an abjuration spell of 1st level or higher, you can create a magical ward on yourself that lasts until you finish a long rest.</li>
-                        <li>The ward has hit points equal to twice your wizard level + your Intelligence modifier (2 * 3 + 2 = 8 HP).</li>
-                        <li>Whenever you take damage, the ward takes the damage instead. If the ward is reduced to 0 HP, you take any remaining damage.</li>
+            
+            <div class="spell-level">
+                <h3>Cantrips</h3>
+                <div class="grid">
+                    <ul class="list">
+                        <li>Prestidigitation (High Elf)</li>
+                        <li>Fire Bolt</li>
+                        <li>Mage Hand</li>
+                        <li>Ray of Frost</li>
+                        <li>Light</li>
+                        <li>Message</li>
+                        <li>Thaumaturgy (Cleric - Magic Initiate)</li>
+                        <li>Mending (Cleric - Magic Initiate)</li>
                     </ul>
-                </li>
-            </ul>
-        </section>
+                </div>
+            </div>
 
-        <!-- Saving Throws -->
-        <section class="section">
-            <h2>Saving Throws</h2>
-            <ul>
-                <li>Intelligence Save: +4 (INT + Proficiency)</li>
-                <li>Wisdom Save: +4 (WIS + Proficiency)</li>
-            </ul>
-        </section>
+            <div class="spell-level">
+                <h3>Level 1 Spells</h3>
+                <div class="grid">
+                    <ul class="list">
+                        <li>Sanctuary (Cleric - Magic Initiate)</li>
+                        <li>Mage Armor</li>
+                        <li>Identify</li>
+                        <li>Magic Missile</li>
+                        <li>Detect Magic</li>
+                        <li>Sleep</li>
+                        <li>Unseen Servant</li>
+                        <li>Find Familiar (Can be cast as a ritual)</li>
+                        <li>Shield</li>
+                        <li>Charm Person</li>
+                    </ul>
+                </div>
+            </div>
 
-        <!-- Magic Theme -->
-        <section class="section">
-            <h2>Magic Theme</h2>
-            <p>Golden rays that carry faint warmth and the hint of windblown sand</p>
-        </section>
+            <div class="spell-level">
+                <h3>Level 2 Spells</h3>
+                <p>To be selected</p>
+            </div>
+
+            <div class="spell-level">
+                <h3>Special Spells</h3>
+                <ul class="list">
+                    <li><strong>Misty Step:</strong> From Fey Teleportation feat (recharges on any rest)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card" id="features">
+            <h2>Features & Traits</h2>
+
+            <div class="feature-card">
+                <div class="feature-name">Magic Initiate (Sage 2024)</div>
+                <ul class="list">
+                    <li>Cantrips: Choose 2 from Cleric, Druid, Wizard</li>
+                    <li>Spells: Choose 1 spell from the initiated class</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-name">High Elf Traits (2024)</div>
+                <ul class="list">
+                    <li>Cantrip: Prestidigitation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-name">Fey Teleportation (Racial Feat)</div>
+                <ul class="list">
+                    <li>Increase Intelligence or Charisma by 1 (max 20)</li>
+                    <li>Learn to speak, read, and write Sylvan</li>
+                    <li>Learn the Misty Step spell, cast once without expending a spell slot (recharges on any rest)</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-name">Arcane Recovery</div>
+                <ul class="list">
+                    <li>Once per day during a short rest, recover 1 spell slot</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-name">Arcane Tradition: Abjuration</div>
+                <h4>Arcane Ward</h4>
+                <ul class="list">
+                    <li>When you cast an abjuration spell of 1st level or higher, you can create a magical ward on yourself that lasts until you finish a long rest</li>
+                    <li>The ward has hit points equal to twice your wizard level + your Intelligence modifier (2 * 3 + 2 = 8 HP)</li>
+                    <li>Whenever you take damage, the ward takes the damage instead. If the ward is reduced to 0 HP, you take any remaining damage</li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Equipment -->
-        <section class="section">
-            <h2>Equipment</h2>
-            <ul>
-                <li><strong>Starting Items:</strong>
-                    <ul>
+        <div class="card" id="equipment">
+            <h2>Equipment & Possessions</h2>
+
+            <div class="grid">
+                <div>
+                    <h3>Weapons & Armor</h3>
+                    <ul class="list">
                         <li>2 Daggers</li>
                         <li>Arcane Focus (Quarterstaff)</li>
+                    </ul>
+
+                    <h3>Clothing</h3>
+                    <ul class="list">
                         <li>Pristine White Robes</li>
-                        <li>Designer Spellbook</li>
                         <li>White Matching Outfit</li>
-                        <li>Scholar's Pack (40 GP):
-                            <ul>
-                                <li>Backpack</li>
-                                <li>Book</li>
-                                <li>Ink</li>
-                                <li>Ink Pen</li>
-                                <li>Lamp</li>
-                                <li>10 Flasks of Oil</li>
-                                <li>10 Sheets of Parchment</li>
-                                <li>Tinderbox</li>
-                            </ul>
-                        </li>
-                        <li>5 Gold Pieces</li>
                     </ul>
-                </li>
-                <li><strong>Sage Origin:</strong>
-                    <ul>
-                        <li>50 Gold Pieces</li>
+                </div>
+
+                <div>
+                    <h3>Scholar's Pack Contents</h3>
+                    <ul class="list">
+                        <li>Backpack</li>
+                        <li>Book</li>
+                        <li>Ink</li>
+                        <li>Ink Pen</li>
+                        <li>Lamp</li>
+                        <li>10 Flasks of Oil</li>
+                        <li>10 Sheets of Parchment</li>
+                        <li>Tinderbox</li>
                     </ul>
-                </li>
-            </ul>
-        </section>
+                </div>
+            </div>
 
-        <!-- Trinkets -->
-        <section class="section">
-            <h2>Trinkets</h2>
-            <p>Mechanical canary inside a lamp: This trinket was gifted by the wizard who told Faranthis he was squandering his powers. The wizard conjured it as a demonstration of how strong and powerful magic can be, and allowed Faranthis to keep it.</p>
-        </section>
-
-        <!-- Personal Details -->
-        <section class="section">
-            <h2>Personal Details</h2>
-
-            <!-- Family -->
-            <section class="section">
-                <h3>Family</h3>
+            <h3>Currency</h3>
+            <ul class="list">
+                <li><strong>Total Gold:</strong> 57 GP</li>
                 <ul>
-                    <li><strong>Parents:</strong>
-                        <ul>
-                            <li><strong>Mother:</strong>
-                                <ul>
-                                    <li>Name: Sariel Fousio</li>
-                                    <li>Race: High Elf</li>
-                                    <li>Alignment: Neutral</li>
-                                    <li>Class: Ranger</li>
-                                    <li>Background: Criminal</li>
-                                    <li>Personality: Friendly</li>
-                                    <li>Status: Alive and Well</li>
-                                </ul>
-                            </li>
-                            <li><strong>Father:</strong>
-                                <ul>
-                                    <li>Name: Adran Fousio</li>
-                                    <li>Race: High Elf</li>
-                                    <li>Alignment: Neutral Evil</li>
-                                    <li>Class: Wizard</li>
-                                    <li>Occupation: Artisan or Guild Member</li>
-                                    <li>Personality: Friendly</li>
-                                    <li>Status: Alive and Well</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li><strong>Siblings:</strong>
-                        <ul>
-                            <li><strong>Dreali Fousio:</strong>
-                                <ul>
-                                    <li>Gender: Male</li>
-                                    <li>Alignment: Neutral Good</li>
-                                    <li>Occupation: Guild Member</li>
-                                    <li>Birth Order: Oldest Sibling</li>
-                                    <li>Relationship: Friendly</li>
-                                    <li>Status: Alive and quite successful</li>
-                                    <li>Class: Warlock</li>
-                                </ul>
-                            </li>
-                            <li><strong>Laucian Fousio:</strong>
-                                <ul>
-                                    <li>Gender: Male</li>
-                                    <li>Alignment: Neutral Evil</li>
-                                    <li>Occupation: Politician</li>
-                                    <li>Birth Order: Second Oldest</li>
-                                    <li>Relationship: Hostile</li>
-                                    <li>Status: Alive and well</li>
-                                    <li>Class: Fighter</li>
-                                </ul>
-                            </li>
-                            <li><strong>Chaedi Fousio:</strong>
-                                <ul>
-                                    <li>Gender: Female</li>
-                                    <li>Alignment: Neutral</li>
-                                    <li>Occupation: Sailor</li>
-                                    <li>Birth Order: Third Oldest</li>
-                                    <li>Relationship: Indifferent</li>
-                                    <li>Status: Alive but doing poorly due to injury</li>
-                                    <li>Class: Sorcerer</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                    <li>Starting Gold: 5 GP</li>
+                    <li>Sage Origin: 50 GP</li>
+                    <li>Life Event Bonus: 2 GP</li>
                 </ul>
-            </section>
+            </ul>
 
-            <!-- Family Lifestyle -->
-            <section class="section">
-                <h3>Family Lifestyle</h3>
-                <ul>
-                    <li>Comfortable (+10)</li>
+            <h3>Trinkets</h3>
+            <div class="feature-card">
+                <div class="feature-name">Mechanical Canary inside a Lamp</div>
+                <p>This trinket was gifted by the wizard who told Faranthis he was squandering his powers. The wizard conjured it as a demonstration of how strong and powerful magic can be, and allowed Faranthis to keep it.</p>
+            </div>
+        </div>
+
+        <!-- Background -->
+        <div class="card" id="background">
+            <h2>Background & Personal Details</h2>
+
+            <h3>Origins</h3>
+            <ul class="list">
+                <li><strong>Birthplace:</strong> Arborea (an outer plane)</li>
+                <li><strong>Family Lifestyle:</strong> Comfortable (+10)</li>
+                <li><strong>Childhood Home:</strong> Small House</li>
+                <li><strong>Childhood Memory:</strong> Had several friends and a generally happy childhood</li>
+            </ul>
+
+            <h3>Character Traits</h3>
+            <dl class="desc-list">
+                <dt>Ambitions</dt>
+                <dd>To become the greatest wizard the world has seen in generations</dd>
+                
+                <dt>Eccentricities</dt>
+                <dd>Talks to plants, treating them like old friends, and often feels their plants are "talking back."</dd>
+
+                <dt>Bond</dt>
+                <dd>I seek to create a magical masterpiece that will be remembered for ages.</dd>
+
+                <dt>Ideal</dt>
+                <dd>Creativity. Innovation and originality are paramount.</dd>
+
+                <dt>Flaw</dt>
+                <dd>I become obsessed with my creations, neglecting other important aspects of life.</dd>
+            </dl>
+
+            <h3>Life Events</h3>
+            <div class="feature-card">
+                <div class="feature-name">1. Good Fortune</div>
+                <p>Gained a bit of good fortune in the form of a distant relative's stipend that enables a comfortable lifestyle for 17 years. If choosing a higher lifestyle, reduce the price by 2 gp during this period.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-name">2. Adventurer Friendship</div>
+                <h4>Friend Details: Regandor Winterflame</h4>
+                <ul class="list">
+                    <li><strong>Race:</strong> Human (Black)</li>
+                    <li><strong>Class:</strong> Druid</li>
+                    <li><strong>Alignment:</strong> Lawful Evil</li>
+                    <li><strong>Occupation:</strong> Farmer / Herder</li>
+                    <li><strong>Relationship:</strong> Friendly</li>
+                    <li><strong>Status:</strong> Alive and Well</li>
                 </ul>
-            </section>
+            </div>
 
-            <!-- Childhood Home -->
-            <section class="section">
-                <h3>Childhood Home</h3>
-                <ul>
-                    <li>Small House</li>
-                </ul>
-            </section>
+            <div class="feature-card">
+                <div class="feature-name">3. Supernatural Experience</div>
+                <p>Explored an empty house and found it to be haunted</p>
+            </div>
 
-            <!-- Childhood Memory -->
-            <section class="section">
-                <h3>Childhood Memory</h3>
-                <ul>
-                    <li>Had several friends and a generally happy childhood</li>
-                </ul>
-            </section>
-        </section>
+            <div class="feature-card">
+                <div class="feature-name">4. Work Related to Background</div>
+                <p>Spent time working in a job related to your background</p>
+                <p><strong>Bonus:</strong> Start the game with an extra 2 GP</p>
+            </div>
+        </div>
 
-        <!-- Origins -->
-        <section class="section">
-            <h2>Origins</h2>
-            <ul>
-                <li><strong>Birthplace:</strong> Arborea (an outer plane of your choice)</li>
-                <li><strong>Parents:</strong> Know who they are</li>
-            </ul>
-        </section>
+        <!-- Family -->
+        <div class="card" id="family">
+            <h2>Family Details</h2>
 
-        <!-- Backstory -->
-        <section class="section">
-            <h2>Backstory</h2>
-            <ul>
-                <li><strong>Ambitions:</strong> To become the greatest wizard the world has seen in generations</li>
-                <li><strong>Eccentricities:</strong> Talks to plants, treating them like old friends, and often feels their plants are “talking back.”</li>
-            </ul>
-        </section>
-
-        <!-- Life Events -->
-        <section class="section">
-            <h2>Life Events</h2>
-            <ol>
-                <li><strong>Good Fortune:</strong>
-                    <ul>
-                        <li>Gained a bit of good fortune</li>
-                        <li>Boon: A distant relative left a stipend that enables a comfortable lifestyle for 17 years. If choosing a higher lifestyle, reduce the price by 2 gp during this period.</li>
+            <h3>Parents</h3>
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="feature-name">Mother: Sariel Fousio</div>
+                    <ul class="list">
+                        <li><strong>Race:</strong> High Elf</li>
+                        <li><strong>Class:</strong> Ranger</li>
+                        <li><strong>Alignment:</strong> Neutral</li>
+                        <li><strong>Background:</strong> Criminal</li>
+                        <li><strong>Personality:</strong> Friendly</li>
+                        <li><strong>Status:</strong> Alive and Well</li>
                     </ul>
-                </li>
-                <li><strong>Adventurer Friendship:</strong>
-                    <ul>
-                        <li>Made a friend of an adventurer</li>
-                        <li>Details: Use supplemental tables and work with your DM to add more details to this friendly character and establish how your friendship began.</li>
-                        <li><strong>Friend's Details:</strong>
-                            <ul>
-                                <li>Name: Regandor WInterflame</li>
-                                <li>Alignment: Lawful Evil</li>
-                                <li>Class: Druid</li>
-                                <li>Occupation: Farmer / Herder</li>
-                                <li>Race: Human (Black)</li>
-                                <li>Relationship: Friendly</li>
-                                <li>Status: Alive and Well</li>
-                            </ul>
-                        </li>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Father: Adran Fousio</div>
+                    <ul class="list">
+                        <li><strong>Race:</strong> High Elf</li>
+                        <li><strong>Class:</strong> Wizard</li>
+                        <li><strong>Alignment:</strong> Neutral Evil</li>
+                        <li><strong>Occupation:</strong> Artisan or Guild Member</li>
+                        <li><strong>Personality:</strong> Friendly</li>
+                        <li><strong>Status:</strong> Alive and Well</li>
                     </ul>
-                </li>
-                <li><strong>Supernatural Experience:</strong>
-                    <ul>
-                        <li>Explored an empty house and found it to be haunted</li>
+                </div>
+            </div>
+
+            <h3>Siblings</h3>
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="feature-name">Dreali Fousio (Oldest)</div>
+                    <ul class="list">
+                        <li><strong>Gender:</strong> Male</li>
+                        <li><strong>Class:</strong> Warlock</li>
+                        <li><strong>Alignment:</strong> Neutral Good</li>
+                        <li><strong>Occupation:</strong> Guild Member</li>
+                        <li><strong>Relationship:</strong> Friendly</li>
+                        <li><strong>Status:</strong> Alive and quite successful</li>
                     </ul>
-                </li>
-                <li><strong>Work Related to Background:</strong>
-                    <ul>
-                        <li>Spent time working in a job related to your background</li>
-                        <li>Bonus: Start the game with an extra 2 GP</li>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-name">Laucian Fousio (Second Oldest)</div>
+                    <ul class="list">
+                        <li><strong>Gender:</strong> Male</li>
+                        <li><strong>Class:</strong> Fighter</li>
+                        <li><strong>Alignment:</strong> Neutral Evil</li>
+                        <li><strong>Occupation:</strong> Politician</li>
+                        <li><strong>Relationship:</strong> Hostile</li>
+                        <li><strong>Status:</strong> Alive and well</li>
                     </ul>
-                </li>
-            </ol>
-        </section>
+                </div>
 
-        <!-- Additional Notes -->
-        <section class="section">
-            <h2>Additional Notes</h2>
-            <ul>
-                <li><strong>Current Age:</strong> 25 years</li>
-                <li><strong>Life Events Roll:</strong> 1d4 (Result: 4)</li>
-            </ul>
-        </section>
-
-        <!-- Languages -->
-        <section class="section">
-            <h2>Languages</h2>
-            <ul>
-                <li>Common</li>
-                <li>Elvish</li>
-                <li>Sylvan</li>
-                <li>Celestial</li>
-                <li>Draconic</li>
-            </ul>
-        </section>
-
-        <!-- Find Familiar -->
-        <section class="section">
-            <h2>Find Familiar</h2>
-            <p>You have the ability to cast the Find Familiar spell. This does not consume a spell slot as it can be cast as a ritual. Your familiar serves as a magical companion without using your spell slots.</p>
-        </section>
-
-        <!-- Background Features -->
-        <section class="section">
-            <h2>Background Features</h2>
-            <ul>
-                <li><strong>Bond:</strong> I seek to create a magical masterpiece that will be remembered for ages.</li>
-                <li><strong>Ideal:</strong> Creativity. Innovation and originality are paramount.</li>
-                <li><strong>Flaw:</strong> I become obsessed with my creations, neglecting other important aspects of life.</li>
-            </ul>
-        </section>
-
-        <!-- Starting Money -->
-        <section class="section">
-            <h2>Starting Money</h2>
-            <ul>
-                <li><strong>Starting Gold Pieces:</strong> 5 GP</li>
-                <li><strong>Sage Origin:</strong> 50 GP</li>
-                <li><strong>Life Event 4 Bonus:</strong> 2 GP</li>
-                <li><strong>Total Starting Gold:</strong> 57 GP</li>
-            </ul>
-        </section>
+                <div class="feature-card">
+                    <div class="feature-name">Chaedi Fousio (Third Oldest)</div>
+                    <ul class="list">
+                        <li><strong>Gender:</strong> Female</li>
+                        <li><strong>Class:</strong> Sorcerer</li>
+                        <li><strong>Alignment:</strong> Neutral</li>
+                        <li><strong>Occupation:</strong> Sailor</li>
+                        <li><strong>Relationship:</strong> Indifferent</li>
+                        <li><strong>Status:</strong> Alive but doing poorly due to injury</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
