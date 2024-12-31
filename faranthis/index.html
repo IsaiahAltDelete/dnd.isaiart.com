@@ -16,6 +16,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            overflow: hidden;
         }
         h1 {
             margin-bottom: 20px;
@@ -39,14 +40,32 @@
             background-color: #f4f4f4;
             color: #1a1a1a;
         }
+        .fade-out {
+            animation: fadeOut 1s forwards;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                background-color: white;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>FARANTHIS FOUSIO</h1>
     <nav>
-<a href="https://dnd.isaiart.com/faranthis/lv1">LEVEL 1</a>
-        <a href="https://dnd.isaiart.com/faranthis/lv2">LEVEL 2</a>
-        <a href="https://dnd.isaiart.com/faranthis/lv3">LEVEL 3</a>
+        <a href="https://dnd.isaiart.com/faranthis/lv1" onclick="fadeOutEffect(event)">LEVEL 1</a>
+        <a href="https://dnd.isaiart.com/faranthis/lv2" onclick="fadeOutEffect(event)">LEVEL 2</a>
+        <a href="https://dnd.isaiart.com/faranthis/lv3" onclick="fadeOutEffect(event)">LEVEL 3</a>
     </nav>
+    <script>
+        function fadeOutEffect(event) {
+            event.preventDefault();
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = event.target.href;
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
