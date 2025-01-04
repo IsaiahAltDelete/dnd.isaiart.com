@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D&D 5e Character Manager</title>
+  <!-- Load Poppins Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    header, nav {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 10px 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+    }
+    nav li {
+      margin: 0;
+    }
+    nav a {
+      color: #ecf0f1;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 5px 10px;
+      border: 1px solid #34495e;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #34495e;
+    }
+    main {
+      padding: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: #f7f7f7;
+    }
+    .section {
+      margin-bottom: 30px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fff;
+    }
+    .section h2 {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+    input, select, button, textarea {
+      margin-top: 5px;
+      padding: 5px 10px;
+      border: 2px solid #333;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      width: 100%;
+      max-width: 350px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #ecf0f1;
+    }
+    .hidden {
+      display: none;
+    }
+    .flex {
+      display: flex;
+      gap: 20px;
+    }
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+    }
+    .portrait {
+      max-width: 150px;
+      max-height: 150px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    .warning {
+      color: red;
+      font-weight: 600;
+    }
+    .calc-detail {
+      color: #555;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      margin-top: -5px;
+    }
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+      }
+      input, select, textarea {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>D&D 5e Character Manager</h1>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="#section-details">Character Details</a></li>
+      <li><a href="#section-info">Character Info</a></li>
+      <li><a href="#section-abilities">Ability Scores</a></li>
+      <li><a href="#section-calculated">Calculated Stats</a></li>
+      <li><a href="#section-rolls">Rolls</a></li>
+      <li><a href="#section-proficiency">Proficiency Bonus</a></li>
+      <li><a href="#section-saves">Saving Throws</a></li>
+      <li><a href="#section-skills">Skills</a></li>
+      <li><a href="#section-equipment">Equipment</a></li>
+      <li><a href="#section-spells">Spells</a></li>
+      <li><a href="#section-features">Features</a></li>
+      <li><a href="#section-background">Background</a></li>
+      <li><a href="#section-feats">Feats</a></li>
+      <li><a href="#section-languages">Languages</a></li>
+      <li><a href="#section-export">Export</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="section" id="section-details">
+      <h2>Character Details</h2>
+      <label>Name: <input type="text" id="charName" placeholder="Character Name"></label>
+      <label>Alignment: <input type="text" id="alignment" placeholder="e.g., Chaotic Good"></label>
+      <label>Personality Traits: <textarea id="personalityTraits" rows="2"></textarea></label>
+      <label>Ideals: <textarea id="ideals" rows="2"></textarea></label>
+      <label>Bonds: <textarea id="bonds" rows="2"></textarea></label>
+      <label>Flaws: <textarea id="flaws" rows="2"></textarea></label>
+      <label>Upload Portrait: <input type="file" id="portrait" accept="image/*"></label>
+      <img id="portraitPreview" class="portrait hidden" src="#" alt="Character Portrait">
+    </div>
+
+    <div class="section" id="section-info">
+      <h2>Character Information</h2>
+      <label>Race: <select id="raceSelect"></select></label>
+      <label>Subrace: <select id="subraceSelect" disabled></select></label>
+      <label>Class: <select id="classSelect"></select></label>
+      <label>Background: <select id="backgroundSelect"></select></label>
+      <label>Level: <input type="number" id="levelInput" min="1" max="20" value="1"></label>
+      <label>Experience Points (XP): <input type="number" id="xpInput" min="0" value="0"></label>
+    </div>
+
+    <div class="section" id="section-abilities">
+      <h2>Ability Scores</h2>
+      <button id="calculateBtn">Calculate Modifiers</button>
+      <table>
+        <thead>
+          <tr><th>Ability</th><th>Score</th><th>Modifier</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Strength</td><td><input type="number" id="str" value="10"></td><td id="modStr">+0</td></tr>
+          <tr><td>Dexterity</td><td><input type="number" id="dex" value="10"></td><td id="modDex">+0</td></tr>
+          <tr><td>Constitution</td><td><input type="number" id="con" value="10"></td><td id="modCon">+0</td></tr>
+          <tr><td>Intelligence</td><td><input type="number" id="int" value="10"></td><td id="modInt">+0</td></tr>
+          <tr><td>Wisdom</td><td><input type="number" id="wis" value="10"></td><td id="modWis">+0</td></tr>
+          <tr><td>Charisma</td><td><input type="number" id="cha" value="10"></td><td id="modCha">+0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-calculated">
+      <h2>Calculated Stats</h2>
+      <p><strong>Initiative:</strong> <span id="initiativeDisplay">+0</span></p>
+      <div class="calc-detail" id="initiativeDetail"></div>
+      <p><strong>Max HP:</strong> <span id="maxHPDisplay">0</span></p>
+      <div class="calc-detail" id="hpDetail"></div>
+      <p><strong>Current HP:</strong> <input type="number" id="currentHPInput" value="0" style="width:70px;"></p>
+      <p><strong>Spell Save DC:</strong> <span id="spellSaveDCDisplay">0</span></p>
+      <div class="calc-detail" id="spellSaveDetail"></div>
+      <p><strong>AC (Armor Class):</strong> <span id="acDisplay">0</span></p>
+      <div class="calc-detail" id="acDetail"></div>
+      <p><strong>Carry Capacity:</strong> <span id="carryCapacityDisplay">0</span> lbs</p>
+      <div class="calc-detail" id="carryDetail"></div>
+      <p class="warning hidden" id="encumbranceWarning">Warning: You are over your carry capacity!</p>
+    </div>
+
+    <div class="section" id="section-rolls">
+      <h2>Dice Rolls</h2>
+      <label>
+        Select Roll Type:
+        <select id="rollType">
+          <option value="">Select Type</option>
+          <option value="saving_throw">Saving Throw</option>
+          <option value="skill">Skill Check</option>
+          <option value="initiative">Initiative</option>
+          <option value="attack">Attack Roll</option>
+        </select>
+      </label>
+      <div id="rollOptions"></div>
+      <button id="rollBtn">Roll</button>
+      <div id="rollResult"></div>
+    </div>
+
+    <div class="section" id="section-proficiency">
+      <h2>Proficiency Bonus</h2>
+      <p id="proficiencyBonus">+2</p>
+    </div>
+
+    <div class="section" id="section-saves">
+      <h2>Saving Throws</h2>
+      <table>
+        <thead>
+          <tr><th>Ability</th><th>Proficient</th><th>Total</th></tr>
+        </thead>
+        <tbody id="savingThrowsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-skills">
+      <h2>Skills</h2>
+      <table>
+        <thead>
+          <tr><th>Skill</th><th>Ability</th><th>Proficient</th><th>Total</th></tr>
+        </thead>
+        <tbody id="skillsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-equipment">
+      <h2>Equipment and Inventory</h2>
+      <button id="addEquipmentBtn">Add Equipment</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Weight</th>
+            <th>AC Bonus</th>
+            <th>Stat Bonus</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="equipmentTable"></tbody>
+      </table>
+      <p>Total Weight: <span id="totalWeight">0</span> lbs</p>
+    </div>
+
+    <div class="section" id="section-spells">
+      <h2>Spells and Spell Slots</h2>
+      <div id="spellsSection" class="hidden">
+        <button id="addSpellBtn">Add Spell</button>
+        <table id="spellsTable">
+          <tr>
+            <th>Spell Name</th>
+            <th>Level</th>
+            <th>Spellcasting Ability</th>
+            <th>Spell Save DC</th>
+            <th>Spell Attack Bonus</th>
+            <th>Actions</th>
+          </tr>
+        </table>
+      </div>
+      <div id="spellSlotsSection" class="hidden">
+        <h3>Spell Slots</h3>
+        <table>
+          <thead>
+            <tr><th>Spell Level</th><th>Total Slots</th><th>Used Slots</th></tr>
+          </thead>
+          <tbody id="spellSlotsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section" id="section-features">
+      <h2>Features and Traits</h2>
+      <button id="addFeatureBtn">Add Feature/Trait</button>
+      <ul id="featuresList"></ul>
+    </div>
+
+    <div class="section" id="section-background">
+      <h2>Background</h2>
+      <p id="backgroundFeatures"></p>
+    </div>
+
+    <div class="section" id="section-feats">
+      <h2>Feats</h2>
+      <label>
+        Select a Feat:
+        <select id="selectFeat"></select>
+      </label>
+      <button id="addFeatBtn">Add Feat</button>
+      <ul id="featsList"></ul>
+    </div>
+
+    <div class="section" id="section-languages">
+      <h2>Languages and Proficiencies</h2>
+      <div class="flex">
+        <div class="flex-column">
+          <h3>Languages</h3>
+          <button id="addLanguageBtn">Add Language</button>
+          <ul id="languagesList"></ul>
+        </div>
+        <div class="flex-column">
+          <h3>Tool Proficiencies</h3>
+          <button id="addToolProfBtn">Add Tool Proficiency</button>
+          <ul id="toolProfsList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-export">
+      <h2>Export Character Sheet</h2>
+      <button id="exportPDFBtn">Export as PDF</button>
+      <button id="exportImageBtn">Export as Image</button>
+    </div>
+  </main>
+
+  <script>
+    /* -----------------------------------------------------------------------
+       1. DATA DEFINITIONS
+    ------------------------------------------------------------------------*/
+    const armorBaseValues = {
+      "Armor - Light": 11,   // 11 + Dex mod
+      "Armor - Medium": 12,  // 12 + min(Dex mod, +2)
+      "Armor - Heavy": 16    // ignoring Dex mod
+    };
+    const shieldBonus = 2;
+
+    const races = {
+      "Human": {
+        "ability_bonuses": {"str": 1, "dex": 1, "con": 1, "int":1, "wis":1, "cha":1},
+        "subraces": null,
+        "traits": ["Extra Language"]
+      },
+      "Dwarf": {
+        "ability_bonuses": {"con": 2},
+        "subraces": {
+          "Hill Dwarf": {"wis": 1},
+          "Mountain Dwarf": {"str": 2}
+        },
+        "traits": ["Darkvision", "Dwarven Resilience", "Dwarven Combat Training", "Tool Proficiency"]
+      },
+      "Elf": {
+        "ability_bonuses": {"dex": 2},
+        "subraces": {
+          "High Elf": {"int":1},
+          "Wood Elf": {"wis":1},
+          "Dark Elf (Drow)": {"cha":1}
+        },
+        "traits": ["Darkvision", "Keen Senses", "Fey Ancestry", "Trance"]
+      },
+      "Halfling": {
+        "ability_bonuses": {"dex": 2},
+        "subraces": {
+          "Lightfoot": {"cha":1},
+          "Stout": {"con":1}
+        },
+        "traits": ["Lucky", "Brave", "Halfling Nimbleness"]
+      },
+      "Dragonborn": {
+        "ability_bonuses": {"str":2, "cha":1},
+        "subraces": null,
+        "traits": ["Draconic Ancestry", "Breath Weapon", "Damage Resistance"]
+      },
+      "Gnome": {
+        "ability_bonuses": {"int":2},
+        "subraces": {
+          "Forest Gnome": {"dex":1},
+          "Rock Gnome": {"con":1}
+        },
+        "traits": ["Darkvision", "Gnome Cunning"]
+      },
+      "Half-Elf": {
+        "ability_bonuses": {"cha":2},
+        "subraces": null,
+        "traits": ["Darkvision", "Fey Ancestry", "Skill Versatility"]
+      },
+      "Half-Orc": {
+        "ability_bonuses": {"str":2, "con":1},
+        "subraces": null,
+        "traits": ["Darkvision", "Menacing", "Relentless Endurance", "Savage Attacks"]
+      },
+      "Tiefling": {
+        "ability_bonuses": {"int":1, "cha":2},
+        "subraces": null,
+        "traits": ["Darkvision", "Hellish Resistance", "Infernal Legacy"]
+      }
+    };
+
+    const classes = {
+      "Barbarian": {
+        "hit_die": 12,
+        "saving_throws": ["str", "con"],
+        "skills": {
+          "choose": 2,
+          "options": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"]
+        },
+        "spellcasting": false
+      },
+      "Bard": {
+        "hit_die": 8,
+        "saving_throws": ["dex", "cha"],
+        "skills": {
+          "choose": 3,
+          "options": ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"]
+        },
+        "spellcasting": true
+      },
+      "Cleric": {
+        "hit_die": 8,
+        "saving_throws": ["wis", "cha"],
+        "skills": {
+          "choose": 2,
+          "options": ["History", "Insight", "Medicine", "Persuasion", "Religion"]
+        },
+        "spellcasting": true
+      },
+      "Druid": {
+        "hit_die": 8,
+        "saving_throws": ["int", "wis"],
+        "skills": {
+          "choose": 2,
+          "options": ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"]
+        },
+        "spellcasting": true
+      },
+      "Fighter": {
+        "hit_die": 10,
+        "saving_throws": ["str", "con"],
+        "skills": {
+          "choose": 2,
+          "options": ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception", "Survival"]
+        },
+        "spellcasting": false
+      },
+      "Monk": {
+        "hit_die": 8,
+        "saving_throws": ["str", "dex"],
+        "skills": {
+          "choose": 2,
+          "options": ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"]
+        },
+        "spellcasting": false
+      },
+      "Paladin": {
+        "hit_die": 10,
+        "saving_throws": ["wis", "cha"],
+        "skills": {
+          "choose": 2,
+          "options": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"]
+        },
+        "spellcasting": true
+      },
+      "Ranger": {
+        "hit_die": 10,
+        "saving_throws": ["str", "dex"],
+        "skills": {
+          "choose": 3,
+          "options": ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"]
+        },
+        "spellcasting": true
+      },
+      "Rogue": {
+        "hit_die": 8,
+        "saving_throws": ["dex", "int"],
+        "skills": {
+          "choose": 4,
+          "options": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"]
+        },
+        "spellcasting": false
+      },
+      "Sorcerer": {
+        "hit_die": 6,
+        "saving_throws": ["con", "cha"],
+        "skills": {
+          "choose": 2,
+          "options": ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"]
+        },
+        "spellcasting": true
+      },
+      "Warlock": {
+        "hit_die": 8,
+        "saving_throws": ["wis", "cha"],
+        "skills": {
+          "choose": 2,
+          "options": ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"]
+        },
+        "spellcasting": true
+      },
+      "Wizard": {
+        "hit_die": 6,
+        "saving_throws": ["int", "wis"],
+        "skills": {
+          "choose": 2,
+          "options": ["Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"]
+        },
+        "spellcasting": true
+      }
+    };
+
+    const backgrounds = {
+      "Acolyte": {
+        "skills": ["Insight", "Religion"],
+        "languages": ["Two additional languages"],
+        "features": ["Shelter of the Faithful"]
+      },
+      "Charlatan": {
+        "skills": ["Deception", "Sleight of Hand"],
+        "features": ["False Identity"]
+      },
+      "Criminal": {
+        "skills": ["Deception", "Stealth"],
+        "features": ["Criminal Contact"]
+      },
+      "Entertainer": {
+        "skills": ["Acrobatics", "Performance"],
+        "features": ["By Popular Demand"]
+      },
+      "Folk Hero": {
+        "skills": ["Animal Handling", "Survival"],
+        "features": ["Rustic Hospitality"]
+      },
+      "Guild Artisan": {
+        "skills": ["Insight", "Persuasion"],
+        "languages": ["One additional language"],
+        "features": ["Guild Membership"]
+      },
+      "Hermit": {
+        "skills": ["Medicine", "Religion"],
+        "features": ["Discovery"]
+      },
+      "Noble": {
+        "skills": ["History", "Persuasion"],
+        "languages": ["One additional language"],
+        "features": ["Position of Privilege"]
+      },
+      "Outlander": {
+        "skills": ["Athletics", "Survival"],
+        "features": ["Wanderer"]
+      },
+      "Sage": {
+        "skills": ["Arcana", "History"],
+        "languages": ["Two additional languages"],
+        "features": ["Researcher"]
+      },
+      "Sailor": {
+        "skills": ["Athletics", "Perception"],
+        "features": ["Ship's Passage"]
+      },
+      "Soldier": {
+        "skills": ["Athletics", "Intimidation"],
+        "features": ["Military Rank"]
+      },
+      "Urchin": {
+        "skills": ["Sleight of Hand", "Stealth"],
+        "features": ["City Secrets"]
+      }
+    };
+
+    const feats = {
+      "Alert": {
+        "description": "+5 to initiative, can't be surprised, hidden foes don't have advantage."
+      },
+      "Athlete": {
+        "description": "Increase STR or DEX by 1, easier climbing, standing from prone costs less movement."
+      },
+      "Crossbow Expert": {
+        "description": "Ignore loading for crossbows, no disadvantage in 5 ft., bonus action hand crossbow."
+      },
+      "Dual Wielder": {
+        "description": "Use two-weapon fighting with non-light weapons, +1 AC while two-weapon fighting."
+      },
+      "Great Weapon Master": {
+        "description": "Extra attack on crit/kill, -5 to hit for +10 damage with heavy weapons."
+      },
+      "Healer": {
+        "description": "Healer's Kit can restore more HP, stabilize for 1 HP."
+      },
+      "Lucky": {
+        "description": "3 luck points to reroll attacks/checks/saves."
+      },
+      "Mobile": {
+        "description": "+10 speed, ignore difficult terrain when Dashing, no op attacks from attacked foes."
+      },
+      "Observant": {
+        "description": "Increase INT or WIS by 1, +5 passive Perception/Investigation, read lips."
+      },
+      "Resilient": {
+        "description": "Increase one ability by 1, gain proficiency in its saving throws."
+      },
+      "Sharpshooter": {
+        "description": "No disadvantage at long range, ignore cover, -5 to hit for +10 damage."
+      },
+      "Tough": {
+        "description": "+2 HP per level."
+      },
+      "War Caster": {
+        "description": "Advantage on concentration, cast spells with occupied hands, spells as op attacks."
+      }
+    };
+
+    const skillsList = {
+      "Acrobatics": "dex",
+      "Animal Handling": "wis",
+      "Arcana": "int",
+      "Athletics": "str",
+      "Deception": "cha",
+      "History": "int",
+      "Insight": "wis",
+      "Intimidation": "cha",
+      "Investigation": "int",
+      "Medicine": "wis",
+      "Nature": "int",
+      "Perception": "wis",
+      "Performance": "cha",
+      "Persuasion": "cha",
+      "Religion": "int",
+      "Sleight of Hand": "dex",
+      "Stealth": "dex",
+      "Survival": "wis"
+    };
+
+    const spellSlotTable = {
+      "Wizard": {
+        1: {1:2},
+        2: {1:3},
+        3: {1:4, 2:2},
+        4: {1:4, 2:3},
+        5: {1:4, 2:3, 3:2},
+        6: {1:4, 2:3, 3:3}
+      },
+      "Cleric": {},
+      "Druid": {},
+      "Bard": {},
+      "Paladin": {},
+      "Ranger": {},
+      "Sorcerer": {},
+      "Warlock": {}
+    };
+
+    const featuresList = {
+      "Darkvision": "See in dim light as if bright, dark as if dim.",
+      "Keen Senses": "Proficiency in Perception.",
+      "Fey Ancestry": "Advantage on charm saves, immune to magic sleep.",
+      "Trance": "Elves meditate 4 hrs instead of sleeping.",
+      "Dwarven Resilience": "Adv on saves vs poison, resist poison dmg.",
+      "Dwarven Combat Training": "Proficiency with certain dwarf weapons.",
+      "Tool Proficiency": "Proficiency with artisan's tools.",
+      "Extra Language": "Speak/read/write an extra language."
+    };
+
+    const equipmentTypes = [
+      "Weapon",
+      "Armor - Light",
+      "Armor - Medium",
+      "Armor - Heavy",
+      "Shield",
+      "Tool",
+      "Adventuring Gear",
+      "Other"
+    ];
+
+    /* -----------------------------------------------------------------------
+       2. ON WINDOW LOAD
+    ------------------------------------------------------------------------*/
+    window.onload = function() {
+      populateRaces();
+      populateClasses();
+      populateBackgrounds();
+      populateSkills();
+      populateSavingThrows();
+      populateFeatsDropdown();
+      loadFromLocalStorage();
+      updateAll();
+    };
+
+    /* -----------------------------------------------------------------------
+       3. POPULATE SELECTS AND TABLES
+    ------------------------------------------------------------------------*/
+    function populateRaces() {
+      const raceSelect = document.getElementById('raceSelect');
+      raceSelect.innerHTML = '<option value="">Select Race</option>';
+      for (let race in races) {
+        let option = document.createElement('option');
+        option.value = race;
+        option.text = race;
+        raceSelect.add(option);
+      }
+      raceSelect.addEventListener('change', () => {
+        const subraceSelect = document.getElementById('subraceSelect');
+        subraceSelect.innerHTML = '<option value="">Select Subrace</option>';
+        const selectedRace = raceSelect.value;
+        if (races[selectedRace] && races[selectedRace].subraces) {
+          subraceSelect.disabled = false;
+          for (let sub in races[selectedRace].subraces) {
+            let opt = document.createElement('option');
+            opt.value = sub;
+            opt.text = sub;
+            subraceSelect.add(opt);
+          }
+        } else {
+          subraceSelect.disabled = true;
+        }
+        updateAll();
+      });
+      document.getElementById('subraceSelect').addEventListener('change', () => updateAll());
+    }
+
+    function populateClasses() {
+      const classSelect = document.getElementById('classSelect');
+      classSelect.innerHTML = '<option value="">Select Class</option>';
+      for (let cls in classes) {
+        let option = document.createElement('option');
+        option.value = cls;
+        option.text = cls;
+        classSelect.add(option);
+      }
+      classSelect.addEventListener('change', () => {
+        initializeSpellSections();
+        updateAll();
+      });
+    }
+
+    function populateBackgrounds() {
+      const bgSelect = document.getElementById('backgroundSelect');
+      bgSelect.innerHTML = '<option value="">Select Background</option>';
+      for (let bg in backgrounds) {
+        let option = document.createElement('option');
+        option.value = bg;
+        option.text = bg;
+        bgSelect.add(option);
+      }
+      bgSelect.addEventListener('change', () => {
+        initializeBackground();
+        updateAll();
+      });
+    }
+
+    function populateSkills() {
+      const skillsTable = document.getElementById('skillsTable');
+      skillsTable.innerHTML = '';
+      for (let skill in skillsList) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${skill}</td>
+          <td>${capitalize(skillsList[skill])}</td>
+          <td><input type="checkbox" id="prof_${skill}"></td>
+          <td id="total_${skill}">0</td>
+        `;
+        skillsTable.appendChild(tr);
+        document.getElementById(`prof_${skill}`).addEventListener('change', () => updateAll());
+      }
+    }
+
+    function populateSavingThrows() {
+      const savingThrowsTable = document.getElementById('savingThrowsTable');
+      savingThrowsTable.innerHTML = '';
+      ["str","dex","con","int","wis","cha"].forEach(ability => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${capitalize(ability)}</td>
+          <td><input type="checkbox" id="saveProf_${ability}"></td>
+          <td id="saveTotal_${ability}">0</td>
+        `;
+        savingThrowsTable.appendChild(tr);
+        document.getElementById(`saveProf_${ability}`).addEventListener('change', ()=>updateAll());
+      });
+    }
+
+    function populateFeatsDropdown() {
+      const selectFeat = document.getElementById('selectFeat');
+      selectFeat.innerHTML = '<option value="">Choose Feat</option>';
+      for (let featName in feats) {
+        let option = document.createElement('option');
+        option.value = featName;
+        option.text = featName;
+        selectFeat.add(option);
+      }
+    }
+
+    /* -----------------------------------------------------------------------
+       4. EVENT LISTENERS
+    ------------------------------------------------------------------------*/
+    document.getElementById('calculateBtn').addEventListener('click', () => updateAll());
+    ["str","dex","con","int","wis","cha"].forEach(ability => {
+      document.getElementById(ability).addEventListener('input', () => updateAll());
+    });
+    document.getElementById('levelInput').addEventListener('input', () => {
+      initializeSpellSlots();
+      updateAll();
+    });
+    document.getElementById('xpInput').addEventListener('input', () => saveToLocalStorage());
+    document.getElementById('currentHPInput').addEventListener('input', () => saveToLocalStorage());
+    document.getElementById('addEquipmentBtn').addEventListener('click', () => addEquipmentRow());
+    document.getElementById('addSpellBtn').addEventListener('click', () => addSpellRow());
+    document.getElementById('addFeatureBtn').addEventListener('click', () => addFeature());
+    document.getElementById('addFeatBtn').addEventListener('click', () => addFeatFromDropdown());
+    document.getElementById('addLanguageBtn').addEventListener('click', () => addLanguage());
+    document.getElementById('addToolProfBtn').addEventListener('click', () => addToolProficiency());
+    document.getElementById('portrait').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => {
+          const portraitPreview = document.getElementById('portraitPreview');
+          portraitPreview.src = evt.target.result;
+          portraitPreview.classList.remove('hidden');
+          saveToLocalStorage();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    document.getElementById('exportPDFBtn').addEventListener('click', () => window.print());
+    document.getElementById('exportImageBtn').addEventListener('click', () => {
+      alert("Image export not implemented yet. Use a library like html2canvas or similar.");
+    });
+    document.getElementById('rollType').addEventListener('change', () => setupRollOptions());
+    document.getElementById('rollBtn').addEventListener('click', () => performRoll());
+
+    /* -----------------------------------------------------------------------
+       5. MAIN UPDATE & CALCULATIONS
+    ------------------------------------------------------------------------*/
+    function updateAll() {
+      let modifiers = calculateModifiers();
+      initializeBackground();
+      calculateSavingThrows(modifiers);
+      calculateSkills(modifiers);
+      calculateProficiencyBonus();
+      calculateCalculatedStats(modifiers);
+      updateEquipmentEffects(modifiers);
+      initializeSpellSections();
+      initializeSpellSlots();
+      updateSpellTable();
+      checkEncumbrance();
+      saveToLocalStorage();
+    }
+
+    function calculateModifiers() {
+      let modifiers = {};
+      ["str","dex","con","int","wis","cha"].forEach(ability => {
+        const val = parseInt(document.getElementById(ability).value) || 10;
+        let mod = Math.floor((val-10)/2);
+        modifiers[ability] = mod;
+        document.getElementById(`mod${capitalize(ability)}`).innerText = (mod>=0?'+':'') + mod;
+      });
+      const raceVal = document.getElementById('raceSelect').value;
+      const subraceVal = document.getElementById('subraceSelect').value;
+      if (raceVal) {
+        let raceBonuses = {...(races[raceVal].ability_bonuses || {})};
+        if (subraceVal && races[raceVal].subraces && races[raceVal].subraces[subraceVal]) {
+          let sb = races[raceVal].subraces[subraceVal];
+          for (let ab in sb) raceBonuses[ab] = (raceBonuses[ab]||0) + sb[ab];
+        }
+        for (let ab in raceBonuses) {
+          modifiers[ab] += raceBonuses[ab];
+          document.getElementById(`mod${capitalize(ab)}`).innerText = (modifiers[ab]>=0?'+':'')+modifiers[ab];
+        }
+      }
+      return modifiers;
+    }
+
+    function calculateProficiencyBonus() {
+      const lvl = parseInt(document.getElementById('levelInput').value)||1;
+      const bonus = 2 + Math.floor((lvl-1)/4);
+      document.getElementById('proficiencyBonus').innerText = (bonus>=0?'+':'')+bonus;
+    }
+
+    function calculateSavingThrows(modifiers) {
+      const lvl = parseInt(document.getElementById('levelInput').value)||1;
+      const profBonus = 2 + Math.floor((lvl-1)/4);
+      const cls = document.getElementById('classSelect').value;
+      if (cls && classes[cls].saving_throws) {
+        classes[cls].saving_throws.forEach(ability => {
+          document.getElementById(`saveProf_${ability}`).checked = true;
+        });
+      }
+      ["str","dex","con","int","wis","cha"].forEach(ability => {
+        let total = modifiers[ability]||0;
+        if (document.getElementById(`saveProf_${ability}`).checked) total += profBonus;
+        document.getElementById(`saveTotal_${ability}`).innerText = (total>=0?'+':'')+total;
+      });
+    }
+
+    function calculateSkills(modifiers) {
+      const lvl = parseInt(document.getElementById('levelInput').value)||1;
+      const profBonus = 2 + Math.floor((lvl-1)/4);
+      for (let skill in skillsList) {
+        let ability = skillsList[skill];
+        let total = modifiers[ability];
+        let proficient = document.getElementById(`prof_${skill}`).checked;
+        let bg = document.getElementById('backgroundSelect').value;
+        if (bg && backgrounds[bg].skills && backgrounds[bg].skills.includes(skill)) proficient = true;
+        if (proficient) total += profBonus;
+        document.getElementById(`total_${skill}`).innerText = (total>=0?'+':'')+total;
+      }
+    }
+
+    function calculateCalculatedStats(modifiers) {
+      const lvl = parseInt(document.getElementById('levelInput').value)||1;
+      const cls = document.getElementById('classSelect').value||'';
+      const conMod = modifiers.con||0;
+      const profBonus = parseInt(document.getElementById('proficiencyBonus').innerText)||2;
+      // Initiative
+      document.getElementById('initiativeDisplay').innerText = (modifiers.dex>=0?'+':'') + modifiers.dex;
+      document.getElementById('initiativeDetail').innerText = `= DEX mod (${(modifiers.dex>=0?'+':'')+modifiers.dex})`;
+      // Max HP
+      let hitdie = 0;
+      if (cls && classes[cls]) hitdie = classes[cls].hit_die;
+      let maxHP = (hitdie + conMod)* lvl;
+      document.getElementById('maxHPDisplay').innerText = maxHP;
+      document.getElementById('hpDetail').innerText = `= (HitDie ${hitdie} + CON mod ${conMod>=0?'+':''}${conMod}) × Level (${lvl})`;
+      let currHP = parseInt(document.getElementById('currentHPInput').value)||0;
+      if (currHP===0) document.getElementById('currentHPInput').value = maxHP;
+      // Spell Save DC
+      let spellSaveDC = 0;
+      let detail = '';
+      if (cls && classes[cls].spellcasting) {
+        let primary = 'int';
+        if (['Cleric','Druid','Ranger'].includes(cls)) primary='wis';
+        if (['Bard','Sorcerer','Warlock','Paladin'].includes(cls)) primary='cha';
+        spellSaveDC = 8 + profBonus + (modifiers[primary]||0);
+        detail = `= 8 + prof (${(profBonus>=0?'+':'')+profBonus}) + ${primary.toUpperCase()} mod (${(modifiers[primary]>=0?'+':'')+modifiers[primary]})`;
+      }
+      document.getElementById('spellSaveDCDisplay').innerText = spellSaveDC;
+      document.getElementById('spellSaveDetail').innerText = spellSaveDC>0 ? detail : '';
+
+      // Armor Class
+      let baseAC = 10 + (modifiers.dex||0);
+      let eqTable = document.getElementById('equipmentTable').rows;
+      let armorAC = 0;
+      let shieldAC = 0;
+      let detailAC = `Base = 10 + DEX mod (${(modifiers.dex>=0?'+':'')+modifiers.dex})`;
+
+      let bestArmorVal = 0;
+      let bestArmorType = '';
+      for (let i=0; i< eqTable.length; i++){
+        let row = eqTable[i];
+        let eqType = row.cells[1].children[0].value;
+        let acB = parseInt(row.cells[4].children[0].value)||0;
+        if (eqType==='Shield') shieldAC += shieldBonus;
+        // If it's an armor type
+        if (armorBaseValues[eqType]) {
+          let base = armorBaseValues[eqType];
+          let finalArmor = 0;
+          if (eqType==='Armor - Light') {
+            finalArmor = base + (modifiers.dex||0);
+          } else if (eqType==='Armor - Medium') {
+            let dexCapped = (modifiers.dex||0) > 2 ? 2 : (modifiers.dex||0);
+            finalArmor = base + dexCapped;
+          } else if (eqType==='Armor - Heavy') {
+            finalArmor = base; // ignoring Dex
+          }
+          finalArmor += acB; 
+          if (finalArmor>bestArmorVal) {
+            bestArmorVal = finalArmor;
+            bestArmorType = eqType;
+          }
+        }
+      }
+      if (bestArmorVal>0) {
+        armorAC = bestArmorVal;
+        detailAC += `; Using ${bestArmorType} = ${bestArmorVal}`;
+      } else {
+        // no actual "armor" found, default to baseAC
+        armorAC = baseAC;
+        detailAC += ` (no armor worn)`;
+      }
+      if (shieldAC>0) {
+        armorAC += shieldAC;
+        detailAC += `; Shield +${shieldAC}`;
+      }
+      document.getElementById('acDisplay').innerText = armorAC;
+      document.getElementById('acDetail').innerText = `= ${detailAC}`;
+      // Carry Capacity
+      let strVal = parseInt(document.getElementById('str').value)||10;
+      let carryCap = strVal*15;
+      document.getElementById('carryCapacityDisplay').innerText = carryCap;
+      document.getElementById('carryDetail').innerText = `= 15 × STR (${strVal})`;
+    }
+
+    function initializeBackground() {
+      const bg = document.getElementById('backgroundSelect').value;
+      const backgroundFeatures = document.getElementById('backgroundFeatures');
+      if (bg && backgrounds[bg] && backgrounds[bg].features) {
+        backgroundFeatures.innerHTML = `<strong>Features:</strong> ${backgrounds[bg].features.join(", ")}`;
+      } else {
+        backgroundFeatures.innerHTML = "";
+      }
+    }
+
+    function initializeSpellSections() {
+      const cls = document.getElementById('classSelect').value;
+      if (cls && classes[cls].spellcasting) {
+        document.getElementById('spellsSection').classList.remove('hidden');
+        document.getElementById('spellSlotsSection').classList.remove('hidden');
+      } else {
+        document.getElementById('spellsSection').classList.add('hidden');
+        document.getElementById('spellSlotsSection').classList.add('hidden');
+      }
+    }
+
+    function initializeSpellSlots() {
+      const cls = document.getElementById('classSelect').value;
+      const lvl = parseInt(document.getElementById('levelInput').value)||1;
+      const spellSlotsTable = document.getElementById('spellSlotsTable');
+      spellSlotsTable.innerHTML = '';
+      if (!cls || !classes[cls].spellcasting) return;
+      if (!spellSlotTable[cls]) return;
+      let slotData = spellSlotTable[cls][lvl]||{};
+      for (let slotLevel in slotData) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${slotLevel}</td>
+          <td>${slotData[slotLevel]}</td>
+          <td><input type="number" min="0" max="${slotData[slotLevel]}" value="0" id="usedSlots_${slotLevel}"></td>
+        `;
+        spellSlotsTable.appendChild(tr);
+      }
+    }
+
+    function updateSpellTable() {
+      const spellsTable = document.getElementById('spellsTable');
+      for (let i=1; i<spellsTable.rows.length; i++){
+        let row = spellsTable.rows[i];
+        updateSpellStats(row);
+      }
+    }
+
+    function updateSpellStats(row) {
+      const cls = document.getElementById('classSelect').value;
+      if (!cls || !classes[cls].spellcasting) return;
+      const profBonus = parseInt(document.getElementById('proficiencyBonus').innerText)||2;
+      let prim = 'int';
+      if (['Cleric','Druid','Ranger'].includes(cls)) prim='wis';
+      if (['Bard','Sorcerer','Warlock','Paladin'].includes(cls)) prim='cha';
+      let abilitySel = row.cells[2].children[0].value||prim;
+      let abilityModTxt = document.getElementById(`mod${capitalize(abilitySel)}`).innerText;
+      let abilityMod = parseInt(abilityModTxt)||0;
+      let sdc = 8 + profBonus + abilityMod;
+      let sab = profBonus + abilityMod;
+      row.cells[3].children[0].value = sdc;
+      row.cells[4].children[0].value = (sab>=0?'+':'')+sab;
+    }
+
+    function updateEquipmentEffects() {
+      let totalWeight = 0;
+      const eqTable = document.getElementById('equipmentTable');
+      for (let row of eqTable.rows) {
+        let qty = parseInt(row.cells[2].children[0].value)||0;
+        let w = parseFloat(row.cells[3].children[0].value)||0;
+        totalWeight += (qty*w);
+      }
+      document.getElementById('totalWeight').innerText = totalWeight;
+    }
+
+    function checkEncumbrance() {
+      const totalWeight = parseFloat(document.getElementById('totalWeight').innerText)||0;
+      const carryCap = parseFloat(document.getElementById('carryCapacityDisplay').innerText)||0;
+      if (totalWeight>carryCap) {
+        document.getElementById('encumbranceWarning').classList.remove('hidden');
+      } else {
+        document.getElementById('encumbranceWarning').classList.add('hidden');
+      }
+    }
+
+    /* -----------------------------------------------------------------------
+       6. ADD/REMOVE ROWS & LIST ITEMS
+    ------------------------------------------------------------------------*/
+    function addEquipmentRow() {
+      const eqTable = document.getElementById('equipmentTable');
+      let row = eqTable.insertRow();
+      row.innerHTML = `
+        <td><input type="text" placeholder="Name"></td>
+        <td>
+          <select>
+            ${equipmentTypes.map(t => `<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </td>
+        <td><input type="number" min="1" value="1"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="text" placeholder="e.g. dex+1, str+2"></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+      `;
+      row.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', () => updateAll());
+      });
+    }
+
+    function addSpellRow() {
+      const spellsTable = document.getElementById('spellsTable');
+      let row = spellsTable.insertRow();
+      row.innerHTML = `
+        <td><input type="text" placeholder="Spell Name"></td>
+        <td><input type="number" min="0" max="9" value="1"></td>
+        <td>
+          <select>
+            <option value="int">Intelligence</option>
+            <option value="wis">Wisdom</option>
+            <option value="cha">Charisma</option>
+          </select>
+        </td>
+        <td><input type="number" min="0" value="0" readonly></td>
+        <td><input type="text" value="+0" readonly></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+      `;
+      let abilitySelect = row.cells[2].children[0];
+      let spellLevel = row.cells[1].children[0];
+      abilitySelect.addEventListener('change', () => updateSpellStats(row));
+      spellLevel.addEventListener('input', () => updateSpellStats(row));
+      updateSpellStats(row);
+    }
+
+    function addFeature() {
+      const featureName = prompt("Enter Feature/Trait Name (e.g. 'Darkvision'):");
+      if (!featureName) return;
+      if (!featuresList[featureName]) {
+        alert("Feature not found in the predefined list.");
+        return;
+      }
+      let fdesc = featuresList[featureName];
+      let ul = document.getElementById('featuresList');
+      let li = document.createElement('li');
+      li.innerHTML = `<strong>${featureName}:</strong> ${fdesc} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      updateAll();
+    }
+
+    function addFeatFromDropdown() {
+      const selectFeat = document.getElementById('selectFeat');
+      let featName = selectFeat.value;
+      if (!featName) {
+        alert("Please select a feat.");
+        return;
+      }
+      if (!feats[featName]) {
+        alert("Feat not found in the predefined list.");
+        return;
+      }
+      let fdesc = feats[featName].description;
+      let ul = document.getElementById('featsList');
+      let li = document.createElement('li');
+      li.innerHTML = `<strong>${featName}:</strong> ${fdesc} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      selectFeat.value = "";
+      updateAll();
+    }
+
+    function addLanguage() {
+      let lang = prompt("Enter Language:");
+      if (!lang) return;
+      let ul = document.getElementById('languagesList');
+      let li = document.createElement('li');
+      li.innerHTML = `${lang} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      updateAll();
+    }
+
+    function addToolProficiency() {
+      let tool = prompt("Enter Tool Proficiency:");
+      if (!tool) return;
+      let ul = document.getElementById('toolProfsList');
+      let li = document.createElement('li');
+      li.innerHTML = `${tool} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      updateAll();
+    }
+
+    function removeRow(btn) {
+      let row = btn.parentElement.parentElement;
+      row.parentElement.removeChild(row);
+      updateAll();
+    }
+
+    function removeListItem(btn) {
+      let li = btn.parentElement;
+      li.parentElement.removeChild(li);
+      updateAll();
+    }
+
+    /* -----------------------------------------------------------------------
+       7. LOCAL STORAGE
+    ------------------------------------------------------------------------*/
+    function saveToLocalStorage() {
+      let data = {};
+      data.charName = document.getElementById('charName').value;
+      data.alignment = document.getElementById('alignment').value;
+      data.personalityTraits = document.getElementById('personalityTraits').value;
+      data.ideals = document.getElementById('ideals').value;
+      data.bonds = document.getElementById('bonds').value;
+      data.flaws = document.getElementById('flaws').value;
+      data.raceSelect = document.getElementById('raceSelect').value;
+      data.subraceSelect = document.getElementById('subraceSelect').value;
+      data.classSelect = document.getElementById('classSelect').value;
+      data.backgroundSelect = document.getElementById('backgroundSelect').value;
+      data.levelInput = document.getElementById('levelInput').value;
+      data.xpInput = document.getElementById('xpInput').value;
+      data.currentHPInput = document.getElementById('currentHPInput').value;
+      ["str","dex","con","int","wis","cha"].forEach(a=>{
+        data[a] = document.getElementById(a).value;
+      });
+      ["str","dex","con","int","wis","cha"].forEach(a=>{
+        data[`saveProf_${a}`] = document.getElementById(`saveProf_${a}`).checked;
+      });
+      for (let skill in skillsList) {
+        data[`prof_${skill}`] = document.getElementById(`prof_${skill}`).checked;
+      }
+      data.equipment = [];
+      let eqTable = document.getElementById('equipmentTable');
+      for (let row of eqTable.rows) {
+        let obj = {
+          name: row.cells[0].children[0].value,
+          type: row.cells[1].children[0].value,
+          quantity: row.cells[2].children[0].value,
+          weight: row.cells[3].children[0].value,
+          acBonus: row.cells[4].children[0].value,
+          statBonus: row.cells[5].children[0].value
+        };
+        data.equipment.push(obj);
+      }
+      data.spells = [];
+      let spellsTable = document.getElementById('spellsTable');
+      for (let i=1; i<spellsTable.rows.length; i++){
+        let row = spellsTable.rows[i];
+        let sp = {
+          name: row.cells[0].children[0].value,
+          level: row.cells[1].children[0].value,
+          ability: row.cells[2].children[0].value,
+          saveDC: row.cells[3].children[0].value,
+          attackBonus: row.cells[4].children[0].value
+        };
+        data.spells.push(sp);
+      }
+      data.features = [];
+      let ftList = document.getElementById('featuresList');
+      for (let li of ftList.children){
+        data.features.push(li.innerHTML);
+      }
+      data.feats = [];
+      let fUl = document.getElementById('featsList');
+      for (let li of fUl.children){
+        data.feats.push(li.innerHTML);
+      }
+      data.languages = [];
+      let langUl = document.getElementById('languagesList');
+      for (let li of langUl.children){
+        data.languages.push(li.innerHTML);
+      }
+      data.tools = [];
+      let toolUl = document.getElementById('toolProfsList');
+      for (let li of toolUl.children){
+        data.tools.push(li.innerHTML);
+      }
+      let portrait = document.getElementById('portraitPreview');
+      data.portraitSrc = portrait.src.includes('base64') ? portrait.src : '';
+      localStorage.setItem('dndCharacterData', JSON.stringify(data));
+    }
+
+    function loadFromLocalStorage() {
+      let json = localStorage.getItem('dndCharacterData');
+      if (!json) return;
+      let data = JSON.parse(json);
+      document.getElementById('charName').value = data.charName||'';
+      document.getElementById('alignment').value = data.alignment||'';
+      document.getElementById('personalityTraits').value = data.personalityTraits||'';
+      document.getElementById('ideals').value = data.ideals||'';
+      document.getElementById('bonds').value = data.bonds||'';
+      document.getElementById('flaws').value = data.flaws||'';
+      document.getElementById('raceSelect').value = data.raceSelect||'';
+      document.getElementById('subraceSelect').value = data.subraceSelect||'';
+      if (data.subraceSelect) document.getElementById('subraceSelect').disabled = false;
+      document.getElementById('classSelect').value = data.classSelect||'';
+      document.getElementById('backgroundSelect').value = data.backgroundSelect||'';
+      document.getElementById('levelInput').value = data.levelInput||'1';
+      document.getElementById('xpInput').value = data.xpInput||'0';
+      document.getElementById('currentHPInput').value = data.currentHPInput||'0';
+      ["str","dex","con","int","wis","cha"].forEach(a=>{
+        if (data[a]) document.getElementById(a).value = data[a];
+      });
+      ["str","dex","con","int","wis","cha"].forEach(a=>{
+        if (data[`saveProf_${a}`]!==undefined) document.getElementById(`saveProf_${a}`).checked = data[`saveProf_${a}`];
+      });
+      for (let skill in skillsList) {
+        if (data[`prof_${skill}`]!==undefined) {
+          document.getElementById(`prof_${skill}`).checked = data[`prof_${skill}`];
+        }
+      }
+      let eqTable = document.getElementById('equipmentTable');
+      eqTable.innerHTML = '';
+      if (data.equipment) {
+        data.equipment.forEach(ei=>{
+          let row = eqTable.insertRow();
+          row.innerHTML = `
+            <td><input type="text" value="${ei.name}"></td>
+            <td>
+              <select>
+                ${equipmentTypes.map(t => `<option value="${t}" ${t===ei.type?'selected':''}>${t}</option>`).join('')}
+              </select>
+            </td>
+            <td><input type="number" min="1" value="${ei.quantity}"></td>
+            <td><input type="number" min="0" value="${ei.weight}"></td>
+            <td><input type="number" min="0" value="${ei.acBonus}"></td>
+            <td><input type="text" value="${ei.statBonus||''}"></td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+          `;
+        });
+      }
+      let spellsTable = document.getElementById('spellsTable');
+      spellsTable.innerHTML = `
+        <tr>
+          <th>Spell Name</th>
+          <th>Level</th>
+          <th>Spellcasting Ability</th>
+          <th>Spell Save DC</th>
+          <th>Spell Attack Bonus</th>
+          <th>Actions</th>
+        </tr>
+      `;
+      if (data.spells) {
+        data.spells.forEach(sp=>{
+          let row = spellsTable.insertRow();
+          row.innerHTML = `
+            <td><input type="text" value="${sp.name}"></td>
+            <td><input type="number" min="0" max="9" value="${sp.level}"></td>
+            <td>
+              <select>
+                <option value="int" ${sp.ability==='int'?'selected':''}>Intelligence</option>
+                <option value="wis" ${sp.ability==='wis'?'selected':''}>Wisdom</option>
+                <option value="cha" ${sp.ability==='cha'?'selected':''}>Charisma</option>
+              </select>
+            </td>
+            <td><input type="number" min="0" value="${sp.saveDC}" readonly></td>
+            <td><input type="text" value="${sp.attackBonus}" readonly></td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+          `;
+        });
+      }
+      let featuresListEl = document.getElementById('featuresList');
+      featuresListEl.innerHTML = '';
+      if (data.features) {
+        data.features.forEach(f=>{
+          let li = document.createElement('li');
+          li.innerHTML = f;
+          featuresListEl.appendChild(li);
+        });
+      }
+      let featsListEl = document.getElementById('featsList');
+      featsListEl.innerHTML = '';
+      if (data.feats) {
+        data.feats.forEach(ft=>{
+          let li = document.createElement('li');
+          li.innerHTML = ft;
+          featsListEl.appendChild(li);
+        });
+      }
+      let langUl = document.getElementById('languagesList');
+      langUl.innerHTML = '';
+      if (data.languages) {
+        data.languages.forEach(lg=>{
+          let li = document.createElement('li');
+          li.innerHTML = lg;
+          langUl.appendChild(li);
+        });
+      }
+      let toolUl = document.getElementById('toolProfsList');
+      toolUl.innerHTML = '';
+      if (data.tools) {
+        data.tools.forEach(tl=>{
+          let li = document.createElement('li');
+          li.innerHTML = tl;
+          toolUl.appendChild(li);
+        });
+      }
+      if (data.portraitSrc) {
+        let portraitPreview = document.getElementById('portraitPreview');
+        portraitPreview.src = data.portraitSrc;
+        portraitPreview.classList.remove('hidden');
+      }
+    }
+
+    /* -----------------------------------------------------------------------
+       8. ROLLING LOGIC
+    ------------------------------------------------------------------------*/
+    function setupRollOptions() {
+      const rollType = document.getElementById('rollType').value;
+      const rollOptions = document.getElementById('rollOptions');
+      rollOptions.innerHTML = '';
+      if (rollType==='saving_throw') {
+        const cls = document.getElementById('classSelect').value;
+        if (cls && classes[cls].saving_throws && classes[cls].saving_throws.length>1) {
+          let label = document.createElement('label');
+          label.innerText = 'Select Ability for Saving Throw:';
+          let sel = document.createElement('select');
+          sel.id = 'rollSavingThrowAbility';
+          classes[cls].saving_throws.forEach(ab=>{
+            let opt = document.createElement('option');
+            opt.value = ab;
+            opt.text = capitalize(ab);
+            sel.add(opt);
+          });
+          label.appendChild(sel);
+          rollOptions.appendChild(label);
+        }
+      } else if (rollType==='skill') {
+        let label = document.createElement('label');
+        label.innerText = 'Select Skill:';
+        let sel = document.createElement('select');
+        sel.id = 'rollSkill';
+        let defOpt = document.createElement('option');
+        defOpt.value='';
+        defOpt.text='Select Skill';
+        sel.add(defOpt);
+        for (let s in skillsList){
+          let opt = document.createElement('option');
+          opt.value = s;
+          opt.text = s;
+          sel.add(opt);
+        }
+        label.appendChild(sel);
+        rollOptions.appendChild(label);
+      } else if (rollType==='attack') {
+        let label = document.createElement('label');
+        label.innerText = 'Describe Attack (optional):';
+        let inp = document.createElement('input');
+        inp.type='text';
+        inp.id='rollAttackName';
+        label.appendChild(inp);
+        rollOptions.appendChild(label);
+      }
+    }
+
+    function performRoll() {
+      const rollType = document.getElementById('rollType').value;
+      if (!rollType) {
+        alert("Please select a roll type.");
+        return;
+      }
+      let d20 = rollDice(20);
+      let modifier = 0;
+      const cls = document.getElementById('classSelect').value;
+      if (rollType==='saving_throw') {
+        if (!cls || !classes[cls]) {
+          alert("Please select a class first.");
+          return;
+        }
+        let saves = classes[cls].saving_throws||[];
+        let chosenAb = saves[0]||'str';
+        let sel = document.getElementById('rollSavingThrowAbility');
+        if (sel && sel.value) chosenAb = sel.value;
+        let stModTxt = document.getElementById(`saveTotal_${chosenAb}`).innerText||'0';
+        modifier = parseInt(stModTxt)||0;
+      } else if (rollType==='skill') {
+        let sel = document.getElementById('rollSkill');
+        if (!sel || !sel.value) {
+          alert("Please select a skill.");
+          return;
+        }
+        let modText = document.getElementById(`total_${sel.value}`).innerText||'0';
+        modifier = parseInt(modText)||0;
+      } else if (rollType==='initiative') {
+        let dexText = document.getElementById('modDex').innerText||'0';
+        modifier = parseInt(dexText)||0;
+      } else if (rollType==='attack') {
+        // Simple approach: STR mod + maybe proficiency if you'd like. We'll do STR only here.
+        let strText = document.getElementById('modStr').innerText||'0';
+        modifier = parseInt(strText)||0;
+      }
+      let final = d20 + modifier;
+      document.getElementById('rollResult').innerText = `Rolled ${d20} + ${modifier} = ${final} (${final>=10?'Success':'Failure'})`;
+    }
+
+    function rollDice(sides) {
+      return Math.floor(Math.random()*sides)+1;
+    }
+
+    /* -----------------------------------------------------------------------
+       9. HELPER
+    ------------------------------------------------------------------------*/
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  </script>
+</body>
+</html>
