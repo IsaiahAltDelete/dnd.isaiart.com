@@ -1,0 +1,1379 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>D&D 5e Character Creator – Immersive Edition</title>
+  <!-- Google Fonts for medieval headings and Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Particles.js for starry night background -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <!-- jsPDF for exporting character sheet (PDF export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Global Styles & Background Effects */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Times New Roman', serif;
+      background: #000;
+      overflow-x: hidden;
+    }
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      overflow: hidden;
+    }
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+      transition: opacity 3s ease;
+    }
+    #day-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #87CEEB 0%, #fff 100%);
+      opacity: 0;
+      transition: opacity 3s ease;
+    }
+    .sun, .moon {
+      position: absolute;
+      top: 10%;
+      font-size: 48px;
+    }
+    .sun {
+      color: #FFDC00;
+      left: -10%;
+      animation: moveSun 20s linear infinite;
+    }
+    .moon {
+      color: #F0F0F0;
+      left: 110%;
+      animation: moveMoon 20s linear infinite;
+      animation-delay: 10s;
+    }
+    @keyframes moveSun {
+      0% { left: -10%; }
+      50% { left: 110%; }
+      100% { left: -10%; }
+    }
+    @keyframes moveMoon {
+      0% { left: 110%; }
+      50% { left: -10%; }
+      100% { left: 110%; }
+    }
+    .clouds {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: url('https://i.imgur.com/8cQ8Q6M.png') repeat-x;
+      background-size: contain;
+      opacity: 0.5;
+      animation: moveClouds 30s linear infinite;
+    }
+    @keyframes moveClouds {
+      from { background-position: 0 0; }
+      to { background-position: -100% 0; }
+    }
+    .daytime #particles-js { opacity: 0; }
+    .daytime #day-background { opacity: 1; }
+    /* Container & Wizard Styles */
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .step {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p.description {
+      font-size: 16px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .tooltip {
+      cursor: help;
+      color: #888;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+    .navigation {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    /* Immersive Button Style */
+    button {
+      background-color: #5A3E36;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    button:hover { background-color: #7B5A4B; }
+    form label { display: block; margin-top: 10px; font-weight: bold; }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 4px 0 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 8px; text-align: center; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; }
+    @media (max-width: 600px) {
+      .navigation { flex-direction: column; }
+      button { width: 100%; }
+      table, th, td { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Elements -->
+  <div id="background">
+    <div id="particles-js"></div>
+    <div id="day-background">
+      <i class="material-icons sun">wb_sunny</i>
+      <i class="material-icons moon">brightness_2</i>
+      <div class="clouds"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="wizard">
+      <!-- Step 1: Welcome -->
+      <div class="step" id="step-1">
+        <h1>Welcome to the D&D 5e Character Creator</h1>
+        <p class="description">
+          Embark on your adventure by creating a character step by step. This immersive tool guides you through choosing your race (with unique bonuses), class, background, proficiencies, ability scores, spells, leveling, and inventory management.
+        </p>
+        <button id="start-btn"><span class="material-icons">play_arrow</span>Start</button>
+      </div>
+
+      <!-- Step 2: Race Selection -->
+      <div class="step" id="step-2" style="display:none;">
+        <h1>Race Selection <span class="material-icons tooltip" title="Each race offers unique ability bonuses and traits that affect your character's strengths and story.">info_outline</span></h1>
+        <p class="description">
+          Choose your race and subrace (if applicable). For example, Elves are nimble and perceptive, while Dwarves are tough and resilient.
+        </p>
+        <form id="race-form">
+          <label>
+            <input type="radio" name="race" value="Human"> Human (Bonus: +1 to all abilities)
+          </label>
+          <label>
+            <input type="radio" name="race" value="Elf"> Elf (Bonus: +2 Dexterity; Subrace bonus varies)
+            <select id="elf-subrace" style="display:none;" title="Select an Elf subrace for additional bonuses.">
+              <option value="High Elf">High Elf (+1 Intelligence)</option>
+              <option value="Wood Elf">Wood Elf (+1 Wisdom)</option>
+              <option value="Drow">Drow (+1 Charisma)</option>
+            </select>
+          </label>
+          <label>
+            <input type="radio" name="race" value="Dwarf"> Dwarf (Bonus: +2 Constitution; Subrace bonus varies)
+            <select id="dwarf-subrace" style="display:none;" title="Select a Dwarf subrace for additional bonuses.">
+              <option value="Hill Dwarf">Hill Dwarf (+1 Wisdom)</option>
+              <option value="Mountain Dwarf">Mountain Dwarf (+2 Strength)</option>
+            </select>
+          </label>
+          <label>
+            <input type="radio" name="race" value="Halfling"> Halfling (Bonus: +2 Dexterity; Subrace bonus varies)
+            <select id="halfling-subrace" style="display:none;" title="Select a Halfling subrace for additional bonuses.">
+              <option value="Lightfoot">Lightfoot (+1 Charisma)</option>
+              <option value="Stout">Stout (+1 Constitution)</option>
+            </select>
+          </label>
+          <label>
+            <input type="radio" name="race" value="Dragonborn"> Dragonborn (Bonus: +2 Strength, +1 Charisma)
+          </label>
+          <label>
+            <input type="radio" name="race" value="Gnome"> Gnome (Bonus: +2 Intelligence; Subrace bonus varies)
+            <select id="gnome-subrace" style="display:none;" title="Select a Gnome subrace for additional bonuses.">
+              <option value="Forest Gnome">Forest Gnome (+1 Dexterity)</option>
+              <option value="Rock Gnome">Rock Gnome (+1 Constitution)</option>
+            </select>
+          </label>
+          <label>
+            <input type="radio" name="race" value="Half-Elf"> Half-Elf (Bonus: +2 Charisma)
+          </label>
+          <label>
+            <input type="radio" name="race" value="Half-Orc"> Half-Orc (Bonus: +2 Strength, +1 Constitution)
+          </label>
+          <label>
+            <input type="radio" name="race" value="Tiefling"> Tiefling (Bonus: +2 Charisma, +1 Intelligence)
+          </label>
+        </form>
+        <div class="navigation">
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Class Selection -->
+      <div class="step" id="step-3" style="display:none;">
+        <h1>Class Selection <span class="material-icons tooltip" title="Your class determines your role, abilities, and proficiencies in combat and role-play.">info_outline</span></h1>
+        <p class="description">
+          Select a class. Some classes are spellcasters, while others excel in combat or stealth.
+        </p>
+        <form id="class-form">
+          <label><input type="radio" name="class" value="Barbarian"> Barbarian</label>
+          <label><input type="radio" name="class" value="Bard"> Bard</label>
+          <label><input type="radio" name="class" value="Cleric"> Cleric</label>
+          <label><input type="radio" name="class" value="Druid"> Druid</label>
+          <label><input type="radio" name="class" value="Fighter"> Fighter</label>
+          <label><input type="radio" name="class" value="Monk"> Monk</label>
+          <label><input type="radio" name="class" value="Paladin"> Paladin</label>
+          <label><input type="radio" name="class" value="Ranger"> Ranger</label>
+          <label><input type="radio" name="class" value="Rogue"> Rogue</label>
+          <label><input type="radio" name="class" value="Sorcerer"> Sorcerer</label>
+          <label><input type="radio" name="class" value="Warlock"> Warlock</label>
+          <label><input type="radio" name="class" value="Wizard"> Wizard</label>
+        </form>
+        <div id="subclass-container" style="display:none; margin-top:10px;">
+          <label for="subclass-select">Select Subclass:</label>
+          <select id="subclass-select" title="Your subclass gives you unique abilities within your class."></select>
+        </div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Background Selection -->
+      <div class="step" id="step-4" style="display:none;">
+        <h1>Background Selection <span class="material-icons tooltip" title="Your background provides skills and a backstory that enriches your character.">info_outline</span></h1>
+        <p class="description">
+          Choose a background. This will grant you additional skill proficiencies and influence your character's personality.
+        </p>
+        <form id="background-form">
+          <label><input type="radio" name="background" value="Acolyte"> Acolyte (Proficiencies: Insight, Religion)</label>
+          <label><input type="radio" name="background" value="Criminal"> Criminal (Proficiencies: Deception, Stealth)</label>
+          <label><input type="radio" name="background" value="Folk Hero"> Folk Hero (Proficiencies: Animal Handling, Survival)</label>
+          <label><input type="radio" name="background" value="Noble"> Noble (Proficiencies: History, Persuasion)</label>
+          <label><input type="radio" name="background" value="Sage"> Sage (Proficiencies: Arcana, History)</label>
+          <label><input type="radio" name="background" value="Soldier"> Soldier (Proficiencies: Athletics, Intimidation)</label>
+          <label><input type="radio" name="background" value="Entertainer"> Entertainer (Proficiencies: Acrobatics, Performance)</label>
+          <label><input type="radio" name="background" value="Outlander"> Outlander (Proficiencies: Athletics, Survival)</label>
+          <label><input type="radio" name="background" value="Charlatan"> Charlatan (Proficiencies: Deception, Sleight of Hand)</label>
+          <label><input type="radio" name="background" value="Guild Artisan"> Guild Artisan (Proficiencies: Insight, Persuasion)</label>
+          <label><input type="radio" name="background" value="Hermit"> Hermit (Proficiencies: Medicine, Religion)</label>
+          <label><input type="radio" name="background" value="Urchin"> Urchin (Proficiencies: Sleight of Hand, Stealth)</label>
+        </form>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Proficiency Selection -->
+      <div class="step" id="step-5" style="display:none;">
+        <h1>Proficiency Selection <span class="material-icons tooltip" title="Select additional skills granted by your class.">info_outline</span></h1>
+        <p class="description">
+          Your background gives you certain skill proficiencies automatically. Additionally, your class allows you to choose extra skills. Choose unique skills from the available options.
+        </p>
+        <div id="background-proficiencies"></div>
+        <div id="class-proficiency-container"></div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 6: Ability Score Generation -->
+      <div class="step" id="step-6" style="display:none;">
+        <h1>Ability Score Generation <span class="material-icons tooltip" title="Ability scores determine your character's core strengths.">info_outline</span></h1>
+        <p class="description">
+          Choose how you want to determine your ability scores. You may use a fixed Standard Array, roll dice (4d6 drop the lowest), or use a Point Buy system where you allocate 27 points.
+        </p>
+        <form id="ability-method-form">
+          <label>
+            <input type="radio" name="abilityMethod" value="standard" checked> Standard Array (15, 14, 13, 12, 10, 8)
+          </label>
+          <label>
+            <input type="radio" name="abilityMethod" value="pointbuy"> Point Buy (27 points)
+          </label>
+          <label>
+            <input type="radio" name="abilityMethod" value="roll"> Roll Dice (4d6, drop lowest)
+          </label>
+        </form>
+        <div id="ability-method-container" style="margin-top:15px;">
+          <!-- Standard Array -->
+          <div id="standard-array" class="ability-method">
+            <p>Standard Array: <strong>15, 14, 13, 12, 10, 8</strong></p>
+          </div>
+          <!-- Point Buy Interface -->
+          <div id="point-buy" class="ability-method" style="display:none;">
+            <p>
+              Adjust your abilities using Point Buy. Each ability starts at 8. Increasing a score costs points. You have 27 points to spend.
+            </p>
+            <table>
+              <tr>
+                <th>Ability</th>
+                <th>Score</th>
+                <th>Adjust</th>
+              </tr>
+              <tr>
+                <td>Strength</td>
+                <td id="pb-str">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('str',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('str',-1)">-</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Dexterity</td>
+                <td id="pb-dex">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('dex',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('dex',-1)">-</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Constitution</td>
+                <td id="pb-con">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('con',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('con',-1)">-</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Intelligence</td>
+                <td id="pb-int">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('int',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('int',-1)">-</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Wisdom</td>
+                <td id="pb-wis">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('wis',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('wis',-1)">-</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Charisma</td>
+                <td id="pb-cha">8</td>
+                <td>
+                  <button type="button" onclick="updatePointBuy('cha',1)">+</button>
+                  <button type="button" onclick="updatePointBuy('cha',-1)">-</button>
+                </td>
+              </tr>
+            </table>
+            <p>Points remaining: <span id="point-buy-remaining">27</span></p>
+          </div>
+          <!-- Roll Dice Interface -->
+          <div id="roll-dice" class="ability-method" style="display:none;">
+            <p>
+              Roll for your ability scores. Click "Roll Dice" to roll 4d6 and drop the lowest die for each ability.
+            </p>
+            <button type="button" id="roll-btn">Roll Dice</button>
+            <p id="roll-results"></p>
+          </div>
+        </div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 7: Ability Assignment (for Standard & Roll methods) -->
+      <div class="step" id="step-7" style="display:none;">
+        <h1>Assign Ability Scores <span class="material-icons tooltip" title="Assign each available score to an ability. Each score can only be used as many times as it appears.">info_outline</span></h1>
+        <p class="description">
+          For the Standard Array or Roll Dice methods, assign each generated score to an ability. Note that each score can only be used a limited number of times.
+        </p>
+        <form id="assign-form">
+          <table>
+            <tr>
+              <th>Ability</th>
+              <th>Assigned Score</th>
+              <th>Choose Score</th>
+            </tr>
+            <tr>
+              <td>Strength</td>
+              <td id="assign-str"></td>
+              <td>
+                <select id="select-str"></select>
+              </td>
+            </tr>
+            <tr>
+              <td>Dexterity</td>
+              <td id="assign-dex"></td>
+              <td>
+                <select id="select-dex"></select>
+              </td>
+            </tr>
+            <tr>
+              <td>Constitution</td>
+              <td id="assign-con"></td>
+              <td>
+                <select id="select-con"></select>
+              </td>
+            </tr>
+            <tr>
+              <td>Intelligence</td>
+              <td id="assign-int"></td>
+              <td>
+                <select id="select-int"></select>
+              </td>
+            </tr>
+            <tr>
+              <td>Wisdom</td>
+              <td id="assign-wis"></td>
+              <td>
+                <select id="select-wis"></select>
+              </td>
+            </tr>
+            <tr>
+              <td>Charisma</td>
+              <td id="assign-cha"></td>
+              <td>
+                <select id="select-cha"></select>
+              </td>
+            </tr>
+          </table>
+        </form>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 8: Appearance & Details -->
+      <div class="step" id="step-8" style="display:none;">
+        <h1>Appearance & Personal Details <span class="material-icons tooltip" title="Define your character's physical appearance, backstory, and personality.">info_outline</span></h1>
+        <p class="description">
+          Enter your character’s name, physical description, and backstory. These details help bring your character to life.
+        </p>
+        <form id="details-form">
+          <label for="char-name">Name:</label>
+          <input type="text" id="char-name" name="charName" title="Your character's name." />
+
+          <label for="char-gender">Gender:</label>
+          <select id="char-gender" name="charGender" title="Select your character's gender.">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <label for="char-age">Age:</label>
+          <input type="number" id="char-age" name="charAge" min="0" title="Enter your character's age." />
+
+          <label for="char-alignment">Alignment:</label>
+          <select id="char-alignment" name="charAlignment" title="Select your character's moral alignment.">
+            <option value="Lawful Good">Lawful Good</option>
+            <option value="Neutral Good">Neutral Good</option>
+            <option value="Chaotic Good">Chaotic Good</option>
+            <option value="Lawful Neutral">Lawful Neutral</option>
+            <option value="True Neutral">True Neutral</option>
+            <option value="Chaotic Neutral">Chaotic Neutral</option>
+            <option value="Lawful Evil">Lawful Evil</option>
+            <option value="Neutral Evil">Neutral Evil</option>
+            <option value="Chaotic Evil">Chaotic Evil</option>
+          </select>
+
+          <label for="char-height">Height:</label>
+          <input type="text" id="char-height" name="charHeight" title="E.g., 6'1\"" />
+
+          <label for="char-weight">Weight:</label>
+          <input type="text" id="char-weight" name="charWeight" title="E.g., 180 lbs." />
+
+          <label for="char-skin-tone">Skin Tone:</label>
+          <input type="text" id="char-skin-tone" name="charSkinTone" title="Describe your skin tone." />
+
+          <label for="char-build">Build:</label>
+          <select id="char-build" name="charBuild" title="Select your character's body build.">
+            <option value="">--Select Build--</option>
+            <option value="Slender">Slender</option>
+            <option value="Athletic">Athletic</option>
+            <option value="Heavy">Heavy</option>
+            <option value="Muscular">Muscular</option>
+          </select>
+
+          <label for="char-eyes">Eye Color:</label>
+          <input type="text" id="char-eyes" name="charEyes" title="E.g., blue, green." />
+
+          <label for="char-eye-shape">Eye Shape:</label>
+          <input type="text" id="char-eye-shape" name="charEyeShape" title="Describe your character's eye shape." />
+
+          <label for="char-hair">Hair Color:</label>
+          <input type="text" id="char-hair" name="charHair" title="E.g., brown, black, blonde." />
+
+          <label for="char-hair-style">Hair Style:</label>
+          <input type="text" id="char-hair-style" name="charHairStyle" title="Describe your hair style." />
+
+          <label for="char-facial-hair">Facial Hair:</label>
+          <input type="text" id="char-facial-hair" name="char-facial-hair" title="E.g., beard, mustache, clean-shaven." />
+
+          <label for="char-distinctive-marks">Distinctive Marks:</label>
+          <textarea id="char-distinctive-marks" name="charDistinctiveMarks" rows="3" title="Tattoos, scars, etc."></textarea>
+
+          <!-- Advanced Background Customization -->
+          <label for="char-personality">Personality Traits:</label>
+          <textarea id="char-personality" name="charPersonality" rows="2" title="Describe key personality traits."></textarea>
+
+          <label for="char-ideals">Ideals:</label>
+          <textarea id="char-ideals" name="charIdeals" rows="2" title="What ideals guide your character?"></textarea>
+
+          <label for="char-bonds">Bonds:</label>
+          <textarea id="char-bonds" name="charBonds" rows="2" title="Describe your character's bonds."></textarea>
+
+          <label for="char-flaws">Flaws:</label>
+          <textarea id="char-flaws" name="charFlaws" rows="2" title="Describe your character's flaws."></textarea>
+
+          <!-- Portrait Selection -->
+          <label for="char-portrait">Character Portrait (URL):</label>
+          <input type="text" id="char-portrait" name="charPortrait" title="Enter a URL for your character's portrait." />
+        </form>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 9: Equipment Selection -->
+      <div class="step" id="step-9" style="display:none;">
+        <h1>Equipment Selection <span class="material-icons tooltip" title="Choose your starting equipment. These items will help you on your adventures.">info_outline</span></h1>
+        <p class="description">
+          Select the equipment that best suits your class. You may choose multiple items.
+        </p>
+        <div id="equipment-options"></div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 10: Spell Selection (For Spellcasters) -->
+      <div class="step" id="step-10" style="display:none;">
+        <h1>Spell Selection <span class="material-icons tooltip" title="For classes that use magic, select your known spells and manage your spell slots.">info_outline</span></h1>
+        <p class="description">
+          If your class is a spellcaster (Wizard, Cleric, Bard, Sorcerer, Warlock, or Druid), choose your spells from the list below. If not, you may skip this step.
+        </p>
+        <div id="spell-options"></div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 11: Leveling & Multi-classing Options -->
+      <div class="step" id="step-11" style="display:none;">
+        <h1>Leveling & Multi-classing <span class="material-icons tooltip" title="Determine your starting level and add multi-class options if desired.">info_outline</span></h1>
+        <p class="description">
+          Set your character's starting level (1-20). If you wish to multi-class, choose an additional class and allocate levels accordingly.
+        </p>
+        <form id="leveling-form">
+          <label for="char-level">Starting Level:</label>
+          <input type="number" id="char-level" name="charLevel" min="1" max="20" value="1" title="Enter a level between 1 and 20." />
+
+          <label>
+            <input type="checkbox" id="multi-class-checkbox" /> Enable Multi-classing?
+          </label>
+          <div id="multi-class-container" style="display:none;">
+            <label for="additional-class">Additional Class:</label>
+            <select id="additional-class" title="Select an additional class.">
+              <option value="">--Select Class--</option>
+              <option value="Barbarian">Barbarian</option>
+              <option value="Bard">Bard</option>
+              <option value="Cleric">Cleric</option>
+              <option value="Druid">Druid</option>
+              <option value="Fighter">Fighter</option>
+              <option value="Monk">Monk</option>
+              <option value="Paladin">Paladin</option>
+              <option value="Ranger">Ranger</option>
+              <option value="Rogue">Rogue</option>
+              <option value="Sorcerer">Sorcerer</option>
+              <option value="Warlock">Warlock</option>
+              <option value="Wizard">Wizard</option>
+            </select>
+
+            <label for="additional-level">Additional Class Level:</label>
+            <input type="number" id="additional-level" name="additionalLevel" min="1" max="20" value="1" title="Enter additional levels for the multi-class." />
+          </div>
+        </form>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Next</button>
+        </div>
+      </div>
+
+      <!-- Step 12: Inventory Management & Export -->
+      <div class="step" id="step-12" style="display:none;">
+        <h1>Inventory Management <span class="material-icons tooltip" title="Manage your equipment: add items, track weight and cost, and export your character sheet.">info_outline</span></h1>
+        <p class="description">
+          Add items to your inventory by specifying the item name, weight, and cost. Your total weight and cost will be calculated automatically.
+        </p>
+        <form id="inventory-form">
+          <div id="inventory-items"></div>
+          <button type="button" onclick="addInventoryItem()">Add Item</button>
+          <p>Total Weight: <span id="total-weight">0</span></p>
+          <p>Total Cost: <span id="total-cost">0</span></p>
+        </form>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button id="export-btn">Export Character Sheet</button>
+          <button id="save-btn">Save Character</button>
+          <button id="load-btn">Load Character</button>
+          <button class="next-btn"><span class="material-icons">arrow_forward</span>Finish</button>
+        </div>
+      </div>
+
+      <!-- Step 13: Final Review -->
+      <div class="step" id="step-13" style="display:none;">
+        <h1>Final Review</h1>
+        <p class="description">
+          Review your complete character sheet. All choices, abilities (with racial bonuses), proficiencies, spells, and inventory details are summarized below.
+        </p>
+        <div id="review"></div>
+        <div class="navigation">
+          <button class="back-btn"><span class="material-icons">arrow_back</span>Back</button>
+          <button id="finish-btn"><span class="material-icons">check</span>Confirm & Create</button>
+        </div>
+      </div>
+
+      <!-- Step 14: Confirmation -->
+      <div class="step" id="step-14" style="display:none;">
+        <h1>Character Created!</h1>
+        <p class="description">
+          Your character has been successfully created. You can copy your character sheet below for future reference.
+        </p>
+        <pre id="character-json"></pre>
+        <button id="restart-btn"><span class="material-icons">replay</span>Create Another Character</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Global Variables
+     ***********************/
+    let currentStepIndex = 0;
+    const steps = [
+      "step-1", "step-2", "step-3", "step-4", "step-5",
+      "step-6", "step-7", "step-8", "step-9", "step-10",
+      "step-11", "step-12", "step-13", "step-14"
+    ];
+    let character = {};  // To store all character data
+    let generatedScores = [];  // For standard/roll methods
+    let pointBuy = { str:8, dex:8, con:8, int:8, wis:8, cha:8 };
+    let pointBuyRemaining = 27;
+
+    // Spell mapping for spellcasters
+    const spellMapping = {
+      "Wizard": ["Magic Missile", "Shield", "Fireball", "Mage Hand"],
+      "Cleric": ["Cure Wounds", "Bless", "Spiritual Weapon", "Guiding Bolt"],
+      "Bard": ["Vicious Mockery", "Healing Word", "Charm Person", "Thunderwave"],
+      "Sorcerer": ["Burning Hands", "Chromatic Orb", "Invisibility", "Scorching Ray"],
+      "Warlock": ["Eldritch Blast", "Hex", "Arms of Hadar", "Misty Step"],
+      "Druid": ["Entangle", "Goodberry", "Thunderwave", "Flame Blade"]
+    };
+
+    // Mappings for subclasses, equipment, class skill choices, and background proficiencies
+    const subclassMapping = {
+      "Barbarian": ["Path of the Berserker", "Path of the Totem Warrior"],
+      "Bard": ["College of Lore", "College of Valor"],
+      "Cleric": ["Life Domain", "Light Domain", "Trickery Domain", "War Domain"],
+      "Druid": ["Circle of the Land", "Circle of the Moon"],
+      "Fighter": ["Champion", "Battle Master", "Eldritch Knight"],
+      "Monk": ["Way of the Open Hand", "Way of Shadow", "Way of the Four Elements"],
+      "Paladin": ["Oath of Devotion", "Oath of the Ancients", "Oath of Vengeance"],
+      "Ranger": ["Hunter", "Beast Master"],
+      "Rogue": ["Thief", "Assassin", "Arcane Trickster"],
+      "Sorcerer": ["Draconic Bloodline", "Wild Magic"],
+      "Warlock": ["The Fiend", "The Great Old One", "The Archfey"],
+      "Wizard": ["School of Evocation", "School of Illusion", "School of Necromancy", "School of Divination", "School of Abjuration", "School of Conjuration", "School of Enchantment", "School of Transmutation"]
+    };
+
+    const equipmentMapping = {
+      "Barbarian": ["Greataxe", "2 Handaxes", "Explorer's Pack"],
+      "Bard": ["Rapier", "Lute", "Diplomat's Pack"],
+      "Cleric": ["Mace", "Chain Mail", "Priest's Pack", "Shield"],
+      "Druid": ["Wooden Shield", "Scimitar", "Druidic Focus", "Explorer's Pack"],
+      "Fighter": ["Longsword", "Shield", "Chain Mail", "Explorer's Pack"],
+      "Monk": ["Shortsword", "10 Darts", "Explorer's Pack"],
+      "Paladin": ["Longsword", "Shield", "Chain Mail", "Priest's Pack"],
+      "Ranger": ["Longbow", "Shortsword", "Leather Armor", "Explorer's Pack"],
+      "Rogue": ["2 Daggers", "Shortsword", "Thieves' Tools", "Burglar's Pack"],
+      "Sorcerer": ["Light Crossbow", "Arcane Focus", "Dungeoneer's Pack"],
+      "Warlock": ["Dagger", "Component Pouch", "Scholar's Pack"],
+      "Wizard": ["Quarterstaff", "Spellbook", "Component Pouch", "Scholar's Pack"]
+    };
+
+    const classSkillChoices = {
+      "Barbarian": { num: 2, options: ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"] },
+      "Bard": { num: 3, options: ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"] },
+      "Cleric": { num: 2, options: ["History", "Insight", "Medicine", "Persuasion", "Religion"] },
+      "Druid": { num: 2, options: ["Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion"] },
+      "Fighter": { num: 2, options: ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception"] },
+      "Monk": { num: 2, options: ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"] },
+      "Paladin": { num: 2, options: ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion"] },
+      "Ranger": { num: 3, options: ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"] },
+      "Rogue": { num: 4, options: ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand"] },
+      "Sorcerer": { num: 2, options: ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion"] },
+      "Warlock": { num: 2, options: ["Arcana", "Deception", "History", "Intimidation", "Investigation"] },
+      "Wizard": { num: 2, options: ["Arcana", "History", "Insight", "Investigation"] }
+    };
+
+    const backgroundSkillProficiencies = {
+      "Acolyte": ["Insight", "Religion"],
+      "Criminal": ["Deception", "Stealth"],
+      "Folk Hero": ["Animal Handling", "Survival"],
+      "Noble": ["History", "Persuasion"],
+      "Sage": ["Arcana", "History"],
+      "Soldier": ["Athletics", "Intimidation"],
+      "Entertainer": ["Acrobatics", "Performance"],
+      "Outlander": ["Athletics", "Survival"],
+      "Charlatan": ["Deception", "Sleight of Hand"],
+      "Guild Artisan": ["Insight", "Persuasion"],
+      "Hermit": ["Medicine", "Religion"],
+      "Urchin": ["Sleight of Hand", "Stealth"]
+    };
+
+    // Racial bonus function
+    function getRacialBonus(race, subrace) {
+      switch(race) {
+        case "Human": return { "Strength": 1, "Dexterity": 1, "Constitution": 1, "Intelligence": 1, "Wisdom": 1, "Charisma": 1 };
+        case "Elf":
+          if (subrace === "High Elf") return { "Dexterity": 2, "Intelligence": 1 };
+          else if (subrace === "Wood Elf") return { "Dexterity": 2, "Wisdom": 1 };
+          else if (subrace === "Drow") return { "Dexterity": 2, "Charisma": 1 };
+          return { "Dexterity": 2 };
+        case "Dwarf":
+          if (subrace === "Hill Dwarf") return { "Constitution": 2, "Wisdom": 1 };
+          else if (subrace === "Mountain Dwarf") return { "Constitution": 2, "Strength": 2 };
+          return { "Constitution": 2 };
+        case "Halfling":
+          if (subrace === "Lightfoot") return { "Dexterity": 2, "Charisma": 1 };
+          else if (subrace === "Stout") return { "Dexterity": 2, "Constitution": 1 };
+          return { "Dexterity": 2 };
+        case "Dragonborn": return { "Strength": 2, "Charisma": 1 };
+        case "Gnome":
+          if (subrace === "Forest Gnome") return { "Intelligence": 2, "Dexterity": 1 };
+          else if (subrace === "Rock Gnome") return { "Intelligence": 2, "Constitution": 1 };
+          return { "Intelligence": 2 };
+        case "Half-Elf": return { "Charisma": 2 };
+        case "Half-Orc": return { "Strength": 2, "Constitution": 1 };
+        case "Tiefling": return { "Charisma": 2, "Intelligence": 1 };
+        default: return {};
+      }
+    }
+
+    // Utility: Show a step
+    function showStep(stepId) {
+      document.querySelectorAll('.step').forEach(s => s.style.display = "none");
+      document.getElementById(stepId).style.display = "block";
+      currentStepIndex = steps.indexOf(stepId);
+      if(stepId === "step-5") populateProficiencyOptions();
+      if(stepId === "step-10") populateSpellOptions();
+    }
+
+    // Start Button
+    document.getElementById("start-btn").addEventListener("click", () => showStep("step-2"));
+
+    // Next Buttons
+    document.querySelectorAll(".next-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const currentStepId = steps[currentStepIndex];
+        if (!saveStepData(currentStepId)) return;
+
+        if (currentStepId === "step-6") { // Ability Score Generation
+          const method = document.querySelector('input[name="abilityMethod"]:checked').value;
+          if (method === "standard") {
+            generatedScores = [15, 14, 13, 12, 10, 8];
+            populateAssignmentDropdowns();
+          } else if (method === "roll") {
+            if (!generatedScores.length) { alert("Please roll the dice to generate scores."); return; }
+            populateAssignmentDropdowns();
+          } else if (method === "pointbuy") {
+            character.abilityMethod = "pointbuy";
+            character.abilities = {
+              "Strength": pointBuy.str,
+              "Dexterity": pointBuy.dex,
+              "Constitution": pointBuy.con,
+              "Intelligence": pointBuy.int,
+              "Wisdom": pointBuy.wis,
+              "Charisma": pointBuy.cha
+            };
+            showStep("step-8");
+            return;
+          }
+        }
+        if (currentStepId === "step-8") populateEquipmentOptions();
+        if (currentStepId === "step-9") { /* Equipment step */ }
+        if (currentStepId === "step-10") { /* Spell selection saved in saveStepData */ }
+        if (currentStepId === "step-11") { /* Leveling saved in saveStepData */ }
+        if (currentStepId === "step-12") { /* Inventory managed via form */ }
+        if (currentStepId === "step-13") { compileReview(); }
+        const nextIndex = currentStepIndex + 1;
+        if (nextIndex < steps.length) showStep(steps[nextIndex]);
+      });
+    });
+
+    // Back Buttons
+    document.querySelectorAll(".back-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const prevIndex = currentStepIndex - 1;
+        if (prevIndex >= 0) showStep(steps[prevIndex]);
+      });
+    });
+
+    // Finish Button (Final Review -> Confirmation)
+    document.getElementById("finish-btn").addEventListener("click", () => {
+      if (!saveStepData("step-7")) return;
+      showStep("step-14");
+      document.getElementById("character-json").textContent = JSON.stringify(character, null, 2);
+    });
+
+    // Restart Button
+    document.getElementById("restart-btn").addEventListener("click", () => location.reload());
+
+    /***********************
+     * Save Data Functions
+     ***********************/
+    function saveStepData(stepId) {
+      switch(stepId) {
+        case "step-2": { // Race
+          const raceRadios = document.getElementsByName("race");
+          let selectedRace = "";
+          for (const radio of raceRadios) { if (radio.checked) { selectedRace = radio.value; break; } }
+          if (!selectedRace) { alert("Please select a race."); return false; }
+          character.race = selectedRace;
+          if (selectedRace === "Elf") character.subrace = document.getElementById("elf-subrace").value;
+          else if (selectedRace === "Dwarf") character.subrace = document.getElementById("dwarf-subrace").value;
+          else if (selectedRace === "Halfling") character.subrace = document.getElementById("halfling-subrace").value;
+          else if (selectedRace === "Gnome") character.subrace = document.getElementById("gnome-subrace").value;
+          else character.subrace = "";
+          character.racialBonus = getRacialBonus(character.race, character.subrace);
+          return true;
+        }
+        case "step-3": { // Class
+          const classRadios = document.getElementsByName("class");
+          let selectedClass = "";
+          for (const radio of classRadios) { if (radio.checked) { selectedClass = radio.value; break; } }
+          if (!selectedClass) { alert("Please select a class."); return false; }
+          character.class = selectedClass;
+          const subContainer = document.getElementById("subclass-container");
+          character.subclass = (subContainer.style.display !== "none") ? document.getElementById("subclass-select").value : "";
+          return true;
+        }
+        case "step-4": { // Background
+          const bgRadios = document.getElementsByName("background");
+          let selectedBg = "";
+          for (const radio of bgRadios) { if (radio.checked) { selectedBg = radio.value; break; } }
+          if (!selectedBg) { alert("Please select a background."); return false; }
+          character.background = selectedBg;
+          return true;
+        }
+        case "step-5": { // Proficiency Selection
+          character.proficiencies = {};
+          character.proficiencies.background = backgroundSkillProficiencies[character.background] || [];
+          const numChoices = classSkillChoices[character.class]?.num || 0;
+          let skillChoices = [];
+          for (let i = 0; i < numChoices; i++) {
+            const sel = document.getElementById("proficiency-select-" + i);
+            if (!sel || sel.value === "") { alert("Please select a class proficiency for choice " + (i+1) + "."); return false; }
+            skillChoices.push(sel.value);
+          }
+          const uniqueSkills = [...new Set(skillChoices)];
+          if (uniqueSkills.length !== skillChoices.length) { alert("Each class proficiency must be unique."); return false; }
+          character.proficiencies.class = skillChoices;
+          return true;
+        }
+        case "step-6": { // Ability Generation
+          character.abilityMethod = document.querySelector('input[name="abilityMethod"]:checked').value;
+          if (character.abilityMethod === "roll" && generatedScores.length !== 6) {
+            alert("Please roll the dice to generate ability scores.");
+            return false;
+          }
+          return true;
+        }
+        case "step-7": { // Ability Assignment
+          const selects = ["select-str", "select-dex", "select-con", "select-int", "select-wis", "select-cha"];
+          const abilities = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
+          let assigned = {}, chosen = [];
+          for (let i = 0; i < selects.length; i++) {
+            const sel = document.getElementById(selects[i]);
+            if (sel.value === "") { alert("Please assign a score to " + abilities[i] + "."); return false; }
+            const score = parseInt(sel.value);
+            assigned[abilities[i]] = score;
+            chosen.push(score);
+          }
+          const countOccurrences = arr => arr.reduce((acc, val) => { acc[val] = (acc[val] || 0) + 1; return acc; }, {});
+          const chosenCount = countOccurrences(chosen);
+          const generatedCount = countOccurrences(generatedScores);
+          for (let num in chosenCount) {
+            if (chosenCount[num] > (generatedCount[num] || 0)) {
+              alert("You have selected the score " + num + " more times than available.");
+              return false;
+            }
+          }
+          character.abilities = assigned;
+          return true;
+        }
+        case "step-8": { // Appearance & Details
+          character.name = document.getElementById("char-name").value || "";
+          character.gender = document.getElementById("char-gender").value;
+          character.age = document.getElementById("char-age").value || "";
+          character.alignment = document.getElementById("char-alignment").value;
+          character.height = document.getElementById("char-height").value || "";
+          character.weight = document.getElementById("char-weight").value || "";
+          character.skinTone = document.getElementById("char-skin-tone").value || "";
+          character.build = document.getElementById("char-build").value || "";
+          character.eyeColor = document.getElementById("char-eyes").value || "";
+          character.eyeShape = document.getElementById("char-eye-shape").value || "";
+          character.hairColor = document.getElementById("char-hair").value || "";
+          character.hairStyle = document.getElementById("char-hair-style").value || "";
+          character.facialHair = document.getElementById("char-facial-hair").value || "";
+          character.distinctiveMarks = document.getElementById("char-distinctive-marks").value || "";
+          character.personality = document.getElementById("char-personality").value || "";
+          character.ideals = document.getElementById("char-ideals").value || "";
+          character.bonds = document.getElementById("char-bonds").value || "";
+          character.flaws = document.getElementById("char-flaws").value || "";
+          character.portrait = document.getElementById("char-portrait").value || "";
+          return true;
+        }
+        case "step-9": { // Equipment Selection
+          const eqCheckboxes = document.querySelectorAll('input[name="equipment"]:checked');
+          character.equipment = [];
+          eqCheckboxes.forEach(chk => character.equipment.push(chk.value));
+          return true;
+        }
+        case "step-10": { // Spell Selection
+          // Only applicable for spellcasting classes
+          if (["Wizard", "Cleric", "Bard", "Sorcerer", "Warlock", "Druid"].includes(character.class)) {
+            const spellCheckboxes = document.querySelectorAll('input[name="spell"]:checked');
+            character.spells = [];
+            spellCheckboxes.forEach(chk => character.spells.push(chk.value));
+            if (character.spells.length === 0) {
+              alert("Please select at least one spell.");
+              return false;
+            }
+          } else {
+            character.spells = [];
+          }
+          return true;
+        }
+        case "step-11": { // Leveling & Multi-classing
+          character.level = document.getElementById("char-level").value;
+          if (document.getElementById("multi-class-checkbox").checked) {
+            character.multiClass = {
+              additionalClass: document.getElementById("additional-class").value,
+              additionalLevel: document.getElementById("additional-level").value
+            };
+            if (!character.multiClass.additionalClass) {
+              alert("Please select an additional class for multi-classing.");
+              return false;
+            }
+          } else {
+            character.multiClass = null;
+          }
+          return true;
+        }
+        case "step-12": { // Inventory Management
+          const items = [];
+          const itemDivs = document.querySelectorAll(".inventory-item");
+          itemDivs.forEach(div => {
+            const name = div.querySelector(".item-name").value;
+            const weight = parseFloat(div.querySelector(".item-weight").value) || 0;
+            const cost = parseFloat(div.querySelector(".item-cost").value) || 0;
+            if (name) items.push({ name, weight, cost });
+          });
+          character.inventory = items;
+          character.totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+          character.totalCost = items.reduce((sum, item) => sum + item.cost, 0);
+          return true;
+        }
+      }
+      return true;
+    }
+
+    /***********************
+     * UI Functions
+     ***********************/
+    // Update subrace dropdown visibility
+    document.getElementsByName("race").forEach(radio => {
+      radio.addEventListener("change", function() {
+        ["elf", "dwarf", "halfling", "gnome"].forEach(r => {
+          document.getElementById(r + "-subrace").style.display = "none";
+        });
+        if (this.value === "Elf") document.getElementById("elf-subrace").style.display = "inline";
+        else if (this.value === "Dwarf") document.getElementById("dwarf-subrace").style.display = "inline";
+        else if (this.value === "Halfling") document.getElementById("halfling-subrace").style.display = "inline";
+        else if (this.value === "Gnome") document.getElementById("gnome-subrace").style.display = "inline";
+      });
+    });
+
+    // Handle subclass options
+    document.getElementsByName("class").forEach(radio => {
+      radio.addEventListener("change", function() {
+        const selClass = this.value;
+        const subContainer = document.getElementById("subclass-container");
+        const subclassSelect = document.getElementById("subclass-select");
+        if (subclassMapping[selClass]) {
+          subclassSelect.innerHTML = "";
+          subclassMapping[selClass].forEach(sub => {
+            const opt = document.createElement("option");
+            opt.value = sub;
+            opt.textContent = sub;
+            subclassSelect.appendChild(opt);
+          });
+          subContainer.style.display = "block";
+        } else {
+          subContainer.style.display = "none";
+        }
+      });
+    });
+
+    // Toggle Ability Method Display
+    document.getElementsByName("abilityMethod").forEach(radio => {
+      radio.addEventListener("change", function() {
+        const method = this.value;
+        document.getElementById("standard-array").style.display = (method === "standard") ? "block" : "none";
+        document.getElementById("point-buy").style.display = (method === "pointbuy") ? "block" : "none";
+        document.getElementById("roll-dice").style.display = (method === "roll") ? "block" : "none";
+      });
+    });
+
+    // Point Buy Functions
+    function calculatePointCost(score) {
+      return score <= 13 ? score - 8 : 5 + (score - 13) * 2;
+    }
+    function updatePointBuy(ability, delta) {
+      let newScore = pointBuy[ability] + delta;
+      if (newScore < 8 || newScore > 15) return;
+      let temp = { ...pointBuy, [ability]: newScore };
+      let totalCost = 0;
+      for (let key in temp) totalCost += calculatePointCost(temp[key]);
+      if (totalCost > 27) return;
+      pointBuy[ability] = newScore;
+      pointBuyRemaining = 27 - totalCost;
+      document.getElementById("pb-" + ability).textContent = newScore;
+      document.getElementById("point-buy-remaining").textContent = pointBuyRemaining;
+    }
+
+    // Roll Dice for Ability Scores
+    document.getElementById("roll-btn").addEventListener("click", function() {
+      generatedScores = [];
+      let resultsText = "";
+      for (let i = 0; i < 6; i++) {
+        let rolls = [];
+        for (let j = 0; j < 4; j++) {
+          rolls.push(Math.floor(Math.random() * 6) + 1);
+        }
+        rolls.sort((a, b) => a - b);
+        let score = rolls[1] + rolls[2] + rolls[3];
+        generatedScores.push(score);
+        resultsText += "Roll " + (i + 1) + ": " + rolls.join(", ") + " → Score: " + score + "\n";
+      }
+      document.getElementById("roll-results").textContent = resultsText;
+    });
+
+    // Populate Assignment Dropdowns (Step 7)
+    function populateAssignmentDropdowns() {
+      const selects = ["select-str", "select-dex", "select-con", "select-int", "select-wis", "select-cha"];
+      selects.forEach(selId => {
+        const sel = document.getElementById(selId);
+        sel.innerHTML = '<option value="">--Select--</option>';
+        generatedScores.forEach(score => {
+          const opt = document.createElement("option");
+          opt.value = score;
+          opt.textContent = score;
+          sel.appendChild(opt);
+        });
+        sel.onchange = updateAssignmentDropdowns;
+      });
+    }
+    function updateAssignmentDropdowns() {
+      const selects = ["select-str", "select-dex", "select-con", "select-int", "select-wis", "select-cha"];
+      const selections = selects.map(id => document.getElementById(id).value).filter(v => v !== "");
+      const totalCounts = generatedScores.reduce((acc, score) => { acc[score] = (acc[score] || 0) + 1; return acc; }, {});
+      selects.forEach(id => {
+        const sel = document.getElementById(id);
+        for (let i = 0; i < sel.options.length; i++) {
+          const opt = sel.options[i];
+          if (opt.value === "") { opt.disabled = false; continue; }
+          let currentVal = sel.value;
+          let countInOthers = selections.filter(val => val === opt.value).length;
+          if (currentVal === opt.value) countInOthers--;
+          opt.disabled = countInOthers >= (totalCounts[opt.value] || 0);
+        }
+      });
+    }
+
+    // Populate Proficiency Options (Step 5)
+    function populateProficiencyOptions() {
+      const container = document.getElementById("class-proficiency-container");
+      container.innerHTML = "";
+      const classChoice = classSkillChoices[character.class];
+      if (!classChoice) {
+        container.innerHTML = "<p>No additional class skill choices available for this class.</p>";
+        return;
+      }
+      const numChoices = classChoice.num;
+      container.innerHTML = "<p>Select " + numChoices + " skill(s) from the following options:</p>";
+      for (let i = 0; i < numChoices; i++) {
+        const label = document.createElement("label");
+        label.textContent = "Choice " + (i+1) + ":";
+        const select = document.createElement("select");
+        select.id = "proficiency-select-" + i;
+        select.innerHTML = '<option value="">--Select Skill--</option>';
+        classChoice.options.forEach(skill => {
+          const opt = document.createElement("option");
+          opt.value = skill;
+          opt.textContent = skill;
+          select.appendChild(opt);
+        });
+        select.onchange = updateProficiencyDropdowns;
+        container.appendChild(label);
+        container.appendChild(select);
+      }
+      const bgProfDiv = document.getElementById("background-proficiencies");
+      const bgProfs = backgroundSkillProficiencies[character.background] || [];
+      bgProfDiv.innerHTML = "<p>Your background provides these skill proficiencies: " + bgProfs.join(", ") + ".</p>";
+    }
+    function updateProficiencyDropdowns() {
+      const selects = [];
+      const classChoice = classSkillChoices[character.class];
+      if (!classChoice) return;
+      const numChoices = classChoice.num;
+      for (let i = 0; i < numChoices; i++) {
+        selects.push(document.getElementById("proficiency-select-" + i));
+      }
+      const selections = selects.map(sel => sel.value).filter(v => v !== "");
+      selects.forEach(sel => {
+        for (let i = 0; i < sel.options.length; i++) {
+          const opt = sel.options[i];
+          if (opt.value === "") { opt.disabled = false; continue; }
+          let countInOthers = selections.filter(val => val === opt.value).length;
+          if (sel.value === opt.value) countInOthers--;
+          opt.disabled = (countInOthers >= 1);
+        }
+      });
+    }
+
+    // Populate Equipment Options (Step 9)
+    function populateEquipmentOptions() {
+      const eqDiv = document.getElementById("equipment-options");
+      eqDiv.innerHTML = "";
+      const selClass = character.class;
+      const options = equipmentMapping[selClass] || ["Standard Adventurer's Pack"];
+      eqDiv.innerHTML = "<p>Select your starting equipment (choose all that apply):</p>";
+      options.forEach((item, idx) => {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = "equipment";
+        checkbox.value = item;
+        checkbox.id = "eq-" + idx;
+        const label = document.createElement("label");
+        label.htmlFor = "eq-" + idx;
+        label.textContent = " " + item;
+        eqDiv.appendChild(checkbox);
+        eqDiv.appendChild(label);
+        eqDiv.appendChild(document.createElement("br"));
+      });
+    }
+
+    // Populate Spell Options (Step 10)
+    function populateSpellOptions() {
+      const container = document.getElementById("spell-options");
+      container.innerHTML = "";
+      if (!["Wizard", "Cleric", "Bard", "Sorcerer", "Warlock", "Druid"].includes(character.class)) {
+        container.innerHTML = "<p>Your class does not cast spells. You may skip this step.</p>";
+        return;
+      }
+      const spells = spellMapping[character.class] || [];
+      container.innerHTML = "<p>Select the spells you know:</p>";
+      spells.forEach((spell, idx) => {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = "spell";
+        checkbox.value = spell;
+        checkbox.id = "spell-" + idx;
+        const label = document.createElement("label");
+        label.htmlFor = "spell-" + idx;
+        label.textContent = " " + spell;
+        container.appendChild(checkbox);
+        container.appendChild(label);
+        container.appendChild(document.createElement("br"));
+      });
+    }
+
+    // Multi-class toggle (Step 11)
+    document.getElementById("multi-class-checkbox").addEventListener("change", function() {
+      document.getElementById("multi-class-container").style.display = this.checked ? "block" : "none";
+    });
+
+    // Inventory Management (Step 12)
+    function addInventoryItem() {
+      const container = document.getElementById("inventory-items");
+      const div = document.createElement("div");
+      div.className = "inventory-item";
+      div.innerHTML = `
+        <input type="text" class="item-name" placeholder="Item Name" title="Enter the name of the item." />
+        <input type="number" step="0.1" class="item-weight" placeholder="Weight" title="Enter the weight of the item." />
+        <input type="number" step="0.01" class="item-cost" placeholder="Cost" title="Enter the cost of the item." />
+        <button type="button" onclick="this.parentElement.remove(); updateInventoryTotals();">Remove</button>
+      `;
+      container.appendChild(div);
+      updateInventoryTotals();
+    }
+    function updateInventoryTotals() {
+      const items = document.querySelectorAll(".inventory-item");
+      let totalWeight = 0, totalCost = 0;
+      items.forEach(item => {
+        totalWeight += parseFloat(item.querySelector(".item-weight").value) || 0;
+        totalCost += parseFloat(item.querySelector(".item-cost").value) || 0;
+      });
+      document.getElementById("total-weight").textContent = totalWeight;
+      document.getElementById("total-cost").textContent = totalCost;
+    }
+
+    // Save and Load Character (Step 12)
+    document.getElementById("save-btn").addEventListener("click", () => {
+      if (saveStepData("step-12")) {
+        localStorage.setItem("savedCharacter", JSON.stringify(character));
+        alert("Character saved locally.");
+      }
+    });
+    document.getElementById("load-btn").addEventListener("click", () => {
+      const saved = localStorage.getItem("savedCharacter");
+      if (saved) {
+        character = JSON.parse(saved);
+        alert("Character loaded from local storage.");
+      } else {
+        alert("No saved character found.");
+      }
+    });
+
+    // Export Character Sheet as PDF (Step 12)
+    document.getElementById("export-btn").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text(JSON.stringify(character, null, 2), 10, 10);
+      doc.save("character.pdf");
+    });
+
+    // Compile Final Review (Step 13)
+    function compileReview() {
+      let reviewDiv = document.getElementById("review");
+      reviewDiv.innerHTML = "<h2>Character Summary</h2>";
+      let summary = "";
+      summary += "Name: " + (character.name || "[Not set]") + "\n";
+      summary += "Race: " + character.race + (character.subrace ? " (" + character.subrace + ")" : "") + "\n";
+      summary += "Racial Bonuses: " + JSON.stringify(character.racialBonus) + "\n";
+      summary += "Class: " + character.class + (character.subclass ? " (" + character.subclass + ")" : "") + "\n";
+      summary += "Background: " + character.background + "\n";
+      summary += "Background Proficiencies: " + (character.proficiencies.background || []).join(", ") + "\n";
+      summary += "Class Proficiencies: " + (character.proficiencies.class || []).join(", ") + "\n\n";
+      summary += "Ability Scores:\n";
+      if (character.abilities) {
+        for (let key in character.abilities) {
+          let bonus = character.racialBonus[key] ? (" (+" + character.racialBonus[key] + ")") : "";
+          summary += "  " + key + ": " + character.abilities[key] + bonus + "\n";
+        }
+      }
+      summary += "\nSpells Known: " + (character.spells ? character.spells.join(", ") : "None") + "\n";
+      summary += "\nLevel: " + character.level + "\n";
+      if (character.multiClass) {
+        summary += "Multi-class: " + character.multiClass.additionalClass + " (Level " + character.multiClass.additionalLevel + ")\n";
+      }
+      summary += "\nAppearance & Details:\n";
+      summary += "  Gender: " + character.gender + "\n";
+      summary += "  Age: " + character.age + "\n";
+      summary += "  Alignment: " + character.alignment + "\n";
+      summary += "  Height: " + character.height + "\n";
+      summary += "  Weight: " + character.weight + "\n";
+      summary += "  Skin Tone: " + character.skinTone + "\n";
+      summary += "  Build: " + character.build + "\n";
+      summary += "  Eye Color: " + character.eyeColor + "\n";
+      summary += "  Eye Shape: " + character.eyeShape + "\n";
+      summary += "  Hair Color: " + character.hairColor + "\n";
+      summary += "  Hair Style: " + character.hairStyle + "\n";
+      summary += "  Facial Hair: " + character.facialHair + "\n";
+      summary += "  Distinctive Marks: " + character.distinctiveMarks + "\n";
+      summary += "\nPersonality: " + character.personality + "\n";
+      summary += "Ideals: " + character.ideals + "\n";
+      summary += "Bonds: " + character.bonds + "\n";
+      summary += "Flaws: " + character.flaws + "\n";
+      summary += "\nPortrait URL: " + character.portrait + "\n";
+      summary += "\nEquipment: " + (character.equipment ? character.equipment.join(", ") : "None") + "\n";
+      summary += "\nInventory Items:\n";
+      if (character.inventory && character.inventory.length > 0) {
+        character.inventory.forEach(item => {
+          summary += "  " + item.name + " - Weight: " + item.weight + ", Cost: " + item.cost + "\n";
+        });
+        summary += "Total Weight: " + character.totalWeight + "\n";
+        summary += "Total Cost: " + character.totalCost + "\n";
+      } else {
+        summary += "None\n";
+      }
+      reviewDiv.innerHTML += "<pre>" + summary + "</pre>";
+    }
+
+    /* Initialize Particles.js */
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#ffffff" },
+        "shape": { "type": "star", "stroke": { "width": 0, "color": "#000000" } },
+        "opacity": { "value": 0.8, "random": true },
+        "size": { "value": 2, "random": true },
+        "line_linked": { "enable": false },
+        "move": { "enable": true, "speed": 0.5, "direction": "none", "random": true }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": { "onhover": { "enable": false }, "onclick": { "enable": false } },
+        "modes": {}
+      },
+      "retina_detect": true
+    });
+
+    /* Transition to Daytime Background after 10 seconds */
+    setTimeout(() => {
+      document.getElementById("background").classList.add("daytime");
+    }, 10000);
+  </script>
+</body>
+</html>
