@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>D&D Monster Generator</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>D&D MONSTER MAKER</h1>
+  
+  <div class="options">
+    <div>
+      <label for="monsterTypeSelect">Monster Type:</label>
+      <select id="monsterTypeSelect">
+        <option value="Any">Any</option>
+      </select>
+    </div>
+    <div>
+      <label for="styleSelect">Style:</label>
+      <select id="styleSelect">
+        <option value="Any">Any</option>
+      </select>
+    </div>
+    <div>
+      <label for="crSelect">Challenge Rating:</label>
+      <select id="crSelect">
+        <option value="Any">Any</option>
+      </select>
+    </div>
+    <div>
+      <label for="habitatSelect">Habitat:</label>
+      <select id="habitatSelect">
+        <option value="Any">Any</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="monster-card" id="monsterDisplay">
+    <p>Click the button to conjure a monstrous creation!</p>
+  </div>
+  
+  <div class="button-container">
+    <button id="generateBtn"><i class="fas fa-dice icon"></i>Generate Monster</button>
+    <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i></button>
+  </div>
+  
+  <div id="toast-container"></div>
+  
+  <!-- Main JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
