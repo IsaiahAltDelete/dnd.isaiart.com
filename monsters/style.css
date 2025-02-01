@@ -1,0 +1,207 @@
+/* Base Styles */
+body {
+    background-image: url('https://i.imgur.com/B1kEKpW.png');
+    background-repeat: repeat;
+    background-size: 400px;
+    font-family: 'Times New Roman', serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    animation: scrollBackground 60s linear infinite;
+  }
+  @keyframes scrollBackground {
+    from { background-position: 0 0; }
+    to { background-position: 400px 0; }
+  }
+  h1 {
+    margin: 20px 0;
+    font-size: 2.5rem;
+    text-align: center;
+    color: #8B4513;
+  }
+  .options {
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .options label {
+    margin-right: 5px;
+  }
+  .options select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #8B4513;
+    font-size: 0.95rem;
+    font-family: 'Times New Roman', serif;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238B4513'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 30px;
+  }
+  .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  button {
+    background-color: #8B4513;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button:hover {
+    background-color: #654321;
+    transform: scale(1.02);
+  }
+  button .icon {
+    color: #fff;
+    margin-right: 5px;
+  }
+  
+  /* Monster Card Styling */
+  .monster-card {
+    background-color: #fff;
+    border: 2px solid #8B4513;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+  .monster-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  .monster-card h2 {
+    margin-top: 0;
+    font-size: 2.2rem;
+    color: #8B4513;
+    text-align: center;
+    font-weight: bold;
+  }
+  .monster-card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+  }
+  .monster-card p {
+    margin: 6px 0;
+    line-height: 1.3;
+  }
+  .monster-card strong {
+    color: #8B4513;
+  }
+  .color-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 5px;
+    border-radius: 3px;
+    border: 1px solid #000;
+  }
+  .icon {
+    margin-right: 8px;
+    color: #8B4513;
+  }
+  .ability-scores {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+  .ability-score {
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #8B4513;
+    border-radius: 5px;
+    width: 50px;
+    font-weight: bold;
+  }
+  /* Copy button styling */
+  .copy-btn {
+    background-color: transparent;
+    color: #8B4513;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s ease;
+  }
+  .copy-btn:hover {
+    color: #654321;
+  }
+  /* Toast notification styling */
+  #toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  .toast {
+    background-color: #8B4513;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .toast.show {
+    opacity: 1;
+  }
+  /* Section Titles */
+  .section-title {
+    font-size: 1.1rem;
+    color: #8B4513;
+    margin-top: 15px;
+    border-bottom: 1px solid #8B4513;
+    padding-bottom: 5px;
+  }
+  /* Abilities list styling */
+  .abilities-list {
+    margin-left: 20px;
+  }
+  .abilities-list li {
+    margin-bottom: 5px;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+    .monster-card h2 {
+      font-size: 1.8rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 0.9rem;
+    }
+    .copy-btn {
+      font-size: 1rem;
+    }
+  }
+  
