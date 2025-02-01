@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Faranthis Fousio Character Sheet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      line-height: 1.6;
+    }
+    h1,
+    h2,
+    h3 {
+      color: #222;
+    }
+    h1 {
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 30px;
+      margin-bottom: 10px;
+    }
+    .info-grid div {
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    table,
+    th,
+    td {
+      border: 1px solid #ccc;
+    }
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+    }
+    ul {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+    .sub-section {
+      margin-left: 20px;
+    }
+    .tracker {
+      background: #eef;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    .tracker button {
+      margin: 0 5px;
+      padding: 5px 10px;
+    }
+    .tracker div {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Faranthis Fousio</h1>
+      <p><strong>Level 3 High Elf - Neutral - Abjuration Wizard</strong></p>
+      <p><strong>Player:</strong> Isaiah</p>
+    </header>
+
+    <section id="appearance">
+      <h2>Appearance</h2>
+      <div class="info-grid">
+        <div><strong>Height:</strong> 6'0"</div>
+        <div><strong>Weight:</strong> 160 lbs</div>
+        <div><strong>Age:</strong> 131 (appears 25)</div>
+        <div><strong>Hair Color:</strong> Platinum blonde (short buzzcut)</div>
+        <div><strong>Eye Color:</strong> Brown</div>
+      </div>
+      <p><strong>Clothing:</strong> Prefers to wear monochrome wizard robes and jewelry/clothing that all match different shades of a single color.</p>
+      <p><strong>Tattoo:</strong> Lunar Cycle – Located on his side torso, this tattoo depicts the phases of the moon. The phases change in sync with the real lunar cycle, and it glows when Faranthis uses magic.</p>
+      <p><strong>Style of Magic:</strong> His magic takes on the form of golden glowing beams of light, accompanied by dazzling golden sparkles and flecks. It has a distinct vanilla scent.</p>
+      <p><strong>Residence:</strong> Waterdeep in a single home under Comfortable lifestyle.</p>
+    </section>
+
+    <section id="personality">
+      <h2>Personality</h2>
+      <h3>Traits & Ideals</h3>
+      <ul>
+        <li><strong>Independent:</strong> "I've learned to rely on myself. I don't need anyone else to take care of me."</li>
+        <li><strong>Inquisitive:</strong> "I have an insatiable curiosity, especially when it comes to magic and the unknown."</li>
+        <li><strong>Ideal (Knowledge):</strong> "The pursuit of knowledge is the highest calling. I seek to uncover the secrets of the universe."</li>
+        <li><strong>Bond (Alden and Gnarsh):</strong> "My friends are the closest thing I have to family. I would do anything for them."</li>
+        <li><strong>Flaw (Vengeful):</strong> "Those who wronged me will pay. I hold grudges and have a hard time forgiving."</li>
+      </ul>
+
+      <h3>Background & Family</h3>
+      <div class="sub-section">
+        <p><strong>Background:</strong> Sage</p>
+        <p><strong>Feature:</strong> Researcher – When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it.</p>
+        <p><strong>Family:</strong> Mother: single; Father: Disappeared; 1 younger sibling</p>
+        <p><strong>Birthplace:</strong> Arborea</p>
+        <p><strong>Childhood:</strong> Happy, lots of friends, moved around a lot</p>
+        <p><strong>Life-Shaping Events:</strong> Imprisoned for a crime he didn't commit for 5 years.</p>
+        <p><strong>Additional Notes:</strong></p>
+        <ul>
+          <li>You have a treasure map that you found.</li>
+          <li>You have two close adventurer friends, Alden (female half-elf warlock) and Gnarsh (male half-orc cleric).</li>
+          <li>You have a deep fear of being charmed or frightened due to a past magical encounter.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Tracker Section -->
+    <section id="tracker">
+      <h2>Character Tracker</h2>
+      <div class="tracker">
+        <!-- HP Tracker -->
+        <div>
+          <h3>Hit Points</h3>
+          <p>
+            Current HP: <span id="currentHP">20</span> / <span id="maxHP">20</span>
+          </p>
+          <button onclick="adjustHP(-1)">-1</button>
+          <button onclick="adjustHP(1)">+1</button>
+          <button onclick="resetHP()">Reset HP</button>
+        </div>
+
+        <!-- Arcane Ward Tracker -->
+        <div>
+          <h3>Arcane Ward</h3>
+          <p>
+            Current Ward: <span id="currentWard">9</span>
+          </p>
+          <button onclick="adjustWard(-1)">-1</button>
+          <button onclick="adjustWard(1)">+1</button>
+          <button onclick="resetWard()">Reset Ward</button>
+        </div>
+
+        <!-- Spell Slot Tracker -->
+        <div>
+          <h3>Spell Slots</h3>
+          <div>
+            <strong>1st Level (4 Slots):</strong>
+            <span id="firstLevelSlots">4</span>
+            <button onclick="adjustSlot('first', -1)">-1</button>
+            <button onclick="adjustSlot('first', 1)">+1</button>
+            <button onclick="resetSlot('first')">Reset</button>
+          </div>
+          <div>
+            <strong>2nd Level (2 Slots):</strong>
+            <span id="secondLevelSlots">2</span>
+            <button onclick="adjustSlot('second', -1)">-1</button>
+            <button onclick="adjustSlot('second', 1)">+1</button>
+            <button onclick="resetSlot('second')">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Initialize tracker values
+    const maxHP = 20, maxWard = 9, firstLevelMax = 4, secondLevelMax = 2;
+    let currentHP = maxHP, currentWard = maxWard, firstLevelSlots = firstLevelMax, secondLevelSlots = secondLevelMax;
+
+    function updateDisplay() {
+      document.getElementById('currentHP').textContent = currentHP;
+      document.getElementById('maxHP').textContent = maxHP;
+      document.getElementById('currentWard').textContent = currentWard;
+      document.getElementById('firstLevelSlots').textContent = firstLevelSlots;
+      document.getElementById('secondLevelSlots').textContent = secondLevelSlots;
+    }
+
+    function adjustHP(change) {
+      currentHP = Math.max(0, currentHP + change);
+      updateDisplay();
+    }
+
+    function resetHP() {
+      currentHP = maxHP;
+      updateDisplay();
+    }
+
+    function adjustWard(change) {
+      currentWard = Math.max(0, currentWard + change);
+      updateDisplay();
+    }
+
+    function resetWard() {
+      currentWard = maxWard;
+      updateDisplay();
+    }
+
+    function adjustSlot(level, change) {
+      if (level === 'first') {
+        firstLevelSlots = Math.min(firstLevelMax, Math.max(0, firstLevelSlots + change));
+      } else if (level === 'second') {
+        secondLevelSlots = Math.min(secondLevelMax, Math.max(0, secondLevelSlots + change));
+      }
+      updateDisplay();
+    }
+
+    function resetSlot(level) {
+      if (level === 'first') {
+        firstLevelSlots = firstLevelMax;
+      } else if (level === 'second') {
+        secondLevelSlots = secondLevelMax;
+      }
+      updateDisplay();
+    }
+
+    // Initial display update on page load
+    updateDisplay();
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faranthis - D&D Campaign</title>
+    <style>
+        body {
+            font-family: 'Cinzel', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 100;
+        }
+
+        .fade-out .overlay {
+            opacity: 1;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+            font-size: 3rem;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(244, 244, 244, 0.3);
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        a {
+            color: #f4f4f4;
+            text-decoration: none;
+            padding: 15px 40px;
+            border: 2px solid #f4f4f4;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(244, 244, 244, 0.1);
+            transition: transform 0.5s ease;
+            transform: skewX(-20deg);
+        }
+
+        a:hover {
+            background-color: rgba(244, 244, 244, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        a:hover:before {
+            transform: translateX(200%) skewX(-20deg);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <h1>FARANTHIS FOUSIO</h1>
+        <nav>
+            <a href="https://dnd.isaiart.com/faranthis/lv1">LEVEL 1</a>
+            <a href="https://dnd.isaiart.com/faranthis/lv2">LEVEL 2</a>
+            <a href="https://dnd.isaiart.com/faranthis/lv3">LEVEL 3</a>
+            <a href="https://dnd.isaiart.com/faranthis/lv6">LEVEL 6</a> <!-- New Level 6 Link -->
+        </nav>
+    </div>
+    <script>
+        window.onload = function() {
+            document.body.style.opacity = 1;
+        }
+        
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                document.body.classList.add('fade-out');
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

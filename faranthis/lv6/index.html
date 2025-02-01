@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faranthis - D&D Character Sheet</title>
+  
+  <!--
+    WARNING: You need to provide your own font files for:
+      1) Modesto Bold Condensed
+      2) Mrs Eaves Small Caps
+      3) Scala Sans
+    Either host them locally or on a server you control, then point the 'src' in @font-face to those files.
+  -->
+
+  <style>
+    /* ========================================
+       FONT-FACE DECLARATIONS
+       ======================================== */
+    @font-face {
+      font-family: 'Modesto Bold Condensed';
+      /* Replace these URLs with the actual paths to your Modesto Bold Condensed font files (WOFF/WOFF2/etc.) */
+      src: url('fonts/ModestoBoldCondensed.woff2') format('woff2'),
+           url('fonts/ModestoBoldCondensed.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Mrs Eaves Small Caps';
+      /* Replace with your Mrs Eaves SC font file paths */
+      src: url('fonts/MrsEavesSC.woff2') format('woff2'),
+           url('fonts/MrsEavesSC.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Scala Sans';
+      /* Replace with your Scala Sans file paths */
+      src: url('fonts/ScalaSans.woff2') format('woff2'),
+           url('fonts/ScalaSans.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* ========================================
+       ANIMATION FOR THE SCROLLING BACKGROUND
+       ======================================== */
+    @keyframes scrollBackground {
+      from {
+        background-position: 0 0;
+      }
+      to {
+        background-position: 1000px 0;
+      }
+    }
+
+    /* ========================================
+       GLOBAL STYLES
+       ======================================== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    body {
+      /* Set up the background to tile and scroll slowly left-to-right */
+      background: url('https://i.imgur.com/B1kEKpW.png') repeat;
+      background-size: auto;
+      animation: scrollBackground 120s linear infinite;
+      color: #2c1b10;
+      font-family: 'Scala Sans', Arial, sans-serif;
+    }
+
+    /* Container for the page’s content */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px 50px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header Styles */
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .header-info div {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    h1 {
+      font-family: 'Modesto Bold Condensed', serif;
+      font-size: 2.5em;
+      text-transform: uppercase;
+      color: #7b0000; /* Dark red for a D&D feel */
+      margin: 0;
+    }
+
+    h2, h3 {
+      font-family: 'Mrs Eaves Small Caps', serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7b0000;
+      margin: 15px 0 10px 0;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+      border-radius: 10px;
+    }
+
+    h3 {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 5px;
+    }
+
+    /* Sections */
+    .section {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .inline > div {
+      flex: 1 1 45%;
+      min-width: 250px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-family: 'Scala Sans', Arial, sans-serif;
+    }
+
+    /* Lists */
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      background: #fafafa;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    /* Equipment Lists and Similar */
+    .equipment-list li ul,
+    .spells-prepared li ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-top: 5px;
+    }
+
+    /* Key Improvements */
+    .key-improvements ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 30px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .inline > div {
+        flex: 1 1 100%;
+      }
+
+      .header-info {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .container {
+        padding: 15px 20px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: none;
+        animation: none;
+      }
+      .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 20px;
+        background: #fff;
+        border: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Character Header -->
+    <div class="header-info">
+      <div>
+        <h1>Faranthis</h1>
+        <p><strong>Race:</strong> High Elf</p>
+        <p><strong>Class:</strong> Wizard (Abjuration) 6</p>
+        <p><strong>Background:</strong> Sage</p>
+        <p><strong>Alignment:</strong> (Not specified)</p>
+      </div>
+      <div>
+        <p><strong>Size:</strong> Medium</p>
+        <p><strong>Type:</strong> Humanoid</p>
+        <p><strong>Tags:</strong> Humanoid, True Soul, Baldurian, High Elf, Elf, Wizard</p>
+        <p><strong>Carrying Capacity:</strong> 150 lbs. (240 lbs. max)</p>
+        <p><strong>Weight:</strong> 150 lbs.</p>
+        <p><strong>Resistances:</strong> None</p>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="section stats">
+      <h2>Stats</h2>
+      <table>
+        <tr>
+          <th>Strength</th>
+          <th>Dexterity</th>
+          <th>Constitution</th>
+          <th>Intelligence</th>
+          <th>Wisdom</th>
+          <th>Charisma</th>
+        </tr>
+        <tr>
+          <td>8 (-1)</td>
+          <td>13 (+1)</td>
+          <td>15 (+2)</td>
+          <td>18 (+4)</td>
+          <td>10 (+0)</td>
+          <td>12 (+1)</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Saving Throws -->
+    <div class="section saving-throws">
+      <h2>Saving Throws</h2>
+      <table>
+        <tr>
+          <th>Strength</th>
+          <th>Dexterity</th>
+          <th>Constitution</th>
+          <th>Intelligence</th>
+          <th>Wisdom</th>
+          <th>Charisma</th>
+        </tr>
+        <tr>
+          <td>-1</td>
+          <td>+1</td>
+          <td>+2</td>
+          <td>+7</td>
+          <td>+3</td>
+          <td>+1</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Skills -->
+    <div class="section skills">
+      <h2>Skills</h2>
+      <table>
+        <tr>
+          <th>Skill</th>
+          <th>Modifier</th>
+        </tr>
+        <tr><td>Acrobatics (Dex)</td><td>+1</td></tr>
+        <tr><td>Animal Handling (Wis)</td><td>0</td></tr>
+        <tr><td>Arcana (Int)</td><td>+9 (from Mage's Friend)</td></tr>
+        <tr><td>Athletics (Str)</td><td>-1</td></tr>
+        <tr><td>Deception (Cha)</td><td>+1</td></tr>
+        <tr><td>History (Int)</td><td>+7</td></tr>
+        <tr><td>Insight (Wis)</td><td>+3</td></tr>
+        <tr><td>Intimidation (Cha)</td><td>+1</td></tr>
+        <tr><td>Investigation (Int)</td><td>+7</td></tr>
+        <tr><td>Medicine (Wis)</td><td>0</td></tr>
+        <tr><td>Nature (Int)</td><td>+4</td></tr>
+        <tr><td>Perception (Wis)</td><td>+3</td></tr>
+        <tr><td>Performance (Cha)</td><td>+1</td></tr>
+        <tr><td>Persuasion (Cha)</td><td>+1</td></tr>
+        <tr><td>Religion (Int)</td><td>+6 (from Mage's Friend)</td></tr>
+        <tr><td>Sleight of Hand (Dex)</td><td>+1</td></tr>
+        <tr><td>Stealth (Dex)</td><td>+1</td></tr>
+        <tr><td>Survival (Wis)</td><td>0</td></tr>
+      </table>
+    </div>
+
+    <!-- Combat Info -->
+    <div class="section combat">
+      <h2>Combat</h2>
+      <div class="inline">
+        <div>
+          <p><strong>Hit Points:</strong> 38</p>
+          <p><strong>Armor Class:</strong> 14 
+            <br><small>(10 from The Protecty Sparkswall, +1 from Wondrous Gloves, +1 Dex, +1 from Sparkswall Armour, +1 from Troubadour's Wonder)</small>
+          </p>
+          <p><strong>Initiative:</strong> +1</p>
+          <p><strong>Speed:</strong> 30 ft.</p>
+          <p><strong>Darkvision:</strong> 40 ft.</p>
+          <p><strong>Proficiency Bonus:</strong> +3</p>
+        </div>
+        <div>
+          <h3>Conditions</h3>
+          <ul>
+            <li>Loviatar's Love</li>
+            <li>Arcane Ward (6)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attacks -->
+    <div class="section attacks">
+      <h2>Attacks</h2>
+      <div class="inline">
+        <div>
+          <h3>Mourning Frost (Quarterstaff)</h3>
+          <p><strong>Attack Bonus:</strong> +4</p>
+          <p><strong>Damage:</strong> 2d6+1 (1d6 bludgeoning + 1d4+1 cold + 1 cold from Heart of Ice) + weapon enchantment +1</p>
+          <p>May inflict <em>Chilled</em>.</p>
+        </div>
+        <div>
+          <h3>Spellthief (Longbow)</h3>
+          <p><strong>Attack Bonus:</strong> +4</p>
+          <p><strong>Damage:</strong> 2d8+1 piercing</p>
+          <p><em>Arcane Vehemence:</em> Once per Short Rest, regain a Level 1 spell slot on a Critical Hit.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proficiencies -->
+    <div class="section proficiencies">
+      <h2>Proficiencies</h2>
+      <div class="inline">
+        <div>
+          <p><strong>Armor:</strong> None</p>
+        </div>
+        <div>
+          <p><strong>Weapons:</strong> Simple Weapons, Martial Weapons</p>
+        </div>
+      </div>
+      <div class="inline">
+        <div>
+          <p><strong>Tools:</strong> None</p>
+        </div>
+        <div>
+          <p><strong>Musical Instrument:</strong> </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features and Traits -->
+    <div class="section features-traits">
+      <h2>Features &amp; Traits</h2>
+      <ul>
+        <li>Arcane Ward</li>
+        <li>Arcane Vehemence</li>
+        <li>Auntie Ethel's Boon</li>
+        <li>Darkvision</li>
+        <li>Elven Weapon Training</li>
+        <li>Fey Ancestry</li>
+        <li>Heart of Ice</li>
+        <li>High Spellcasting</li>
+        <li>Insidious Cold</li>
+        <li>Minor Arcane Amplification</li>
+        <li>Night Walker</li>
+        <li>Opportunity Attack</li>
+        <li>Projected Ward</li>
+        <li>Sparkswall Armour</li>
+        <li>Troubadour's Wonder</li>
+        <li>War Caster: Concentration</li>
+      </ul>
+    </div>
+
+    <!-- Equipment -->
+    <div class="section equipment">
+      <h2>Equipment</h2>
+      <ul>
+        <li>
+          <strong>Head:</strong> Circlet of Blasting
+          <br><em>Grants Scorching Ray spell</em>
+        </li>
+        <li>
+          <strong>Cloak:</strong> (None equipped)
+        </li>
+        <li>
+          <strong>Chest:</strong> The Protecty Sparkswall
+          <ul>
+            <li>AC 10</li>
+            <li>High Spellcasting: +1 to Spell Save DC</li>
+            <li>Sparkswall Armour: +1 bonus to AC &amp; Saving Throws with Lightning Charges</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Gloves:</strong> Wondrous Gloves
+          <ul>
+            <li>Troubadour's Wonder: +1 to AC, +1 Bardic Inspiration use if you have Bardic Inspiration</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Boots:</strong> Disintegrating Night Walkers
+          <ul>
+            <li>Night Walker: Immune to being enwebbed, entangled, or ensnared; can't slip on grease/ice</li>
+            <li>Grants Misty Step spell</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Neck:</strong> The Spectator Eyes
+          <ul>
+            <li>Grants Ray of Fear &amp; Wounding Ray spells</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Ring 1:</strong> Mage's Friend
+          <br><em>+1 to Arcana and Religion</em>
+        </li>
+        <li>
+          <strong>Ring 2:</strong> Band of Minor Arcana
+          <ul>
+            <li>Minor Arcane Amplification: Add half your Intelligence modifier to cantrip damage</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Melee Weapon:</strong> Mourning Frost (Quarterstaff, Very Rare, 2-12 damage)
+          <ul>
+            <li>Heart of Ice: +1 cold damage when dealing cold damage</li>
+            <li>Insidious Cold: Cold damage can inflict Chilled</li>
+            <li>Weapon Enchantment +1</li>
+            <li>Grants Ray of Frost cantrip</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Ranged Weapon:</strong> Spellthief (Longbow, Uncommon, 2-9 damage)
+          <ul>
+            <li>Arcane Vehemence: Once per Short Rest, regain a Level 1 spell slot on a Critical Hit</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Spellcasting -->
+    <div class="section spellcasting">
+      <h2>Spellcasting</h2>
+      <p><strong>Spellcasting Ability:</strong> Intelligence</p>
+      <p><strong>Spell Save DC:</strong> 16 
+        <br><small>(8 + Proficiency + Intelligence Modifier +1 from High Spellcasting)</small>
+      </p>
+      <p><strong>Spell Attack Modifier:</strong> +7</p>
+
+      <h3>Cantrips Known</h3>
+      <ul>
+        <li>Mage Hand</li>
+        <li>Minor Illusion</li>
+        <li>Light</li>
+        <li>Friends</li>
+        <li>Bone Chill</li>
+        <li>Ray of Frost (Also granted by Mourning Frost)</li>
+        <li>Fire Bolt</li>
+      </ul>
+
+      <h3>Spells Prepared</h3>
+      <div class="inline">
+        <div>
+          <strong>Level 1 (4 slots)</strong>
+          <ul>
+            <li>False Life</li>
+            <li>Color Spray</li>
+            <li>Chromatic Orb</li>
+            <li>Fog Cloud</li>
+            <li>Charm Person</li>
+            <li>Sleep</li>
+            <li>Expeditious Retreat</li>
+            <li>Witch Bolt</li>
+            <li>Feather Fall</li>
+            <li>Grease</li>
+            <li>Ray of Sickness</li>
+            <li>Protection from Evil and Good</li>
+            <li>Thunderwave</li>
+            <li>Tasha's Hideous Laughter</li>
+            <li>Burning Hands</li>
+            <li>Find Familiar</li>
+            <li>Shield</li>
+            <li>Magic Missile</li>
+            <li>Mage Armor</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Level 2 (3 slots)</strong>
+          <ul>
+            <li>Blur</li>
+            <li>Flaming Sphere</li>
+            <li>Blindness</li>
+            <li>Darkness</li>
+            <li>Magic Weapon</li>
+            <li>Ray of Enfeeblement</li>
+            <li>Gust of Wind</li>
+            <li>Invisibility</li>
+            <li>Enlarge/Reduce</li>
+            <li>Web</li>
+            <li>Misty Step (Also granted by Disintegrating Night Walkers)</li>
+            <li>Darkvision</li>
+            <li>Hold Person</li>
+            <li>Mirror Image</li>
+            <li>Scorching Ray (Also granted by Circlet of Blasting)</li>
+            <li>Melf's Acid Arrow</li>
+            <li>See Invisibility</li>
+            <li>Shatter</li>
+            <li>Cloud of Daggers</li>
+            <li>Detect Thoughts</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Level 3 (3 slots)</strong>
+          <ul>
+            <li>Protection from Energy</li>
+            <li>Slow</li>
+            <li>Vampiric Touch</li>
+            <li>Remove Curse</li>
+            <li>Fear</li>
+            <li>Lightning Bolt</li>
+            <li>Haste</li>
+            <li>Grant Flight</li>
+            <li>Gaseous Form</li>
+            <li>Feign Death</li>
+            <li>Blink</li>
+            <li>Bestow Curse</li>
+            <li>Animate Dead</li>
+            <li>Hypnotic Pattern</li>
+            <li>Glyph of Warding</li>
+            <li>Fireball</li>
+            <li>Ray of Fear (Also granted by The Spectator Eyes)</li>
+            <li>Wounding Ray (Also granted by The Spectator Eyes)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Class Actions</h3>
+      <ul>
+        <li>Arcane Recovery</li>
+      </ul>
+
+      <h3>Common Actions</h3>
+      <ul>
+        <li>Survival Instinct</li>
+      </ul>
+    </div>
+
+    <!-- Key Improvements -->
+    <div class="section key-improvements">
+      <h2>Key Improvements from Equipment</h2>
+      <ul>
+        <li><strong>Increased Armor Class:</strong> Faranthis now has a respectable AC of 14.</li>
+        <li><strong>Boosted Cantrip Damage:</strong> The Band of Minor Arcana adds +2 damage (half of Intelligence modifier) to cantrips.</li>
+        <li><strong>Extra Spells:</strong> Faranthis gains access to Scorching Ray, Misty Step, Ray of Fear, and Wounding Ray from their equipment.</li>
+        <li><strong>Enhanced Spell Save DC:</strong> The Protecty Sparkswall increases their Spell Save DC to 16.</li>
+        <li><strong>Mobility and Utility:</strong> The Disintegrating Night Walkers provide excellent mobility and prevent them from being restrained by common environmental hazards.</li>
+        <li><strong>Melee and Ranged Options:</strong> Mourning Frost offers a potent melee option with additional cold damage, while Spellthief allows for spell slot recovery on critical hits.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
