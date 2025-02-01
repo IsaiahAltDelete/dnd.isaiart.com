@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+}
+
+.solar-system {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.star-small {
+    animation: starMove 30s linear infinite;
+}
+
+.star-medium {
+    animation: starMove 20s linear infinite;
+}
+
+.star-large {
+    animation: starMove 10s linear infinite;
+}
+
+.sun {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 50px white;
+}
+
+.orbit {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.planet-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: orbit linear infinite;
+    top: 0;
+    left: 0;
+}
+
+.planet {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.moon-orbit {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: moonOrbit linear infinite;
+}
+
+.moon {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ring {
+    position: absolute;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotateX(75deg);
+}
+
+@keyframes starMove {
+    from {
+        transform: translateX(100vw);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes orbit {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes moonOrbit {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>
+</head>
+<body>
+<div class="solar-system">
+    <div class="sun"></div>
+</div>
+
+<script>
+const solarSystem = document.querySelector('.solar-system');
+
+function createStars(count) {
+    const starLayers = [
+        { className: 'star-small', size: [0.5, 1], count: Math.floor(count * 0.5) },
+        { className: 'star-medium', size: [1, 1.5], count: Math.floor(count * 0.3) },
+        { className: 'star-large', size: [1.5, 2], count: Math.floor(count * 0.2) }
+    ];
+
+    starLayers.forEach(layer => {
+        for (let i = 0; i < layer.count; i++) {
+            const star = document.createElement('div');
+            star.className = `star ${layer.className}`;
+            
+            const size = layer.size[0] + Math.random() * (layer.size[1] - layer.size[0]);
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDelay = -Math.random() * 30 + 's';
+            
+            const brightness = 0.5 + Math.random() * 0.5;
+            star.style.opacity = brightness;
+            
+            solarSystem.appendChild(star);
+        }
+    });
+}
+
+function createPlanet(orbitRadius, size, speed, hasMoon, hasRings) {
+    const orbit = document.createElement('div');
+    orbit.className = 'orbit';
+    orbit.style.width = orbitRadius * 2 + 'px';
+    orbit.style.height = orbitRadius * 2 + 'px';
+
+    const planetContainer = document.createElement('div');
+    planetContainer.className = 'planet-container';
+    planetContainer.style.animation = `orbit ${speed}s linear infinite`;
+
+    const planet = document.createElement('div');
+    planet.className = 'planet';
+    planet.style.width = size + 'px';
+    planet.style.height = size + 'px';
+
+    if (hasRings) {
+        const ringCount = Math.floor(Math.random() * 3) + 2;
+        for (let i = 0; i < ringCount; i++) {
+            const ring = document.createElement('div');
+            ring.className = 'ring';
+            ring.style.width = (size * (2 + i * 0.5)) + 'px';
+            ring.style.height = (size * (2 + i * 0.5)) + 'px';
+            ring.style.left = '50%';
+            ring.style.top = '50%';
+            planet.appendChild(ring);
+        }
+    }
+
+    if (hasMoon) {
+        const moonOrbit = document.createElement('div');
+        moonOrbit.className = 'moon-orbit';
+        moonOrbit.style.width = size * 3 + 'px';
+        moonOrbit.style.height = size * 3 + 'px';
+        moonOrbit.style.animation = `moonOrbit ${speed / 2}s linear infinite`;
+        moonOrbit.style.left = '50%';
+        moonOrbit.style.top = '50%';
+        moonOrbit.style.transform = 'translate(-50%, -50%)';
+
+        const moon = document.createElement('div');
+        moon.className = 'moon';
+        moon.style.width = size * 0.3 + 'px';
+        moon.style.height = size * 0.3 + 'px';
+
+        moonOrbit.appendChild(moon);
+        planet.appendChild(moonOrbit);
+    }
+
+    planetContainer.appendChild(planet);
+    orbit.appendChild(planetContainer);
+    solarSystem.appendChild(orbit);
+}
+
+createStars(300);
+
+const planets = [
+    { orbit: 100, size: 10, speed: 8, hasMoon: false, hasRings: false },
+    { orbit: 150, size: 15, speed: 12, hasMoon: true, hasRings: false },
+    { orbit: 200, size: 25, speed: 16, hasMoon: false, hasRings: true },
+    { orbit: 280, size: 20, speed: 20, hasMoon: true, hasRings: false },
+    { orbit: 350, size: 30, speed: 25, hasMoon: true, hasRings: true },
+    { orbit: 420, size: 18, speed: 30, hasMoon: false, hasRings: false }
+];
+
+planets.forEach(planet => {
+    createPlanet(planet.orbit, planet.size, planet.speed, planet.hasMoon, planet.hasRings);
+});
+</script>
+</body>
+</html>
