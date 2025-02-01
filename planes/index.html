@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Enhanced Forgotten Realms Cosmology</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: "Times New Roman", serif;
+        user-select: none;
+      }
+      .label {
+        color: #fff;
+        font-size: 14px;
+        text-shadow: 0 0 5px #000;
+      }
+      #info {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        font-size: 32px;
+        pointer-events: none;
+        z-index: 10;
+      }
+      canvas {
+        display: block;
+      }
+      /* Bottom Control Panel Styles */
+      #controlsPanel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        transition: opacity 0.5s;
+        opacity: 0;
+        z-index: 100;
+        pointer-events: auto;
+      }
+      body:hover #controlsPanel,
+      #controlsPanel:hover {
+        opacity: 1;
+      }
+      #controlsPanel label {
+        margin: 0 10px;
+        font-size: 14px;
+      }
+      #controlsPanel input[type="range"] {
+        -webkit-appearance: none;
+        width: 100px;
+        background: #333;
+        height: 4px;
+        margin: 0 5px;
+        vertical-align: middle;
+      }
+      #controlsPanel input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        cursor: pointer;
+      }
+      #controlsPanel button {
+        background: #fff;
+        border: none;
+        color: #000;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info">The Forgotten Realms</div>
+    <div id="controlsPanel">
+      <button id="playPause">Pause</button>
+      <label>
+        Outer Speed:
+        <input type="range" id="outerSpeed" min="0" max="0.01" step="0.0001" value="0.002">
+      </label>
+      <label>
+        Elemental Speed:
+        <input type="range" id="elementalSpeed" min="0" max="0.01" step="0.0001" value="0.003">
+      </label>
+      <label>
+        Outlands Speed:
+        <input type="range" id="outlandsSpeed" min="0" max="0.05" step="0.0001" value="0.02">
+      </label>
+      <label>
+        Inner Speed:
+        <input type="range" id="innerSpeed" min="0" max="0.05" step="0.0001" value="0.01">
+      </label>
+      <label>
+        Star Rotation:
+        <input type="range" id="starRotation" min="0" max="0.005" step="0.0001" value="0.0005">
+      </label>
+    </div>
+    <!-- Three.js, TrackballControls, CSS2DRenderer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TrackballControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script>
+      // ---------------------------
+      // Scene, Camera, Renderer
+      // ---------------------------
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
+      camera.position.set(0, 200, 400);
+      
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      
+      const labelRenderer = new THREE.CSS2DRenderer();
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.domElement.style.position = "absolute";
+      labelRenderer.domElement.style.top = "0";
+      document.body.appendChild(labelRenderer.domElement);
+      
+      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(0, 1, 1);
+      scene.add(directionalLight);
+      
+      const controls = new THREE.TrackballControls(camera, renderer.domElement);
+      controls.rotateSpeed = 3.0;
+      controls.zoomSpeed = 1.2;
+      controls.panSpeed = 0.8;
+      controls.staticMoving = false;
+      controls.dynamicDampingFactor = 0.3;
+      
+      // ---------------------------
+      // Animation Parameters
+      // ---------------------------
+      let params = {
+        outerSpeed: 0.002,
+        elementalSpeed: 0.003,
+        outlandsSpeed: 0.02,
+        innerSpeed: 0.01,
+        starRotation: 0.0005,
+        playing: true,
+      };
+      
+      // ---------------------------
+      // Starfield & Shooting Stars
+      // ---------------------------
+      function createStars(count = 2000) {
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        for (let i = 0; i < count; i++) {
+          positions.push(
+            THREE.MathUtils.randFloatSpread(2000),
+            THREE.MathUtils.randFloatSpread(2000),
+            THREE.MathUtils.randFloatSpread(2000)
+          );
+        }
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, sizeAttenuation: true });
+        return new THREE.Points(geometry, material);
+      }
+      const starField = createStars();
+      scene.add(starField);
+      
+      const shootingStars = [];
+      const shootingStarCount = 10;
+      const shootingStarGeometry = new THREE.SphereGeometry(0.8, 8, 8);
+      const shootingStarMaterial = new THREE.MeshBasicMaterial({ color: 0xffffaa });
+      for (let i = 0; i < shootingStarCount; i++) {
+        const star = new THREE.Mesh(shootingStarGeometry, shootingStarMaterial);
+        resetShootingStar(star);
+        shootingStars.push(star);
+        scene.add(star);
+      }
+      function resetShootingStar(star) {
+        star.position.set(THREE.MathUtils.randFloatSpread(1000), THREE.MathUtils.randFloat(100, 500), 1000);
+        star.userData.velocity = new THREE.Vector3(
+          -THREE.MathUtils.randFloat(2, 5),
+          -THREE.MathUtils.randFloat(0.5, 2),
+          -THREE.MathUtils.randFloat(2, 5)
+        );
+      }
+      
+      // ---------------------------
+      // Helper: Labeled Spheres & Orbit Rings
+      // ---------------------------
+      function createLabeledSphere(name, color, size = 10) {
+        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ color });
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.userData.planeName = name;
+        const div = document.createElement("div");
+        div.className = "label";
+        div.textContent = name;
+        const label = new THREE.CSS2DObject(div);
+        label.position.set(0, size + 2, 0);
+        sphere.add(label);
+        return sphere;
+      }
+      
+      function addOrbitRing(radius) {
+        const ringGeometry = new THREE.RingGeometry(radius - 0.5, radius + 0.5, 64);
+        const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
+        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+      }
+      
+      // ---------------------------
+      // List of Unique Outer Plane Effects:
+      //
+      // Mount Celestia: Golden aura with orbiting mini spheres.
+      // The Abyss: Shadowy swirling particles with intermittent lightning bursts.
+      // Elysium: Multicolored drifting nebula particles.
+      // Hades: Fiery ember particles with burst effects.
+      // Arborea: Lush green, leaf-like drifting particles.
+      // Baator: Smoky dark dust with ember sparks.
+      // Mechanus: Rotating metallic cubes arranged like gears.
+      // Limbo: Chaotic, shifting fractal particles (colors change over time).
+      // Arcadia: Pastel light streams with small orbiting orbs.
+      // Pandemonium: Erratic, strobing multi-colored lightning lines.
+      // Beastlands: Organic, spore-like particles drifting in a gentle swirl.
+      // Gehenna: Burning dark red smoke with intermittent sparks.
+      // Bytopia: Serene multi-colored glow with orbiting circular halos.
+      // Carceri: Fragmented, dark shards and slowly rotating debris.
+      // ---------------------------
+      
+      // ---------------------------
+      // Outer Plane Effect Functions
+      // ---------------------------
+      function createAuraEffect(color) {
+        const group = new THREE.Group();
+        for (let i = 0; i < 5; i++) {
+          const mini = new THREE.Mesh(new THREE.SphereGeometry(1.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xfff200 }));
+          mini.position.set(8 * Math.cos((i/5)*Math.PI*2), 0, 8 * Math.sin((i/5)*Math.PI*2));
+          group.add(mini);
+        }
+        return group;
+      }
+      
+      function createSwirlingLightningEffect(color) {
+        const group = new THREE.Group();
+        // Swirling dark particles
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 50; i++) {
+          pos.push((Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0x222222, size: 1, opacity: 0.7, transparent: true }));
+        group.add(pts);
+        // Lightning line
+        const lineGeom = new THREE.BufferGeometry();
+        const linePos = [];
+        for (let i = 0; i < 6; i++) {
+          linePos.push((Math.random()-0.5)*15, (Math.random()-0.5)*15, (Math.random()-0.5)*15);
+        }
+        lineGeom.setAttribute("position", new THREE.Float32BufferAttribute(linePos, 3));
+        const line = new THREE.Line(lineGeom, new THREE.LineBasicMaterial({ color: color, opacity: 0.8, transparent: true }));
+        group.add(line);
+        return group;
+      }
+      
+      function createNebulaEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const count = 100;
+        const positions = [];
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+          positions.push((Math.random()-0.5)*30, (Math.random()-0.5)*30, (Math.random()-0.5)*30);
+          // Random pastel colors
+          const r = 0.7 + Math.random()*0.3;
+          const g = 0.7 + Math.random()*0.3;
+          const b = 0.7 + Math.random()*0.3;
+          colors.push(r, g, b);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+        geom.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ vertexColors: true, size: 1.5, transparent: true, opacity: 0.8 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createFlameEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 80; i++) {
+          pos.push((Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0xff5500, size: 1.2, transparent: true, opacity: 0.9 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createNatureEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 60; i++) {
+          pos.push((Math.random()-0.5)*15, (Math.random()-0.5)*15, (Math.random()-0.5)*15);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0x22aa22, size: 1.2, transparent: true, opacity: 0.8 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createSmokyEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 70; i++) {
+          pos.push((Math.random()-0.5)*25, (Math.random()-0.5)*25, (Math.random()-0.5)*25);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0x333333, size: 1.5, transparent: true, opacity: 0.5 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createMechanicalEffect() {
+        const group = new THREE.Group();
+        for (let i = 0; i < 6; i++) {
+          const cube = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), new THREE.MeshBasicMaterial({ color: 0xaaaaaa }));
+          cube.position.set(10 * Math.cos((i/6)*Math.PI*2), 0, 10 * Math.sin((i/6)*Math.PI*2));
+          group.add(cube);
+        }
+        return group;
+      }
+      
+      function createChaosEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 120; i++) {
+          pos.push((Math.random()-0.5)*30, (Math.random()-0.5)*30, (Math.random()-0.5)*30);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0xffffff, size: 1, vertexColors: false, transparent: true, opacity: 0.7 }));
+        group.add(pts);
+        // In animate, we will change pts.material.color over time.
+        group.userData.isChaos = true;
+        return group;
+      }
+      
+      function createPastelEffect() {
+        const group = new THREE.Group();
+        for (let i = 0; i < 4; i++) {
+          const orb = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffc0cb }));
+          orb.position.set(7 * Math.cos((i/4)*Math.PI*2), 0, 7 * Math.sin((i/4)*Math.PI*2));
+          group.add(orb);
+        }
+        return group;
+      }
+      
+      function createErraticLightningEffect() {
+        const group = new THREE.Group();
+        for (let i = 0; i < 3; i++) {
+          const geom = new THREE.BufferGeometry();
+          const pos = [];
+          for (let j = 0; j < 8; j++) {
+            pos.push((Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
+          }
+          geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+          const line = new THREE.Line(geom, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 }));
+          group.add(line);
+        }
+        return group;
+      }
+      
+      function createOrganicEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 90; i++) {
+          pos.push((Math.random()-0.5)*18, (Math.random()-0.5)*18, (Math.random()-0.5)*18);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0x88cc44, size: 1.2, transparent: true, opacity: 0.8 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createBurningEffect() {
+        const group = new THREE.Group();
+        const geom = new THREE.BufferGeometry();
+        const pos = [];
+        for (let i = 0; i < 80; i++) {
+          pos.push((Math.random()-0.5)*22, (Math.random()-0.5)*22, (Math.random()-0.5)*22);
+        }
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ color: 0x990000, size: 1.5, transparent: true, opacity: 0.6 }));
+        group.add(pts);
+        return group;
+      }
+      
+      function createSereneGlowEffect() {
+        const group = new THREE.Group();
+        for (let i = 0; i < 3; i++) {
+          const halo = new THREE.Mesh(new THREE.RingGeometry(3, 3.5, 32), new THREE.MeshBasicMaterial({ color: 0xffddaa, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+          halo.rotation.x = Math.PI/2;
+          halo.position.set(0, i*2 - 2, 0);
+          group.add(halo);
+        }
+        return group;
+      }
+      
+      function createFragmentedEffect() {
+        const group = new THREE.Group();
+        for (let i = 0; i < 4; i++) {
+          const shard = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), new THREE.MeshBasicMaterial({ color: 0x222222 }));
+          shard.position.set((Math.random()-0.5)*10, (Math.random()-0.5)*10, (Math.random()-0.5)*10);
+          group.add(shard);
+        }
+        return group;
+      }
+      
+      // Mapping Outer Plane Names to Their Effect Functions
+      const effectMapping = {
+        "Mount Celestia": createAuraEffect,
+        "The Abyss": createSwirlingLightningEffect,
+        "Elysium": createNebulaEffect,
+        "Hades": createFlameEffect,
+        "Arborea": createNatureEffect,
+        "Baator": createSmokyEffect,
+        "Mechanus": createMechanicalEffect,
+        "Limbo": createChaosEffect,
+        "Arcadia": createPastelEffect,
+        "Pandemonium": createErraticLightningEffect,
+        "Beastlands": createOrganicEffect,
+        "Gehenna": createBurningEffect,
+        "Bytopia": createSereneGlowEffect,
+        "Carceri": createFragmentedEffect
+      };
+      
+      // ---------------------------
+      // Outer Planes Setup (Great Wheel)
+      // ---------------------------
+      const outerGroup = new THREE.Group();
+      const outerOrbitRadius = 150;
+      const outerPairs = [
+        { positive: { name: "Mount Celestia", color: 0xffcc00 },
+          negative: { name: "The Abyss", color: 0x330033 } },
+        { positive: { name: "Elysium", color: 0xff66cc },
+          negative: { name: "Hades", color: 0x555555 } },
+        { positive: { name: "Arborea", color: 0x66ccff },
+          negative: { name: "Baator", color: 0x990000 } },
+        { positive: { name: "Mechanus", color: 0xcccccc },
+          negative: { name: "Limbo", color: 0xadd8e6 } },
+        { positive: { name: "Arcadia", color: 0xffcc99 },
+          negative: { name: "Pandemonium", color: 0xff6699 } },
+        { positive: { name: "Beastlands", color: 0x99ff99 },
+          negative: { name: "Gehenna", color: 0x990099 } },
+        { positive: { name: "Bytopia", color: 0xff9900 },
+          negative: { name: "Carceri", color: 0x333333 } },
+      ];
+      const totalPairs = outerPairs.length;
+      const spokeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
+      
+      outerPairs.forEach((pair, i) => {
+        const angle = (i / totalPairs) * Math.PI * 2;
+        // Positive outer sphere
+        const posSphere = createLabeledSphere(pair.positive.name, pair.positive.color);
+        posSphere.position.set(outerOrbitRadius * Math.cos(angle), 0, outerOrbitRadius * Math.sin(angle));
+        const posEffectFunc = effectMapping[pair.positive.name];
+        if (posEffectFunc) {
+          posSphere.add(posEffectFunc(pair.positive.color));
+        }
+        outerGroup.add(posSphere);
+        
+        // Negative outer sphere
+        const negSphere = createLabeledSphere(pair.negative.name, pair.negative.color);
+        negSphere.position.set(outerOrbitRadius * Math.cos(angle + Math.PI), 0, outerOrbitRadius * Math.sin(angle + Math.PI));
+        const negEffectFunc = effectMapping[pair.negative.name];
+        if (negEffectFunc) {
+          negSphere.add(negEffectFunc(pair.negative.color));
+        }
+        outerGroup.add(negSphere);
+        
+        // Spokes from outer spheres to Outlands ring (radius 90)
+        const innerPointPos = new THREE.Vector3(90 * Math.cos(angle), 0, 90 * Math.sin(angle));
+        const geoPos = new THREE.BufferGeometry().setFromPoints([ posSphere.position, innerPointPos ]);
+        scene.add(new THREE.Line(geoPos, spokeMaterial));
+        
+        const innerPointNeg = new THREE.Vector3(90 * Math.cos(angle + Math.PI), 0, 90 * Math.sin(angle + Math.PI));
+        const geoNeg = new THREE.BufferGeometry().setFromPoints([ negSphere.position, innerPointNeg ]);
+        scene.add(new THREE.Line(geoNeg, spokeMaterial));
+      });
+      scene.add(outerGroup);
+      addOrbitRing(outerOrbitRadius);
+      
+      // ---------------------------
+      // Other Plane Groups
+      // ---------------------------
+      // Elemental Planes (radius 70)
+      const elementalGroup = new THREE.Group();
+      const elementalOrbitRadius = 70;
+      const elementalPlanes = [
+        { name: "Plane of Air", color: 0xadd8e6 },
+        { name: "Plane of Earth", color: 0x8b4513 },
+        { name: "Plane of Fire", color: 0xff4500 },
+        { name: "Plane of Water", color: 0x1e90ff },
+      ];
+      elementalPlanes.forEach((plane, i) => {
+        const angle = (i / elementalPlanes.length) * Math.PI * 2;
+        const sphere = createLabeledSphere(plane.name, plane.color);
+        sphere.position.set(elementalOrbitRadius * Math.cos(angle), 0, elementalOrbitRadius * Math.sin(angle));
+        elementalGroup.add(sphere);
+      });
+      scene.add(elementalGroup);
+      addOrbitRing(elementalOrbitRadius);
+      
+      // Outlands (radius 90)
+      const outlandsGroup = new THREE.Group();
+      const outlandsOrbitRadius = 90;
+      const outlandsSphere = createLabeledSphere("Outlands", 0x00ff00, 12);
+      outlandsSphere.position.set(outlandsOrbitRadius, 0, 0);
+      outlandsGroup.add(outlandsSphere);
+      scene.add(outlandsGroup);
+      addOrbitRing(outlandsOrbitRadius);
+      
+      // Inner Planes (center & orbiting at radius 20)
+      const materialPlane = createLabeledSphere("Material Plane", 0x00aa00, 20);
+      materialPlane.position.set(0, 0, 0);
+      scene.add(materialPlane);
+      const innerOrbitGroup = new THREE.Group();
+      const innerOrbitRadius = 20;
+      const innerPlanes = [
+        { name: "Feywild", color: 0xff69b4 },
+        { name: "Shadowfell", color: 0x555555 },
+      ];
+      innerPlanes.forEach((plane, i) => {
+        const angle = (i / innerPlanes.length) * Math.PI * 2;
+        const sphere = createLabeledSphere(plane.name, plane.color, 8);
+        sphere.position.set(innerOrbitRadius * Math.cos(angle), 0, innerOrbitRadius * Math.sin(angle));
+        innerOrbitGroup.add(sphere);
+      });
+      scene.add(innerOrbitGroup);
+      addOrbitRing(innerOrbitRadius);
+      
+      // ---------------------------
+      // Play/Pause Controls
+      // ---------------------------
+      document.getElementById("playPause").addEventListener("click", () => {
+        params.playing = !params.playing;
+        document.getElementById("playPause").textContent = params.playing ? "Pause" : "Play";
+      });
+      document.getElementById("outerSpeed").addEventListener("input", e => { params.outerSpeed = parseFloat(e.target.value); });
+      document.getElementById("elementalSpeed").addEventListener("input", e => { params.elementalSpeed = parseFloat(e.target.value); });
+      document.getElementById("outlandsSpeed").addEventListener("input", e => { params.outlandsSpeed = parseFloat(e.target.value); });
+      document.getElementById("innerSpeed").addEventListener("input", e => { params.innerSpeed = parseFloat(e.target.value); });
+      document.getElementById("starRotation").addEventListener("input", e => { params.starRotation = parseFloat(e.target.value); });
+      
+      // ---------------------------
+      // Animation Loop (with effect updates)
+      // ---------------------------
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        if (params.playing) {
+          starField.rotation.y += params.starRotation;
+          outerGroup.rotation.y += params.outerSpeed;
+          elementalGroup.rotation.y += params.elementalSpeed;
+          outlandsGroup.rotation.y += params.outlandsSpeed;
+          innerOrbitGroup.rotation.y += params.innerSpeed;
+        }
+        // For chaotic effects: update color over time
+        outerGroup.traverse(child => {
+          if (child.userData.isChaos) {
+            const time = Date.now() * 0.002;
+            const r = (Math.sin(time) + 1) / 2;
+            const g = (Math.sin(time + 2) + 1) / 2;
+            const b = (Math.sin(time + 4) + 1) / 2;
+            child.material && (child.material.color.setRGB(r, g, b));
+          }
+        });
+        shootingStars.forEach(star => {
+          star.position.add(star.userData.velocity);
+          if (star.position.z < -1000) resetShootingStar(star);
+        });
+        renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
+      }
+      animate();
+      
+      // ---------------------------
+      // Responsive Resize
+      // ---------------------------
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        controls.handleResize();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Free-Rotating Forgotten Realms Cosmology</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: "Times New Roman", serif;
+      }
+      .label {
+        color: #fff;
+        font-size: 14px;
+        text-shadow: 0 0 5px #000;
+      }
+      #info {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        font-size: 32px;
+        pointer-events: none;
+      }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="info">The Forgotten Realms</div>
+    <!-- Three.js, TrackballControls, CSS2DRenderer, dat.GUI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Use TrackballControls for free rotation, panning, and zooming -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TrackballControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script>
+      // Scene, Camera, and Renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        60, window.innerWidth / window.innerHeight, 0.1, 3000
+      );
+      camera.position.set(0, 200, 400);
+      
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      
+      // CSS2DRenderer for labels
+      const labelRenderer = new THREE.CSS2DRenderer();
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.domElement.style.position = "absolute";
+      labelRenderer.domElement.style.top = "0";
+      document.body.appendChild(labelRenderer.domElement);
+      
+      // Lighting
+      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(0, 1, 1);
+      scene.add(directionalLight);
+      
+      // TrackballControls: Allows full free rotation, panning, and zooming by click and drag
+      const controls = new THREE.TrackballControls(camera, renderer.domElement);
+      controls.rotateSpeed = 3.0;
+      controls.zoomSpeed = 1.2;
+      controls.panSpeed = 0.8;
+      controls.noZoom = false;
+      controls.noPan = false;
+      controls.staticMoving = false;
+      controls.dynamicDampingFactor = 0.3;
+      
+      // dat.GUI for rotation speed controls of the display
+      const gui = new dat.GUI();
+      const params = {
+        outerSpeed: 0.002,
+        elementalSpeed: 0.003,
+        outlandsSpeed: 0.02,
+        innerSpeed: 0.01,
+        starRotation: 0.0005,
+      };
+      gui.add(params, "outerSpeed", 0, 0.01).name("Outer Speed");
+      gui.add(params, "elementalSpeed", 0, 0.01).name("Elemental Speed");
+      gui.add(params, "outlandsSpeed", 0, 0.05).name("Outlands Speed");
+      gui.add(params, "innerSpeed", 0, 0.05).name("Inner Speed");
+      gui.add(params, "starRotation", 0, 0.005).name("Star Rotation");
+      
+      // ---------------------------
+      // Starfield with shooting stars
+      // ---------------------------
+      function createStars(count = 2000) {
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        for (let i = 0; i < count; i++) {
+          positions.push(
+            THREE.MathUtils.randFloatSpread(2000),
+            THREE.MathUtils.randFloatSpread(2000),
+            THREE.MathUtils.randFloatSpread(2000)
+          );
+        }
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+          color: 0xffffff, size: 1.5, sizeAttenuation: true
+        });
+        return new THREE.Points(geometry, material);
+      }
+      const starField = createStars();
+      scene.add(starField);
+      
+      // Shooting stars: fast-moving particles
+      const shootingStars = [];
+      const shootingStarCount = 10;
+      const shootingStarGeometry = new THREE.SphereGeometry(0.8, 8, 8);
+      const shootingStarMaterial = new THREE.MeshBasicMaterial({ color: 0xffffaa });
+      for (let i = 0; i < shootingStarCount; i++) {
+        const star = new THREE.Mesh(shootingStarGeometry, shootingStarMaterial);
+        resetShootingStar(star);
+        shootingStars.push(star);
+        scene.add(star);
+      }
+      function resetShootingStar(star) {
+        star.position.set(
+          THREE.MathUtils.randFloatSpread(1000),
+          THREE.MathUtils.randFloat(100, 500),
+          1000
+        );
+        star.userData.velocity = new THREE.Vector3(
+          -THREE.MathUtils.randFloat(2, 5),
+          -THREE.MathUtils.randFloat(0.5, 2),
+          -THREE.MathUtils.randFloat(2, 5)
+        );
+      }
+      
+      // ---------------------------
+      // Helper: Labeled spheres and orbit rings
+      // ---------------------------
+      function createLabeledSphere(name, color, size = 5) {
+        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ color });
+        const sphere = new THREE.Mesh(geometry, material);
+        const div = document.createElement("div");
+        div.className = "label";
+        div.textContent = name;
+        const label = new THREE.CSS2DObject(div);
+        label.position.set(0, size + 2, 0);
+        sphere.add(label);
+        return sphere;
+      }
+      function addOrbitRing(radius) {
+        const ringGeometry = new THREE.RingGeometry(radius - 0.5, radius + 0.5, 64);
+        const ringMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff, side: THREE.DoubleSide,
+          transparent: true, opacity: 0.2
+        });
+        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+      }
+      
+      // ---------------------------
+      // Outer Planes (Great Wheel) - Outer ring (radius 150)
+      // ---------------------------
+      const outerGroup = new THREE.Group();
+      const outerOrbitRadius = 150;
+      const outerPairs = [
+        { positive: { name: "Mount Celestia", color: 0xffcc00 },
+          negative: { name: "The Abyss", color: 0x330033 } },
+        { positive: { name: "Elysium", color: 0xff66cc },
+          negative: { name: "Hades", color: 0x555555 } },
+        { positive: { name: "Arborea", color: 0x66ccff },
+          negative: { name: "Baator", color: 0x990000 } },
+        { positive: { name: "Mechanus", color: 0xcccccc },
+          negative: { name: "Limbo", color: 0xadd8e6 } },
+        { positive: { name: "Arcadia", color: 0xffcc99 },
+          negative: { name: "Pandemonium", color: 0xff6699 } },
+        { positive: { name: "Beastlands", color: 0x99ff99 },
+          negative: { name: "Gehenna", color: 0x990099 } },
+        { positive: { name: "Bytopia", color: 0xff9900 },
+          negative: { name: "Carceri", color: 0x333333 } },
+      ];
+      const totalPairs = outerPairs.length;
+      const spokeMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff, opacity: 0.3, transparent: true
+      });
+      outerPairs.forEach((pair, i) => {
+        const angle = (i / totalPairs) * Math.PI * 2;
+        // Positive outer sphere
+        const posSphere = createLabeledSphere(pair.positive.name, pair.positive.color);
+        posSphere.position.set(
+          outerOrbitRadius * Math.cos(angle), 0,
+          outerOrbitRadius * Math.sin(angle)
+        );
+        outerGroup.add(posSphere);
+        // Negative outer sphere (180° opposite)
+        const negSphere = createLabeledSphere(pair.negative.name, pair.negative.color);
+        negSphere.position.set(
+          outerOrbitRadius * Math.cos(angle + Math.PI), 0,
+          outerOrbitRadius * Math.sin(angle + Math.PI)
+        );
+        outerGroup.add(negSphere);
+        
+        // Spokes from each outer sphere to Outlands ring (radius 90)
+        const innerPointPos = new THREE.Vector3(
+          90 * Math.cos(angle), 0, 90 * Math.sin(angle)
+        );
+        const geometryPos = new THREE.BufferGeometry().setFromPoints([
+          posSphere.position, innerPointPos
+        ]);
+        scene.add(new THREE.Line(geometryPos, spokeMaterial));
+        
+        const innerPointNeg = new THREE.Vector3(
+          90 * Math.cos(angle + Math.PI), 0, 90 * Math.sin(angle + Math.PI)
+        );
+        const geometryNeg = new THREE.BufferGeometry().setFromPoints([
+          negSphere.position, innerPointNeg
+        ]);
+        scene.add(new THREE.Line(geometryNeg, spokeMaterial));
+      });
+      scene.add(outerGroup);
+      addOrbitRing(outerOrbitRadius);
+      
+      // ---------------------------
+      // Elemental Planes Ring (radius 70, 4 main planes)
+      // ---------------------------
+      const elementalGroup = new THREE.Group();
+      const elementalOrbitRadius = 70;
+      const elementalPlanes = [
+        { name: "Plane of Air", color: 0xadd8e6 },
+        { name: "Plane of Earth", color: 0x8b4513 },
+        { name: "Plane of Fire", color: 0xff4500 },
+        { name: "Plane of Water", color: 0x1e90ff },
+      ];
+      elementalPlanes.forEach((plane, i) => {
+        const angle = (i / elementalPlanes.length) * Math.PI * 2;
+        const sphere = createLabeledSphere(plane.name, plane.color);
+        sphere.position.set(
+          elementalOrbitRadius * Math.cos(angle), 0,
+          elementalOrbitRadius * Math.sin(angle)
+        );
+        elementalGroup.add(sphere);
+      });
+      scene.add(elementalGroup);
+      addOrbitRing(elementalOrbitRadius);
+      
+      // ---------------------------
+      // Outlands Ring (radius 90, spins faster)
+      // ---------------------------
+      const outlandsGroup = new THREE.Group();
+      const outlandsOrbitRadius = 90;
+      const outlandsSphere = createLabeledSphere("Outlands", 0x00ff00, 6);
+      outlandsSphere.position.set(outlandsOrbitRadius, 0, 0);
+      outlandsGroup.add(outlandsSphere);
+      scene.add(outlandsGroup);
+      addOrbitRing(outlandsOrbitRadius);
+      
+      // ---------------------------
+      // Inner Planes: Material (center), Feywild & Shadowfell orbiting (radius 20)
+      // ---------------------------
+      const materialPlane = createLabeledSphere("Material Plane", 0x00aa00, 10);
+      materialPlane.position.set(0, 0, 0);
+      scene.add(materialPlane);
+      const innerOrbitGroup = new THREE.Group();
+      const innerOrbitRadius = 20;
+      const innerPlanes = [
+        { name: "Feywild", color: 0xff69b4 },
+        { name: "Shadowfell", color: 0x555555 },
+      ];
+      innerPlanes.forEach((plane, i) => {
+        const angle = (i / innerPlanes.length) * Math.PI * 2;
+        const sphere = createLabeledSphere(plane.name, plane.color, 4);
+        sphere.position.set(
+          innerOrbitRadius * Math.cos(angle), 0,
+          innerOrbitRadius * Math.sin(angle)
+        );
+        innerOrbitGroup.add(sphere);
+      });
+      scene.add(innerOrbitGroup);
+      addOrbitRing(innerOrbitRadius);
+      
+      // ---------------------------
+      // Animation Loop
+      // ---------------------------
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update(); // Update TrackballControls for free rotation and zooming
+        starField.rotation.y += params.starRotation;
+        shootingStars.forEach(star => {
+          star.position.add(star.userData.velocity);
+          if (star.position.z < -1000) resetShootingStar(star);
+        });
+        outerGroup.rotation.y += params.outerSpeed;
+        elementalGroup.rotation.y += params.elementalSpeed;
+        outlandsGroup.rotation.y += params.outlandsSpeed;
+        innerOrbitGroup.rotation.y += params.innerSpeed;
+        renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
+      }
+      animate();
+      
+      // ---------------------------
+      // Responsive resizing
+      // ---------------------------
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        controls.handleResize();
+      });
+    </script>
+  </body>
+</html>
