@@ -1,0 +1,1673 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D&D 5e Character Manager</title>
+  <!-- Load Poppins Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0; padding: 0;
+      display: flex; flex-direction: column;
+      background-color: #f7f7f7;
+    }
+    header, nav {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 10px 20px;
+    }
+    header h1 {
+      margin: 0; font-size: 1.5rem;
+    }
+    nav ul {
+      list-style: none;
+      display: flex; flex-wrap: wrap;
+      gap: 10px; margin: 0; padding: 0;
+    }
+    nav li { margin: 0; }
+    nav a {
+      color: #ecf0f1; text-decoration: none; font-weight: 500;
+      padding: 5px 10px; border: 1px solid #34495e; border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #34495e;
+    }
+    main {
+      padding: 20px; width: 100%; max-width: 1200px; margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 30px; border: 2px solid #333; border-radius: 8px;
+      padding: 20px; background-color: #fff;
+    }
+    .section h2 { margin-top: 0; }
+    label {
+      display: block; margin-top: 10px; font-weight: 500;
+    }
+    input, select, button, textarea {
+      margin-top: 5px; padding: 5px 10px; border: 2px solid #333; border-radius: 6px;
+      font-family: 'Poppins', sans-serif; width: 100%; max-width: 350px;
+    }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 10px;
+      border: 2px solid #333; border-radius: 8px; overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #333; padding: 8px; text-align: left;
+    }
+    th {
+      background-color: #ecf0f1;
+    }
+    .hidden { display: none; }
+    .flex { display: flex; gap: 20px; }
+    .flex-column { display: flex; flex-direction: column; }
+    .portrait {
+      max-width: 150px; max-height: 150px; border: 2px solid #333;
+      border-radius: 8px; margin-top: 10px;
+    }
+    .warning { color: red; font-weight: 600; }
+    .calc-detail { color: #555; font-size: 0.9rem; margin-bottom: 10px; margin-top: -5px; }
+
+    /* Color Coding for abilities (used anywhere the ability is displayed) */
+    .color-str, [data-ability="str"] { color: #e74c3c; }
+    .color-dex, [data-ability="dex"] { color: #27ae60; }
+    .color-con, [data-ability="con"] { color: #e67e22; }
+    .color-int, [data-ability="int"] { color: #2980b9; }
+    .color-wis, [data-ability="wis"] { color: #8e44ad; }
+    .color-cha, [data-ability="cha"] { color: #c0392b; }
+
+    /* Simple modal for item description popout */
+    #itemModal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5); display: none;
+      justify-content: center; align-items: center; z-index: 9999;
+    }
+    #itemModalContent {
+      background-color: #fff; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;
+    }
+    #closeItemModal {
+      background-color: #c0392b; color: #fff; border: none; border-radius: 4px;
+      margin-top: 10px; padding: 5px 10px; cursor: pointer;
+    }
+
+    /* Minecraft-like Inventory Grid */
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .inventory-cell {
+      position: relative;
+      width: 80px; height: 80px;
+      border: 2px solid #333; border-radius: 6px;
+      background-color: #eaeaea;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .inventory-cell:hover {
+      background-color: #cfcfcf;
+    }
+    .inventory-cell span {
+      font-size: 1.8rem;
+      user-select: none;
+    }
+
+    /* Dice Roller Animation */
+    @keyframes diceShake {
+      0%   { transform: rotate(0deg) translateX(0px); }
+      20%  { transform: rotate(-10deg) translateX(-5px); }
+      40%  { transform: rotate(10deg) translateX(5px); }
+      60%  { transform: rotate(-10deg) translateX(-5px); }
+      80%  { transform: rotate(10deg) translateX(5px); }
+      100% { transform: rotate(0deg) translateX(0px); }
+    }
+    .dice-shake {
+      display: inline-block;
+      animation: diceShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    .dice-result {
+      font-size: 1.2rem; font-weight: bold; margin-top: 10px;
+      display: inline-block; position: relative;
+    }
+
+    /* More visually appealing spell slot circles */
+    .spell-slot-container {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .spell-slot {
+      width: 30px; height: 30px; border-radius: 50%;
+      background-color: #bdc3c7;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; user-select: none;
+      font-size: 0.9rem; transition: background-color 0.2s;
+    }
+    .spell-slot.used {
+      background-color: #7f8c8d;
+      text-decoration: line-through;
+    }
+    .spell-slot:hover {
+      background-color: #95a5a6;
+    }
+
+    /* Better layout for feats */
+    #featsList li {
+      margin-bottom: 10px;
+      background-color: #f1f1f1; padding: 10px; border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* More background detail */
+    #backgroundDetailsInput {
+      width: 100%; height: 100px; resize: vertical;
+    }
+
+    /* Hover to see skill calculation detail */
+    .skill-total:hover::after {
+      content: attr(data-calc);
+      position: absolute; 
+      background-color: rgba(0,0,0,0.8); 
+      color: #fff; 
+      padding: 5px 10px; 
+      border-radius: 6px; 
+      font-size: 0.8rem;
+      transform: translateX(10px) translateY(-10px);
+      white-space: nowrap;
+      z-index: 9999;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav ul { flex-direction: column; }
+      input, select, textarea { max-width: 100%; }
+      .inventory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>D&D 5e Character Manager</h1>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="#section-details">Character Details</a></li>
+      <li><a href="#section-info">Character Info</a></li>
+      <li><a href="#section-abilities">Ability Scores</a></li>
+      <li><a href="#section-calculated">Calculated Stats</a></li>
+      <li><a href="#section-rolls">Rolls</a></li>
+      <li><a href="#section-proficiency">Proficiency Bonus</a></li>
+      <li><a href="#section-saves">Saving Throws</a></li>
+      <li><a href="#section-skills">Skills</a></li>
+      <li><a href="#section-equipment">Equipment</a></li>
+      <li><a href="#section-money">Money</a></li>
+      <li><a href="#section-spells">Spells</a></li>
+      <li><a href="#section-background">Background</a></li>
+      <li><a href="#section-feats">Feats</a></li>
+      <li><a href="#section-languages">Languages</a></li>
+      <li><a href="#section-export">Export / Import</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- Item Modal for showing full info -->
+    <div id="itemModal">
+      <div id="itemModalContent">
+        <h3 id="itemModalName">Item Name</h3>
+        <p id="itemModalDesc">Item Description</p>
+        <button id="closeItemModal">Close</button>
+      </div>
+    </div>
+
+    <div class="section" id="section-details">
+      <h2>Character Details</h2>
+      <label>Name: <input type="text" id="charName"></label>
+      <label>Alignment: <input type="text" id="alignment" placeholder="e.g., Chaotic Good"></label>
+      <label>Upload Portrait: <input type="file" id="portrait" accept="image/*"></label>
+      <img id="portraitPreview" class="portrait hidden" src="#" alt="Character Portrait">
+    </div>
+
+    <div class="section" id="section-info">
+      <h2>Character Information</h2>
+      <label>Race: <select id="raceSelect"></select></label>
+      <label>Subrace: 
+        <select id="subraceSelect" disabled></select>
+      </label>
+      <label>Class: <select id="classSelect"></select></label>
+      <label>Background: <select id="backgroundSelect"></select></label>
+      <label>Level: <input type="number" id="levelInput" min="1" max="20" value="1"></label>
+      <label>Experience Points (XP): <input type="number" id="xpInput" min="0" value="0"></label>
+    </div>
+
+    <div class="section" id="section-abilities">
+      <h2>Ability Scores</h2>
+      <!-- Button remains to manually re-check calculations if needed -->
+      <button id="calculateBtn">Re-Calculate Modifiers (Auto-Calc is also active)</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Ability</th>
+            <th>Score</th>
+            <th>Modifier</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="color-str">Strength</td>
+            <td><input type="number" id="str" value="10" /></td>
+            <td id="modStr">+0</td>
+          </tr>
+          <tr>
+            <td class="color-dex">Dexterity</td>
+            <td><input type="number" id="dex" value="10" /></td>
+            <td id="modDex">+0</td>
+          </tr>
+          <tr>
+            <td class="color-con">Constitution</td>
+            <td><input type="number" id="con" value="10" /></td>
+            <td id="modCon">+0</td>
+          </tr>
+          <tr>
+            <td class="color-int">Intelligence</td>
+            <td><input type="number" id="int" value="10" /></td>
+            <td id="modInt">+0</td>
+          </tr>
+          <tr>
+            <td class="color-wis">Wisdom</td>
+            <td><input type="number" id="wis" value="10" /></td>
+            <td id="modWis">+0</td>
+          </tr>
+          <tr>
+            <td class="color-cha">Charisma</td>
+            <td><input type="number" id="cha" value="10" /></td>
+            <td id="modCha">+0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-calculated">
+      <h2>Calculated Stats</h2>
+      <p><strong>Initiative:</strong> <span id="initiativeDisplay">+0</span></p>
+      <div class="calc-detail" id="initiativeDetail"></div>
+      <p><strong>Max HP:</strong> <span id="maxHPDisplay">0</span></p>
+      <div class="calc-detail" id="hpDetail"></div>
+      <p><strong>Current HP:</strong> <input type="number" id="currentHPInput" value="0" style="width:70px;"></p>
+      <p><strong>Spell Save DC:</strong> <span id="spellSaveDCDisplay">0</span></p>
+      <div class="calc-detail" id="spellSaveDetail"></div>
+      <p><strong>AC (Armor Class):</strong> <span id="acDisplay">0</span></p>
+      <div class="calc-detail" id="acDetail"></div>
+      <p><strong>Carry Capacity:</strong> <span id="carryCapacityDisplay">0</span> lbs</p>
+      <div class="calc-detail" id="carryDetail"></div>
+      <p class="warning hidden" id="encumbranceWarning">Warning: You are over your carry capacity!</p>
+    </div>
+
+    <div class="section" id="section-rolls">
+      <h2>Dice Rolls</h2>
+      <label>
+        Select Roll Type:
+        <select id="rollType">
+          <option value="">Select Type</option>
+          <option value="saving_throw">Saving Throw</option>
+          <option value="skill">Skill Check</option>
+          <option value="initiative">Initiative</option>
+          <option value="attack">Attack Roll</option>
+        </select>
+      </label>
+
+      <!-- Advantage/Disadvantage Select -->
+      <label>
+        Roll Mode:
+        <select id="rollMode">
+          <option value="normal">Normal</option>
+          <option value="adv">Advantage</option>
+          <option value="dis">Disadvantage</option>
+        </select>
+      </label>
+
+      <div id="rollOptions"></div>
+      <button id="rollBtn">Roll</button>
+      <div id="rollResult" class="dice-result"></div>
+    </div>
+
+    <div class="section" id="section-proficiency">
+      <h2>Proficiency Bonus</h2>
+      <p id="proficiencyBonus">+2</p>
+      <div class="calc-detail">
+        <p><em>
+          Proficiency bonus scales by level:  
+          L1-4 = +2, L5-8 = +3, L9-12 = +4, L13-16 = +5, L17-20 = +6.
+        </em></p>
+      </div>
+    </div>
+
+    <div class="section" id="section-saves">
+      <h2>Saving Throws</h2>
+      <table>
+        <thead>
+          <tr><th>Ability</th><th>Proficient</th><th>Total</th></tr>
+        </thead>
+        <tbody id="savingThrowsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-skills">
+      <h2>Skills</h2>
+      <table>
+        <thead>
+          <tr><th>Skill</th><th>Ability</th><th>Proficient</th><th>Total</th></tr>
+        </thead>
+        <tbody id="skillsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section-equipment">
+      <h2>Equipment and Inventory</h2>
+      <button id="addEquipmentBtn">Add Equipment</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Weight</th>
+            <th>AC Bonus</th>
+            <th>Stat Bonus</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="equipmentTable"></tbody>
+      </table>
+      <p>Total Weight: <span id="totalWeight">0</span> lbs</p>
+
+      <!-- Minecraft-like Inventory Grid Example -->
+      <h3>Inventory Grid View (Click an Item to View / Edit)</h3>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+    </div>
+
+    <!-- Money Tracking -->
+    <div class="section" id="section-money">
+      <h2>Money Tracking</h2>
+      <label>Gold (gp): <input type="number" id="goldInput" min="0" value="0"></label>
+      <label>Silver (sp): <input type="number" id="silverInput" min="0" value="0"></label>
+      <label>Copper (cp): <input type="number" id="copperInput" min="0" value="0"></label>
+      <p>Money Weight: <span id="moneyWeight">0</span> lbs</p>
+      <div class="calc-detail" id="moneyDetail"></div>
+    </div>
+
+    <div class="section" id="section-spells">
+      <h2>Spells and Spell Slots</h2>
+      <div id="spellsSection" class="hidden">
+        <button id="addSpellBtn">Add Spell</button>
+        <table id="spellsTable">
+          <tr>
+            <th>Spell Name</th>
+            <th>Level</th>
+            <th>Spellcasting Ability</th>
+            <th>Spell Save DC</th>
+            <th>Spell Attack Bonus</th>
+            <th>Actions</th>
+          </tr>
+        </table>
+      </div>
+      <div id="spellSlotsSection" class="hidden">
+        <h3>Spell Slots</h3>
+        <!-- We’ll replace the table with a more visually appealing slot system after generation -->
+        <table>
+          <thead><tr><th>Spell Level</th><th>Total Slots</th><th>Used Slots</th></tr></thead>
+          <tbody id="spellSlotsTable"></tbody>
+        </table>
+        <div class="spell-slot-container" id="spellSlotsVisualizer"></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-background">
+      <h2>Background</h2>
+      <p id="backgroundFeatures"></p>
+      <p><strong>Additional Background Details:</strong></p>
+      <textarea id="backgroundDetailsInput" placeholder="Flesh out your background here..."></textarea>
+    </div>
+
+    <div class="section" id="section-feats">
+      <h2>Feats (Supports Custom Feats)</h2>
+      <label>Select a Feat: <select id="selectFeat"></select></label>
+      <button id="addFeatBtn">Add Feat</button>
+      <ul id="featsList"></ul>
+    </div>
+
+    <div class="section" id="section-languages">
+      <h2>Languages and Proficiencies</h2>
+      <div class="flex">
+        <div class="flex-column">
+          <h3>Languages</h3>
+          <button id="addLanguageBtn">Add Language</button>
+          <ul id="languagesList"></ul>
+        </div>
+        <div class="flex-column">
+          <h3>Tool Proficiencies</h3>
+          <button id="addToolProfBtn">Add Tool Proficiency</button>
+          <ul id="toolProfsList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export/Import JSON -->
+    <div class="section" id="section-export">
+      <h2>Export / Import Character Data (JSON)</h2>
+      <button id="exportJsonBtn">Export JSON</button>
+      <button id="importJsonBtn">Import JSON</button>
+      <input type="file" id="importJsonFile" accept=".json" style="display:none;">
+    </div>
+  </main>
+
+  <script>
+    /* -------------------------------
+       1. DATA DEFINITIONS
+    --------------------------------*/
+    const armorBaseValues = {
+      "Armor - Light": 11,
+      "Armor - Medium": 12,
+      "Armor - Heavy": 16
+    };
+    const shieldBonus = 2;
+
+    const races = {
+      "Human": {
+        "ability_bonuses": {"str": 1, "dex": 1, "con": 1, "int":1, "wis":1, "cha":1},
+        "subraces": null,
+        "traits": ["Extra Language"]
+      },
+      "Dwarf": {
+        "ability_bonuses": {"con": 2},
+        "subraces": {
+          "Hill Dwarf": {"wis": 1},
+          "Mountain Dwarf": {"str": 2}
+        },
+        "traits": ["Darkvision", "Dwarven Resilience", "Dwarven Combat Training", "Tool Proficiency"]
+      },
+      "Elf": {
+        "ability_bonuses": {"dex": 2},
+        "subraces": {
+          "High Elf": {"int":1},
+          "Wood Elf": {"wis":1},
+          "Dark Elf (Drow)": {"cha":1}
+        },
+        "traits": ["Darkvision", "Keen Senses", "Fey Ancestry", "Trance"]
+      },
+      "Halfling": {
+        "ability_bonuses": {"dex": 2},
+        "subraces": {
+          "Lightfoot": {"cha":1},
+          "Stout": {"con":1}
+        },
+        "traits": ["Lucky", "Brave", "Halfling Nimbleness"]
+      },
+      "Dragonborn": {
+        "ability_bonuses": {"str":2, "cha":1},
+        "subraces": null,
+        "traits": ["Draconic Ancestry", "Breath Weapon", "Damage Resistance"]
+      },
+      "Gnome": {
+        "ability_bonuses": {"int":2},
+        "subraces": {
+          "Forest Gnome": {"dex":1},
+          "Rock Gnome": {"con":1}
+        },
+        "traits": ["Darkvision", "Gnome Cunning"]
+      },
+      "Half-Elf": {
+        "ability_bonuses": {"cha":2},
+        "subraces": null,
+        "traits": ["Darkvision", "Fey Ancestry", "Skill Versatility"]
+      },
+      "Half-Orc": {
+        "ability_bonuses": {"str":2, "con":1},
+        "subraces": null,
+        "traits": ["Darkvision", "Menacing", "Relentless Endurance", "Savage Attacks"]
+      },
+      "Tiefling": {
+        "ability_bonuses": {"int":1, "cha":2},
+        "subraces": null,
+        "traits": ["Darkvision", "Hellish Resistance", "Infernal Legacy"]
+      }
+    };
+
+    const classes = {
+      "Barbarian": {
+        "hit_die": 12,
+        "saving_throws": ["str", "con"],
+        "skills": {"choose": 2, "options": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"]},
+        "spellcasting": false
+      },
+      "Bard": {
+        "hit_die": 8,
+        "saving_throws": ["dex", "cha"],
+        "skills": {"choose": 3,"options": ["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Perception","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"]},
+        "spellcasting": true
+      },
+      "Cleric": {
+        "hit_die": 8,
+        "saving_throws": ["wis", "cha"],
+        "skills": {"choose": 2, "options": ["History", "Insight", "Medicine", "Persuasion", "Religion"]},
+        "spellcasting": true
+      },
+      "Druid": {
+        "hit_die": 8,
+        "saving_throws": ["int", "wis"],
+        "skills": {"choose": 2, "options": ["Arcana","Animal Handling","Insight","Medicine","Nature","Perception","Religion","Survival"]},
+        "spellcasting": true
+      },
+      "Fighter": {
+        "hit_die": 10,
+        "saving_throws": ["str","con"],
+        "skills": {"choose": 2, "options": ["Acrobatics","Animal Handling","Athletics","History","Insight","Intimidation","Perception","Survival"]},
+        "spellcasting": false
+      },
+      "Monk": {
+        "hit_die": 8,
+        "saving_throws": ["str","dex"],
+        "skills": {"choose": 2, "options": ["Acrobatics","Athletics","History","Insight","Religion","Stealth"]},
+        "spellcasting": false
+      },
+      "Paladin": {
+        "hit_die": 10,
+        "saving_throws": ["wis","cha"],
+        "skills": {"choose": 2, "options": ["Athletics","Insight","Intimidation","Medicine","Persuasion","Religion"]},
+        "spellcasting": true
+      },
+      "Ranger": {
+        "hit_die": 10,
+        "saving_throws": ["str","dex"],
+        "skills": {"choose": 3, "options": ["Animal Handling","Athletics","Insight","Investigation","Nature","Perception","Stealth","Survival"]},
+        "spellcasting": true
+      },
+      "Rogue": {
+        "hit_die": 8,
+        "saving_throws": ["dex","int"],
+        "skills": {"choose": 4, "options": ["Acrobatics","Athletics","Deception","Insight","Intimidation","Investigation","Perception","Performance","Persuasion","Sleight of Hand","Stealth"]},
+        "spellcasting": false
+      },
+      "Sorcerer": {
+        "hit_die": 6,
+        "saving_throws": ["con","cha"],
+        "skills": {"choose": 2, "options": ["Arcana","Deception","Insight","Intimidation","Persuasion","Religion"]},
+        "spellcasting": true
+      },
+      "Warlock": {
+        "hit_die": 8,
+        "saving_throws": ["wis","cha"],
+        "skills": {"choose": 2, "options": ["Arcana","Deception","History","Intimidation","Investigation","Nature","Religion"]},
+        "spellcasting": true
+      },
+      "Wizard": {
+        "hit_die": 6,
+        "saving_throws": ["int","wis"],
+        "skills": {"choose": 2, "options": ["Arcana","History","Insight","Investigation","Medicine","Religion"]},
+        "spellcasting": true
+      }
+    };
+
+    const backgrounds = {
+      "Acolyte": { "skills": ["Insight","Religion"], "features": ["Shelter of the Faithful"] },
+      "Charlatan": { "skills": ["Deception","Sleight of Hand"], "features": ["False Identity"] },
+      "Criminal": { "skills": ["Deception","Stealth"], "features": ["Criminal Contact"] },
+      "Entertainer": { "skills": ["Acrobatics","Performance"], "features": ["By Popular Demand"] },
+      "Folk Hero": { "skills": ["Animal Handling","Survival"], "features": ["Rustic Hospitality"] },
+      "Guild Artisan": { "skills": ["Insight","Persuasion"], "features": ["Guild Membership"] },
+      "Hermit": { "skills": ["Medicine","Religion"], "features": ["Discovery"] },
+      "Noble": { "skills": ["History","Persuasion"], "features": ["Position of Privilege"] },
+      "Outlander": { "skills": ["Athletics","Survival"], "features": ["Wanderer"] },
+      "Sage": { "skills": ["Arcana","History"], "features": ["Researcher"] },
+      "Sailor": { "skills": ["Athletics","Perception"], "features": ["Ship's Passage"] },
+      "Soldier": { "skills": ["Athletics","Intimidation"], "features": ["Military Rank"] },
+      "Urchin": { "skills": ["Sleight of Hand","Stealth"], "features": ["City Secrets"] }
+    };
+
+    const feats = {
+      "Alert": { "description": "+5 to initiative, can't be surprised, hidden foes no advantage." },
+      "Athlete": { "description": "Increase STR or DEX by 1, easier climbing, cheaper prone stand." },
+      "Crossbow Expert": { "description": "Ignore loading, no disadvantage in 5 ft., bonus action hand crossbow." },
+      "Dual Wielder": { "description": "Use two-weapon fighting with non-light weapons, +1 AC with two-weapon." },
+      "Great Weapon Master": { "description": "Extra attack on crit/kill, -5 to hit for +10 damage with heavy weapons." },
+      "Healer": { "description": "Healer's Kit restores HP more effectively, 1 HP on stabilize." },
+      "Lucky": { "description": "3 luck points for rerolls on attacks/checks/saves." },
+      "Mobile": { "description": "+10 speed, no difficult terrain cost when dashing, no op attacks after you hit." },
+      "Observant": { "description": "INT or WIS +1, +5 passive Perception/Investigation, read lips." },
+      "Resilient": { "description": "Increase one ability by 1, gain saving throw proficiency in it." },
+      "Sharpshooter": { "description": "No disadvantage at long range, ignore cover, -5 to hit for +10 damage." },
+      "Tough": { "description": "+2 HP per level." },
+      "War Caster": { "description": "Adv on concentration, cast spells with hands full, can cast spells as OA." }
+    };
+
+    const skillsList = {
+      "Acrobatics":"dex","Animal Handling":"wis","Arcana":"int","Athletics":"str","Deception":"cha",
+      "History":"int","Insight":"wis","Intimidation":"cha","Investigation":"int","Medicine":"wis",
+      "Nature":"int","Perception":"wis","Performance":"cha","Persuasion":"cha","Religion":"int",
+      "Sleight of Hand":"dex","Stealth":"dex","Survival":"wis"
+    };
+
+    // Very simplified
+    const spellSlotTable = {
+      "Wizard": { 1:{1:2}, 2:{1:3}, 3:{1:4,2:2}, 4:{1:4,2:3}, 5:{1:4,2:3,3:2}, 6:{1:4,2:3,3:3} },
+      "Cleric": {},
+      "Druid": {},
+      "Bard": {},
+      "Paladin": {},
+      "Ranger": {},
+      "Sorcerer": {},
+      "Warlock": {}
+    };
+
+    /* -------------------------------
+       2. ON WINDOW LOAD
+    --------------------------------*/
+    window.onload = function() {
+      populateRaces();
+      populateClasses();
+      populateBackgrounds();
+      populateSkills();
+      populateSavingThrows();
+      populateFeatsDropdown();
+      loadFromLocalStorage();
+      updateAll();
+    };
+
+    /* -------------------------------
+       3. POPULATE SELECTS/TABLES
+    --------------------------------*/
+    function populateRaces() {
+      const raceSelect = document.getElementById('raceSelect');
+      raceSelect.innerHTML = '<option value="">Select Race</option>';
+      for (let r in races) {
+        let opt = document.createElement('option');
+        opt.value = r; opt.text = r;
+        raceSelect.add(opt);
+      }
+      raceSelect.addEventListener('change', () => {
+        populateSubraceDropdown(raceSelect.value);
+        updateAll();
+      });
+      document.getElementById('subraceSelect').addEventListener('change',()=>updateAll());
+    }
+
+    // separate function to fill subrace dropdown
+    function populateSubraceDropdown(selectedRace){
+      const subraceSelect = document.getElementById('subraceSelect');
+      subraceSelect.innerHTML = '<option value="">Select Subrace</option>';
+      if (selectedRace && races[selectedRace].subraces) {
+        subraceSelect.disabled = false;
+        let sraces = races[selectedRace].subraces;
+        for (let sr in sraces) {
+          let sopt = document.createElement('option');
+          sopt.value = sr; sopt.text = sr;
+          subraceSelect.add(sopt);
+        }
+      } else {
+        subraceSelect.disabled = true;
+      }
+    }
+
+    function populateClasses() {
+      const classSelect = document.getElementById('classSelect');
+      classSelect.innerHTML = '<option value="">Select Class</option>';
+      for (let c in classes) {
+        let opt = document.createElement('option');
+        opt.value = c; opt.text = c;
+        classSelect.add(opt);
+      }
+      classSelect.addEventListener('change', () => {
+        initializeSpellSections(); updateAll();
+      });
+    }
+
+    function populateBackgrounds() {
+      const bgSelect = document.getElementById('backgroundSelect');
+      bgSelect.innerHTML = '<option value="">Select Background</option>';
+      for (let b in backgrounds) {
+        let opt = document.createElement('option');
+        opt.value = b; opt.text = b;
+        bgSelect.add(opt);
+      }
+      bgSelect.addEventListener('change',()=>{
+        initializeBackground(); updateAll();
+      });
+    }
+
+    function populateSkills() {
+      const skillsTable = document.getElementById('skillsTable');
+      skillsTable.innerHTML='';
+      for (let sk in skillsList) {
+        let ab=skillsList[sk];
+        let tr = document.createElement('tr');
+        tr.innerHTML=`
+          <td>${sk}</td>
+          <td data-ability="${ab}">${capitalize(ab)}</td>
+          <td><input type="checkbox" id="prof_${sk}"></td>
+          <td id="total_${sk}" class="skill-total" data-calc="">0</td>
+        `;
+        skillsTable.appendChild(tr);
+        document.getElementById(`prof_${sk}`).addEventListener('change',()=>updateAll());
+      }
+    }
+
+    function populateSavingThrows() {
+      const stTable = document.getElementById('savingThrowsTable');
+      stTable.innerHTML='';
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        let tr = document.createElement('tr');
+        tr.innerHTML=`
+          <td data-ability="${ab}">${capitalize(ab)}</td>
+          <td><input type="checkbox" id="saveProf_${ab}"></td>
+          <td id="saveTotal_${ab}">0</td>
+        `;
+        stTable.appendChild(tr);
+        document.getElementById(`saveProf_${ab}`).addEventListener('change',()=>updateAll());
+      });
+    }
+
+    function populateFeatsDropdown() {
+      const selectFeat = document.getElementById('selectFeat');
+      selectFeat.innerHTML='<option value="">Choose Feat</option>';
+      for (let f in feats) {
+        let opt = document.createElement('option');
+        opt.value = f; opt.text = f;
+        selectFeat.add(opt);
+      }
+    }
+
+    /* -------------------------------
+       4. EVENT LISTENERS
+    --------------------------------*/
+    document.getElementById('calculateBtn').addEventListener('click',()=>updateAll());
+    ["str","dex","con","int","wis","cha"].forEach(ab=>{
+      document.getElementById(ab).addEventListener('input',()=>updateAll());
+    });
+    document.getElementById('levelInput').addEventListener('input',()=>{
+      initializeSpellSlots(); updateAll();
+    });
+    document.getElementById('xpInput').addEventListener('input',()=>saveToLocalStorage());
+    document.getElementById('currentHPInput').addEventListener('input',()=>saveToLocalStorage());
+    document.getElementById('addEquipmentBtn').addEventListener('click',()=>addEquipmentRow());
+    document.getElementById('addSpellBtn').addEventListener('click',()=>addSpellRow());
+    document.getElementById('addFeatBtn').addEventListener('click',()=>addFeatFromDropdown());
+    document.getElementById('addLanguageBtn').addEventListener('click',()=>addLanguage());
+    document.getElementById('addToolProfBtn').addEventListener('click',()=>addToolProficiency());
+    document.getElementById('portrait').addEventListener('change', e=>{
+      const file = e.target.files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload=evt=>{
+          const portraitPreview=document.getElementById('portraitPreview');
+          portraitPreview.src=evt.target.result;
+          portraitPreview.classList.remove('hidden');
+          saveToLocalStorage();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    document.getElementById('rollType').addEventListener('change',()=>setupRollOptions());
+    document.getElementById('rollBtn').addEventListener('click',()=>performRoll());
+
+    // Money
+    ["goldInput","silverInput","copperInput"].forEach(id=>{
+      document.getElementById(id).addEventListener('input',()=>updateAll());
+    });
+
+    // Additional background info
+    document.getElementById('backgroundDetailsInput').addEventListener('input',()=>saveToLocalStorage());
+
+    // Export / Import JSON
+    document.getElementById('exportJsonBtn').addEventListener('click',()=>exportJson());
+    document.getElementById('importJsonBtn').addEventListener('click',()=>{
+      document.getElementById('importJsonFile').click();
+    });
+    document.getElementById('importJsonFile').addEventListener('change',(e)=>{
+      importJson(e.target.files[0]);
+    });
+
+    // Item Modal
+    document.getElementById('closeItemModal').addEventListener('click',()=>{
+      document.getElementById('itemModal').style.display='none';
+    });
+
+    /* -------------------------------
+       5. MAIN UPDATE & CALCULATIONS
+    --------------------------------*/
+    function updateAll(){
+      let mods = calculateModifiers();
+      initializeBackground();
+      calculateSavingThrows(mods);
+      calculateSkills(mods);
+      calculateProficiencyBonus();
+      calculateCalculatedStats(mods);
+      updateEquipmentEffects(mods);
+      buildInventoryGrid();
+      initializeSpellSections();
+      initializeSpellSlots();
+      updateSpellTable();
+      updateSpellSlotsVisualizer();
+      checkEncumbrance();
+      calcMoneyWeight();
+      saveToLocalStorage();
+    }
+
+    function calculateModifiers(){
+      let modifiers={};
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        let val = parseInt(document.getElementById(ab).value)||10;
+        let baseMod = Math.floor((val-10)/2);
+        modifiers[ab]=baseMod;
+        document.getElementById(`mod${capitalize(ab)}`).innerText=(baseMod>=0?'+':'')+baseMod;
+      });
+      let raceVal=document.getElementById('raceSelect').value;
+      let subraceVal=document.getElementById('subraceSelect').value;
+      if(raceVal){
+        let rb={...(races[raceVal].ability_bonuses||{})};
+        if(subraceVal && races[raceVal].subraces && races[raceVal].subraces[subraceVal]){
+          let srb=races[raceVal].subraces[subraceVal];
+          for(let ab in srb) rb[ab]=(rb[ab]||0)+srb[ab];
+        }
+        for(let ab in rb){
+          modifiers[ab]+=rb[ab];
+          document.getElementById(`mod${capitalize(ab)}`).innerText=(modifiers[ab]>=0?'+':'')+modifiers[ab];
+        }
+      }
+      return modifiers;
+    }
+
+    function calculateProficiencyBonus(){
+      const lvl=parseInt(document.getElementById('levelInput').value)||1;
+      const bonus=2+Math.floor((lvl-1)/4);
+      document.getElementById('proficiencyBonus').innerText=(bonus>=0?'+':'')+bonus;
+    }
+
+    function calculateSavingThrows(modifiers){
+      const lvl=parseInt(document.getElementById('levelInput').value)||1;
+      const profB=2+Math.floor((lvl-1)/4);
+      const cls=document.getElementById('classSelect').value;
+      if(cls && classes[cls].saving_throws){
+        classes[cls].saving_throws.forEach(ab=>{
+          document.getElementById(`saveProf_${ab}`).checked=true;
+        });
+      }
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        let tot = modifiers[ab]||0;
+        if(document.getElementById(`saveProf_${ab}`).checked) tot+=profB;
+        document.getElementById(`saveTotal_${ab}`).innerText=(tot>=0?'+':'')+tot;
+      });
+    }
+
+    function calculateSkills(modifiers){
+      const lvl=parseInt(document.getElementById('levelInput').value)||1;
+      const profB=2+Math.floor((lvl-1)/4);
+      for(let sk in skillsList){
+        let ab=skillsList[sk];
+        let tot = modifiers[ab];
+        let proficient=document.getElementById(`prof_${sk}`).checked;
+        let bgVal=document.getElementById('backgroundSelect').value;
+        if(bgVal && backgrounds[bgVal].skills && backgrounds[bgVal].skills.includes(sk)) proficient=true;
+        if(proficient) tot+=profB;
+        const displayVal=(tot>=0?'+':'')+tot;
+        const detailCalc=`Base mod: ${(modifiers[ab]>=0?'+':'')+modifiers[ab]} ${proficient?`+ Proficiency (${profB})`:'(no proficiency)'}`;
+        document.getElementById(`total_${sk}`).innerText=displayVal;
+        document.getElementById(`total_${sk}`).setAttribute('data-calc', detailCalc);
+      }
+    }
+
+    function calculateCalculatedStats(modifiers){
+      const lvl=parseInt(document.getElementById('levelInput').value)||1;
+      const cls=document.getElementById('classSelect').value||'';
+      const conMod=modifiers.con||0;
+      const profB=parseInt(document.getElementById('proficiencyBonus').innerText)||2;
+
+      // Initiative
+      document.getElementById('initiativeDisplay').innerText=(modifiers.dex>=0?'+':'')+modifiers.dex;
+      document.getElementById('initiativeDetail').innerText=`= DEX mod (${(modifiers.dex>=0?'+':'')+modifiers.dex})`;
+
+      // Max HP
+      let hd=0; if(cls && classes[cls]) hd=classes[cls].hit_die;
+      let maxHP=(hd+conMod)*lvl;
+      document.getElementById('maxHPDisplay').innerText=maxHP;
+      document.getElementById('hpDetail').innerText=`= (HitDie ${hd} + CON mod ${conMod>=0?'+':''}${conMod}) × Level (${lvl})`;
+      let chp=parseInt(document.getElementById('currentHPInput').value)||0;
+      if(chp===0) document.getElementById('currentHPInput').value=maxHP;
+
+      // Spell Save DC
+      let sdc=0; let detail='';
+      if(cls && classes[cls].spellcasting){
+        let primary='int';
+        if(['Cleric','Druid','Ranger'].includes(cls)) primary='wis';
+        if(['Bard','Sorcerer','Warlock','Paladin'].includes(cls)) primary='cha';
+        sdc=8+profB+(modifiers[primary]||0);
+        detail=`= 8 + prof (${(profB>=0?'+':'')+profB}) + ${primary.toUpperCase()} mod (${(modifiers[primary]>=0?'+':'')+modifiers[primary]})`;
+      }
+      document.getElementById('spellSaveDCDisplay').innerText=sdc;
+      document.getElementById('spellSaveDetail').innerText=sdc>0 ? detail : '';
+
+      // Armor Class
+      let baseAC=10+(modifiers.dex||0);
+      let eqRows=document.getElementById('equipmentTable').rows;
+      let bestArmorVal=0; let bestArmorType='';
+      let shieldAC=0; let detailAC=`Base = 10 + DEX mod (${(modifiers.dex>=0?'+':'')+modifiers.dex})`;
+      for(let i=0; i<eqRows.length; i++){
+        let row=eqRows[i];
+        let eqType=row.cells[1].children[0].value;
+        let acB=parseInt(row.cells[4].children[0].value)||0;
+        let statB=row.cells[5].children[0].value||'';
+        // parse item statB e.g. "dex+2"
+        if(statB.trim()!==''){
+          let splitted=statB.split(',');
+          splitted.forEach(s=>{
+            let c=s.trim(); let signInd=c.indexOf('+');
+            if(signInd>0){
+              let stName=c.substring(0,signInd).toLowerCase();
+              let stVal=parseInt(c.substring(signInd+1))||0;
+              let oldScore=parseInt(document.getElementById(stName).value)||10;
+              let newScore=oldScore+stVal;
+              document.getElementById(stName).value=newScore; // auto-apply
+            }
+          });
+        }
+        // handle armor
+        if(eqType==='Shield'){ shieldAC+=shieldBonus; }
+        if(armorBaseValues[eqType]){
+          let abv=armorBaseValues[eqType];
+          let finalArmor=0;
+          if(eqType==='Armor - Light'){
+            finalArmor=abv+(modifiers.dex||0);
+          } else if(eqType==='Armor - Medium'){
+            let cappedDex=(modifiers.dex||0)>2?2:(modifiers.dex||0);
+            finalArmor=abv+cappedDex;
+          } else if(eqType==='Armor - Heavy'){
+            finalArmor=abv; // ignore Dex
+          }
+          finalArmor+=acB;
+          if(finalArmor>bestArmorVal){
+            bestArmorVal=finalArmor; bestArmorType=eqType;
+          }
+        }
+      }
+      let totalAC=0;
+      if(bestArmorVal>0){
+        totalAC=bestArmorVal;
+        detailAC+=`; Using ${bestArmorType} = ${bestArmorVal}`;
+      } else {
+        totalAC=baseAC;
+        detailAC+=` (no armor worn)`;
+      }
+      if(shieldAC>0){
+        totalAC+=shieldAC;
+        detailAC+=`; Shield +${shieldAC}`;
+      }
+      document.getElementById('acDisplay').innerText=totalAC;
+      document.getElementById('acDetail').innerText=`= ${detailAC}`;
+
+      // Carry Capacity
+      let strVal=parseInt(document.getElementById('str').value)||10;
+      let carryCap=strVal*15;
+      document.getElementById('carryCapacityDisplay').innerText=carryCap;
+      document.getElementById('carryDetail').innerText=`= 15 × STR (${strVal})`;
+    }
+
+    function initializeBackground(){
+      const bg=document.getElementById('backgroundSelect').value;
+      const bfeat=document.getElementById('backgroundFeatures');
+      if(bg && backgrounds[bg] && backgrounds[bg].features){
+        bfeat.innerHTML=`<strong>Features:</strong> ${backgrounds[bg].features.join(", ")}`;
+      } else {
+        bfeat.innerHTML='';
+      }
+    }
+
+    function initializeSpellSections(){
+      const cls=document.getElementById('classSelect').value;
+      if(cls && classes[cls].spellcasting){
+        document.getElementById('spellsSection').classList.remove('hidden');
+        document.getElementById('spellSlotsSection').classList.remove('hidden');
+      } else {
+        document.getElementById('spellsSection').classList.add('hidden');
+        document.getElementById('spellSlotsSection').classList.add('hidden');
+      }
+    }
+
+    function initializeSpellSlots(){
+      const cls=document.getElementById('classSelect').value;
+      const lvl=parseInt(document.getElementById('levelInput').value)||1;
+      const sTable=document.getElementById('spellSlotsTable');
+      sTable.innerHTML='';
+      if(!cls||!classes[cls].spellcasting)return;
+      if(!spellSlotTable[cls])return;
+      let data=spellSlotTable[cls][lvl]||{};
+      for(let sl in data){
+        let row=document.createElement('tr');
+        row.innerHTML=`
+          <td>${sl}</td>
+          <td>${data[sl]}</td>
+          <td><input type="number" min="0" max="${data[sl]}" value="0" data-level="${sl}" class="slot-used"></td>
+        `;
+        sTable.appendChild(row);
+      }
+    }
+
+    // Build or update visual circles for spell slots
+    function updateSpellSlotsVisualizer(){
+      const slContainer=document.getElementById('spellSlotsVisualizer');
+      slContainer.innerHTML='';
+      const rows=document.getElementById('spellSlotsTable').querySelectorAll('tbody tr');
+      rows.forEach(r=>{
+        const lvlCell=r.cells[0].innerText;
+        const totalSlots=parseInt(r.cells[1].innerText)||0;
+        const usedInput=r.cells[2].querySelector('.slot-used');
+        const usedSlots=parseInt(usedInput.value)||0;
+        // Add a label for the level
+        let label=document.createElement('div');
+        label.style.marginTop='10px';
+        label.innerHTML=`<strong>Level ${lvlCell}:</strong>`;
+        slContainer.appendChild(label);
+
+        let slotRow=document.createElement('div');
+        slotRow.classList.add('spell-slot-container');
+
+        for(let i=0; i<totalSlots; i++){
+          let circle=document.createElement('div');
+          circle.classList.add('spell-slot');
+          if(i<usedSlots){
+            circle.classList.add('used');
+          }
+          circle.innerText=(i+1);
+          circle.addEventListener('click',()=>{
+            // Toggle usage
+            if(circle.classList.contains('used')){
+              // unuse one slot
+              usedInput.value=Math.max(parseInt(usedInput.value)-1,0);
+            } else {
+              // use one slot
+              usedInput.value=Math.min(parseInt(usedInput.value)+1,totalSlots);
+            }
+            updateSpellSlotsVisualizer();
+            saveToLocalStorage();
+          });
+          slotRow.appendChild(circle);
+        }
+        slContainer.appendChild(slotRow);
+      });
+    }
+
+    function updateSpellTable(){
+      const st=document.getElementById('spellsTable');
+      for(let i=1;i<st.rows.length;i++){
+        let row=st.rows[i]; updateSpellStats(row);
+      }
+    }
+
+    function updateSpellStats(row){
+      const cls=document.getElementById('classSelect').value;
+      if(!cls||!classes[cls].spellcasting)return;
+      const pbText=document.getElementById('proficiencyBonus').innerText||'+2';
+      const pb=parseInt(pbText)||2;
+      let prim='int';
+      if(['Cleric','Druid','Ranger'].includes(cls)) prim='wis';
+      if(['Bard','Sorcerer','Warlock','Paladin'].includes(cls)) prim='cha';
+      let abSel=row.cells[2].children[0].value||prim;
+      let abModTxt=document.getElementById(`mod${capitalize(abSel)}`).innerText||'+0';
+      let abMod=parseInt(abModTxt)||0;
+      let sdc=8+pb+abMod;
+      let sab=pb+abMod;
+      row.cells[3].children[0].value=sdc;
+      row.cells[4].children[0].value=(sab>=0?'+':'')+sab;
+    }
+
+    function updateEquipmentEffects(){
+      let totalWeight=0;
+      const eqTable=document.getElementById('equipmentTable');
+      for(let row of eqTable.rows){
+        let qty=parseInt(row.cells[2].children[0].value)||0;
+        let w=parseFloat(row.cells[3].children[0].value)||0;
+        totalWeight+=qty*w;
+      }
+      document.getElementById('totalWeight').innerText=totalWeight;
+    }
+
+    // Builds a Minecraft-like grid from the equipment
+    function buildInventoryGrid(){
+      const eqTable=document.getElementById('equipmentTable');
+      const invGrid=document.getElementById('inventoryGrid');
+      invGrid.innerHTML='';
+      for(let row of eqTable.rows){
+        let name=row.cells[0].children[0].value || 'Unknown';
+        let type=row.cells[1].children[0].value;
+        let qty=row.cells[2].children[0].value;
+        // For demonstration, pick an emoji based on type
+        let emoji='❓';
+        if(type==='Weapon') emoji='⚔️';
+        if(type==='Shield') emoji='🛡️';
+        if(type.includes('Armor')) emoji='👕';
+        if(type==='Tool') emoji='🛠️';
+        if(type==='Adventuring Gear') emoji='🎒';
+        if(type==='Other') emoji='📦';
+
+        let cell=document.createElement('div');
+        cell.classList.add('inventory-cell');
+        // show quantity if more than 1
+        cell.innerHTML=`<span title="${name} (x${qty})">${emoji}</span>`;
+
+        cell.addEventListener('click',()=>{
+          // Show item info modal
+          document.getElementById('itemModalName').innerText=`${name} (x${qty})`;
+          document.getElementById('itemModalDesc').innerText=
+            row.cells[6].children[0].value || 'No description provided.';
+          document.getElementById('itemModal').style.display='flex';
+        });
+        invGrid.appendChild(cell);
+      }
+    }
+
+    function checkEncumbrance(){
+      const tw=parseFloat(document.getElementById('totalWeight').innerText)||0;
+      const cc=parseFloat(document.getElementById('carryCapacityDisplay').innerText)||0;
+      if(tw>cc){
+        document.getElementById('encumbranceWarning').classList.remove('hidden');
+      } else {
+        document.getElementById('encumbranceWarning').classList.add('hidden');
+      }
+    }
+
+    function calcMoneyWeight(){
+      let gp=parseInt(document.getElementById('goldInput').value)||0;
+      let sp=parseInt(document.getElementById('silverInput').value)||0;
+      let cp=parseInt(document.getElementById('copperInput').value)||0;
+      /* Common rule of thumb: 50 coins = 1 lb. So each coin is 0.02 lbs. */
+      let totalCoins=gp+sp+cp;
+      let moneyW=totalCoins*0.02;
+      document.getElementById('moneyWeight').innerText=moneyW.toFixed(2);
+      document.getElementById('moneyDetail').innerText=`= (GP + SP + CP = ${totalCoins} coins) × 0.02 lbs each`;
+    }
+
+    /* -------------------------------
+       6. ADD/REMOVE ROWS, etc.
+    --------------------------------*/
+    function addEquipmentRow(){
+      const eqTable=document.getElementById('equipmentTable');
+      let row=eqTable.insertRow();
+      row.innerHTML=`
+        <td><input type="text" placeholder="Name"></td>
+        <td><select>${Object.keys(armorBaseValues).map(t=>`<option value="${t}">${t}</option>`).join('')}
+          <option value="Shield">Shield</option>
+          <option value="Weapon">Weapon</option>
+          <option value="Tool">Tool</option>
+          <option value="Adventuring Gear">Adventuring Gear</option>
+          <option value="Other">Other</option>
+        </select></td>
+        <td><input type="number" min="1" value="1"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="text" placeholder="e.g. dex+1"></td>
+        <td><input type="text" placeholder="Description..."><button onclick="showItemInfo(this)">View</button></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+      `;
+      row.querySelectorAll('input, select').forEach(el=>{
+        el.addEventListener('input',()=>updateAll());
+      });
+      updateAll();
+    }
+
+    function showItemInfo(btn){
+      let row=btn.parentElement.parentElement;
+      let name=row.cells[0].children[0].value||'Unnamed Item';
+      let desc=row.cells[6].children[0].value||'No description provided.';
+      document.getElementById('itemModalName').innerText=name;
+      document.getElementById('itemModalDesc').innerText=desc;
+      document.getElementById('itemModal').style.display='flex';
+    }
+
+    function addSpellRow(){
+      const st=document.getElementById('spellsTable');
+      let row=st.insertRow();
+      row.innerHTML=`
+        <td><input type="text" placeholder="Spell Name"></td>
+        <td><input type="number" min="0" max="9" value="1"></td>
+        <td>
+          <select>
+            <option value="int">Intelligence</option>
+            <option value="wis">Wisdom</option>
+            <option value="cha">Charisma</option>
+          </select>
+        </td>
+        <td><input type="number" value="0" readonly></td>
+        <td><input type="text" value="+0" readonly></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+      `;
+      row.cells[2].children[0].addEventListener('change',()=>updateSpellStats(row));
+      row.cells[1].children[0].addEventListener('input',()=>updateSpellStats(row));
+      updateSpellStats(row);
+    }
+
+    function addFeatFromDropdown(){
+      const sf=document.getElementById('selectFeat');
+      let fName=sf.value;
+      if(!fName){
+        // custom feat?
+        let custom=prompt("Enter custom feat name:");
+        if(!custom)return;
+        let customDesc=prompt("Enter custom feat description:");
+        if(!customDesc)return;
+        let ul=document.getElementById('featsList');
+        let li=document.createElement('li');
+        li.innerHTML=`<strong>${custom}:</strong> ${customDesc} <button onclick="removeListItem(this)">Remove</button>`;
+        ul.appendChild(li);
+        updateAll();
+        return;
+      }
+      if(!feats[fName]){
+        alert("Feat not found in predefined list.");
+        return;
+      }
+      let fd=feats[fName].description;
+      let featsUl=document.getElementById('featsList');
+      let li=document.createElement('li');
+      li.innerHTML=`<strong>${fName}:</strong> ${fd} <button onclick="removeListItem(this)">Remove</button>`;
+      featsUl.appendChild(li);
+      sf.value="";
+      updateAll();
+    }
+
+    function addLanguage(){
+      let lang=prompt("Enter Language:");
+      if(!lang)return;
+      let ul=document.getElementById('languagesList');
+      let li=document.createElement('li');
+      li.innerHTML=`${lang} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      updateAll();
+    }
+
+    function addToolProficiency(){
+      let tp=prompt("Enter Tool Proficiency:");
+      if(!tp)return;
+      let ul=document.getElementById('toolProfsList');
+      let li=document.createElement('li');
+      li.innerHTML=`${tp} <button onclick="removeListItem(this)">Remove</button>`;
+      ul.appendChild(li);
+      updateAll();
+    }
+
+    function removeRow(btn){
+      let row=btn.parentElement.parentElement;
+      row.parentElement.removeChild(row);
+      updateAll();
+    }
+
+    function removeListItem(btn){
+      let li=btn.parentElement;
+      li.parentElement.removeChild(li);
+      updateAll();
+    }
+
+    /* -------------------------------
+       7. LOCAL STORAGE
+    --------------------------------*/
+    function saveToLocalStorage(){
+      let data={};
+      data.charName=document.getElementById('charName').value;
+      data.alignment=document.getElementById('alignment').value;
+      data.raceSelect=document.getElementById('raceSelect').value;
+      data.subraceSelect=document.getElementById('subraceSelect').value;
+      data.classSelect=document.getElementById('classSelect').value;
+      data.backgroundSelect=document.getElementById('backgroundSelect').value;
+      data.levelInput=document.getElementById('levelInput').value;
+      data.xpInput=document.getElementById('xpInput').value;
+      data.currentHPInput=document.getElementById('currentHPInput').value;
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        data[ab]=document.getElementById(ab).value;
+      });
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        data[`saveProf_${ab}`]=document.getElementById(`saveProf_${ab}`).checked;
+      });
+      for(let sk in skillsList){
+        data[`prof_${sk}`]=document.getElementById(`prof_${sk}`).checked;
+      }
+      // Equipment
+      data.equipment=[];
+      let eqTable=document.getElementById('equipmentTable');
+      for(let row of eqTable.rows){
+        let item={
+          name:row.cells[0].children[0].value,
+          type:row.cells[1].children[0].value,
+          quantity:row.cells[2].children[0].value,
+          weight:row.cells[3].children[0].value,
+          acBonus:row.cells[4].children[0].value,
+          statBonus:row.cells[5].children[0].value,
+          description:row.cells[6].children[0].value
+        };
+        data.equipment.push(item);
+      }
+      // Money
+      data.goldInput=document.getElementById('goldInput').value;
+      data.silverInput=document.getElementById('silverInput').value;
+      data.copperInput=document.getElementById('copperInput').value;
+
+      // Spells
+      data.spells=[];
+      let st=document.getElementById('spellsTable');
+      for(let i=1;i<st.rows.length;i++){
+        let row=st.rows[i];
+        let sp={
+          name:row.cells[0].children[0].value,
+          level:row.cells[1].children[0].value,
+          ability:row.cells[2].children[0].value,
+          saveDC:row.cells[3].children[0].value,
+          attackBonus:row.cells[4].children[0].value
+        };
+        data.spells.push(sp);
+      }
+      // Feats
+      data.feats=[];
+      let featsUl=document.getElementById('featsList');
+      for(let li of featsUl.children){
+        data.feats.push(li.innerHTML);
+      }
+      // Languages
+      data.languages=[];
+      let langUl=document.getElementById('languagesList');
+      for(let li of langUl.children){
+        data.languages.push(li.innerHTML);
+      }
+      // Tools
+      data.tools=[];
+      let toolUl=document.getElementById('toolProfsList');
+      for(let li of toolUl.children){
+        data.tools.push(li.innerHTML);
+      }
+      // Portrait
+      let portraitPrev=document.getElementById('portraitPreview');
+      data.portraitSrc=portraitPrev.src.includes('base64')?portraitPrev.src:'';
+
+      // Additional background details
+      data.backgroundDetails=document.getElementById('backgroundDetailsInput').value || '';
+
+      localStorage.setItem('dndCharacterData',JSON.stringify(data));
+    }
+
+    function loadFromLocalStorage(){
+      let json=localStorage.getItem('dndCharacterData');
+      if(!json)return;
+      let data=JSON.parse(json);
+
+      document.getElementById('charName').value=data.charName||'';
+      document.getElementById('alignment').value=data.alignment||'';
+      document.getElementById('raceSelect').value=data.raceSelect||'';
+      // re-populate subrace if race is loaded
+      populateSubraceDropdown(data.raceSelect);
+      document.getElementById('subraceSelect').value=data.subraceSelect||'';
+      if(data.subraceSelect) document.getElementById('subraceSelect').disabled=false;
+
+      document.getElementById('classSelect').value=data.classSelect||'';
+      document.getElementById('backgroundSelect').value=data.backgroundSelect||'';
+      document.getElementById('levelInput').value=data.levelInput||'1';
+      document.getElementById('xpInput').value=data.xpInput||'0';
+      document.getElementById('currentHPInput').value=data.currentHPInput||'0';
+
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        if(data[ab]) document.getElementById(ab).value=data[ab];
+      });
+      ["str","dex","con","int","wis","cha"].forEach(ab=>{
+        if(data[`saveProf_${ab}`]!==undefined){
+          document.getElementById(`saveProf_${ab}`).checked=data[`saveProf_${ab}`];
+        }
+      });
+      for(let sk in skillsList){
+        if(data[`prof_${sk}`]!==undefined){
+          document.getElementById(`prof_${sk}`).checked=data[`prof_${sk}`];
+        }
+      }
+      let eqTable=document.getElementById('equipmentTable');
+      eqTable.innerHTML='';
+      if(data.equipment){
+        data.equipment.forEach(ei=>{
+          let row=eqTable.insertRow();
+          row.innerHTML=`
+            <td><input type="text" value="${ei.name}"></td>
+            <td>
+              <select>
+                ${Object.keys(armorBaseValues).map(t=>`<option value="${t}" ${t===ei.type?'selected':''}>${t}</option>`).join('')}
+                <option value="Shield" ${ei.type==="Shield"?'selected':''}>Shield</option>
+                <option value="Weapon" ${ei.type==="Weapon"?'selected':''}>Weapon</option>
+                <option value="Tool" ${ei.type==="Tool"?'selected':''}>Tool</option>
+                <option value="Adventuring Gear" ${ei.type==="Adventuring Gear"?'selected':''}>Adventuring Gear</option>
+                <option value="Other" ${ei.type==="Other"?'selected':''}>Other</option>
+              </select>
+            </td>
+            <td><input type="number" min="1" value="${ei.quantity}"></td>
+            <td><input type="number" min="0" value="${ei.weight}"></td>
+            <td><input type="number" min="0" value="${ei.acBonus}"></td>
+            <td><input type="text" value="${ei.statBonus||''}"></td>
+            <td><input type="text" value="${ei.description||''}"><button onclick="showItemInfo(this)">View</button></td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+          `;
+        });
+      }
+      // Money
+      document.getElementById('goldInput').value=data.goldInput||'0';
+      document.getElementById('silverInput').value=data.silverInput||'0';
+      document.getElementById('copperInput').value=data.copperInput||'0';
+
+      let st=document.getElementById('spellsTable');
+      st.innerHTML=`
+        <tr>
+          <th>Spell Name</th>
+          <th>Level</th>
+          <th>Spellcasting Ability</th>
+          <th>Spell Save DC</th>
+          <th>Spell Attack Bonus</th>
+          <th>Actions</th>
+        </tr>
+      `;
+      if(data.spells){
+        data.spells.forEach(sp=>{
+          let row=st.insertRow();
+          row.innerHTML=`
+            <td><input type="text" value="${sp.name}"></td>
+            <td><input type="number" min="0" max="9" value="${sp.level}"></td>
+            <td>
+              <select>
+                <option value="int" ${sp.ability==='int'?'selected':''}>Intelligence</option>
+                <option value="wis" ${sp.ability==='wis'?'selected':''}>Wisdom</option>
+                <option value="cha" ${sp.ability==='cha'?'selected':''}>Charisma</option>
+              </select>
+            </td>
+            <td><input type="number" value="${sp.saveDC}" readonly></td>
+            <td><input type="text" value="${sp.attackBonus}" readonly></td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+          `;
+        });
+      }
+
+      let featsUl=document.getElementById('featsList');
+      featsUl.innerHTML='';
+      if(data.feats){
+        data.feats.forEach(f=>{
+          let li=document.createElement('li');
+          li.innerHTML=f; featsUl.appendChild(li);
+        });
+      }
+
+      let lUl=document.getElementById('languagesList');
+      lUl.innerHTML='';
+      if(data.languages){
+        data.languages.forEach(l=>{
+          let li=document.createElement('li');
+          li.innerHTML=l; lUl.appendChild(li);
+        });
+      }
+
+      let tUl=document.getElementById('toolProfsList');
+      tUl.innerHTML='';
+      if(data.tools){
+        data.tools.forEach(tl=>{
+          let li=document.createElement('li');
+          li.innerHTML=tl; tUl.appendChild(li);
+        });
+      }
+      if(data.portraitSrc){
+        let pp=document.getElementById('portraitPreview');
+        pp.src=data.portraitSrc;
+        pp.classList.remove('hidden');
+      }
+      document.getElementById('backgroundDetailsInput').value=data.backgroundDetails||'';
+    }
+
+    /* -------------------------------
+       8. ROLLING LOGIC
+    --------------------------------*/
+    function setupRollOptions(){
+      const rType=document.getElementById('rollType').value;
+      const rOpt=document.getElementById('rollOptions');
+      rOpt.innerHTML='';
+      if(rType==='saving_throw'){
+        const cls=document.getElementById('classSelect').value;
+        if(cls && classes[cls].saving_throws && classes[cls].saving_throws.length>1){
+          let label=document.createElement('label');
+          label.innerText='Select Ability for Saving Throw:';
+          let sel=document.createElement('select');
+          sel.id='rollSavingThrowAbility';
+          classes[cls].saving_throws.forEach(ab=>{
+            let op=document.createElement('option');
+            op.value=ab; op.text=capitalize(ab);
+            sel.add(op);
+          });
+          label.appendChild(sel);
+          rOpt.appendChild(label);
+        }
+      } else if(rType==='skill'){
+        let label=document.createElement('label');
+        label.innerText='Select Skill:';
+        let sel=document.createElement('select');
+        sel.id='rollSkill';
+        let defO=document.createElement('option');
+        defO.value=''; defO.text='Select Skill';
+        sel.add(defO);
+        for(let sk in skillsList){
+          let opt=document.createElement('option');
+          opt.value=sk; opt.text=sk;
+          sel.add(opt);
+        }
+        label.appendChild(sel);
+        rOpt.appendChild(label);
+      } else if(rType==='attack'){
+        let label=document.createElement('label');
+        label.innerText='Describe Attack (optional):';
+        let inp=document.createElement('input');
+        inp.type='text'; inp.id='rollAttackName';
+        label.appendChild(inp);
+        rOpt.appendChild(label);
+      }
+    }
+    function performRoll(){
+      const rType=document.getElementById('rollType').value;
+      if(!rType){alert("Please select a roll type.");return;}
+
+      // normal, adv, dis
+      let mode=document.getElementById('rollMode').value;
+
+      // First base roll
+      let roll1=rollDice(20);
+      let roll2=0;
+      // If advantage or disadvantage, roll 2 dice
+      if(mode==='adv'){
+        roll2=rollDice(20);
+      }
+      else if(mode==='dis'){
+        roll2=rollDice(20);
+      }
+      let finalRoll=(mode==='adv') ? Math.max(roll1, roll2)
+                    : (mode==='dis') ? Math.min(roll1, roll2)
+                    : roll1;
+
+      let mod=0;
+      const cls=document.getElementById('classSelect').value;
+      if(rType==='saving_throw'){
+        if(!cls||!classes[cls]){alert("Select a class first.");return;}
+        let saves=classes[cls].saving_throws||[];
+        let chosen=saves[0]||'str';
+        let sel=document.getElementById('rollSavingThrowAbility');
+        if(sel && sel.value) chosen=sel.value;
+        let stTxt=document.getElementById(`saveTotal_${chosen}`).innerText||'0';
+        mod=parseInt(stTxt)||0;
+      } else if(rType==='skill'){
+        let sel=document.getElementById('rollSkill');
+        if(!sel||!sel.value){alert("Please select a skill.");return;}
+        let skTxt=document.getElementById(`total_${sel.value}`).innerText||'0';
+        mod=parseInt(skTxt)||0;
+      } else if(rType==='initiative'){
+        let dx=document.getElementById('modDex').innerText||'0';
+        mod=parseInt(dx)||0;
+      } else if(rType==='attack'){
+        // By default, let's add STR mod. Could be DEX or something else, but we'll keep it simple.
+        let st=document.getElementById('modStr').innerText||'0';
+        mod=parseInt(st)||0;
+      }
+
+      let final=finalRoll+mod;
+      const resultDiv=document.getElementById('rollResult');
+      // show both dice if adv/dis
+      if(mode==='adv'){
+        resultDiv.innerHTML=`<span class="dice-shake">Roll 1: ${roll1}, Roll 2: ${roll2} => Take Higher</span><br/>Total: ${final} ( ${finalRoll>=10?'Success?':'Check GM'} )`;
+      }
+      else if(mode==='dis'){
+        resultDiv.innerHTML=`<span class="dice-shake">Roll 1: ${roll1}, Roll 2: ${roll2} => Take Lower</span><br/>Total: ${final} ( ${finalRoll>=10?'Success?':'Check GM'} )`;
+      }
+      else {
+        resultDiv.innerHTML=`<span class="dice-shake">Rolled ${roll1}</span><br/>Total: ${final} ( ${final>=10?'Success?':'Check GM'} )`;
+      }
+      // Force re-trigger the shake animation
+      void resultDiv.offsetWidth; // reflow
+    }
+    function rollDice(sides){return Math.floor(Math.random()*sides)+1;}
+
+    /* -------------------------------
+       9. JSON IMPORT/EXPORT
+    --------------------------------*/
+    function exportJson(){
+      let data=localStorage.getItem('dndCharacterData');
+      if(!data){alert("No data to export.");return;}
+      let blob=new Blob([data],{type:'application/json'});
+      let url=URL.createObjectURL(blob);
+      let a=document.createElement('a');
+      a.href=url; a.download='characterData.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function importJson(file){
+      if(!file){return;}
+      let reader=new FileReader();
+      reader.onload=function(e){
+        let content=e.target.result;
+        try{
+          JSON.parse(content); // test parse
+          localStorage.setItem('dndCharacterData',content);
+          loadFromLocalStorage();
+          updateAll();
+        }catch(err){
+          alert("Error parsing JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* -------------------------------
+       10. HELPER
+    --------------------------------*/
+    function capitalize(str){ return str.charAt(0).toUpperCase()+str.slice(1); }
+  </script>
+</body>
+</html>

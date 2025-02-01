@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #loginSection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #loginBox {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        #gallery {
+            display: none;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+            gap: 10px;
+        }
+
+        .gallery-item {
+            position: relative;
+            background: #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginSection">
+        <div id="loginBox">
+            <h2>Enter Password</h2>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <button onclick="checkPassword()">Submit</button>
+        </div>
+    </div>
+
+    <div id="gallery"></div>
+
+    <script>
+        const CORRECT_PASSWORD = '1688';
+        let imageElements = [];
+        let gridSize = { rows: 3, cols: 4 }; // Default grid size
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('gallery').style.display = 'grid';
+                initializeGallery();
+                window.addEventListener('resize', adjustGridLayout);
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        function calculateOptimalGrid() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const aspectRatio = viewportWidth / viewportHeight;
+            
+            // Adjust grid size based on screen aspect ratio
+            if (aspectRatio > 1.8) {
+                return { rows: 3, cols: 4 };  // Landscape: 3x4
+            } else if (aspectRatio > 1.3) {
+                return { rows: 3, cols: 3 };  // Standard: 3x3
+            } else {
+                return { rows: 4, cols: 2 };  // Portrait: 4x2
+            }
+        }
+
+        function adjustGridLayout() {
+            const gallery = document.getElementById('gallery');
+            gridSize = calculateOptimalGrid();
+            
+            // Update grid layout
+            gallery.style.display = 'grid';
+            gallery.style.gridTemplateColumns = `repeat(${gridSize.cols}, 1fr)`;
+            gallery.style.gridTemplateRows = `repeat(${gridSize.rows}, 1fr)`;
+
+            // Adjust number of gallery items
+            const totalCells = gridSize.rows * gridSize.cols;
+            
+            // Remove extra items if needed
+            while (gallery.children.length > totalCells) {
+                gallery.removeChild(gallery.lastChild);
+                imageElements.pop();
+            }
+            
+            // Add new items if needed
+            while (gallery.children.length < totalCells) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const img = document.createElement('img');
+                img.alt = 'Gallery Image';
+                item.appendChild(img);
+                gallery.appendChild(item);
+                imageElements.push(img);
+                
+                // Set different intervals for each image
+                setInterval(() => {
+                    updateImage(img);
+                }, 20000 + (Math.random() * 20000));
+            }
+
+            // Initial load of images for new items
+            imageElements.forEach(img => {
+                if (!img.src) {
+                    updateImage(img);
+                }
+            });
+        }
+
+        function initializeGallery() {
+            adjustGridLayout();
+        }
+
+        function updateImage(imgElement) {
+            // Get list of images from the folder
+            fetch('https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/contents/folder')
+                .then(response => response.json())
+                .then(files => {
+                    const images = files.filter(file => 
+                        file.name.toLowerCase().endsWith('.jpg') || 
+                        file.name.toLowerCase().endsWith('.png') ||
+                        file.name.toLowerCase().endsWith('.jpeg')
+                    );
+                    
+                    // Select random image
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    
+                    // Create new image to preload
+                    const newImage = new Image();
+                    newImage.onload = () => {
+                        // Fade transition
+                        imgElement.style.opacity = '0';
+                        setTimeout(() => {
+                            imgElement.src = newImage.src;
+                            imgElement.style.opacity = '1';
+                        }, 500);
+                    };
+                    newImage.src = randomImage.download_url;
+                })
+                .catch(error => console.error('Error loading images:', error));
+        }
+
+        // Handle enter key for password input
+        document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>
