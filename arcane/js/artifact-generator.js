@@ -3,13 +3,12 @@ import { randomItem, randomNumber, rollDice, getChargeDieForSpellLevel } from '.
 import {
   artifactTypes, standoutFeatures, adjectives, materials, colors, accentColors, spellLists,
   cantripList, spellEnhancements, disadvantages, staffDesigns, sentientPersonalities,
-  sentientAlignments, sentientSenses, sentientPurposes,
-  quirks // <-- ADDED 'quirks' to the list here!
+  sentientAlignments, sentientSenses, sentientPurposes, quirks, rarities // <-- rarities is now imported
 } from './data.js';
 import { selectRarity, selectArtifactIcon } from './data-selectors.js';
 
 export const generateArtifact = () => {
-  // Retrieve user selections (assuming these are globally accessible or passed as arguments if needed).
+  // Retrieve user selections.
   const selectedArtifactType = document.getElementById("artifactTypeSelect").value;
   const selectedRarity = document.getElementById("raritySelect").value;
 
@@ -20,7 +19,7 @@ export const generateArtifact = () => {
   const material = randomItem(materials);
   const mainColor = randomItem(colors);
   const accentColor = randomItem(accentColors);
-  const rarity = selectRarity(selectedRarity);
+  const rarity = selectRarity(selectedRarity); // Rarity object is now available
   const weight = randomNumber(1, 5) + " lbs";
   const meleeDamage = rarity.meleeDamage;
 
@@ -39,7 +38,7 @@ export const generateArtifact = () => {
 
   if (usesCharges) {
     // Charge system allows leveled spells.
-    const effectFactor = 2;
+    const effectFactor = 1;
     const usageFrequency = 3;
     let maxER = 0;
     const spellList = [];
@@ -60,7 +59,7 @@ export const generateArtifact = () => {
     spellInfo = `
       <div class="artifact-section">
         <p><i class="fas fa-scroll icon"></i><strong>Spell Slots:</strong></p>
-        <p>${spellList.join("</p><p>")}</p>
+      <p>${spellList.join("</p><p>")}</p>
       </div>
     `;
     // At-Will: Only one cantrip per item.
@@ -72,9 +71,10 @@ export const generateArtifact = () => {
     `;
     // Charges Calculation.
     const dailyChargesNeeded = maxER * usageFrequency;
-    const totalCapacity = Math.ceil(2 * dailyChargesNeeded);
-    const rechargeDieString = `1d${maxER * 2} + ${maxER}`;
-    const avgRecharge = (((maxER * 2) + 1) / 2 + maxER).toFixed(1);
+    const baseTotalCapacity = Math.ceil(2 * dailyChargesNeeded);
+    const totalCapacity = Math.ceil(baseTotalCapacity * rarity.chargeCapacityMultiplier); // Apply capacity multiplier from rarity!
+    const rechargeDieString = `1d${Math.ceil(maxER * 2 * rarity.rechargeMultiplier)} + ${Math.ceil(maxER * rarity.rechargeMultiplier)}`; // Apply recharge multiplier!
+    const avgRecharge = (((Math.ceil(maxER * 2 * rarity.rechargeMultiplier)) + 1) / 2 + (Math.ceil(maxER * rarity.rechargeMultiplier))).toFixed(1);
     let riskClause = "";
     if (Math.random() < 0.5) {
       riskClause = `<p><i class="fas fa-skull-crossbones icon"></i><strong>Last Charge Risk:</strong> If the final charge is expended, roll a d20. On a 1, the item is destroyed.</p>`;
@@ -83,7 +83,7 @@ export const generateArtifact = () => {
       <div class="artifact-section">
         <p><i class="fas fa-bolt icon"></i><strong>Total Charge Capacity:</strong> ${totalCapacity} charges.</p>
         <p><i class="fas fa-bolt icon"></i><strong>Recharge at Dawn:</strong> Roll ${rechargeDieString} (avg ~${avgRecharge} charges).</p>
-        ${riskClause}
+      ${riskClause}
       </div>
     `;
   } else if (artifactType === "Wand" || artifactType === "Staff") {
