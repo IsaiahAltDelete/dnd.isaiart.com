@@ -1,0 +1,166 @@
+/* style.css */
+/* Base Styles & Global Settings */
+body {
+  background-color: #f5f0e1;
+  background-image: url("https://i.imgur.com/B1kEKpW.png");
+  background-repeat: repeat;
+  background-position: 0 0;
+  font-family: "Times New Roman", serif;
+  color: #8b4513;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  animation: scrollBackground 60s linear infinite;
+}
+@keyframes scrollBackground {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 0; }
+}
+header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+}
+main {
+  width: 100%;
+  max-width: 1000px;
+}
+h1 {
+  margin: 20px 0;
+  font-size: 2.5rem;
+  text-align: center;
+  color: #8b4513;
+}
+/* Compact icon-based controls */
+.options {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.option-label {
+  font-size: 1.2rem;
+  color: #8b4513;
+}
+.options select {
+  padding: 4px 6px;
+  border-radius: 3px;
+  border: 1px solid #8b4513;
+  font-size: 0.85rem;
+  background-color: #f5f0e1;
+  color: #8b4513;
+}
+.icon-btn {
+  background-color: #f5f0e1;
+  border: 1px solid #8b4513;
+  border-radius: 5px;
+  padding: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.icon-btn:hover {
+  background-color: #e0d9c5;
+  transform: scale(1.05);
+}
+/* Profile Card Layout */
+.profile-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid #8b4513;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.profile-header {
+  text-align: center;
+}
+.profile-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.profile-left, .profile-right {
+  flex: 1;
+  min-width: 250px;
+}
+/* Title with softened drop shadow */
+.profile-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+.basic-info p {
+  margin: 5px 0;
+}
+.artifact-section {
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #8b4513;
+}
+.artifact-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.color-box {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 5px;
+  border-radius: 3px;
+  border: 1px solid #000;
+}
+.icon { margin-right: 8px; color: #8b4513; }
+.spell-charges { margin-left: 5px; font-style: italic; }
+/* Toned-down glow */
+.glow-green { text-shadow: 0 0 4px green; }
+.glow-red { text-shadow: 0 0 4px red; }
+.copy-btn {
+  background-color: #f5f0e1;
+  color: #8b4513;
+  border: 1px solid #8b4513;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.copy-btn:hover {
+  background-color: #e0d9c5;
+  transform: scale(1.02);
+}
+/* Toast Notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #f5f0e1;
+  color: #8b4513;
+  border: 1px solid #8b4513;
+  padding: 15px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(-20px);
+  z-index: 1000;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (max-width: 600px) {
+  h1 { font-size: 1.5rem; }
+  .icon-btn { padding: 6px 10px; font-size: 1rem; }
+  .copy-btn { padding: 6px 12px; font-size: 0.8rem; }
+}
