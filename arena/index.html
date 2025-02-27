@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Solo Battle Arena</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #7b2cbf;
+            --secondary-color: #9d4edd;
+            --tertiary-color: #c77dff;
+            --accent-color: #e0aaff;
+            --dark-color: #240046;
+            --light-color: #f8f9fa;
+            --success-color: #38b000;
+            --danger-color: #d90429;
+            --warning-color: #ffb703;
+            --info-color: #00b4d8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: var(--light-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23121212"/><path d="M0,0L100,100M100,0L0,100" stroke="%23240046" stroke-width="0.5"/></svg>');
+            background-size: 20px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        button .material-icons {
+            margin-right: 5px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Title Screen */
+        #title-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        #title-screen h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px var(--tertiary-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Character Creation */
+        #character-creation {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .creation-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .creation-section {
+            background-color: rgba(36, 0, 70, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .creation-section h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--tertiary-color);
+        }
+
+        .option-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .option-card {
+            background-color: var(--dark-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+        }
+
+        .option-card.selected {
+            background-color: var(--primary-color);
+            border-color: var(--accent-color);
+        }
+
+        .option-card .material-icons {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .attribute-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .attribute {
+            text-align: center;
+            background-color: rgba(36, 0, 70, 0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .attribute h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .attribute-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .attribute-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .attribute-buttons button {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            margin: 0 0.25rem;
+            font-size: 1.2rem;
+        }
+
+        .points-remaining {
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: var(--warning-color);
+        }
+
+        .character-preview {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .character-name-input {
+            background-color: var(--dark-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 4px;
+            color: var(--light-color);
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .creation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Battle Screen */
+        #battle-screen {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .battle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            background-color: rgba(36, 0, 70, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .battle-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .round-info {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--tertiary-color);
+        }
+
+        .battle-arena {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .battle-arena {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .combatant-card {
+            background-color: rgba(36, 0, 70, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            min-height: 300px;
+        }
+
+        .combatant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .combatant-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .combatant-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--dark-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            border: 2px solid var(--primary-color);
+            overflow: hidden;
+        }
+
+        .combatant-avatar .material-icons {
+            font-size: 3rem;
+            color: var(--accent-color);
+        }
+
+        .combatant-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .combatant-stat {
+            text-align: center;
+            background-color: rgba(36, 0, 70, 0.5);
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        .combatant-stat-name {
+            font-size: 0.8rem;
+            color: var(--tertiary-color);
+        }
+
+        .combatant-stat-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .health-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .health-bar {
+            height: 100%;
+            background-color: var(--success-color);
+            width: 100%;
+            transition: width 0.5s;
+            position: relative;
+        }
+
+        .health-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px #000;
+            white-space: nowrap;
+        }
+
+        .status-effects {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .status-effect {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-effect .material-icons {
+            font-size: 1rem;
+            margin-right: 0.25rem;
+        }
+
+        .action-timer {
+            width: 100%;
+            height: 5px;
+            background-color: #444;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background-color: var(--warning-color);
+            width: 0%;
+            transition: width linear;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .action-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .battle-log {
+            background-color: rgba(36, 0, 70, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--dark-color);
+        }
+
+        .log-entry:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .log-player {
+            color: var(--info-color);
+        }
+
+        .log-enemy {
+            color: var(--danger-color);
+        }
+
+        .log-system {
+            color: var(--warning-color);
+        }
+
+        .log-critical {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Battle End Screen */
+        #battle-end {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .result-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px var(--tertiary-color);
+        }
+
+        .victory {
+            color: var(--success-color);
+            animation: victory 2s infinite;
+        }
+
+        @keyframes victory {
+            0% { transform: scale(1); text-shadow: 0 0 10px var(--success-color); }
+            50% { transform: scale(1.1); text-shadow: 0 0 20px var(--success-color); }
+            100% { transform: scale(1); text-shadow: 0 0 10px var(--success-color); }
+        }
+
+        .defeat {
+            color: var(--danger-color);
+            animation: defeat 2s infinite;
+        }
+
+        @keyframes defeat {
+            0% { transform: scale(1); text-shadow: 0 0 10px var(--danger-color); }
+            50% { transform: scale(1.1); text-shadow: 0 0 20px var(--danger-color); }
+            100% { transform: scale(1); text-shadow: 0 0 10px var(--danger-color); }
+        }
+
+        .battle-stats {
+            background-color: rgba(36, 0, 70, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .battle-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--dark-color);
+        }
+
+        .battle-stat:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .battle-stat-name {
+            font-weight: bold;
+        }
+
+        .battle-stat-value {
+            color: var(--accent-color);
+        }
+
+        .rewards {
+            background-color: rgba(36, 0, 70, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reward-item .material-icons {
+            color: var(--warning-color);
+            margin-right: 0.5rem;
+        }
+
+        .end-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
+            max-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .toast .material-icons {
+            margin-right: 0.5rem;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--info-color);
+        }
+
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--dark-color);
+            border-top: 5px solid var(--tertiary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            color: var(--tertiary-color);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--dark-color);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.5s;
+        }
+
+        @keyframes modalIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--light-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .level-up-container {
+            text-align: center;
+        }
+
+        .level-up-container h2 {
+            color: var(--tertiary-color);
+            margin-bottom: 1rem;
+        }
+
+        .level-up-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .level-up-stat {
+            background-color: rgba(36, 0, 70, 0.7);
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .level-up-stat-name {
+            font-weight: bold;
+        }
+
+        .level-up-stat-value {
+            color: var(--success-color);
+        }
+
+        .new-ability {
+            background-color: rgba(36, 0, 70, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .new-ability h4 {
+            color: var(--tertiary-color);
+            margin-bottom: 0.5rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .new-ability h4 .material-icons {
+            margin-right: 0.5rem;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Animation effects */
+        .attack-animation {
+            animation: attack 0.5s;
+        }
+
+        @keyframes attack {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-20px); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+
+        .damage-animation {
+            animation: damage 0.5s;
+        }
+
+        @keyframes damage {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(10px); }
+            50% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .heal-animation {
+            animation: heal 1s;
+        }
+
+        @keyframes heal {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(1); }
+        }
+
+        .critical-text {
+            position: absolute;
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 2rem;
+            z-index: 100;
+            animation: criticalText 1s forwards;
+            text-shadow: 0 0 10px var(--danger-color);
+        }
+
+        @keyframes criticalText {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -100%) scale(1.5); }
+            100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+        }
+
+        .dodge-text {
+            position: absolute;
+            color: var(--info-color);
+            font-weight: bold;
+            font-size: 1.5rem;
+            z-index: 100;
+            animation: dodgeText 1s forwards;
+            text-shadow: 0 0 10px var(--info-color);
+        }
+
+        @keyframes dodgeText {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -100%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+        }
+
+        /* Dice rolling animation */
+        .dice-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            perspective: 600px;
+            width: 100px;
+            height: 100px;
+            display: none;
+        }
+
+        .dice-container.active {
+            display: block;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rolling 2s;
+        }
+
+        @keyframes rolling {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            25% { transform: rotateX(180deg) rotateY(90deg) rotateZ(180deg); }
+            50% { transform: rotateX(360deg) rotateY(180deg) rotateZ(270deg); }
+            75% { transform: rotateX(180deg) rotateY(270deg) rotateZ(180deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            border: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--light-color);
+        }
+
+        .dice-face-1 { transform: translateZ(50px); }
+        .dice-face-2 { transform: rotateY(180deg) translateZ(50px); }
+        .dice-face-3 { transform: rotateY(90deg) translateZ(50px); }
+        .dice-face-4 { transform: rotateY(-90deg) translateZ(50px); }
+        .dice-face-5 { transform: rotateX(90deg) translateZ(50px); }
+        .dice-face-6 { transform: rotateX(-90deg) translateZ(50px); }
+
+        .dice-result {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--tertiary-color);
+            white-space: nowrap;
+        }
+
+        /* Random events */
+        .event-banner {
+            background-color: var(--warning-color);
+            color: #333;
+            text-align: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            animation: eventBanner 0.5s;
+        }
+
+        @keyframes eventBanner {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .creation-container {
+                grid-template-columns: 1fr;
+            }
+
+            .attribute-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .battle-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .end-buttons {
+                flex-direction: column;
+            }
+
+            .level-up-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="dice-container" id="dice-container">
+        <div class="dice" id="dice">
+            <div class="dice-face dice-face-1">1</div>
+            <div class="dice-face dice-face-2">2</div>
+            <div class="dice-face dice-face-3">3</div>
+            <div class="dice-face dice-face-4">4</div>
+            <div class="dice-face dice-face-5">5</div>
+            <div class="dice-face dice-face-6">6</div>
+        </div>
+        <div class="dice-result" id="dice-result"></div>
+    </div>
+
+    <div class="loading" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <div class="modal" id="level-up-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-level-modal">×</button>
+            <div class="level-up-container">
+                <h2>Level Up!</h2>
+                <div class="level-up-stats" id="level-up-stats">
+                    <!-- Stats will be populated dynamically -->
+                </div>
+                <div class="new-ability" id="new-ability">
+                    <!-- New ability will be populated dynamically -->
+                </div>
+                <button id="confirm-level-up">
+                    <i class="material-icons">check_circle</i>
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Title Screen -->
+        <div class="screen active" id="title-screen">
+            <h1>D&D Solo Battle Arena</h1>
+            <div class="main-menu">
+                <button id="new-game-btn">
+                    <i class="material-icons">add_circle</i>
+                    New Game
+                </button>
+                <button id="load-game-btn" disabled>
+                    <i class="material-icons">restore</i>
+                    Load Game
+                </button>
+                <button id="about-btn">
+                    <i class="material-icons">info</i>
+                    About
+                </button>
+            </div>
+        </div>
+
+        <!-- Character Creation Screen -->
+        <div class="screen" id="character-creation">
+            <h2>Create Your Character</h2>
+            <div class="creation-container">
+                <div class="creation-section">
+                    <h3>Race</h3>
+                    <div class="option-list" id="race-options">
+                        <!-- Race options will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="creation-section">
+                    <h3>Class</h3>
+                    <div class="option-list" id="class-options">
+                        <!-- Class options will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="creation-section">
+                <h3>Attributes</h3>
+                <div class="points-remaining" id="points-remaining">
+                    Points Remaining: 27
+                </div>
+                <div class="attribute-container" id="attributes">
+                    <!-- Attributes will be populated dynamically -->
+                </div>
+            </div>
+
+            <div class="creation-section">
+                <h3>Character Preview</h3>
+                <div class="character-preview">
+                    <input type="text" class="character-name-input" id="character-name" placeholder="Enter character name" maxlength="20">
+                    <div class="combatant-avatar">
+                        <i class="material-icons" id="character-icon">person</i>
+                    </div>
+                    <div class="combatant-stats" id="preview-stats">
+                        <!-- Preview stats will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="creation-buttons">
+                <button id="back-to-title">
+                    <i class="material-icons">arrow_back</i>
+                    Back
+                </button>
+                <button id="create-character">
+                    <i class="material-icons">check_circle</i>
+                    Create
+                </button>
+            </div>
+        </div>
+
+        <!-- Battle Screen -->
+        <div class="screen" id="battle-screen">
+            <div class="battle-header">
+                <button id="back-to-menu">
+                    <i class="material-icons">menu</i>
+                    Menu
+                </button>
+                <div class="battle-info">
+                    <div class="round-info" id="round-info">Round 1</div>
+                </div>
+                <div class="player-info">
+                    <div class="player-level" id="player-level">Level 1</div>
+                </div>
+            </div>
+
+            <div class="battle-arena">
+                <div class="combatant-card" id="player-card">
+                    <div class="combatant-header">
+                        <div class="combatant-name" id="player-name">Player</div>
+                    </div>
+                    <div class="combatant-avatar">
+                        <i class="material-icons" id="player-icon">person</i>
+                    </div>
+                    <div class="health-bar-container">
+                        <div class="health-bar" id="player-health-bar">
+                            <div class="health-text" id="player-health-text">100/100</div>
+                        </div>
+                    </div>
+                    <div class="action-timer">
+                        <div class="timer-bar" id="player-timer"></div>
+                    </div>
+                    <div class="combatant-stats" id="player-stats">
+                        <!-- Player stats will be populated dynamically -->
+                    </div>
+                    <div class="status-effects" id="player-status-effects">
+                        <!-- Status effects will be populated dynamically -->
+                    </div>
+                    <div class="action-buttons" id="player-actions">
+                        <!-- Action buttons will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="combatant-card" id="enemy-card">
+                    <div class="combatant-header">
+                        <div class="combatant-name" id="enemy-name">Enemy</div>
+                    </div>
+                    <div class="combatant-avatar">
+                        <i class="material-icons" id="enemy-icon">smart_toy</i>
+                    </div>
+                    <div class="health-bar-container">
+                        <div class="health-bar" id="enemy-health-bar">
+                            <div class="health-text" id="enemy-health-text">100/100</div>
+                        </div>
+                    </div>
+                    <div class="action-timer">
+                        <div class="timer-bar" id="enemy-timer"></div>
+                    </div>
+                    <div class="combatant-stats" id="enemy-stats">
+                        <!-- Enemy stats will be populated dynamically -->
+                    </div>
+                    <div class="status-effects" id="enemy-status-effects">
+                        <!-- Status effects will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="battle-log" id="battle-log">
+                <!-- Battle log entries will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Battle End Screen -->
+        <div class="screen" id="battle-end">
+            <h2 class="result-title" id="result-title">Victory!</h2>
+            <div class="battle-stats">
+                <div class="battle-stat">
+                    <div class="battle-stat-name">Rounds</div>
+                    <div class="battle-stat-value" id="stat-rounds">0</div>
+                </div>
+                <div class="battle-stat">
+                    <div class="battle-stat-name">Damage Dealt</div>
+                    <div class="battle-stat-value" id="stat-damage-dealt">0</div>
+                </div>
+                <div class="battle-stat">
+                    <div class="battle-stat-name">Damage Taken</div>
+                    <div class="battle-stat-value" id="stat-damage-taken">0</div>
+                </div>
+                <div class="battle-stat">
+                    <div class="battle-stat-name">Critical Hits</div>
+                    <div class="battle-stat-value" id="stat-critical-hits">0</div>
+                </div>
+                <div class="battle-stat">
+                    <div class="battle-stat-name">Experience Gained</div>
+                    <div class="battle-stat-value" id="stat-xp-gained">0</div>
+                </div>
+            </div>
+
+            <div class="rewards" id="rewards">
+                <h3>Rewards</h3>
+                <!-- Rewards will be populated dynamically -->
+            </div>
+
+            <div class="end-buttons">
+                <button id="return-to-menu">
+                    <i class="material-icons">home</i>
+                    Main Menu
+                </button>
+                <button id="next-battle">
+                    <i class="material-icons">skip_next</i>
+                    Next Battle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the icons we need for races that don't have material icons
+        const customIcons = {
+            elvish: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12,22c4.97,0,9-4.03,9-9c-0.93,0-1.68,0.75-1.68,1.68c0,1.85-1.5,3.35-3.35,3.35 c-1.85,0-3.35-1.5-3.35-3.35c0-0.93-0.75-1.68-1.68-1.68c-0.93,0-1.68,0.75-1.68,1.68c0,1.85-1.5,3.35-3.35,3.35 c-1.85,0-3.35-1.5-3.35-3.35c0-0.93-0.75-1.68-1.68-1.68c0,4.97,4.03,9,9,9z M12,2C6.48,2,2,6.48,2,12 c1.54,0,2.78,1.25,2.78,2.78c0,1.54,1.25,2.78,2.78,2.78c1.54,0,2.78-1.25,2.78-2.78c0-1.54,1.25-2.78,2.78-2.78 s2.78,1.25,2.78,2.78c0,1.54,1.25,2.78,2.78,2.78c1.54,0,2.78-1.25,2.78-2.78c0-1.54,1.25-2.78,2.78-2.78 C22,6.48,17.52,2,12,2z"/></svg>`,
+            stealth: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12,4C9.79,4,8,5.79,8,8s1.79,4,4,4s4-1.79,4-4S14.21,4,12,4z M20,19v1c0,0.55-0.45,1-1,1H5c-0.55,0-1-0.45-1-1v-1 c0-2.77,2.23-5,5-5h6C17.77,14,20,16.23,20,19z M15.25,12c-0.41,0-0.75-0.34-0.75-0.75v-0.5C14.5,10.34,14.84,10,15.25,10 s0.75,0.34,0.75,0.75v0.5C16,11.66,15.66,12,15.25,12z M18,10.75c0-0.41,0.34-0.75,0.75-0.75S19.5,10.34,19.5,10.75v0.5 c0,0.41-0.34,0.75-0.75,0.75S18,11.66,18,11.25V10.75z M8.5,10.75c0-0.41,0.34-0.75,0.75-0.75S10,10.34,10,10.75v0.5 c0,0.41-0.34,0.75-0.75,0.75S8.5,11.66,8.5,11.25V10.75z M8.75,8c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S8.2,8,8.75,8z M15.25,8c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S14.7,8,15.25,8z"/></svg>`,
+            dragon: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M16.03,15.58c-0.28-0.15-0.68-0.52-0.68-1.53V9.99l-4.62,3.24c-0.44,0.32-1.03,0.25-1.38-0.16 c-0.37-0.41-0.36-1.07,0.01-1.45l6.96-6.63C16.88,4.46,17.58,4.34,17.87,4.32C19.19,4.22,20.75,4.03,22,4V2H7v18h1c1.07,0,2.09,0.25,3,0.69 V12h1v8.31c0.89,0.44,1.91,0.69,3,0.69h1v-10h1v2.06c0,1.35,0.45,3.58,3.24,3.58c1.79,0,2.62-1.17,2.8-1.71 C23.38,13.6,23.75,12,22,12C19.38,12,17.65,16.56,16.03,15.58z M4,4v2c0,0-2,0-2,2v6c0,2,2,2,2,2v2c0,0-4,0-4-4V8C0,4,4,4,4,4z"/></svg>`,
+            skull: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12,2C7.03,2,3,6.03,3,11c0,2.49,1.03,4.73,2.68,6.36c1.34,1.31,1.57,2.27,1.57,3.64h0v1h10h0v-1h0 c0-1.36,0.23-2.33,1.57-3.64C20.97,15.73,22,13.49,22,11C22,6.03,17.97,2,13,2H12z M15.25,14c-0.41,0-0.75-0.34-0.75-0.75 c0-0.41,0.34-0.75,0.75-0.75c0.41,0,0.75,0.34,0.75,0.75C16,13.66,15.66,14,15.25,14z M15.25,12c-0.41,0-0.75-0.34-0.75-0.75V10.5 c0-0.41,0.34-0.75,0.75-0.75c0.41,0,0.75,0.34,0.75,0.75v0.75C16,11.66,15.66,12,15.25,12z M8.75,14c-0.41,0-0.75-0.34-0.75-0.75 c0-0.41,0.34-0.75,0.75-0.75s0.75,0.34,0.75,0.75C9.5,13.66,9.16,14,8.75,14z M8.75,12c-0.41,0-0.75-0.34-0.75-0.75V10.5 c0-0.41,0.34-0.75,0.75-0.75s0.75,0.34,0.75,0.75v0.75C9.5,11.66,9.16,12,8.75,12z"/></svg>`,
+            deceased: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10,2H14V7H10V2M14,9H10V22H14V9Z"/></svg>`
+        };
+        // Game Data
+        const races = [
+            {
+                id: 'human',
+                name: 'Human',
+                icon: 'person',
+                bonuses: {
+                    strength: 1,
+                    dexterity: 1,
+                    constitution: 1,
+                    intelligence: 1,
+                    wisdom: 1,
+                    charisma: 1
+                },
+                description: 'Versatile and adaptable, humans gain +1 to all attributes.'
+            },
+            {
+                id: 'elf',
+                name: 'Elf',
+                icon: 'elvish',
+                bonuses: {
+                    dexterity: 2,
+                    intelligence: 1,
+                    wisdom: 1
+                },
+                description: 'Graceful and intelligent, elves gain +2 to Dexterity and +1 to Intelligence and Wisdom.'
+            },
+            {
+                id: 'dwarf',
+                name: 'Dwarf',
+                icon: 'engineering',
+                bonuses: {
+                    constitution: 2,
+                    strength: 1,
+                    wisdom: 1
+                },
+                description: 'Hardy and resilient, dwarves gain +2 to Constitution and +1 to Strength and Wisdom.'
+            },
+            {
+                id: 'halfling',
+                name: 'Halfling',
+                icon: 'child_care',
+                bonuses: {
+                    dexterity: 2,
+                    charisma: 1,
+                    luck: 1
+                },
+                description: 'Nimble and lucky, halflings gain +2 to Dexterity, +1 to Charisma, and have a Lucky trait that allows them to reroll 1s on d20 rolls.'
+            },
+            {
+                id: 'dragonborn',
+                name: 'Dragonborn',
+                icon: 'whatshot',
+                bonuses: {
+                    strength: 2,
+                    charisma: 1,
+                    fireResistance: 50
+                },
+                description: 'Powerful dragon-humanoids, dragonborn gain +2 to Strength, +1 to Charisma, and have 50% resistance to fire damage.'
+            }
+        ];
+
+        const classes = [
+            {
+                id: 'fighter',
+                name: 'Fighter',
+                icon: 'security',
+                baseStats: {
+                    health: 12,
+                    mana: 0,
+                    strength: 3,
+                    dexterity: 2,
+                    constitution: 3,
+                    intelligence: 0,
+                    wisdom: 1,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Basic Attack',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with your weapon.',
+                        cooldown: 0,
+                        manaCost: 0,
+                        damage: 'strengthMod * d6 + 2',
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'second_wind',
+                        name: 'Second Wind',
+                        icon: 'healing',
+                        description: 'Recover some health.',
+                        cooldown: 4,
+                        manaCost: 0,
+                        healing: 'd8 + constitutionMod',
+                        target: 'self',
+                        type: 'healing'
+                    },
+                    {
+                        id: 'power_attack',
+                        name: 'Power Attack',
+                        icon: 'flash_on',
+                        description: 'A powerful attack that deals extra damage.',
+                        cooldown: 3,
+                        manaCost: 0,
+                        damage: 'strengthMod * d8 + 4',
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'defensive_stance',
+                        name: 'Defensive Stance',
+                        icon: 'shield',
+                        description: 'Take a defensive stance, reducing damage taken.',
+                        cooldown: 5,
+                        manaCost: 0,
+                        effect: {
+                            type: 'defense',
+                            value: 50,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                description: 'Masters of combat, fighters excel at dealing and soaking damage.'
+            },
+            {
+                id: 'wizard',
+                name: 'Wizard',
+                icon: 'auto_fix_high',
+                baseStats: {
+                    health: 6,
+                    mana: 20,
+                    strength: 0,
+                    dexterity: 1,
+                    constitution: 1,
+                    intelligence: 4,
+                    wisdom: 2,
+                    charisma: 1
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Magic Missile',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic magic attack that never misses.',
+                        cooldown: 0,
+                        manaCost: 1,
+                        damage: 'intelligenceMod * d4 + 3',
+                        target: 'enemy',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'fireball',
+                        name: 'Fireball',
+                        icon: 'local_fire_department',
+                        description: 'Launch a ball of fire at your enemy.',
+                        cooldown: 3,
+                        manaCost: 5,
+                        damage: 'intelligenceMod * d10 + 5',
+                        target: 'enemy',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'barrier',
+                        name: 'Arcane Barrier',
+                        icon: 'shield',
+                        description: 'Create a magical barrier that absorbs damage.',
+                        cooldown: 4,
+                        manaCost: 6,
+                        effect: {
+                            type: 'shield',
+                            value: 'intelligenceMod * d8 + 5',
+                            duration: 3
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    },
+                    {
+                        id: 'restore_mana',
+                        name: 'Mana Surge',
+                        icon: 'bolt',
+                        description: 'Restore some mana.',
+                        cooldown: 5,
+                        manaCost: 0,
+                        effect: {
+                            type: 'mana',
+                            value: 'intelligenceMod * d6 + 5'
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                description: 'Masters of arcane magic, wizards can unleash devastating spells at the cost of physical frailty.'
+            },
+            {
+                id: 'rogue',
+                name: 'Rogue',
+                icon: 'stealth',
+                baseStats: {
+                    health: 8,
+                    mana: 0,
+                    strength: 1,
+                    dexterity: 4,
+                    constitution: 1,
+                    intelligence: 2,
+                    wisdom: 1,
+                    charisma: 2
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Sneak Attack',
+                        icon: 'sports_kabaddi',
+                        description: 'A stealthy attack that deals extra damage.',
+                        cooldown: 0,
+                        manaCost: 0,
+                        damage: 'dexterityMod * d6 + 2',
+                        criticalChance: 20,
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'backstab',
+                        name: 'Backstab',
+                        icon: 'outbreak',
+                        description: 'A devastating attack from behind.',
+                        cooldown: 3,
+                        manaCost: 0,
+                        damage: 'dexterityMod * d8 + 5',
+                        criticalChance: 25,
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'evasion',
+                        name: 'Evasion',
+                        icon: 'directions_run',
+                        description: 'Dodge incoming attacks.',
+                        cooldown: 4,
+                        manaCost: 0,
+                        effect: {
+                            type: 'dodge',
+                            value: 80,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    },
+                    {
+                        id: 'poison',
+                        name: 'Poison Strike',
+                        icon: 'science',
+                        description: 'Apply poison to your weapon, dealing damage over time.',
+                        cooldown: 5,
+                        manaCost: 0,
+                        damage: 'dexterityMod * d4',
+                        effect: {
+                            type: 'poison',
+                            value: 'dexterityMod * 2',
+                            duration: 3
+                        },
+                        target: 'enemy',
+                        type: 'physical'
+                    }
+                ],
+                description: 'Masters of stealth and precision, rogues excel at critical strikes and evasion.'
+            },
+            {
+                id: 'cleric',
+                name: 'Cleric',
+                icon: 'church',
+                baseStats: {
+                    health: 10,
+                    mana: 15,
+                    strength: 1,
+                    dexterity: 0,
+                    constitution: 2,
+                    intelligence: 1,
+                    wisdom: 4,
+                    charisma: 2
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Mace Strike',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with your mace.',
+                        cooldown: 0,
+                        manaCost: 0,
+                        damage: 'strengthMod * d6 + 1',
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'heal',
+                        name: 'Heal',
+                        icon: 'healing',
+                        description: 'Heal yourself or an ally.',
+                        cooldown: 2,
+                        manaCost: 4,
+                        healing: 'wisdomMod * d8 + 5',
+                        target: 'self',
+                        type: 'healing'
+                    },
+                    {
+                        id: 'smite',
+                        name: 'Divine Smite',
+                        icon: 'bolt',
+                        description: 'Call down divine energy to smite your enemy.',
+                        cooldown: 3,
+                        manaCost: 5,
+                        damage: 'wisdomMod * d8 + 5',
+                        target: 'enemy',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'bless',
+                        name: 'Bless',
+                        icon: 'emoji_objects',
+                        description: 'Bless yourself, increasing your attributes.',
+                        cooldown: 5,
+                        manaCost: 6,
+                        effect: {
+                            type: 'bless',
+                            value: 2,
+                            duration: 3
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                description: 'Divine spellcasters, clerics excel at healing and supporting allies while still holding their own in combat.'
+            },
+            {
+                id: 'ranger',
+                name: 'Ranger',
+                icon: 'forest',
+                baseStats: {
+                    health: 10,
+                    mana: 5,
+                    strength: 1,
+                    dexterity: 3,
+                    constitution: 2,
+                    intelligence: 1,
+                    wisdom: 3,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Bow Shot',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with your bow.',
+                        cooldown: 0,
+                        manaCost: 0,
+                        damage: 'dexterityMod * d8 + 1',
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'multishot',
+                        name: 'Multishot',
+                        icon: 'bolt',
+                        description: 'Fire multiple arrows at once.',
+                        cooldown: 3,
+                        manaCost: 3,
+                        damage: 'dexterityMod * d6 * 3',
+                        target: 'enemy',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'track',
+                        name: 'Track',
+                        icon: 'search',
+                        description: 'Track your enemy, increasing your hit chance.',
+                        cooldown: 4,
+                        manaCost: 2,
+                        effect: {
+                            type: 'accuracy',
+                            value: 20,
+                            duration: 3
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    },
+                    {
+                        id: 'nature_bond',
+                        name: 'Nature\'s Bond',
+                        icon: 'eco',
+                        description: 'Bond with nature, healing yourself and increasing your attributes.',
+                        cooldown: 5,
+                        manaCost: 4,
+                        healing: 'wisdomMod * d6 + 3',
+                        effect: {
+                            type: 'natural_affinity',
+                            value: 2,
+                            duration: 3
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                description: 'Masters of the wilderness, rangers excel at ranged combat and tracking.'
+            }
+        ];
+
+        const enemies = [
+            {
+                id: 'goblin',
+                name: 'Goblin',
+                icon: 'pest_control',
+                level: 1,
+                stats: {
+                    health: 15,
+                    strength: 1,
+                    dexterity: 2,
+                    constitution: 1,
+                    intelligence: 0,
+                    wisdom: 0,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Dagger Strike',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a dagger.',
+                        cooldown: 0,
+                        damage: 'd4 + 1',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'sneak',
+                        name: 'Sneak Attack',
+                        icon: 'diversity_3',
+                        description: 'A sneaky attack that deals extra damage.',
+                        cooldown: 3,
+                        damage: 'd6 + 2',
+                        target: 'player',
+                        type: 'physical'
+                    }
+                ],
+                xp: 100,
+                goldReward: [5, 10],
+                description: 'A small, green-skinned creature with a mischievous grin.'
+            },
+            {
+                id: 'orc',
+                name: 'Orc',
+                icon: 'fitness_center',
+                level: 2,
+                stats: {
+                    health: 25,
+                    strength: 3,
+                    dexterity: 1,
+                    constitution: 2,
+                    intelligence: 0,
+                    wisdom: 0,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Axe Swing',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with an axe.',
+                        cooldown: 0,
+                        damage: 'd6 + 3',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'rage',
+                        name: 'Rage',
+                        icon: 'mood_bad',
+                        description: 'Enter a rage, increasing damage.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'rage',
+                            value: 3,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    },
+                    {
+                        id: 'cleave',
+                        name: 'Cleave',
+                        icon: 'bolt',
+                        description: 'A powerful sweeping attack.',
+                        cooldown: 3,
+                        damage: 'd8 + 4',
+                        target: 'player',
+                        type: 'physical'
+                    }
+                ],
+                xp: 200,
+                goldReward: [10, 20],
+                description: 'A muscular, green-skinned humanoid with tusks protruding from its mouth.'
+            },
+            {
+                id: 'skeleton',
+                name: 'Skeleton',
+                icon: 'skull',
+                level: 1,
+                stats: {
+                    health: 12,
+                    strength: 1,
+                    dexterity: 2,
+                    constitution: 0,
+                    intelligence: 0,
+                    wisdom: 0,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Bone Strike',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a bone club.',
+                        cooldown: 0,
+                        damage: 'd4 + 1',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'reassemble',
+                        name: 'Reassemble',
+                        icon: 'recycling',
+                        description: 'Reassemble your bones, recovering health.',
+                        cooldown: 5,
+                        healing: 'd6 + 2',
+                        target: 'self',
+                        type: 'healing'
+                    }
+                ],
+                xp: 100,
+                goldReward: [5, 10],
+                description: 'A walking skeleton animated by dark magic.'
+            },
+            {
+                id: 'zombie',
+                name: 'Zombie',
+                icon: 'deceased',
+                level: 1,
+                stats: {
+                    health: 20,
+                    strength: 2,
+                    dexterity: 0,
+                    constitution: 2,
+                    intelligence: 0,
+                    wisdom: 0,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Zombie Bite',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with rotten teeth.',
+                        cooldown: 0,
+                        damage: 'd4 + 2',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'disease',
+                        name: 'Spread Disease',
+                        icon: 'coronavirus',
+                        description: 'Spread disease, dealing damage over time.',
+                        cooldown: 4,
+                        damage: 'd4',
+                        effect: {
+                            type: 'disease',
+                            value: 2,
+                            duration: 3
+                        },
+                        target: 'player',
+                        type: 'physical'
+                    }
+                ],
+                xp: 120,
+                goldReward: [5, 15],
+                description: 'A rotting corpse animated by dark magic.'
+            },
+            {
+                id: 'wolf',
+                name: 'Wolf',
+                icon: 'pets',
+                level: 1,
+                stats: {
+                    health: 15,
+                    strength: 1,
+                    dexterity: 3,
+                    constitution: 1,
+                    intelligence: 0,
+                    wisdom: 1,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Wolf Bite',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with sharp teeth.',
+                        cooldown: 0,
+                        damage: 'd4 + 1',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'howl',
+                        name: 'Howl',
+                        icon: 'campaign',
+                        description: 'Howl, increasing your attributes.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'howl',
+                            value: 1,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                xp: 100,
+                goldReward: [5, 10],
+                description: 'A feral wolf with sharp teeth and piercing yellow eyes.'
+            },
+            {
+                id: 'giant_spider',
+                name: 'Giant Spider',
+                icon: 'bug_report',
+                level: 2,
+                stats: {
+                    health: 20,
+                    strength: 1,
+                    dexterity: 3,
+                    constitution: 1,
+                    intelligence: 0,
+                    wisdom: 1,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Spider Bite',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with venomous fangs.',
+                        cooldown: 0,
+                        damage: 'd4 + 1',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'web',
+                        name: 'Web',
+                        icon: 'catching_pokemon',
+                        description: 'Entangle your enemy in a web, reducing their attributes.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'web',
+                            value: 2,
+                            duration: 2
+                        },
+                        target: 'player',
+                        type: 'debuff'
+                    },
+                    {
+                        id: 'venom',
+                        name: 'Venom',
+                        icon: 'science',
+                        description: 'Inject venom, dealing damage over time.',
+                        cooldown: 3,
+                        damage: 'd4',
+                        effect: {
+                            type: 'poison',
+                            value: 2,
+                            duration: 3
+                        },
+                        target: 'player',
+                        type: 'physical'
+                    }
+                ],
+                xp: 150,
+                goldReward: [10, 15],
+                description: 'A massive spider with eight hairy legs and venomous fangs.'
+            },
+            {
+                id: 'cultist',
+                name: 'Cultist',
+                icon: 'psychology',
+                level: 2,
+                stats: {
+                    health: 18,
+                    strength: 1,
+                    dexterity: 1,
+                    constitution: 1,
+                    intelligence: 2,
+                    wisdom: 1,
+                    charisma: 2
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Dagger Strike',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a ceremonial dagger.',
+                        cooldown: 0,
+                        damage: 'd4 + 1',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'dark_magic',
+                        name: 'Dark Magic',
+                        icon: 'auto_fix_high',
+                        description: 'Cast a spell of dark magic.',
+                        cooldown: 3,
+                        damage: 'd6 + 3',
+                        target: 'player',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'sacrifice',
+                        name: 'Blood Sacrifice',
+                        icon: 'bloodtype',
+                        description: 'Sacrifice some health to deal more damage.',
+                        cooldown: 4,
+                        damage: 'd8 + 4',
+                        selfDamage: 'd4',
+                        target: 'player',
+                        type: 'magical'
+                    }
+                ],
+                xp: 180,
+                goldReward: [10, 18],
+                description: 'A robed figure with mysterious symbols adorning their clothing.'
+            },
+            {
+                id: 'ogre',
+                name: 'Ogre',
+                icon: 'sentiment_very_dissatisfied',
+                level: 3,
+                stats: {
+                    health: 35,
+                    strength: 4,
+                    dexterity: 0,
+                    constitution: 3,
+                    intelligence: 0,
+                    wisdom: 0,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Club Smash',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a massive club.',
+                        cooldown: 0,
+                        damage: 'd8 + 4',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'ground_slam',
+                        name: 'Ground Slam',
+                        icon: 'bolt',
+                        description: 'Slam the ground, creating a shockwave.',
+                        cooldown: 3,
+                        damage: 'd10 + 5',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'roar',
+                        name: 'Intimidating Roar',
+                        icon: 'campaign',
+                        description: 'Roar intimidatingly, reducing enemy\'s attributes.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'intimidate',
+                            value: 2,
+                            duration: 2
+                        },
+                        target: 'player',
+                        type: 'debuff'
+                    }
+                ],
+                xp: 300,
+                goldReward: [20, 30],
+                description: 'A massive, brutish humanoid with thick skin and incredible strength.'
+            },
+            {
+                id: 'bandit',
+                name: 'Bandit',
+                icon: 'face',
+                level: 2,
+                stats: {
+                    health: 20,
+                    strength: 2,
+                    dexterity: 2,
+                    constitution: 1,
+                    intelligence: 1,
+                    wisdom: 1,
+                    charisma: 1
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Sword Slash',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a sword.',
+                        cooldown: 0,
+                        damage: 'd6 + 2',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'steal',
+                        name: 'Steal',
+                        icon: 'savings',
+                        description: 'Attempt to steal gold.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'steal',
+                            value: [1, 5]
+                        },
+                        target: 'player',
+                        type: 'special'
+                    },
+                    {
+                        id: 'dirty_trick',
+                        name: 'Dirty Trick',
+                        icon: 'visibility_off',
+                        description: 'Use a dirty trick to gain an advantage.',
+                        cooldown: 3,
+                        damage: 'd4 + 2',
+                        effect: {
+                            type: 'blind',
+                            value: 20,
+                            duration: 1
+                        },
+                        target: 'player',
+                        type: 'physical'
+                    }
+                ],
+                xp: 150,
+                goldReward: [15, 25],
+                description: 'A rugged individual armed with a sword and a mischievous grin.'
+            },
+            {
+                id: 'wraith',
+                name: 'Wraith',
+                icon: 'blur_on',
+                level: 3,
+                stats: {
+                    health: 25,
+                    strength: 1,
+                    dexterity: 3,
+                    constitution: 1,
+                    intelligence: 2,
+                    wisdom: 2,
+                    charisma: 0
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Spectral Touch',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with a ghostly touch.',
+                        cooldown: 0,
+                        damage: 'd6 + 2',
+                        target: 'player',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'life_drain',
+                        name: 'Life Drain',
+                        icon: 'favorite',
+                        description: 'Drain life, dealing damage and healing yourself.',
+                        cooldown: 3,
+                        damage: 'd8 + 3',
+                        healing: 'd4 + 1',
+                        target: 'player',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'fear',
+                        name: 'Induce Fear',
+                        icon: 'mood_bad',
+                        description: 'Induce fear, reducing enemy\'s attributes.',
+                        cooldown: 4,
+                        effect: {
+                            type: 'fear',
+                            value: 2,
+                            duration: 2
+                        },
+                        target: 'player',
+                        type: 'debuff'
+                    },
+                    {
+                        id: 'intangible',
+                        name: 'Intangible Form',
+                        icon: 'blur_on',
+                        description: 'Become intangible, reducing damage taken.',
+                        cooldown: 5,
+                        effect: {
+                            type: 'defense',
+                            value: 40,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                xp: 250,
+                goldReward: [0, 5],
+                description: 'A ghostly apparition with a haunting presence and glowing eyes.'
+            },
+            {
+                id: 'dragon_young',
+                name: 'Young Dragon',
+                icon: 'dragon',
+                level: 5,
+                stats: {
+                    health: 50,
+                    strength: 4,
+                    dexterity: 2,
+                    constitution: 4,
+                    intelligence: 3,
+                    wisdom: 2,
+                    charisma: 2
+                },
+                abilities: [
+                    {
+                        id: 'attack',
+                        name: 'Claw Swipe',
+                        icon: 'sports_kabaddi',
+                        description: 'A basic attack with sharp claws.',
+                        cooldown: 0,
+                        damage: 'd8 + 4',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'bite',
+                        name: 'Dragon Bite',
+                        icon: 'back_hand',
+                        description: 'A powerful bite with razor-sharp teeth.',
+                        cooldown: 2,
+                        damage: 'd10 + 5',
+                        target: 'player',
+                        type: 'physical'
+                    },
+                    {
+                        id: 'fire_breath',
+                        name: 'Fire Breath',
+                        icon: 'local_fire_department',
+                        description: 'Breathe fire, dealing massive damage.',
+                        cooldown: 4,
+                        damage: 'd12 + 8',
+                        target: 'player',
+                        type: 'magical'
+                    },
+                    {
+                        id: 'scales',
+                        name: 'Dragon Scales',
+                        icon: 'shield',
+                        description: 'Harden your scales, reducing damage taken.',
+                        cooldown: 5,
+                        effect: {
+                            type: 'defense',
+                            value: 50,
+                            duration: 2
+                        },
+                        target: 'self',
+                        type: 'buff'
+                    }
+                ],
+                xp: 500,
+                goldReward: [50, 100],
+                description: 'A young dragon with shimmering scales and fiery breath.'
+            }
+        ];
+
+        // Random Events
+        const randomEvents = [
+            {
+                id: 'ambush',
+                name: 'Ambush',
+                description: 'You\'ve been ambushed! Your enemy gets a free attack.',
+                effect: (player, enemy) => {
+                    const ability = enemy.abilities[0];
+                    const damage = calculateDamage(ability, enemy, player);
+                    applyDamage(player, damage);
+                    addToLog(`<span class="log-system">Ambush!</span> ${enemy.name} gets a free attack!`);
+                    addToLog(`<span class="log-enemy">${enemy.name}</span> uses <span class="log-enemy">${ability.name}</span> and deals <span class="log-enemy">${damage}</span> damage.`);
+                }
+            },
+            {
+                id: 'blessing',
+                name: 'Divine Blessing',
+                description: 'A divine light shines upon you, restoring some health.',
+                effect: (player, enemy) => {
+                    const healing = Math.floor(Math.random() * 10) + 5;
+                    player.currentHealth = Math.min(player.currentHealth + healing, player.maxHealth);
+                    updateHealthBar('player', player.currentHealth, player.maxHealth);
+                    addToLog(`<span class="log-system">Divine Blessing!</span> You are healed for <span class="log-player">${healing}</span> health.`);
+                }
+            },
+            {
+                id: 'treasure',
+                name: 'Hidden Treasure',
+                description: 'You spot a hidden treasure chest! You gain some gold.',
+                effect: (player, enemy) => {
+                    const gold = Math.floor(Math.random() * 20) + 10;
+                    player.gold += gold;
+                    addToLog(`<span class="log-system">Hidden Treasure!</span> You find <span class="log-player">${gold}</span> gold.`);
+                }
+            },
+            {
+                id: 'weakness',
+                name: 'Exposed Weakness',
+                description: 'You spot a weakness in your enemy\'s defenses! Your next attack will deal extra damage.',
+                effect: (player, enemy) => {
+                    player.statusEffects.push({
+                        name: 'Exploit Weakness',
+                        icon: 'bolt',
+                        description: 'Your next attack deals 50% extra damage.',
+                        duration: 1,
+                        type: 'buff',
+                        value: 50
+                    });
+                    updateStatusEffects('player', player.statusEffects);
+                    addToLog(`<span class="log-system">Exposed Weakness!</span> Your next attack will deal <span class="log-player">50%</span> extra damage.`);
+                }
+            },
+            {
+                id: 'exhaustion',
+                name: 'Exhaustion',
+                description: 'The long battle has exhausted you. Your attributes are reduced for 2 rounds.',
+                effect: (player, enemy) => {
+                    player.statusEffects.push({
+                        name: 'Exhaustion',
+                        icon: 'bedtime',
+                        description: 'Your attributes are reduced by 2.',
+                        duration: 2,
+                        type: 'debuff',
+                        value: 2
+                    });
+                    updateStatusEffects('player', player.statusEffects);
+                    addToLog(`<span class="log-system">Exhaustion!</span> Your attributes are reduced by <span class="log-enemy">2</span> for 2 rounds.`);
+                }
+            },
+            {
+                id: 'reinforcements',
+                name: 'Enemy Reinforcements',
+                description: 'Your enemy has called for reinforcements! Their health is partially restored.',
+                effect: (player, enemy) => {
+                    const healing = Math.floor(enemy.maxHealth * 0.2);
+                    enemy.currentHealth = Math.min(enemy.currentHealth + healing, enemy.maxHealth);
+                    updateHealthBar('enemy', enemy.currentHealth, enemy.maxHealth);
+                    addToLog(`<span class="log-system">Enemy Reinforcements!</span> ${enemy.name} is healed for <span class="log-enemy">${healing}</span> health.`);
+                }
+            },
+            {
+                id: 'inspiration',
+                name: 'Moment of Inspiration',
+                description: 'You have a moment of inspiration! All your cooldowns are reset.',
+                effect: (player, enemy) => {
+                    for (const ability of player.abilities) {
+                        ability.currentCooldown = 0;
+                    }
+                    updateActionButtons();
+                    addToLog(`<span class="log-system">Moment of Inspiration!</span> All your cooldowns are reset.`);
+                }
+            },
+            {
+                id: 'storm',
+                name: 'Sudden Storm',
+                description: 'A sudden storm erupts! Both you and your enemy take damage.',
+                effect: (player, enemy) => {
+                    const playerDamage = Math.floor(Math.random() * 5) + 3;
+                    const enemyDamage = Math.floor(Math.random() * 5) + 3;
+                    applyDamage(player, playerDamage);
+                    applyDamage(enemy, enemyDamage);
+                    addToLog(`<span class="log-system">Sudden Storm!</span> You take <span class="log-enemy">${playerDamage}</span> damage and ${enemy.name} takes <span class="log-player">${enemyDamage}</span> damage.`);
+                }
+            },
+            {
+                id: 'wild_magic',
+                name: 'Wild Magic Surge',
+                description: 'A surge of wild magic fills the area! Random effects occur.',
+                effect: (player, enemy) => {
+                    const effects = [
+                        () => {
+                            // Heal both
+                            const playerHealing = Math.floor(Math.random() * 10) + 5;
+                            const enemyHealing = Math.floor(Math.random() * 10) + 5;
+                            player.currentHealth = Math.min(player.currentHealth + playerHealing, player.maxHealth);
+                            enemy.currentHealth = Math.min(enemy.currentHealth + enemyHealing, enemy.maxHealth);
+                            updateHealthBar('player', player.currentHealth, player.maxHealth);
+                            updateHealthBar('enemy', enemy.currentHealth, enemy.maxHealth);
+                            addToLog(`<span class="log-system">Wild Magic Surge!</span> Both combatants are healed: You for <span class="log-player">${playerHealing}</span> and ${enemy.name} for <span class="log-enemy">${enemyHealing}</span>.`);
+                        },
+                        () => {
+                            // Damage both
+                            const playerDamage = Math.floor(Math.random() * 8) + 3;
+                            const enemyDamage = Math.floor(Math.random() * 8) + 3;
+                            applyDamage(player, playerDamage);
+                            applyDamage(enemy, enemyDamage);
+                            addToLog(`<span class="log-system">Wild Magic Surge!</span> Both combatants take damage: You take <span class="log-enemy">${playerDamage}</span> and ${enemy.name} takes <span class="log-player">${enemyDamage}</span>.`);
+                        },
+                        () => {
+                            // Swap health percentages
+                            const playerHealthPercent = player.currentHealth / player.maxHealth;
+                            const enemyHealthPercent = enemy.currentHealth / enemy.maxHealth;
+                            player.currentHealth = Math.floor(enemyHealthPercent * player.maxHealth);
+                            enemy.currentHealth = Math.floor(playerHealthPercent * enemy.maxHealth);
+                            updateHealthBar('player', player.currentHealth, player.maxHealth);
+                            updateHealthBar('enemy', enemy.currentHealth, enemy.maxHealth);
+                            addToLog(`<span class="log-system">Wild Magic Surge!</span> Health percentages are swapped between combatants!`);
+                        },
+                        () => {
+                            // Random buffs
+                            player.statusEffects.push({
+                                name: 'Arcane Empowerment',
+                                icon: 'auto_fix_high',
+                                description: 'Your attributes are increased by 3.',
+                                duration: 2,
+                                type: 'buff',
+                                value: 3
+                            });
+                            enemy.statusEffects.push({
+                                name: 'Arcane Empowerment',
+                                icon: 'auto_fix_high',
+                                description: 'Attributes increased by 3.',
+                                duration: 2,
+                                type: 'buff',
+                                value: 3
+                            });
+                            updateStatusEffects('player', player.statusEffects);
+                            updateStatusEffects('enemy', enemy.statusEffects);
+                            addToLog(`<span class="log-system">Wild Magic Surge!</span> Both combatants are empowered with arcane energy!`);
+                        }
+                    ];
+
+                    const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+                    randomEffect();
+                }
+            }
+        ];
+
+        // Game Variables
+        let gameState = 'title'; // title, creation, battle, end
+        let player = null;
+        let enemy = null;
+        let battleStats = {
+            rounds: 0,
+            damageDealt: 0,
+            damageTaken: 0,
+            criticalHits: 0,
+            xpGained: 0
+        };
+        let currentRound = 1;
+        let playerActionsLocked = false;
+
+        // DOM Elements
+        const screens = document.querySelectorAll('.screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const toastContainer = document.getElementById('toast-container');
+        const raceOptions = document.getElementById('race-options');
+        const classOptions = document.getElementById('class-options');
+        const attributes = document.getElementById('attributes');
+        const pointsRemaining = document.getElementById('points-remaining');
+        const previewStats = document.getElementById('preview-stats');
+        const characterIcon = document.getElementById('character-icon');
+        const levelUpModal = document.getElementById('level-up-modal');
+        const diceContainer = document.getElementById('dice-container');
+        const dice = document.getElementById('dice');
+        const diceResult = document.getElementById('dice-result');
+
+        // Initialize Game
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+        });
+
+        function initGame() {
+            // Remove loading screen after a short delay
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 1000);
+
+            // Add event listeners to buttons
+            document.getElementById('new-game-btn').addEventListener('click', startNewGame);
+            document.getElementById('about-btn').addEventListener('click', showAbout);
+            document.getElementById('back-to-title').addEventListener('click', returnToTitle);
+            document.getElementById('create-character').addEventListener('click', createCharacter);
+            document.getElementById('back-to-menu').addEventListener('click', confirmExitBattle);
+            document.getElementById('return-to-menu').addEventListener('click', returnToTitle);
+            document.getElementById('next-battle').addEventListener('click', setupNextBattle);
+            document.getElementById('close-level-modal').addEventListener('click', () => {
+                levelUpModal.classList.remove('active');
+            });
+            document.getElementById('confirm-level-up').addEventListener('click', () => {
+                levelUpModal.classList.remove('active');
+                if (gameState === 'battle') {
+                    // Continue the battle
+                } else if (gameState === 'end') {
+                    // Setup next battle
+                    setupNextBattle();
+                }
+            });
+
+            // Check for saved game
+            const savedGame = localStorage.getItem('dndSoloBattle');
+            if (savedGame) {
+                document.getElementById('load-game-btn').disabled = false;
+                document.getElementById('load-game-btn').addEventListener('click', loadGame);
+            }
+
+            // Initialize the character creation screen
+            initCharacterCreation();
+        }
+
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startNewGame() {
+            showScreen('character-creation');
+            gameState = 'creation';
+        }
+
+        function loadGame() {
+            const savedGame = JSON.parse(localStorage.getItem('dndSoloBattle'));
+            player = savedGame.player;
+            showToast('Game loaded!', 'success');
+            setupBattle();
+        }
+
+        function showAbout() {
+            showToast('D&D Solo Battle Arena v1.0', 'info');
+            showToast('Created with love for D&D fans', 'info');
+        }
+
+        function returnToTitle() {
+            showScreen('title-screen');
+            gameState = 'title';
+            // Save game if player exists
+            if (player) {
+                saveGame();
+            }
+        }
+
+        function confirmExitBattle() {
+            if (confirm('Are you sure you want to exit this battle? Your progress will be saved.')) {
+                saveGame();
+                returnToTitle();
+            }
+        }
+
+        function saveGame() {
+            const gameData = {
+                player: player
+            };
+            localStorage.setItem('dndSoloBattle', JSON.stringify(gameData));
+            showToast('Game saved!', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            let icon = 'info';
+            if (type === 'success') icon = 'check_circle';
+            if (type === 'error') icon = 'error';
+            if (type === 'warning') icon = 'warning';
+            
+            toast.innerHTML = `<i class="material-icons">${icon}</i>${message}`;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Character Creation
+        function initCharacterCreation() {
+            // Reset points
+            document.getElementById('points-remaining').textContent = 'Points Remaining: 27';
+            
+            // Populate race options
+            raceOptions.innerHTML = '';
+            races.forEach(race => {
+                const raceCard = document.createElement('div');
+                raceCard.className = 'option-card';
+                raceCard.dataset.id = race.id;
+                raceCard.innerHTML = `
+                    <i class="material-icons">${race.icon}</i>
+                    <div>${race.name}</div>
+                `;
+                raceCard.addEventListener('click', () => selectRace(race.id));
+                raceOptions.appendChild(raceCard);
+            });
+
+            // Populate class options
+            classOptions.innerHTML = '';
+            classes.forEach(cls => {
+                const classCard = document.createElement('div');
+                classCard.className = 'option-card';
+                classCard.dataset.id = cls.id;
+                classCard.innerHTML = `
+                    <i class="material-icons">${cls.icon}</i>
+                    <div>${cls.name}</div>
+                `;
+                classCard.addEventListener('click', () => selectClass(cls.id));
+                classOptions.appendChild(classCard);
+            });
+
+            // Initialize attributes
+            attributes.innerHTML = '';
+            const attributeNames = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma'];
+            attributeNames.forEach(attr => {
+                const attrLower = attr.toLowerCase();
+                const attrDiv = document.createElement('div');
+                attrDiv.className = 'attribute';
+                attrDiv.innerHTML = `
+                    <h4>${attr}</h4>
+                    <div class="attribute-value" id="${attrLower}-value">8</div>
+                    <div class="attribute-buttons">
+                        <button id="${attrLower}-minus" disabled>-</button>
+                        <button id="${attrLower}-plus">+</button>
+                    </div>
+                `;
+                attributes.appendChild(attrDiv);
+
+                // Add event listeners
+                document.getElementById(`${attrLower}-minus`).addEventListener('click', () => adjustAttribute(attrLower, -1));
+                document.getElementById(`${attrLower}-plus`).addEventListener('click', () => adjustAttribute(attrLower, 1));
+            });
+
+            // Initialize preview stats
+            updatePreviewStats();
+        }
+
+        function selectRace(raceId) {
+            // Clear previous selection
+            const raceCards = raceOptions.querySelectorAll('.option-card');
+            raceCards.forEach(card => card.classList.remove('selected'));
+            
+            // Select new race
+            const selectedCard = raceOptions.querySelector(`.option-card[data-id="${raceId}"]`);
+            selectedCard.classList.add('selected');
+            
+            // Update character icon
+            const race = races.find(r => r.id === raceId);
+            characterIcon.textContent = race.icon;
+            
+            // Update preview stats
+            updatePreviewStats();
+            
+            // Show tooltip with race description
+            showToast(race.description, 'info');
+        }
+
+        function selectClass(classId) {
+            // Clear previous selection
+            const classCards = classOptions.querySelectorAll('.option-card');
+            classCards.forEach(card => card.classList.remove('selected'));
+            
+            // Select new class
+            const selectedCard = classOptions.querySelector(`.option-card[data-id="${classId}"]`);
+            selectedCard.classList.add('selected');
+            
+            // Update preview stats
+            updatePreviewStats();
+            
+            // Show tooltip with class description
+            const selectedClass = classes.find(c => c.id === classId);
+            showToast(selectedClass.description, 'info');
+        }
+
+        function adjustAttribute(attr, amount) {
+            // Get current points remaining
+            let points = parseInt(pointsRemaining.textContent.split(':')[1].trim());
+            
+            // Get current attribute value
+            let value = parseInt(document.getElementById(`${attr}-value`).textContent);
+            
+            // Check if we can adjust
+            if (amount > 0 && points <= 0) {
+                showToast('No points remaining!', 'error');
+                return;
+            }
+            
+            if (amount < 0 && value <= 8) {
+                showToast('Cannot reduce below 8!', 'error');
+                return;
+            }
+            
+            if (amount > 0 && value >= 15) {
+                showToast('Cannot increase above 15!', 'error');
+                return;
+            }
+            
+            // Calculate point cost
+            let pointCost = amount;
+            if (value >= 13) {
+                pointCost = amount * 2;
+            }
+            
+            // Adjust points and value
+            points -= pointCost;
+            value += amount;
+            
+            // Update UI
+            pointsRemaining.textContent = `Points Remaining: ${points}`;
+            document.getElementById(`${attr}-value`).textContent = value;
+            
+            // Update buttons
+            document.getElementById(`${attr}-minus`).disabled = (value <= 8);
+            document.getElementById(`${attr}-plus`).disabled = (value >= 15 || points <= 0);
+            
+            // Update preview stats
+            updatePreviewStats();
