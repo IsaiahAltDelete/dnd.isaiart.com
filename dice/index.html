@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D DnD Dice Roller</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --d4-color: #3498db;
+            --d6-color: #e74c3c;
+            --d8-color: #2ecc71;
+            --d10-color: #9b59b6;
+            --d12-color: #f39c12;
+            --d20-color: #1abc9c;
+            --bg-color: #111111;
+            --text-color: #ffffff;
+            --panel-bg: rgba(30, 30, 30, 0.75);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #ui {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+            padding: 20px;
+            background-color: var(--panel-bg);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+        }
+        
+        button {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 80px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #d4-button { background-color: var(--d4-color); }
+        #d6-button { background-color: var(--d6-color); }
+        #d8-button { background-color: var(--d8-color); }
+        #d10-button { background-color: var(--d10-color); }
+        #d12-button { background-color: var(--d12-color); }
+        #d20-button { background-color: var(--d20-color); }
+        
+        #d4-button:hover { background-color: #2980b9; }
+        #d6-button:hover { background-color: #c0392b; }
+        #d8-button:hover { background-color: #27ae60; }
+        #d10-button:hover { background-color: #8e44ad; }
+        #d12-button:hover { background-color: #d35400; }
+        #d20-button:hover { background-color: #16a085; }
+        
+        #result {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: 600;
+            background-color: var(--panel-bg);
+            padding: 16px 30px;
+            border-radius: 16px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 220px;
+            letter-spacing: 0.5px;
+        }
+        
+        #title {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 28px;
+            font-weight: 700;
+            z-index: 10;
+            background-color: var(--panel-bg);
+            padding: 16px 24px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            letter-spacing: 0.5px;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: white;
+            font-weight: 500;
+            background-color: var(--panel-bg);
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+    </style>
+</head>
+<body>
+    <div id="result">Select a die to roll</div>
+    <div id="ui">
+        <button id="d4-button" onclick="rollDie(4)">D4</button>
+        <button id="d6-button" onclick="rollDie(6)">D6</button>
+        <button id="d8-button" onclick="rollDie(8)">D8</button>
+        <button id="d10-button" onclick="rollDie(10)">D10</button>
+        <button id="d12-button" onclick="rollDie(12)">D12</button>
+        <button id="d20-button" onclick="rollDie(20)">D20</button>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="loading" class="loading">Loading 3D engine...</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    
+    <script>
+        let scene, camera, renderer, world;
+        let dice = {};
+        let currentDie = null;
+        let rolling = false;
+        let diceColors = {
+            4: 0x3498db,  // blue
+            6: 0xe74c3c,  // red
+            8: 0x2ecc71,  // green
+            10: 0x9b59b6, // purple
+            12: 0xf39c12, // orange
+            20: 0x1abc9c  // teal
+        };
+        
+        // Initialize the scene
+        function init() {
+            // Remove loading message
+            document.getElementById('loading').style.display = 'none';
+            
+            // Three.js scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111111);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 20);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('canvas'), 
+                antialias: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -20;
+            directionalLight.shadow.camera.right = 20;
+            directionalLight.shadow.camera.top = 20;
+            directionalLight.shadow.camera.bottom = -20;
+            scene.add(directionalLight);
+            
+            // Create a spotlight for dramatic effect
+            const spotlight = new THREE.SpotLight(0xffffff, 0.8);
+            spotlight.position.set(0, 20, 0);
+            spotlight.angle = Math.PI / 4;
+            spotlight.penumbra = 0.1;
+            spotlight.decay = 2;
+            spotlight.distance = 50;
+            spotlight.castShadow = true;
+            spotlight.shadow.mapSize.width = 1024;
+            spotlight.shadow.mapSize.height = 1024;
+            scene.add(spotlight);
+            
+            // Physics world
+            world = new CANNON.World();
+            world.gravity.set(0, -25, 0); // Stronger gravity for faster settling
+            world.broadphase = new CANNON.NaiveBroadphase();
+            world.solver.iterations = 20;
+            world.defaultContactMaterial.restitution = 0.3;
+            
+            // Create a rolling area with walls
+            createRollingArea();
+            
+            // Create dice
+            createDice();
+            
+            // Start animation loop
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        // Create a rolling area with walls
+        function createRollingArea() {
+            // Floor
+            const floorSize = 20;
+            const floorGeometry = new THREE.BoxGeometry(floorSize, 1, floorSize);
+            const floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x222222,
+                roughness: 0.7,
+                metalness: 0.3
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.position.y = -0.5;
+            floor.receiveShadow = true;
+            scene.add(floor);
+            
+            const floorBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Box(new CANNON.Vec3(floorSize/2, 0.5, floorSize/2)),
+                position: new CANNON.Vec3(0, -0.5, 0)
+            });
+            world.addBody(floorBody);
+            
+            // Create walls
+            const wallHeight = 3;
+            const wallThickness = 1;
+            const wallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x444444,
+                roughness: 0.6,
+                metalness: 0.4,
+                transparent: true,
+                opacity: 0.4
+            });
+            
+            // Wall bodies
+            const wallShape = new CANNON.Box(new CANNON.Vec3(floorSize/2, wallHeight/2, wallThickness/2));
+            
+            // North wall
+            const northWall = new THREE.Mesh(
+                new THREE.BoxGeometry(floorSize, wallHeight, wallThickness),
+                wallMaterial
+            );
+            northWall.position.set(0, wallHeight/2, -floorSize/2 - wallThickness/2);
+            northWall.receiveShadow = true;
+            northWall.castShadow = true;
+            scene.add(northWall);
+            
+            const northWallBody = new CANNON.Body({
+                mass: 0,
+                shape: wallShape,
+                position: new CANNON.Vec3(0, wallHeight/2, -floorSize/2 - wallThickness/2)
+            });
+            world.addBody(northWallBody);
+            
+            // South wall
+            const southWall = new THREE.Mesh(
+                new THREE.BoxGeometry(floorSize, wallHeight, wallThickness),
+                wallMaterial
+            );
+            southWall.position.set(0, wallHeight/2, floorSize/2 + wallThickness/2);
+            southWall.receiveShadow = true;
+            southWall.castShadow = true;
+            scene.add(southWall);
+            
+            const southWallBody = new CANNON.Body({
+                mass: 0,
+                shape: wallShape,
+                position: new CANNON.Vec3(0, wallHeight/2, floorSize/2 + wallThickness/2)
+            });
+            world.addBody(southWallBody);
+            
+            // East wall
+            const eastWall = new THREE.Mesh(
+                new THREE.BoxGeometry(wallThickness, wallHeight, floorSize + wallThickness*2),
+                wallMaterial
+            );
+            eastWall.position.set(floorSize/2 + wallThickness/2, wallHeight/2, 0);
+            eastWall.receiveShadow = true;
+            eastWall.castShadow = true;
+            scene.add(eastWall);
+            
+            const eastWallBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Box(new CANNON.Vec3(wallThickness/2, wallHeight/2, (floorSize + wallThickness*2)/2)),
+                position: new CANNON.Vec3(floorSize/2 + wallThickness/2, wallHeight/2, 0)
+            });
+            world.addBody(eastWallBody);
+            
+            // West wall
+            const westWall = new THREE.Mesh(
+                new THREE.BoxGeometry(wallThickness, wallHeight, floorSize + wallThickness*2),
+                wallMaterial
+            );
+            westWall.position.set(-floorSize/2 - wallThickness/2, wallHeight/2, 0);
+            westWall.receiveShadow = true;
+            westWall.castShadow = true;
+            scene.add(westWall);
+            
+            const westWallBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Box(new CANNON.Vec3(wallThickness/2, wallHeight/2, (floorSize + wallThickness*2)/2)),
+                position: new CANNON.Vec3(-floorSize/2 - wallThickness/2, wallHeight/2, 0)
+            });
+            world.addBody(westWallBody);
+        }
+        
+        // Create dice meshes and physics bodies
+        function createDice() {
+            // Function to create textured die
+            function createTexturedDie(geometry, sides, color) {
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    roughness: 0.5,
+                    metalness: 0.7,
+                });
+                
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.castShadow = true;
+                mesh.visible = false;
+                scene.add(mesh);
+                
+                return mesh;
+            }
+            
+            // Create dice with different shapes and colors
+            
+            // D4 (Tetrahedron)
+            const d4Geometry = new THREE.TetrahedronGeometry(2.5);
+            const d4Mesh = createTexturedDie(d4Geometry, 4, diceColors[4]);
+            const d4Shape = new CANNON.Box(new CANNON.Vec3(1.5, 1.5, 1.5));
+            const d4Body = new CANNON.Body({ mass: 2, shape: d4Shape });
+            world.addBody(d4Body);
+            dice[4] = { mesh: d4Mesh, body: d4Body, sides: 4 };
+            
+            // D6 (Cube)
+            const d6Geometry = new THREE.BoxGeometry(2.5, 2.5, 2.5);
+            const d6Mesh = createTexturedDie(d6Geometry, 6, diceColors[6]);
+            const d6Shape = new CANNON.Box(new CANNON.Vec3(1.25, 1.25, 1.25));
+            const d6Body = new CANNON.Body({ mass: 2, shape: d6Shape });
+            world.addBody(d6Body);
+            dice[6] = { mesh: d6Mesh, body: d6Body, sides: 6 };
+            
+            // D8 (Octahedron)
+            const d8Geometry = new THREE.OctahedronGeometry(2);
+            const d8Mesh = createTexturedDie(d8Geometry, 8, diceColors[8]);
+            const d8Shape = new CANNON.Box(new CANNON.Vec3(1.4, 1.4, 1.4));
+            const d8Body = new CANNON.Body({ mass: 2, shape: d8Shape });
+            world.addBody(d8Body);
+            dice[8] = { mesh: d8Mesh, body: d8Body, sides: 8 };
+            
+            // D10 (Proper pentagonal trapezohedron)
+            const d10Geometry = new THREE.DodecahedronGeometry(2, 0);
+            // Modify the geometry to make it more like a traditional d10
+            for (let i = 0; i < d10Geometry.attributes.position.count; i++) {
+                let y = d10Geometry.attributes.position.getY(i);
+                // Compress vertically to create the pentagonal trapezohedron shape
+                y *= 0.6;
+                d10Geometry.attributes.position.setY(i, y);
+            }
+            d10Geometry.computeVertexNormals();
+            
+            const d10Mesh = createTexturedDie(d10Geometry, 10, diceColors[10]);
+            const d10Shape = new CANNON.Box(new CANNON.Vec3(1.5, 0.9, 1.5));
+            const d10Body = new CANNON.Body({ mass: 2, shape: d10Shape });
+            world.addBody(d10Body);
+            dice[10] = { mesh: d10Mesh, body: d10Body, sides: 10 };
+            
+            // D12 (Dodecahedron)
+            const d12Geometry = new THREE.DodecahedronGeometry(2);
+            const d12Mesh = createTexturedDie(d12Geometry, 12, diceColors[12]);
+            const d12Shape = new CANNON.Box(new CANNON.Vec3(1.7, 1.7, 1.7));
+            const d12Body = new CANNON.Body({ mass: 2, shape: d12Shape });
+            world.addBody(d12Body);
+            dice[12] = { mesh: d12Mesh, body: d12Body, sides: 12 };
+            
+            // D20 (Icosahedron)
+            const d20Geometry = new THREE.IcosahedronGeometry(2);
+            const d20Mesh = createTexturedDie(d20Geometry, 20, diceColors[20]);
+            const d20Shape = new CANNON.Box(new CANNON.Vec3(1.8, 1.8, 1.8));
+            const d20Body = new CANNON.Body({ mass: 2, shape: d20Shape });
+            world.addBody(d20Body);
+            dice[20] = { mesh: d20Mesh, body: d20Body, sides: 20 };
+        }
+        
+        // Roll a specific die
+        function rollDie(sides) {
+            if (rolling) return;
+            
+            // Hide all dice
+            Object.values(dice).forEach(die => {
+                die.mesh.visible = false;
+            });
+            
+            // Get the color to match the die
+            let dieColor = diceColors[sides].toString(16);
+            // Ensure it's 6 digits
+            while (dieColor.length < 6) {
+                dieColor = '0' + dieColor;
+            }
+            
+            // Show result placeholder with matching color
+            document.getElementById('result').textContent = `Rolling d${sides}...`;
+            document.getElementById('result').style.borderBottom = `4px solid #${dieColor}`;
+            
+            // Get the die and make it visible
+            currentDie = dice[sides];
+            currentDie.mesh.visible = true;
+            
+            // Reset position - higher up for better visibility of the roll
+            currentDie.body.position.set(Math.random() * 4 - 2, 15, Math.random() * 4 - 2);
+            currentDie.body.quaternion.set(
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1,
+                Math.random() * 2 - 1
+            );
+            currentDie.body.quaternion.normalize();
+            
+            // Update mesh position and rotation to match body
+            currentDie.mesh.position.copy(currentDie.body.position);
+            currentDie.mesh.quaternion.copy(currentDie.body.quaternion);
+            
+            // Apply random rotation and force for rolling
+            currentDie.body.angularVelocity.set(
+                Math.random() * 20 - 10,
+                Math.random() * 20 - 10,
+                Math.random() * 20 - 10
+            );
+            
+            currentDie.body.velocity.set(
+                Math.random() * 10 - 5,
+                2,
+                Math.random() * 10 - 5
+            );
+            
+            rolling = true;
+            
+            // Check when the die has stopped moving
+            checkDieSettled(sides);
+        }
+        
+        // Check if the die has settled
+        function checkDieSettled(sides) {
+            const die = dice[sides];
+            let settlementTimer = 0;
+            
+            const checkInterval = setInterval(() => {
+                // Get velocity magnitude
+                const velocityMagnitude = die.body.velocity.length();
+                const angularVelocityMagnitude = die.body.angularVelocity.length();
+                
+                // If the die is nearly stopped, count up the settlement timer
+                if (velocityMagnitude < 0.1 && angularVelocityMagnitude < 0.1) {
+                    settlementTimer += 100;
+                } else {
+                    // Reset the timer if it starts moving again
+                    settlementTimer = 0;
+                }
+                
+                // If the die has been still for half a second, it's settled
+                if (settlementTimer >= 500) {
+                    clearInterval(checkInterval);
+                    
+                    // Generate random result
+                    const result = Math.floor(Math.random() * die.sides) + 1;
+                    document.getElementById('result').textContent = `Result: ${result}`;
+                    rolling = false;
+                }
+            }, 100);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update physics
+            world.step(1/60);
+            
+            // Update meshes based on physics bodies
+            Object.values(dice).forEach(die => {
+                if (die.mesh.visible) {
+                    die.mesh.position.copy(die.body.position);
+                    die.mesh.quaternion.copy(die.body.quaternion);
+                }
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize everything when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
