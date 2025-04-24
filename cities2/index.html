@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faerûn City Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .title-font {
+            font-family: 'IM Fell English SC', serif;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.6s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .race-bar {
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .district-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            color: white;
+        }
+        
+        .npc-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-12">
+            <h1 class="title-font text-5xl font-bold mb-2 text-gray-800">Faerûn City Generator</h1>
+            <p class="text-gray-600 text-lg">Create unique cities for your Dungeons & Dragons campaign</p>
+        </header>
+        
+        <div class="flex justify-center mb-8">
+            <button id="generateBtn" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
+                Generate City
+            </button>
+        </div>
+        
+        <div id="cityDisplay" class="bg-white rounded-xl shadow-xl overflow-hidden mb-8 hidden fade-in">
+            <div class="bg-gray-800 text-white p-6">
+                <h2 id="cityName" class="title-font text-3xl font-bold"></h2>
+                <p id="cityTagline" class="text-gray-300 italic"></p>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Overview Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Overview</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Population:</span>
+                            <span id="population" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Size:</span>
+                            <span id="citySize" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Population Density:</span>
+                            <span id="density" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Location:</span>
+                            <span id="location" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Government:</span>
+                            <span id="government" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Languages:</span>
+                            <span id="languages" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demographics Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Demographics</h3>
+                    <div id="raceDemographics" class="space-y-2">
+                        <!-- Race percentages will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Economy Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Economy</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Primary Industries:</span>
+                            <span id="industries" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Major Exports:</span>
+                            <span id="exports" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Trade Partners:</span>
+                            <span id="tradePartners" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Wealth Level:</span>
+                            <span id="wealth" class="text-gray-600"></span>
+                            <div class="progress-bar mt-1">
+                                <div id="wealthBar" class="progress-fill bg-green-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Architecture Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Architecture</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Style:</span>
+                            <span id="architectureStyle" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Notable Features:</span>
+                            <span id="architectureFeatures" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Building Materials:</span>
+                            <span id="buildingMaterials" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Fortifications:</span>
+                            <span id="fortifications" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Geography Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Geography</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Terrain:</span>
+                            <span id="terrain" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Climate:</span>
+                            <span id="climate" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Water Source:</span>
+                            <span id="waterSource" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Elevation:</span>
+                            <span id="elevation" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Culture Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Culture</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Popular Classes:</span>
+                            <span id="popularClasses" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Religions:</span>
+                            <span id="religions" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Crime Level:</span>
+                            <span id="crime" class="text-gray-600"></span>
+                            <div class="progress-bar mt-1">
+                                <div id="crimeBar" class="progress-fill bg-red-500"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Magic Prevalence:</span>
+                            <span id="magic" class="text-gray-600"></span>
+                            <div class="progress-bar mt-1">
+                                <div id="magicBar" class="progress-fill bg-purple-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: Factions Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Factions & Organizations</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Major Faction:</span>
+                            <span id="majorFaction" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Notable Guilds:</span>
+                            <span id="guilds" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Secret Societies:</span>
+                            <span id="secretSocieties" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Criminal Organizations:</span>
+                            <span id="criminalOrgs" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: City Districts Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Districts & Quarters</h3>
+                    <div id="districtsList" class="space-y-4">
+                        <!-- Districts will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- NEW: Points of Interest Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Notable Locations</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Popular Taverns:</span>
+                            <span id="taverns" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Shops & Markets:</span>
+                            <span id="shops" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Landmarks:</span>
+                            <span id="landmarks" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Magical Locations:</span>
+                            <span id="magicalLocations" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW: Notable NPCs Section -->
+            <div class="px-6 pb-6">
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Notable NPCs</h3>
+                    <div id="npcList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- NPCs will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Local Customs & Plot Hooks Section -->
+            <div class="px-6 pb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- NEW: Local Customs Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Local Customs</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Festival or Holiday:</span>
+                            <span id="festival" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Local Tradition:</span>
+                            <span id="tradition" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Taboos:</span>
+                            <span id="taboos" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Local Cuisine:</span>
+                            <span id="cuisine" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: City Problems/Plot Hooks Card -->
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Current Problems</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="font-semibold text-gray-700">Major Threat:</span>
+                            <span id="majorThreat" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Political Intrigue:</span>
+                            <span id="politicalIntrigue" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Rumors:</span>
+                            <span id="rumors" class="text-gray-600"></span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-700">Quest Opportunity:</span>
+                            <span id="quest" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- City Description -->
+            <div class="px-6 pb-6">
+                <div class="card bg-white rounded-lg p-6 border border-gray-200">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">City Description</h3>
+                    <p id="cityDescription" class="text-gray-700 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Name components for city generation
+        const prefixes = ["Al", "Bar", "Cal", "Dor", "El", "Fal", "Gor", "Har", "Il", "Jor", 
+                         "Kel", "Lor", "Mor", "Nor", "Oth", "Pel", "Quar", "Riv", "Sel", "Tor",
+                         "Ul", "Val", "Wes", "Xan", "Yar", "Zor", "Thal", "Shar", "Bel", "Cyr"];
+        const middles = ["an", "ar", "en", "il", "or", "ur", "ath", "ith", "oth", "esh",
+                        "ish", "osh", "ash", "eth", "yth", "al", "el", "ol", "ul", "ir",
+                        "am", "im", "om", "yn", "ys", "rin", "thin", "wyn", "lyr", "mir"];
+        const suffixes = ["dor", "mar", "ton", "ven", "wick", "ford", "stead", "burg", "holm", 
+                         "crest", "watch", "spire", "haven", "port", "reach", "rock", "fall", 
+                         "glen", "hollow", "keep", "moor", "peak", "ridge", "vale", "wood",
+                         "gate", "run", "dale", "hold", "guard", "way", "cross", "break", "rest", "forge"];
+        const standalone = ["Duskendale", "Brightwater", "Stormhaven", "Mooncrest", "Dragonfell",
+                          "Silvermarsh", "Goldspire", "Ironford", "Shadowfen", "Highcliff",
+                          "Deepwood", "Fairwind", "Stonebridge", "Blackmoor", "Whitepeak",
+                          "Winterhold", "Ravenspire", "Summerhaven", "Falcon's Rest", "Darkwater",
+                          "Waterdeep", "Neverwinter", "Baldur's Gate", "Icewind Dale", "Myth Drannor"];
+        
+        // Location options
+        const locations = [
+            "Along the Sword Coast", "In the Dalelands", "Near the Sea of Fallen Stars",
+            "In the North", "In the Western Heartlands", "In Amn", "In Tethyr",
+            "In the Silver Marches", "In the Unapproachable East", "In the Shaar",
+            "On the Moonsea", "In the Vilhon Reach", "In the Lake of Steam region",
+            "In the Chultan Peninsula", "In the Underdark", "On an island in the Trackless Sea",
+            "In the High Forest", "In the Anauroch desert", "In the Storm Horns mountains",
+            "Along the River Chionthar", "Near the Marsh of Chelimber", "In the Graypeak Mountains",
+            "In the Savage Frontier", "Near the Spine of the World", "In the Dragon Coast",
+            "Nestled in the Nether Mountains", "At the edge of the Vast Swamp", "Near the Fields of the Dead",
+            "In the shadows of Cormanthor", "On the shores of the Dragonmere", "At the foot of the Giant's Run Mountains"
+        ];
+        
+        // Government types
+        const governments = [
+            "Monarchy", "Council of Merchants", "Mageocracy", "Theocracy", "Military Dictatorship",
+            "Oligarchy", "Democracy", "Feudal System", "Guild-run", "Tribal Council",
+            "Magistrate Rule", "Undead Overlord", "Dragon Rule", "Plutocracy", "Anarchy",
+            "Matriarchy", "Patriarchy", "Elder Council", "Divine Mandate", "Secret Society Control",
+            "Merchant Consortium", "Adventurer's Guild Leadership", "Druid Circle Guidance",
+            "Noble Houses Coalition", "Paladin Order", "Bardic College Administration",
+            "Warlock Pact Collective", "Celestial Envoy Oversight", "Planar Embassy Rule"
+        ];
+        
+        // City sizes with population ranges
+        const citySizes = [
+            { name: "Village", population: "100-1,000" },
+            { name: "Small Town", population: "1,000-5,000" },
+            { name: "Large Town", population: "5,000-10,000" },
+            { name: "Small City", population: "10,000-25,000" },
+            { name: "Medium City", population: "25,000-50,000" },
+            { name: "Large City", population: "50,000-100,000" },
+            { name: "Metropolis", population: "100,000+" }
+        ];
+        
+        // Population densities
+        const densities = [
+            "Very sparse (rural)", "Sparse", "Moderate", "Dense", "Very dense (urban)",
+            "Extremely dense (crowded)", "Variable (sprawling)", "Clustered (pocket settlements)",
+            "Layered (vertical city)", "Subterranean (cave dwellings)"
+        ];
+        
+        // Architecture styles
+        const architectureStyles = [
+            "Gothic", "Romanesque", "Elven Elegance", "Dwarven Stonework", "Moorish",
+            "Byzantine", "Nordic", "Oriental", "Mage-touched", "Underdark",
+            "Pirate-inspired", "Naval", "Agricultural", "Militaristic", "Religious",
+            "Arcane", "Decadent", "Ruined", "Rebuilt", "Eclectic Mix",
+            "Halfling Burrows", "Gnomish Invention", "Dragonborn Scaled", "Tiefling Infernal",
+            "Necromantic", "Fey-court", "Celestial", "Planar Convergence", "Living Fungal"
+        ];
+        
+        // Architecture features
+        const architectureFeatures = [
+            "Tall spires", "Underground tunnels", "Canals", "Floating districts", "Tree-top walkways",
+            "Massive walls", "Glass domes", "Hanging gardens", "Elevated walkways", "Magical lighting",
+            "Flying buttresses", "Underground cities", "Portals to other planes", "Living buildings",
+            "Shifting architecture", "Crystal structures", "Bone towers", "Petrified wood buildings",
+            "Waterfront docks", "Multi-level city", "Rotating towers", "Mirage illusions",
+            "Weather-controlling domes", "Lava channels", "Musical bridges", "Shadow-casting monuments",
+            "Dream-capturing spires", "Constellation-aligned streets", "Mist-gathering fountains"
+        ];
+        
+        // Building materials
+        const buildingMaterials = [
+            "Stone", "Wood", "Brick", "Marble", "Crystal",
+            "Magically reinforced", "Living plants", "Bone", "Obsidian", "Metal",
+            "Petrified wood", "Ice", "Adobe", "Thatch", "Mud brick",
+            "Glass", "Compacted earth", "Coral", "Fungal growth", "Unknown alien material",
+            "Dragon scales", "Magically transmuted substances", "Spell-woven energy", "Planar matter",
+            "Elemental essence", "Godforged metal", "Enchanted cloth", "Living wood", "Hardened light"
+        ];
+        
+        // Fortifications
+        const fortifications = [
+            "None", "Simple wooden palisade", "Stone walls", "High walls with towers", 
+            "Massive walls with magical defenses", "Citadel at center", "Multiple layered walls",
+            "Floating defensive platforms", "Underground bunkers", "Maze-like streets designed for defense",
+            "Living walls of thorny plants", "Animated statues", "Elemental guardians", 
+            "Glyphs and wards", "Moat with drawbridges", "Cliffside defenses", "Hidden escape tunnels",
+            "Magical barrier", "Dimensional locks", "Dragon perches", "Invisible force fields",
+            "Sentient defensive system", "Mind-influencing wards", "Golem sentries", "Phase-shifting walls",
+            "Time-dilating defenses", "Prismatic barriers", "Antimagic fields", "Soul-binding protections"
+        ];
+        
+        // Terrain types
+        const terrains = [
+            "Plains", "Hills", "Mountains", "Forest", "Jungle",
+            "Desert", "Tundra", "Swamp", "Coastal", "Island",
+            "Underground", "Floating", "Cliffside", "Volcanic", "Marsh",
+            "River delta", "Plateau", "Canyon", "Fey-touched", "Shadow-infused",
+            "Crystal fields", "Petrified forest", "Magical wastes", "Fungal caverns",
+            "Asteroid field", "Glacial", "Geothermal", "Aberrant landscape", "Planar convergence",
+            "Ancient battlefield"
+        ];
+        
+        // Climates
+        const climates = [
+            "Temperate", "Cold", "Warm", "Arid", "Humid",
+            "Frigid", "Tropical", "Mediterranean", "Magically altered", "Variable",
+            "Eternal spring", "Perpetual autumn", "Controlled by magic", "Storm-wracked",
+            "Fog-shrouded", "Dusty", "Misty", "Rainy", "Windy", "Strange planar influences",
+            "Elemental air dominant", "Elemental water dominant", "Elemental fire dominant", 
+            "Elemental earth dominant", "Ethereal mists", "Shadow-touched", "Feywild-influenced",
+            "Artificially maintained", "Seasonally extreme", "Ley line converged"
+        ];
+        
+        // Water sources
+        const waterSources = [
+            "River", "Lake", "Oasis", "Underground springs", "Magical creation",
+            "Rain collection", "Desalination", "Ice melt", "Portals to elemental plane of water",
+            "Condensation towers", "Aqueducts", "Wells", "Artesian springs", "Tidal flows",
+            "Living water creatures", "Divine blessing", "Elemental binding", "Dew collectors",
+            "Cloud siphoning", "Alchemical processes", "Glacial runoff", "Steam vents", 
+            "Wandering magical springs", "Water-producing plants", "Imported from other planes",
+            "Tears of a god", "Enchanted fog harvesting", "Liquid transmutation", "Blood rivers"
+        ];
+        
+        // Elevations
+        const elevations = [
+            "Sea level", "Lowlands", "Hills", "Mountainous", "Underground",
+            "Floating", "Cliffside", "Valley", "Plateau", "Canyon",
+            "Suspended in trees", "Built into a giant creature", "Flying", "On a massive bridge",
+            "In a crater", "On a glacier", "On a massive tree", "On a giant mushroom", 
+            "On a floating island", "In a massive geode", "Stepping terraces", "Multiple planes",
+            "Inside a dormant volcano", "Within a colossal statue", "Planar rift", "Giant staircase city",
+            "Nested elevations", "Upside-down", "Vertically aligned towers", "Dimensional pockets"
+        ];
+        
+        // Industries
+        const industries = [
+            "Agriculture", "Mining", "Fishing", "Lumber", "Textiles",
+            "Metalworking", "Shipbuilding", "Magic items", "Alchemy", "Glassmaking",
+            "Pottery", "Weapons", "Armor", "Spices", "Wine",
+            "Livestock", "Hunting", "Trapping", "Fur trade", "Slave trade",
+            "Information brokering", "Smuggling", "Piracy", "Mercenary work", "Art",
+            "Spellcasting services", "Planar goods", "Soul binding", "Teleportation", "Necromancy",
+            "Monster parts", "Dragon products", "Magic scrolls", "Herbalism", "Gemcutting",
+            "Dream harvesting", "Prophecy selling", "Beast training", "Divine artifacts", "Cursed objects removal"
+        ];
+        
+        // Exports
+        const exports = [
+            "Grain", "Ore", "Fish", "Timber", "Cloth",
+            "Metal goods", "Ships", "Magic items", "Potions", "Glass",
+            "Ceramics", "Weapons", "Armor", "Spices", "Wine",
+            "Livestock", "Furs", "Slaves", "Information", "Art",
+            "Exotic animals", "Rare plants", "Ancient artifacts", "Spell components", "Mercenaries",
+            "Magical creatures", "Enchanted tools", "Dimensional pockets", "Sentient constructs", 
+            "Elemental essences", "Undead servants", "Planar maps", "Golem parts", "Divination services",
+            "Soul contracts", "Memory crystals", "Time in a bottle", "Preserved monster specimens"
+        ];
+        
+        // Trade partners
+        const tradePartners = [
+            "Waterdeep", "Baldur's Gate", "Neverwinter", "Silverymoon", "Mirabar",
+            "Luskan", "Calimport", "Athkatla", "Suzail", "Westgate",
+            "Zhentil Keep", "Hillsfar", "Mulmaster", "Phlan", "Elturgard",
+            "Daggerford", "Secomber", "Tethyr", "Amn", "Thay",
+            "Underdark cities", "Elven settlements", "Dwarven strongholds", "Gnomish enclaves", "Dragonmarked houses",
+            "Candlekeep", "Elemental Planes merchants", "Feywild trade posts", "Shadow Plane smugglers",
+            "City of Brass", "Sigil portals", "Drow houses", "Giant clans", "Dragon territories",
+            "The Beastlands", "Mechanus constructs", "Devils of the Nine Hells", "Celestial emissaries"
+        ];
+        
+        // Wealth levels
+        const wealthLevels = [
+            "Destitute", "Poor", "Modest", "Comfortable", "Wealthy",
+            "Very wealthy", "Extremely wealthy", "Decadently rich", "Planar wealth", "Divine treasury"
+        ];
+        
+        // Popular classes
+        const popularClasses = [
+            "Fighters", "Rogues", "Wizards", "Clerics", "Rangers",
+            "Paladins", "Druids", "Bards", "Barbarians", "Monks",
+            "Sorcerers", "Warlocks", "Artificers", "Blood hunters", "Psions",
+            "Runecasters", "Shadowdancers", "Arcane archers", "War priests", "Battlemages",
+            "Beast masters", "Eldritch knights", "Assassins", "Necromancers", "Demonologists",
+            "Elementalists", "Void callers", "Sword mages", "Oath breakers", "Wild mages"
+        ];
+        
+        // Religions
+        const religions = [
+            "Worship of the Seldarine (elven pantheon)", "Moradin and the dwarven pantheon", "The Triad (Tyr, Torm, Ilmater)",
+            "The Moonmaiden (Selûne)", "The Morninglord (Lathander)", "The Dead Three (Bane, Bhaal, Myrkul)",
+            "Mystra's faith", "The Red Knight", "Tempus", "Gond", "Oghma",
+            "Chauntea", "Sune", "Shar", "Cyric", "Talos",
+            "Local deity", "Primordial worship", "Dragon cult", "Demon worship", "No organized religion",
+            "Mask (God of Thieves)", "Waukeen (Goddess of Trade)", "Silvanus (God of Nature)", "Umberlee (Goddess of the Sea)",
+            "Asmodeus cult", "The Raven Queen", "Ancient titans", "Elemental princes", "Archfey pacts",
+            "Forgotten gods", "Celestial patrons", "Ancestor worship", "Star cults", "Outer Gods followers"
+        ];
+        
+        // Crime levels
+        const crimeLevels = [
+            "Virtually nonexistent", "Very low", "Low", "Moderate", "High",
+            "Very high", "Rampant", "Controlled by thieves' guilds", "Organized crime rules", "Anarchy",
+            "Underground fighting rings", "Secret assassination network", "Corrupt guard presence",
+            "Political blackmail system", "Infiltrated by cultists", "Monster trafficking", "Magical contraband trade",
+            "Soul selling operations", "Forbidden magic black market", "Mind control syndicate"
+        ];
+        
+        // Magic prevalence
+        const magicLevels = [
+            "Nonexistent", "Very rare", "Uncommon", "Common", "Widespread",
+            "Very common", "Ubiquitous", "Arcane city", "Magocracy", "Magical experiments everywhere",
+            "Wild magic zones", "Anti-magic pockets", "Magic is currency", "Spell-dependent economy",
+            "Magic addiction epidemic", "Enchanted daily life", "Magical power struggles", 
+            "Dangerous arcane pollution", "Spellplague affected", "Weave-warped reality"
+        ];
+        
+        // Races with color coding
+        const races = [
+            { name: "Humans", color: "bg-blue-500" },
+            { name: "Elves", color: "bg-green-500" },
+            { name: "Dwarves", color: "bg-yellow-500" },
+            { name: "Halflings", color: "bg-red-500" },
+            { name: "Gnomes", color: "bg-purple-500" },
+            { name: "Half-Elves", color: "bg-indigo-500" },
+            { name: "Half-Orcs", color: "bg-orange-500" },
+            { name: "Tieflings", color: "bg-pink-500" },
+            { name: "Dragonborn", color: "bg-teal-500" },
+            { name: "Genasi", color: "bg-cyan-500" },
+            { name: "Aasimar", color: "bg-amber-500" },
+            { name: "Goliaths", color: "bg-lime-500" },
+            { name: "Tabaxi", color: "bg-fuchsia-500" },
+            { name: "Kenku", color: "bg-rose-500" },
+            { name: "Other", color: "bg-gray-500" }
+        ];
+        
+        // Languages
+        const languages = [
+            "Common", "Elvish", "Dwarvish", "Halfling", "Gnomish",
+            "Draconic", "Infernal", "Celestial", "Undercommon", "Giant",
+            "Orcish", "Abyssal", "Primordial", "Sylvan", "Deep Speech",
+            "Thieves' Cant", "Druidic", "Sign language", "Regional dialect", "Secret tongue",
+            "Ancient Netherese", "High Elvish", "Dethek (dwarven runes)", "Thorass (Old Common)",
+            "Alzhedo (Calishite)", "Chondathan", "Illuskan", "Thayan", "Rashemi",
+            "Shou", "Aquan", "Auran", "Ignan", "Terran", "Telepathy"
+        ];
+        
+        // Taglines
+        const taglines = [
+            "Where shadows whisper and gold flows like water.",
+            "A jewel of the North, rough-cut but shining bright.",
+            "The city of a thousand spires and ten thousand secrets.",
+            "Built on magic, ruled by steel.",
+            "Where the river meets the road and all paths converge.",
+            "A beacon of civilization in the wild lands.",
+            "The city that never sleeps, for nightmares walk its streets.",
+            "Carved from the living rock, a testament to dwarven ingenuity.",
+            "Floating on the clouds, touched by the divine.",
+            "A den of scoundrels and thieves, but oh what treasures they hold!",
+            "Last bastion before the untamed wilderness.",
+            "Where fortunes are made and souls are sold.",
+            "City of splendor, city of wonder, city of dangers untold.",
+            "The crossroads of fate where destinies collide.",
+            "Built on ancient ruins, reaching for tomorrow's skies.",
+            "Where the old gods still whisper to those who listen.",
+            "Forged in fire, tempered by time, unyielding as stone.",
+            "The jewel of the realm, faceted with equal parts beauty and blood.",
+            "Where magic and mundane dance their eternal waltz.",
+            "The nexus where a thousand realms touch and trade their wonders."
+        ];
+        
+        // City descriptions
+        const cityDescriptions = [
+            "This city has stood for centuries, weathering wars, plagues, and magical catastrophes. Its streets tell stories of glory and ruin, with each district bearing the marks of different eras in its architecture and culture.",
+            "A relatively new settlement by Faerûnian standards, this city has rapidly grown due to its strategic location and abundant resources. The mix of old traditions and new ideas creates a vibrant, if sometimes chaotic, atmosphere.",
+            "Ancient beyond memory, this city was old when Netheril was young. Its foundations contain secrets best left buried, though scholars and adventurers constantly seek them out.",
+            "Built upon layer upon layer of previous civilizations, this city is literally and figuratively deep. The upper levels gleam with wealth and power, while the lower levels descend into darkness and mystery.",
+            "Perched precariously in a dangerous location, this city survives through a combination of stubbornness, ingenuity, and sheer luck. Its people are hardened by their environment but proud of their home.",
+            "A city of contrasts, where splendor and squalor exist side by side. The wealthy live in opulent towers while the poor scrape by in shadowed alleys, yet all share a fierce love for their city.",
+            "Known for its stunning beauty and artistic culture, this city attracts bards, artists, and philosophers from across Faerûn. Its walls are adorned with murals and its squares filled with music.",
+            "A grim, utilitarian city where function outweighs form. Its people are practical to a fault, valuing strength and skill above all else. Not a place for the weak or faint of heart.",
+            "Shrouded in mist and mystery, this city seems half-real at times. Visitors speak of streets that shift when no one is looking and buildings that weren't there yesterday.",
+            "A melting pot of cultures and races, this city thrives on diversity. Dozens of languages can be heard in its markets, and its cuisine is legendary across the Sword Coast.",
+            "This city lives and dies by the tides, its fortunes rising and falling with the sea. The scent of salt and exotic spices fills the air, and tales from distant shores are its currency.",
+            "A fortress city that has never fallen, its walls bear the scars of a hundred sieges. Its people are as unyielding as its ramparts, proud and stubborn to a fault.",
+            "The city seems to have grown organically from the land itself, buildings and streets following the natural contours of the terrain. There's no clear plan to its layout, giving it a chaotic but strangely harmonious feel.",
+            "From a distance, the city's magical illumination creates a spectacle that draws travelers like moths to flame. Some come seeking enlightenment, others to exploit the constant flow of visitors and their coin.",
+            "A city that reimagines itself with each generation, tearing down the old to build anew. Only a few ancient landmarks remain as anchors to its past, while innovation and ambition propel it forward.",
+            "This settlement began as a temporary camp and somehow never left. Structures intended to last a season have been repeatedly reinforced and expanded over decades, creating a unique architectural hodgepodge.",
+            "The city wears its violent history like a badge of honor. Every tower, wall, and gate has a name and a story attached to it, usually involving memorable battles or heroic last stands.",
+            "This city exists in symbiosis with an unusual natural feature or magical phenomenon. Its culture, economy, and daily life are all shaped by this relationship, creating traditions found nowhere else in Faerûn.",
+            "A city of scholars and scribes, where knowledge is the most valuable currency. Libraries and archives compete to acquire rare texts, while sages debate esoteric points of lore in open forums.",
+            "The entire city serves a singular purpose, whether religious, military, or arcane. Every aspect of its design and society supports this function, creating an environment of intense specialization and focus."
+        ];
+        
+        // NEW: Faction types
+        const factions = [
+            "The Silver Hand (Paladin Order)", "Emerald Enclave (Nature Protectors)", "Lords' Alliance (Noble Coalition)",
+            "Zhentarim (Mercenary Company)", "Harpers (Secret Do-gooders)", "Red Wizards of Thay (Mages)",
+            "Knights of the Shield (Merchant Spies)", "Iron Throne (Ruthless Merchants)", "Cult of the Dragon (Dragon Worshippers)",
+            "Kraken Society (Secret Network)", "Purple Dragons (Cormyrean Knights)", "Moonstars (Mage Collective)",
+            "Shadow Thieves (Criminal Organization)", "Fire Knives (Assassins)", "Earthfast (Dwarven Clan)",
+            "House Obarskyr (Noble Family)", "Order of the Gauntlet (Righteous Warriors)", "Many-Starred Cloak (Diviners)",
+            "Circle of Rust and Worm (Decay Druids)", "Cult of the Absolute (Growing Zealots)", "House Baenre (Drow House)",
+            "Black Network (Criminal Enterprise)", "Arcane Brotherhood (Wizards)", "Fellowship of the Purple Staff (Mystics)",
+            "Xanathar Guild (Crime Syndicate)", "Bregan D'aerthe (Drow Mercenaries)", "Eldreth Veluuthra (Elf Supremacists)",
+            "Merchant Princes (Trade Consortium)", "Cult of Shar (Shadow Worshippers)", "Order of Samular (Holy Knights)"
+        ];
+        
+        // NEW: Guild types
+        const guilds = [
+            "Alchemists' Guild", "Armorers' Guild", "Bakers' Guild", "Blacksmiths' Guild",
+            "Brewers' Guild", "Carpenters' Guild", "Clothiers' Guild", "Cobblers' Guild",
+            "Gemcutters' Guild", "Glassblowers' Guild", "Jewelers' Guild", "Leatherworkers' Guild",
+            "Masons' Guild", "Merchants' Guild", "Metalsmiths' Guild", "Miners' Guild",
+            "Painters' Guild", "Potters' Guild", "Scribes' Guild", "Shipwrights' Guild",
+            "Stonemasons' Guild", "Tanners' Guild", "Wainwrights' Guild", "Weavers' Guild",
+            "Wizards' Guild", "Adventurers' Guild", "Healers' Guild", "Bards' College",
+            "Poisoners' Guild", "Beast Tamers' Guild", "Cartographers' Guild", "Planar Travelers' Guild",
+            "Dream Harvesters' Guild", "Soul Binders' Guild", "Elemental Channelers' Guild"
+        ];
+        
+        // NEW: Secret societies
+        const secretSocieties = [
+            "The Whispering Way", "Circle of the Ebon Star", "Keepers of the Eternal Flame", "Order of the Veiled Eye",
+            "Brotherhood of the Wolf", "Sisters of the Silver Moon", "The Ashen Hand", "Disciples of the Broken Crown",
+            "The Midnight Council", "Guardians of the Hidden Path", "Children of the Forgotten God", "The Enlightened",
+            "Seekers of the Hidden Truth", "The Shadowcloaks", "Masters of the Fifth Voice", "The Everwatch",
+            "Servants of the Crystal Shard", "The Nameless", "Followers of the Seventh Signing", "The Inscrutable",
+            "Keepers of Forbidden Lore", "The Undying Court", "The Silent Syndicate", "The Planeswalkers' Conclave",
+            "The Nightmare Weavers", "Void Speakers", "The Starborn", "Cult of the Unseeing Eye", "The Faceless",
+            "Inheritors of Ancient Glory", "The Timeless", "The Veiled Alliance", "Wardens of Reality", "The Illuminated"
+        ];
+        
+        // NEW: Criminal organizations
+        const criminalOrganizations = [
+            "The Black Fingers", "The Crimson Daggers", "Emerald Vipers", "Shadow Network",
+            "The Untouchables", "Dock Street Gang", "The Silent Blades", "Thieves' Guild",
+            "The Nightwalkers", "Golden Hand", "Red Sashes", "Tunnel Rats",
+            "The Unseen", "Harbor Lords", "The Cutters", "Wharf Rats",
+            "The Broken Circle", "Market Street Gang", "The Talons", "Sewer Kings",
+            "The Viper's Nest", "Grey Ghost Gang", "The Silent Death", "Moonlight Shadows",
+            "The Butcher's Boys", "Dusk Till Dawn", "The Rookery", "Night Market Syndicate",
+            "The Whispering Knives", "The Scarlet Chain", "The Moondancers", "Dockside Devourers",
+            "The Last Laugh", "The Spider's Web", "The Shrouded Hand", "The Blood Coins"
+        ];
+        
+        // NEW: City districts with types
+        const districtTypes = [
+            { name: "Noble Quarter", color: "bg-purple-600" },
+            { name: "Merchant District", color: "bg-yellow-600" },
+            { name: "Temple District", color: "bg-blue-600" },
+            { name: "Artisan's Quarter", color: "bg-green-600" },
+            { name: "Harbor District", color: "bg-cyan-600" },
+            { name: "Market District", color: "bg-orange-600" },
+            { name: "Slums", color: "bg-gray-600" },
+            { name: "Entertainment District", color: "bg-pink-600" },
+            { name: "Mage's Quarter", color: "bg-indigo-600" },
+            { name: "Foreign Quarter", color: "bg-red-600" },
+            { name: "Military District", color: "bg-gray-800" },
+            { name: "Garden District", color: "bg-emerald-600" },
+            { name: "University Quarter", color: "bg-amber-600" },
+            { name: "Undercity", color: "bg-stone-600" },
+            { name: "Factory District", color: "bg-zinc-600" },
+            { name: "Floating District", color: "bg-sky-600" },
+            { name: "Necropolis", color: "bg-neutral-600" },
+            { name: "Embassy Row", color: "bg-violet-600" },
+            { name: "Adventurer's Quarter", color: "bg-lime-600" },
+            { name: "Planar District", color: "bg-fuchsia-600" }
+        ];
+        
+        // NEW: District descriptions
+        const districtDescriptions = [
+            "Center of wealth and power where nobles vie for influence.",
+            "Bustling commercial area full of shops and businesses.",
+            "Dominated by temples, shrines, and religious orders.",
+            "Where craftspeople ply their trades and sell their wares.",
+            "Rough-and-tumble area filled with sailors and dock workers.",
+            "Vibrant marketplace with goods from across Faerûn.",
+            "Poverty-stricken area with desperate people and crumbling buildings.",
+            "Full of taverns, theaters, gambling halls, and other diversions.",
+            "Where arcane practitioners conduct research and sell services.",
+            "Home to immigrants from other lands and cultures.",
+            "Housing barracks, training grounds, and military facilities.",
+            "Lush green spaces, parks, and manicured estates.",
+            "Centers of learning with libraries, schools, and lecture halls.",
+            "The hidden city beneath, home to outcasts and strange creatures.",
+            "Filled with workshops, smoke, and the sounds of industry.",
+            "Magically suspended above the city or on water.",
+            "City of the dead with tombs, mausoleums, and memorials.",
+            "Where foreign powers maintain diplomatic presence.",
+            "Catering to adventurers with equipment shops and quest boards.",
+            "Where beings from other planes gather and trade exotic goods."
+        ];
+        
+        // NEW: Tavern names
+        const tavernNames = [
+            "The Drunken Dragon", "The Prancing Pony", "The Slumbering Sphinx", "The Laughing Beholder",
+            "The Rusty Tankard", "The Silver Chalice", "The Wandering Wyvern", "The Broken Blade",
+            "The Sleeping Giant", "The Dancing Dryad", "The Thirsty Troll", "The Gilded Rose",
+            "The Salty Dog", "The Three-Legged Kobold", "The Winking Siren", "The Grinning Gargoyle",
+            "The Tipsy Pixie", "The Roaring Lion", "The Whispering Raven", "The Staggering Ogre",
+            "The Phoenix Tail", "The Dwarf's Beard", "The Lucky Halfling", "The Copper Coin",
+            "The Smoking Pipe", "The Bloody Knuckle", "The Captain's Rest", "The Dire Wolf",
+            "The Bottomless Mug", "The Glowing Staff", "The Soggy Bottom", "The Leaky Barrel",
+            "The Drunken Cleric", "The Satyr's Dance", "The Black Unicorn", "The Wizard's Sleeve"
+        ];
+        
+        // NEW: Shop names
+        const shopNames = [
+            "Arcane Wonders", "The Sharpened Edge", "Dragon's Hoard Gems", "Elminster's Scrolls",
+            "Durable Armaments", "Nature's Remedies", "The Adventurer's Pack", "Mystic Potions",
+            "Dwarven Metalworks", "Elven Bowcraft", "Exotic Curios", "Reliable Provisions",
+            "Featherfall Clothiers", "Golem's Gear", "Whispering Winds Books", "Celestial Trinkets",
+            "Blackstaff's Components", "The Cartographer's Table", "Enchanted Threads", "Familiar Friends",
+            "Glittergold's Gadgets", "The Holy Symbol", "Instrument of the Bards", "Journeyman's Tools",
+            "Keeper's Lock & Key", "Leomund's Tiny Hut", "Magical Menagerie", "Neverwinter Nights Lanterns",
+            "Oathkeeper's Forge", "Prestidigitation Cleaners", "Quiver of Plenty", "Rustmonster Antiques",
+            "Silverbeard's Pipes", "Tenser's Floating Emporium", "Underdark Imports", "Vigilant Eye Optics"
+        ];
+        
+        // NEW: Landmark types
+        const landmarks = [
+            "Ancient temple", "Grand plaza", "Historic battlefield", "Massive statue",
+            "Magical fountain", "Famous bridge", "Memorial monument", "Great library",
+            "Royal palace", "Cathedral", "Fortified keep", "Public gardens",
+            "Ancient tree", "Observatory", "Colosseum", "Theater",
+            "Wizard's tower", "Guild headquarters", "Public baths", "Ornate gates",
+            "Underground labyrinth", "Sacred grove", "Historic ruins", "Hanging gardens",
+            "Elemental shrine", "Planar gateway", "Petrified titan", "Celestial observatory",
+            "Living statue", "Ancient portal", "Dimensional anomaly", "Dragon's lair",
+            "Floating monolith", "Moving maze", "Enchanted waterfall", "God's footprint"
+        ];
+        
+        // NEW: Magical locations
+        const magicalLocations = [
+            "Wild magic zone", "Ley line nexus", "Wizard's academy", "Teleportation circle",
+            "Portal to another plane", "Enchanted spring", "Magic item shop", "Divination parlor",
+            "Elemental binding site", "Arcane laboratory", "Spellcaster's guild", "Familiars market",
+            "Golem workshop", "Illusion house", "Conjuration arena", "Necromancer's tower",
+            "Transmutation fountain", "Evocation training grounds", "Abjuration shields", "Scrying pool",
+            "Enchantment salon", "Dragon's blood spring", "Wish fountain", "Reality warp",
+            "Feywild crossing", "Shadow realm tear", "Time distortion", "Memory crystal vault",
+            "Dream harvesting center", "Soul binding furnace", "Mind enhancement spa", "Magic dead zone",
+            "Living spell preserve", "Spell component bazaar", "Magic weapon forge", "Scroll library"
+        ];
+        
+        // NEW: NPC names (first names)
+        const npcFirstNames = [
+            "Alaric", "Brienne", "Caspian", "Drusilla", "Evendur", "Fiora", "Gareth", "Helaina",
+            "Isolde", "Jareth", "Keira", "Lucan", "Myrtle", "Niles", "Ophelia", "Percival",
+            "Qara", "Rowan", "Seraphina", "Thaddeus", "Uma", "Varis", "Winifred", "Xander",
+            "Yvette", "Zephyr", "Aldric", "Beatrix", "Cedric", "Daria", "Eldon", "Freya",
+            "Garrick", "Hilda", "Ignatius", "Johanna", "Kieran", "Lyra", "Magnus", "Nessa",
+            "Orrin", "Phaedra", "Quintus", "Rhiannon", "Silas", "Talia", "Ulric", "Valeria",
+            "Willow", "Xanthus", "Yseult", "Zander", "Adeline", "Balthazar", "Cordelia", "Darius"
+        ];
+        
+        // NEW: NPC names (last names)
+        const npcLastNames = [
+            "Ambershield", "Blackwater", "Crestfallen", "Darkmantle", "Emberstone", "Frostbeard",
+            "Glimmergold", "Hollowbrook", "Ironheart", "Jewelspinner", "Knightforge", "Lightbringer",
+            "Mistwalker", "Nightshade", "Oathkeeper", "Proudmane", "Quicksilver", "Ravencrest",
+            "Silverhand", "Thorngage", "Underhill", "Voidwalker", "Windwhisper", "Yewbranch",
+            "Zephyrblade", "Arakhor", "Blackthorn", "Caskajack", "Duskwalker", "Evenwood",
+            "Flameheart", "Greycastle", "Highwind", "Icevein", "Jadestar", "Kingshield",
+            "Lorebinder", "Moonblade", "Neverdie", "Oakenheel", "Peacebringer", "Quincy",
+            "Redcloak", "Stormchaser", "Trueheart", "Umbermoor", "Valeska", "Wildmane",
+            "Xalorn", "Yelloweye", "Zanathar", "Ashenheart", "Boulderfoot", "Coinpurse", "Dragonbane"
+        ];
+        
+        // NEW: NPC titles/occupations
+        const npcOccupations = [
+            "City Guard Captain", "Master Blacksmith", "High Priest", "Guild Master", "Court Wizard",
+            "Master Thief", "Tavern Owner", "Merchant Prince", "Royal Adviser", "Archmage",
+            "Noble Lord/Lady", "Master Alchemist", "Ship Captain", "Retired Adventurer", "Traveling Bard",
+            "Famed Gladiator", "Court Jester", "Master Assassin", "Renown Healer", "Fortune Teller",
+            "City Architect", "Military Commander", "Spymaster", "Crime Lord", "Street Urchin Leader",
+            "Artifact Collector", "Monster Hunter", "Elemental Binder", "Soul Merchant", "Dream Weaver",
+            "Planar Traveler", "Prophecy Speaker", "Legendary Artisan", "Golem Creator", "Dragonrider",
+            "Undead Controller", "Shapeshifter", "Teleportation Expert", "Timekeeper", "Dimensional Tailor"
+        ];
+        
+        // NEW: NPC races
+        const npcRaces = [
+            "Human", "Elf", "Dwarf", "Halfling", "Gnome",
+            "Half-Elf", "Half-Orc", "Tiefling", "Dragonborn", "Aasimar",
+            "Genasi", "Goliath", "Tabaxi", "Kenku", "Firbolg",
+            "Triton", "Aarakocra", "Changeling", "Warforged", "Yuan-Ti",
+            "Tortle", "Kalashtar", "Shifter", "Goblin", "Hobgoblin",
+            "Bugbear", "Kobold", "Lizardfolk", "Orc", "Minotaur"
+        ];
+        
+        // NEW: NPC personality traits
+        const npcPersonalities = [
+            "Ambitious", "Cautious", "Curious", "Decisive", "Eccentric",
+            "Friendly", "Grumpy", "Honorable", "Intimidating", "Jovial",
+            "Knowledgeable", "Loyal", "Mysterious", "Nervous", "Observant",
+            "Paranoid", "Quirky", "Ruthless", "Sarcastic", "Temperamental",
+            "Unflappable", "Vengeful", "Wise", "Xenophobic", "Zealous",
+            "Absent-minded", "Boisterous", "Calculating", "Devious", "Enthusiastic",
+            "Farsighted", "Generous", "Hedonistic", "Impulsive", "Judgmental",
+            "Kind", "Logical", "Melancholic", "Noble", "Opportunistic",
+            "Philosophical", "Quick-witted", "Reserved", "Scholarly", "Theatrical"
+        ];
+        
+        // NEW: Festivals and holidays
+        const festivals = [
+            "The Feast of the Moon", "Greengrass Celebration", "Midsummer Festival",
+            "Highharvestide", "Shieldmeet", "The Running of the Trolls", "Dragon's Day",
+            "Festival of Masks", "The Grand Tournament", "Winter Solstice Ball",
+            "Founding Day Celebration", "Remembrance Day", "The Night Market",
+            "Spring Equinox", "Harvest Moon Ball", "The Wild Hunt", "Lantern Festival",
+            "The Blessing of Fleets", "Lovers' Day", "Festival of Fools",
+            "The Great Hunt", "Ascension Day", "The Planar Confluence", "Elements Day",
+            "New Year's Celebration", "The Awakening", "Corellon's Blessing", "Moradin's Forge Day",
+            "Lathander's Dawn", "Selûne's Tears", "The Purple Dragon Parade", "Day of Wonders"
+        ];
+        
+        // NEW: Local traditions
+        const traditions = [
+            "Touching a specific statue for luck", "Throwing coins in a fountain for wishes", 
+            "Annual competitions between city districts", "Gift exchange during winter solstice",
+            "Wearing masks during a specific holiday", "Silent day where no one speaks", 
+            "Painting doors a specific color to ward off evil", "Midnight processions with lanterns",
+            "Leaving offerings at crossroads for travelers", "Ritual baths before important events",
+            "Children's naming ceremonies at the central temple", "Marriage proposals only allowed on specific days",
+            "First harvest always given to the temple", "Warriors' coming of age trials", 
+            "Magical tests for children showing arcane talent", "Ancestor worship on designated days",
+            "Wearing specific colors to indicate social status", "Blessing new buildings with salt and wine",
+            "Lighting candles on water during the new moon", "Trading jobs for a day each year",
+            "Hanging charms on newborns' cribs", "Specific greetings for different social classes",
+            "Secret handshakes among guild members", "Blood oaths for official contracts",
+            "Symbolic duels to settle disputes", "Shadow puppetry to tell history", 
+            "Face painting for festivals", "Ritual tattooing for life accomplishments",
+            "Braiding ribbons into hair for luck", "Season-specific clothing colors"
+        ];
+        
+        // NEW: Taboos
+        const taboos = [
+            "Speaking a former ruler's name", "Wearing the color purple in the temple district", 
+            "Conducting business during holy days", "Touching the city's sacred monument",
+            "Bringing weapons into the peace gardens", "Practicing certain schools of magic", 
+            "Whistling after dark", "Entering certain areas without permission",
+            "Insulting the local deity", "Refusing hospitality", "Magical scrying without consent", 
+            "Marriage between certain social classes", "Eating specific foods on holy days",
+            "Wearing shoes in sacred places", "Looking at the noble quarter during certain festivals", 
+            "Speaking of death at celebrations", "Turning down a direct gift",
+            "Crossing water during a full moon", "Making deals on certain unlucky days", 
+            "Using certain forbidden words or phrases", "Playing specific musical instruments", 
+            "Pointing at the moon", "Certain styles of dress for non-natives",
+            "Learning foreign magic traditions", "Drawing blood in the market square", 
+            "Refusing to toast with locals", "Speaking of the 'old troubles'",
+            "Refusing to help a child in need", "Killing certain animals considered sacred", 
+            "Breaking bread without saying a blessing"
+        ];
+        
+        // NEW: Local cuisine
+        const cuisines = [
+            "Spicy dragon pepper stew", "Honeyed elfbread with forest berries", 
+            "Dwarven stone fungus soup", "Deep-fried basilisk bites",
+            "Gnomish color-changing pastries", "Halfling comfort pies", 
+            "Coastal squid ink pasta", "Chimera three-flavor roast",
+            "Griffon egg omelets", "Wild boar with mountain herbs", 
+            "Five-spice owlbear steak", "Desert cactus fruit wine",
+            "Sweetwater eel wrapped in seaweed", "Smoked dire wolf sausages", 
+            "Fairy-dusted confections", "Underground mushroom risotto",
+            "Dragonborn fire-breath ale", "Elvish century-aged wine", 
+            "Giant spider leg kebabs", "Wizard's changing flavor mead",
+            "Sunfruit preserves", "Fireberry tarts", "Frostberry ice cream", 
+            "Hydra head soup (one bowl, many flavors)", "Minotaur milk cheese",
+            "Treant sap syrup", "Displacer beast steaks (hard to eat)", 
+            "Cockatrice eggs (not petrified)", "Manticore tail skewers", 
+            "Gelatinous cube jelly desserts"
+        ];
+        
+        // NEW: City threats
+        const threats = [
+            "Impending invasion from neighboring kingdom", "Cult activity in the sewers", 
+            "Dragon sighted in nearby mountains", "Mysterious plague spreading through lower districts",
+            "Tensions between racial communities", "Corruption in the city guard", 
+            "Serial killer targeting specific citizens", "Magical anomalies causing strange phenomena",
+            "Economic crisis due to failed trade agreements", "Upcoming succession crisis", 
+            "Undead rising from the old cemetery", "Demon summoning ritual preparations",
+            "Thieves' guild war spilling into the streets", "Weather magic gone wrong", 
+            "Fey creatures infiltrating the market", "Ancient curse awakening",
+            "Rival city's spies undermining leadership", "Religious conflict between temples", 
+            "Beast attacks on the outskirts", "Portal to another plane opening randomly",
+            "Aboleth controlling key city officials", "Vampires establishing a hidden court", 
+            "Mind flayers harvesting intellect in the university", "Changelings replacing citizens",
+            "Magical pollution from alchemists' quarter", "Prophecy of city's destruction", 
+            "Civil unrest due to food shortages", "Underground slave trade network",
+            "Forbidden magic research causing disturbances", "Time distortions affecting specific streets"
+        ];
+        
+        // NEW: Political intrigues
+        const politicalIntrigues = [
+            "Two noble houses competing for royal favor", "Secret heir to the throne discovered", 
+            "Foreign ambassador suspected of espionage", "Guild masters rigging council elections",
+            "Religious order seeking political power", "Mayor being blackmailed by unknown entity", 
+            "Arranged marriage to secure political alliance", "Power struggle after leader's sudden death",
+            "Forgery of important city documents", "Conspiracy to overthrow current government", 
+            "Fraudulent tax collection scheme", "Magical mind control of council members",
+            "False flag operations to blame rival faction", "Secret deals with criminal organizations", 
+            "Merchant monopoly through bribery", "Assassination plot against visiting dignitary",
+            "Covert military buildup for coup attempt", "Hidden network of informants and spies", 
+            "Disputed land ownership between powerful families", "Foreign infiltration of city defense",
+            "Creation of laws targeting specific groups", "Manipulation of food prices for political gain", 
+            "Secret society controlling from shadows", "War profiteering by city officials",
+            "Falsified lineage claims for political advancement", "Border dispute with neighboring city", 
+            "Religious persecution disguised as law enforcement", "Suppression of magical practitioners",
+            "Rigged trials against political opponents", "Hidden treasure influencing political decisions"
+        ];
+        
+        // NEW: Rumors
+        const rumors = [
+            "Hidden treasure beneath the old temple", "The mayor is actually a doppelganger", 
+            "Secret tunnels connect all noble houses", "Ghost of the former ruler haunts the castle",
+            "Drinking from the north fountain grants visions", "The blacksmith's sword can kill demons", 
+            "Strange lights seen in abandoned tower", "Children disappearing near the old forest",
+            "Merchant selling potions that cause mutations", "Wizard's apprentice accidentally summoned something", 
+            "Ancient dragon sleeps beneath the city", "Local wine contains truth serum",
+            "Foreign spies infiltrated the city guard", "Statues in the park move at midnight", 
+            "Strange illness caused by cursed jewelry", "Secret fighting pits in the warehouse district",
+            "Certain city officials are undead", "Time moves differently in the old library", 
+            "Famous relic in the temple is actually fake", "Noble heir practicing forbidden magic",
+            "Prophetic dreams shared by multiple citizens", "Specific tavern is entrance to thieves' guild", 
+            "Talking animals spotted at the city outskirts", "Local cook uses questionable meat sources",
+            "Wealthy merchant made pact with fiend", "Music from nowhere heard in empty alleyways", 
+            "Someone selling maps to parallel world", "Wells in the east side have healing properties",
+            "City built on ancient burial ground", "Specific constellation causes strange magic when visible"
+        ];
+        
+        // NEW: Quest hooks
+        const quests = [
+            "Retrieve stolen artifact from thieves' guild", "Investigate disappearances in the merchant quarter", 
+            "Clear monsters from the sewers", "Protect visiting dignitary from assassination",
+            "Find cure for noble's strange illness", "Resolve dispute between rival families", 
+            "Break curse affecting city landmark", "Uncover spy network operating in the city",
+            "Escort important shipment to neighboring town", "Participate in tournament for valuable prize", 
+            "Stop ritual being performed by hidden cult", "Find missing person last seen at the docks",
+            "Deliver secret message to undercover agent", "Track down escaped magical creature", 
+            "Investigate haunting at prestigious inn", "Recover family heirloom from dangerous ruins",
+            "Gather rare ingredients for master alchemist", "Prove accused citizen's innocence", 
+            "Infiltrate noble's mansion to find evidence", "Stop magical experiment threatening city",
+            "Mediate conflict between guilds", "Hunt notorious criminal hiding in city", 
+            "Protect endangered magical species", "Recover cargo from shipwreck in harbor",
+            "Map unexplored catacombs beneath city", "Translate ancient text in forgotten language", 
+            "Find artist's muse (literal or figurative)", "Escort refugees safely through city",
+            "Sabotage rival city's trade negotiations", "Investigate strange weather phenomena affecting crops"
+        ];
+        
+        // Generate a random city name
+        function generateCityName() {
+            // 30% chance for a standalone name
+            if (Math.random() < 0.3) {
+                return standalone[Math.floor(Math.random() * standalone.length)];
+            }
+            
+            // 70% chance for a constructed name
+            const useMiddle = Math.random() < 0.5;
+            let name = prefixes[Math.floor(Math.random() * prefixes.length)];
+            
+            if (useMiddle) {
+                name += middles[Math.floor(Math.random() * middles.length)];
+            }
+            
+            name += suffixes[Math.floor(Math.random() * suffixes.length)];
+            
+            // 20% chance to add a second word
+            if (Math.random() < 0.2) {
+                const secondWordType = Math.random();
+                if (secondWordType < 0.5) {
+                    // Add another constructed name
+                    let secondName = prefixes[Math.floor(Math.random() * prefixes.length)];
+                    if (Math.random() < 0.5) {
+                        secondName += middles[Math.floor(Math.random() * middles.length)];
+                    }
+                    secondName += suffixes[Math.floor(Math.random() * suffixes.length)];
+                    name += " " + secondName;
+                } else {
+                    // Add a descriptor
+                    const descriptors = ["Upper", "Lower", "New", "Old", "East", "West", 
+                                        "North", "South", "High", "Deep", "Far", "Near"];
+                    name += " " + descriptors[Math.floor(Math.random() * descriptors.length)];
+                }
+            }
+            
+            return name;
+        }
+        
+        // Generate random race percentages that add up to 100
+        function generateRacePercentages() {
+            const percentages = [];
+            let remaining = 100;
+            
+            // Generate percentages for all races except "Other"
+            for (let i = 0; i < races.length - 1; i++) {
+                if (remaining <= 0) {
+                    percentages.push(0);
+                    continue;
+                }
+                
+                // The first few races get larger percentages
+                let max;
+                if (i < 3) {
+                    max = Math.min(remaining, 40);
+                } else {
+                    max = Math.min(remaining, 20);
+                }
+                
+                const min = i < 3 ? 5 : 0;
+                const percent = Math.floor(Math.random() * (max - min + 1)) + min;
+                percentages.push(percent);
+                remaining -= percent;
+            }
+            
+            // Add "Other" with whatever is left
+            percentages.push(remaining);
+            
+            // Shuffle the array (except "Other" which should stay last)
+            for (let i = races.length - 2; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [percentages[i], percentages[j]] = [percentages[j], percentages[i]];
+            }
+            
+            return percentages;
+        }
+        
+        // Generate a random selection from an array with 1-4 items
+        function generateRandomSelection(array, min = 1, max = 4) {
+            const count = Math.floor(Math.random() * (max - min + 1)) + min;
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count).join(", ");
+        }
+        
+        // NEW: Generate random NPC
+        function generateNPC() {
+            const firstName = npcFirstNames[Math.floor(Math.random() * npcFirstNames.length)];
+            const lastName = npcLastNames[Math.floor(Math.random() * npcLastNames.length)];
+            const race = npcRaces[Math.floor(Math.random() * npcRaces.length)];
+            const occupation = npcOccupations[Math.floor(Math.random() * npcOccupations.length)];
+            const personality = npcPersonalities[Math.floor(Math.random() * npcPersonalities.length)];
+            
+            // Generate avatar background color
+            const colors = ["bg-blue-500", "bg-red-500", "bg-green-500", "bg-purple-500", 
+                           "bg-yellow-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500"];
+            const avatarColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            return {
+                name: `${firstName} ${lastName}`,
+                race: race,
+                occupation: occupation,
+                personality: personality,
+                avatarColor: avatarColor,
+                avatarInitial: firstName.charAt(0)
+            };
+        }
+        
+        // NEW: Generate random city districts
+        function generateDistricts(min = 3, max = 5) {
+            const count = Math.floor(Math.random() * (max - min + 1)) + min;
+            const shuffledTypes = [...districtTypes].sort(() => 0.5 - Math.random());
+            const districts = [];
+            
+            for (let i = 0; i < count; i++) {
+                districts.push({
+                    type: shuffledTypes[i].name,
+                    color: shuffledTypes[i].color,
+                    description: districtDescriptions[Math.floor(Math.random() * districtDescriptions.length)]
+                });
+            }
+            
+            return districts;
+        }
+        
+        // Generate a random city
+        function generateCity() {
+            const city = {};
+            
+            // Basic info
+            city.name = generateCityName();
+            city.tagline = taglines[Math.floor(Math.random() * taglines.length)];
+            city.description = cityDescriptions[Math.floor(Math.random() * cityDescriptions.length)];
+            
+            // Size and population
+            const size = citySizes[Math.floor(Math.random() * citySizes.length)];
+            city.size = size.name;
+            city.population = size.population;
+            city.density = densities[Math.floor(Math.random() * densities.length)];
+            
+            // Location and government
+            city.location = locations[Math.floor(Math.random() * locations.length)];
+            city.government = governments[Math.floor(Math.random() * governments.length)];
+            
+            // Demographics
+            city.racePercentages = generateRacePercentages();
+            city.languages = generateRandomSelection(languages);
+            
+            // Economy
+            city.industries = generateRandomSelection(industries);
+            city.exports = generateRandomSelection(exports);
+            city.tradePartners = generateRandomSelection(tradePartners);
+            city.wealth = wealthLevels[Math.floor(Math.random() * wealthLevels.length)];
+            city.wealthValue = wealthLevels.indexOf(city.wealth) + 1; // For progress bar
+            
+            // Architecture
+            city.architectureStyle = architectureStyles[Math.floor(Math.random() * architectureStyles.length)];
+            city.architectureFeatures = generateRandomSelection(architectureFeatures);
+            city.buildingMaterials = generateRandomSelection(buildingMaterials);
+            city.fortifications = fortifications[Math.floor(Math.random() * fortifications.length)];
+            
+            // Geography
+            city.terrain = terrains[Math.floor(Math.random() * terrains.length)];
+            city.climate = climates[Math.floor(Math.random() * climates.length)];
+            city.waterSource = waterSources[Math.floor(Math.random() * waterSources.length)];
+            city.elevation = elevations[Math.floor(Math.random() * elevations.length)];
+            
+            // Culture
+            city.popularClasses = generateRandomSelection(popularClasses);
+            city.religions = generateRandomSelection(religions);
+            city.crime = crimeLevels[Math.floor(Math.random() * crimeLevels.length)];
+            city.crimeValue = crimeLevels.indexOf(city.crime) + 1; // For progress bar
+            city.magic = magicLevels[Math.floor(Math.random() * magicLevels.length)];
+            city.magicValue = magicLevels.indexOf(city.magic) + 1; // For progress bar
+            
+            // NEW: Organizations and factions
+            city.majorFaction = factions[Math.floor(Math.random() * factions.length)];
+            city.guilds = generateRandomSelection(guilds);
+            city.secretSocieties = generateRandomSelection(secretSocieties);
+            city.criminalOrgs = generateRandomSelection(criminalOrganizations);
+            
+            // NEW: City districts
+            city.districts = generateDistricts();
+            
+            // NEW: Notable locations
+            city.taverns = generateRandomSelection(tavernNames);
+            city.shops = generateRandomSelection(shopNames);
+            city.landmarks = generateRandomSelection(landmarks);
+            city.magicalLocations = generateRandomSelection(magicalLocations);
+            
+            // NEW: NPCs - generate 3-5 notable NPCs
+            city.npcs = [];
+            const npcCount = Math.floor(Math.random() * 3) + 3; // 3-5 NPCs
+            for (let i = 0; i < npcCount; i++) {
+                city.npcs.push(generateNPC());
+            }
+            
+            // NEW: Local customs
+            city.festival = festivals[Math.floor(Math.random() * festivals.length)];
+            city.tradition = traditions[Math.floor(Math.random() * traditions.length)];
+            city.taboos = generateRandomSelection(taboos, 1, 2);
+            city.cuisine = generateRandomSelection(cuisines, 1, 3);
+            
+            // NEW: City problems/plot hooks
+            city.majorThreat = threats[Math.floor(Math.random() * threats.length)];
+            city.politicalIntrigue = politicalIntrigues[Math.floor(Math.random() * politicalIntrigues.length)];
+            city.rumors = generateRandomSelection(rumors, 1, 3);
+            city.quest = quests[Math.floor(Math.random() * quests.length)];
+            
+            return city;
+        }
+        
+        // Display the generated city
+        function displayCity(city) {
+            // Basic info
+            document.getElementById('cityName').textContent = city.name;
+            document.getElementById('cityTagline').textContent = city.tagline;
+            document.getElementById('cityDescription').textContent = city.description;
+            
+            // Overview
+            document.getElementById('population').textContent = city.population;
+            document.getElementById('citySize').textContent = city.size;
+            document.getElementById('density').textContent = city.density;
+            document.getElementById('location').textContent = city.location;
+            document.getElementById('government').textContent = city.government;
+            document.getElementById('languages').textContent = city.languages;
+            
+            // Demographics
+            const raceDemographics = document.getElementById('raceDemographics');
+            raceDemographics.innerHTML = '';
+            
+            for (let i = 0; i < races.length; i++) {
+                if (city.racePercentages[i] > 0) {
+                    const raceDiv = document.createElement('div');
+                    raceDiv.className = 'flex items-center justify-between';
+                    
+                    const raceName = document.createElement('span');
+                    raceName.className = 'font-semibold text-gray-700';
+                    raceName.textContent = races[i].name;
+                    
+                    const racePercent = document.createElement('span');
+                    racePercent.className = 'text-gray-600';
+                    racePercent.textContent = `${city.racePercentages[i]}%`;
+                    
+                    raceDiv.appendChild(raceName);
+                    raceDiv.appendChild(racePercent);
+                    
+                    const progressContainer = document.createElement('div');
+                    progressContainer.className = 'w-full mt-1';
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'race-bar ' + races[i].color;
+                    progressBar.style.width = `${city.racePercentages[i]}%`;
+                    
+                    progressContainer.appendChild(progressBar);
+                    
+                    raceDemographics.appendChild(raceDiv);
+                    raceDemographics.appendChild(progressContainer);
+                }
+            }
+            
+            // Economy
+            document.getElementById('industries').textContent = city.industries;
+            document.getElementById('exports').textContent = city.exports;
+            document.getElementById('tradePartners').textContent = city.tradePartners;
+            document.getElementById('wealth').textContent = city.wealth;
+            document.getElementById('wealthBar').style.width = `${(city.wealthValue / wealthLevels.length) * 100}%`;
+            
+            // Architecture
+            document.getElementById('architectureStyle').textContent = city.architectureStyle;
+            document.getElementById('architectureFeatures').textContent = city.architectureFeatures;
+            document.getElementById('buildingMaterials').textContent = city.buildingMaterials;
+            document.getElementById('fortifications').textContent = city.fortifications;
+            
+            // Geography
+            document.getElementById('terrain').textContent = city.terrain;
+            document.getElementById('climate').textContent = city.climate;
+            document.getElementById('waterSource').textContent = city.waterSource;
+            document.getElementById('elevation').textContent = city.elevation;
+            
+            // Culture
+            document.getElementById('popularClasses').textContent = city.popularClasses;
+            document.getElementById('religions').textContent = city.religions;
+            document.getElementById('crime').textContent = city.crime;
+            document.getElementById('crimeBar').style.width = `${(city.crimeValue / crimeLevels.length) * 100}%`;
+            document.getElementById('magic').textContent = city.magic;
+            document.getElementById('magicBar').style.width = `${(city.magicValue / magicLevels.length) * 100}%`;
+            
+            // NEW: Organizations and factions
+            document.getElementById('majorFaction').textContent = city.majorFaction;
+            document.getElementById('guilds').textContent = city.guilds;
+            document.getElementById('secretSocieties').textContent = city.secretSocieties;
+            document.getElementById('criminalOrgs').textContent = city.criminalOrgs;
+            
+            // NEW: City districts
+            const districtsList = document.getElementById('districtsList');
+            districtsList.innerHTML = '';
+            
+            city.districts.forEach(district => {
+                const districtDiv = document.createElement('div');
+                districtDiv.className = 'mb-3';
+                
+                const districtHeader = document.createElement('div');
+                districtHeader.className = 'flex items-start mb-1';
+                
+                const districtBadge = document.createElement('span');
+                districtBadge.className = `district-badge ${district.color}`;
+                districtBadge.textContent = district.type;
+                
+                districtHeader.appendChild(districtBadge);
+                
+                const districtDescription = document.createElement('p');
+                districtDescription.className = 'text-gray-600 text-sm mt-1';
+                districtDescription.textContent = district.description;
+                
+                districtDiv.appendChild(districtHeader);
+                districtDiv.appendChild(districtDescription);
+                
+                districtsList.appendChild(districtDiv);
+            });
+            
+            // NEW: Notable locations
+            document.getElementById('taverns').textContent = city.taverns;
+            document.getElementById('shops').textContent = city.shops;
+            document.getElementById('landmarks').textContent = city.landmarks;
+            document.getElementById('magicalLocations').textContent = city.magicalLocations;
+            
+            // NEW: NPCs
+            const npcList = document.getElementById('npcList');
+            npcList.innerHTML = '';
+            
+            city.npcs.forEach(npc => {
+                const npcCard = document.createElement('div');
+                npcCard.className = 'flex items-start p-3 bg-gray-50 rounded-lg';
+                
+                const avatar = document.createElement('div');
+                avatar.className = `npc-avatar ${npc.avatarColor} mr-3 flex-shrink-0`;
+                avatar.textContent = npc.avatarInitial;
+                
+                const npcInfo = document.createElement('div');
+                
+                const npcName = document.createElement('div');
+                npcName.className = 'font-bold text-gray-800';
+                npcName.textContent = npc.name;
+                
+                const npcOccupation = document.createElement('div');
+                npcOccupation.className = 'text-sm font-medium text-gray-700';
+                npcOccupation.textContent = npc.occupation;
+                
+                const npcRace = document.createElement('div');
+                npcRace.className = 'text-xs text-gray-600';
+                npcRace.textContent = npc.race;
+                
+                const npcPersonality = document.createElement('div');
+                npcPersonality.className = 'text-xs italic text-gray-500 mt-1';
+                npcPersonality.textContent = `Personality: ${npc.personality}`;
+                
+                npcInfo.appendChild(npcName);
+                npcInfo.appendChild(npcOccupation);
+                npcInfo.appendChild(npcRace);
+                npcInfo.appendChild(npcPersonality);
+                
+                npcCard.appendChild(avatar);
+                npcCard.appendChild(npcInfo);
+                
+                npcList.appendChild(npcCard);
+            });
+            
+            // NEW: Local customs
+            document.getElementById('festival').textContent = city.festival;
+            document.getElementById('tradition').textContent = city.tradition;
+            document.getElementById('taboos').textContent = city.taboos;
+            document.getElementById('cuisine').textContent = city.cuisine;
+            
+            // NEW: City problems/plot hooks
+            document.getElementById('majorThreat').textContent = city.majorThreat;
+            document.getElementById('politicalIntrigue').textContent = city.politicalIntrigue;
+            document.getElementById('rumors').textContent = city.rumors;
+            document.getElementById('quest').textContent = city.quest;
+            
+            // Show the city display
+            document.getElementById('cityDisplay').classList.remove('hidden');
+        }
+        
+        // Generate and display a city when the button is clicked
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const city = generateCity();
+            displayCity(city);
+            
+            // Scroll to the city display
+            document.getElementById('cityDisplay').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Generate a city on initial load
+        window.addEventListener('load', function() {
+            const city = generateCity();
+            displayCity(city);
+        });
+    </script>
+</body>
+</html>
