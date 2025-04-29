@@ -137,10 +137,7 @@
         .list-item .material-symbols-outlined { color: var(--text-secondary); font-size: 1.2rem; flex-shrink: 0; }
         .list-item.drawback { color: var(--color-drawback); }
         .list-item.drawback .material-symbols-outlined { color: var(--color-drawback); }
-        /* Fix for text wrapping issue */
-        .list-item span:last-child {
-            word-break: break-word; /* Allow text to wrap */
-        }
+        .list-item span:last-child { word-break: break-word; line-height: 1.3; }
 
 
         /* Details Lists (Appearance, Status, Background) */
@@ -207,7 +204,7 @@
     <div class="main-container">
         <header class="text-center mb-4">
             <h1 class="text-3xl md:text-4xl font-bold text-white uppercase tracking-wider">Hero Builder</h1>
-            <!-- Removed subheading -->
+            <!-- Subheading removed -->
         </header>
 
         <!-- History Section -->
@@ -260,80 +257,10 @@
         const distinguishingFeatures = [ "Facial Scar (Jagged/Burn/Ritual)", "Distinctive Tattoo (Tribal/Mystic/Tech)", "Cybernetic Eye (Glowing/Scanner)", "Cybernetic Limb (Sleek/Bulky/Weaponized)", "Unusual Birthmark (Shaped/Glowing)", "Pointed Ears (Fae/Elven)", "Small Horns (Curled/Straight/Broken)", "Subtle Glowing Eyes (Constant/Emotional)", "Odd Skin Pattern (Stripes/Spots/Geometric)", "Visible Circuitry (Lines/Patches)", "Prehensile Tail (Furred/Scaled/Robotic)", "Vestigial Wings (Feathered/Leathery/Energy)", "Energy Cracks (Skin/Armor)", "Metallic Patch (Skin/Scales)", "Third Eye (Closed/Open/Mystic)", "None Noticeable", "Always Wears Mask/Helmet", "Fangs/Tusks", "Claws (Retractable/Permanent)", "Feathered Crest/Plumage", "Scales (Patches/Full Body)", "Antennae", "Extra Digits", "Unnatural Hair Texture (Crystal/Metal)", "Permanent Aura (Faint/Intimidating)", "Visible Scars (Multiple/Severe)" ];
         const outfitStyles = ["Sleek Bodysuit", "Tactical Gear", "Heavy Armored Suit", "Flowing Robes/Cloak", "Modified Streetwear", "High-Tech Exoskeleton", "Mystical Vestments", "Minimalist Uniform", "Animalistic Costume", "Energy Construct Armor", "Ragged/Worn Clothes", "Formal Suit (Modified)", "Powered Armor", "Leather Jacket & Jeans", "Ancient Armor (Modernized)", "Bio-Organic Suit"];
         const powers = [ /* Offensive */ { name: "Super Strength", icon: "fitness_center", type: ["Brawler", "Tank", "Warrior"] }, { name: "Energy Blasts (Force/Kinetic)", icon: "bolt", type: ["Blaster", "Elementalist"] }, { name: "Energy Blasts (Heat/Fire)", icon: "local_fire_department", type: ["Blaster", "Elementalist"] }, { name: "Energy Blasts (Cold/Ice)", icon: "ac_unit", type: ["Blaster", "Elementalist"] }, { name: "Energy Blasts (Electric)", icon: "flash_on", type: ["Blaster", "Elementalist"] }, { name: "Energy Blasts (Light/Radiant)", icon: "wb_sunny", type: ["Blaster", "Mystic", "Paladin"] }, { name: "Energy Blasts (Shadow/Dark)", icon: "dark_mode", type: ["Blaster", "Mystic", "Rogue", "Warlock"] }, { name: "Sonic Scream/Blast", icon: "volume_up", type: ["Blaster", "Controller"] }, { name: "Weapon Summoning (Energy/Physical)", icon: "construction", type: ["Warrior", "Mystic", "Gadgeteer"] }, { name: "Acid/Poison Generation/Projection", icon: "science", type: ["Blaster", "Rogue", "Controller"] }, { name: "Explosion Generation", icon: "bomb", type: ["Blaster"] }, /* Defensive/Utility */ { name: "Super Speed", icon: "speed", type: ["Speedster", "Rogue"] }, { name: "Flight (Winged/Propulsion/Levitation)", icon: "flight", type: ["Speedster", "Blaster", "Mystic"] }, { name: "Regeneration (Minor/Major)", icon: "healing", type: ["Tank", "Brawler"] }, { name: "Force Field Generation", icon: "shield", type: ["Tank", "Controller", "Support"] }, { name: "Enhanced Durability/Invulnerability", icon: "security", type: ["Tank", "Brawler", "Warrior"] }, { name: "Invisibility/Camouflage", icon: "visibility_off", type: ["Infiltrator", "Rogue"] }, { name: "Intangibility/Phasing", icon: "blur_on", type: ["Infiltrator", "Speedster"] }, { name: "Teleportation (Short/Long Range)", icon: "swap_horiz", type: ["Speedster", "Infiltrator", "Mystic"] }, { name: "Enhanced Senses (All/Specific)", icon: "hearing", type: ["Infiltrator", "Marksman", "Druid"] }, { name: "Wall-Crawling/Adhesion", icon: "vertical_align_top", type: ["Infiltrator", "Rogue"] }, { name: "Danger Sense/Precognitive Reflexes", icon: "crisis_alert", type: ["Any"] }, { name: "Adaptation (Environmental/Threat)", icon: "sync_alt", type: ["Tank", "Shapeshifter"] }, /* Mental/Mystical */ { name: "Telekinesis", icon: "psychology", type: ["Psychic", "Controller", "Mystic"] }, { name: "Telepathy (Read/Project/Link)", icon: "wifi_tethering", type: ["Psychic", "Controller", "Infiltrator"] }, { name: "Illusion Casting", icon: "movie_filter", type: ["Mystic", "Controller", "Rogue", "Bard"] }, { name: "Magic/Sorcery (Elemental/Arcane/Divine)", icon: "auto_fix_high", type: ["Mystic", "Sorcerer", "Warlock", "Paladin"] }, { name: "Precognition (Vague/Specific)", icon: "update", type: ["Psychic", "Mystic", "Support"] }, { name: "Mind Control/Suggestion", icon: "neurology", type: ["Psychic", "Controller", "Bard", "Warlock"] }, { name: "Astral Projection", icon: "travel_explore", type: ["Mystic", "Psychic"] }, { name: "Necromancy (Limited)", icon: "skull", type: ["Mystic", "Warlock"] }, /* Control/Manipulation */ { name: "Shapeshifting (Animal/Humanoid/Object)", icon: "transform", type: ["Shapeshifter", "Druid", "Infiltrator"] }, { name: "Elemental Control (Fire)", icon: "local_fire_department", type: ["Elementalist", "Mystic"] }, { name: "Elemental Control (Water/Ice)", icon: "water_drop", type: ["Elementalist", "Mystic"] }, { name: "Elemental Control (Earth/Metal)", icon: "landscape", type: ["Elementalist", "Tank"] }, { name: "Elemental Control (Air/Weather)", icon: "air", type: ["Elementalist", "Speedster"] }, { name: "Technopathy/Cyberpathy", icon: "memory", type: ["Gadgeteer", "Artificer", "Controller"] }, { name: "Magnetism Control", icon: "settings_input_component", type: ["Controller", "Elementalist"] }, { name: "Gravity Manipulation", icon: "public", type: ["Controller", "Tank"] }, { name: "Plant Control/Chlorokinesis", icon: "forest", type: ["Druid", "Controller", "Elementalist"] }, { name: "Animal Communication/Control", icon: "pets", type: ["Druid", "Support", "Summoner"] }, { name: "Sound Manipulation/Absorption", icon: "surround_sound", type: ["Controller", "Support"] }, { name: "Light Manipulation (Hard Light)", icon: "highlight", type: ["Controller", "Blaster", "Mystic"] }, { name: "Shadow Manipulation/Travel", icon: "nights_stay", type: ["Infiltrator", "Rogue", "Mystic", "Warlock"] }, /* Body Manipulation */ { name: "Elasticity/Plasticity", icon: "commit", type: ["Shapeshifter", "Brawler"] }, { name: "Size Manipulation (Grow/Shrink)", icon: "aspect_ratio", type: ["Shapeshifter", "Tank", "Infiltrator"] }, { name: "Density Control (Increase/Decrease)", icon: "compress", type: ["Tank", "Infiltrator"] }, { name: "Bone/Claw/Spike Generation", icon: "cut", type: ["Brawler", "Warrior"] }, { name: "Biological Manipulation (Self)", icon: "biotech", type: ["Shapeshifter", "Tank"] }, { name: "Duplication (Self)", icon: "control_point_duplicate", type: ["Controller", "Infiltrator"] }, { name: "Pheromone Control", icon: "hive", type: ["Controller", "Bard", "Infiltrator"] }, /* Support/Other */ { name: "Healing (Self/Others)", icon: "medical_services", type: ["Healer/Support", "Mystic", "Paladin"] }, { name: "Power Augmentation/Granting", icon: "trending_up", type: ["Support", "Mystic"] }, { name: "Power Nullification/Dampening", icon: "block", type: ["Controller", "Support", "Tank"] }, { name: "Summoning (Creatures/Objects/Elementals)", icon: "group_add", type: ["Summoner", "Mystic", "Warlock"] }, { name: "Probability Manipulation (Luck/Jinx)", icon: "casino", type: ["Controller", "Rogue", "Bard"] }, { name: "Portal Creation", icon: "adjust", type: ["Mystic", "Speedster"] }, { name: "Omnilingualism", icon: "translate", type: ["Support", "Infiltrator", "Psychic"] },
-            /* Drawbacks / Weaknesses (Expanded) */
-            { name: "Power Instability/Backlash", icon: "warning", type: ["Drawback"], drawback: true },
-            { name: "Energy Drain (Requires Touch/Proximity)", icon: "battery_alert", type: ["Drawback", "Brawler"], drawback: true },
-            { name: "Vulnerability (Specific Element/Material/Energy)", icon: "report", type: ["Drawback"], drawback: true },
-            { name: "Uncontrolled Power Surges", icon: "error", type: ["Drawback"], drawback: true },
-            { name: "Horrific/Unsettling Appearance", icon: "sentiment_very_dissatisfied", type: ["Drawback"], drawback: true },
-            { name: "Constant Pain/Discomfort", icon: "sick", type: ["Drawback"], drawback: true },
-            { name: "Severe Allergy (Common Substance)", icon: "allergy", type: ["Drawback"], drawback: true },
-            { name: "Power Negation Field (Self)", icon: "signal_cellular_off", type: ["Drawback"], drawback: true },
-            { name: "Mental Instability/Voices", icon: "psychiatry", type: ["Drawback", "Psychic"], drawback: true },
-            { name: "Sunlight/Specific Condition Weakness", icon: "wb_twilight", type: ["Drawback"], drawback: true },
-            { name: "Power Requires Fuel/Charge/Emotion", icon: "battery_charging_full", type: ["Drawback"], drawback: true },
-            { name: "Mutation/Degeneration Risk", icon: "coronavirus", type: ["Drawback"], drawback: true },
-            { name: "Noticeable Tell/Side Effect", icon: "visibility", type: ["Drawback"], drawback: true }, // e.g., eyes glow when using powers
-            { name: "Phobia (Specific/Crippling)", icon: "panic", type: ["Drawback"], drawback: true },
-            { name: "Code of Honor/Restriction", icon: "gavel", type: ["Drawback"], drawback: true }, // e.g., cannot lie, cannot harm innocents
-            { name: "Social Stigma/Outcast", icon: "group_off", type: ["Drawback"], drawback: true },
-            { name: "Dependency (Substance/Person/Object)", icon: "pill", type: ["Drawback"], drawback: true },
-            { name: "Limited Power Usage (Charges/Time)", icon: "hourglass_empty", type: ["Drawback"], drawback: true },
-            { name: "Emotional Power Trigger (Unreliable)", icon: "sentiment_neutral", type: ["Drawback"], drawback: true },
-        ];
+            /* Drawbacks / Weaknesses */ { name: "Power Instability/Backlash", icon: "warning", type: ["Drawback"], drawback: true }, { name: "Energy Drain (Requires Touch/Proximity)", icon: "battery_alert", type: ["Drawback", "Brawler"], drawback: true }, { name: "Vulnerability (Specific Element/Material/Energy)", icon: "report", type: ["Drawback"], drawback: true }, { name: "Uncontrolled Power Surges", icon: "error", type: ["Drawback"], drawback: true }, { name: "Horrific/Unsettling Appearance", icon: "sentiment_very_dissatisfied", type: ["Drawback"], drawback: true }, { name: "Constant Pain/Discomfort", icon: "sick", type: ["Drawback"], drawback: true }, { name: "Severe Allergy (Common Substance)", icon: "allergy", type: ["Drawback"], drawback: true }, { name: "Power Negation Field (Self)", icon: "signal_cellular_off", type: ["Drawback"], drawback: true }, { name: "Mental Instability/Voices", icon: "psychiatry", type: ["Drawback", "Psychic"], drawback: true }, { name: "Sunlight/Specific Condition Weakness", icon: "wb_twilight", type: ["Drawback"], drawback: true }, { name: "Power Requires Fuel/Charge/Emotion", icon: "battery_charging_full", type: ["Drawback"], drawback: true }, { name: "Mutation/Degeneration Risk", icon: "coronavirus", type: ["Drawback"], drawback: true }, { name: "Noticeable Tell/Side Effect", icon: "visibility", type: ["Drawback"], drawback: true }, { name: "Phobia (Specific/Crippling)", icon: "panic", type: ["Drawback"], drawback: true }, { name: "Code of Honor/Restriction", icon: "gavel", type: ["Drawback"], drawback: true }, { name: "Social Stigma/Outcast", icon: "group_off", type: ["Drawback"], drawback: true }, { name: "Dependency (Substance/Person/Object)", icon: "pill", type: ["Drawback"], drawback: true }, { name: "Limited Power Usage (Charges/Time)", icon: "hourglass_empty", type: ["Drawback"], drawback: true }, { name: "Emotional Power Trigger (Unreliable)", icon: "sentiment_neutral", type: ["Drawback"], drawback: true }, ];
         const skills = [ { name: "Acrobatics (Dex)", icon: "sports_gymnastics" }, { name: "Stealth (Dex)", icon: "visibility_off" }, { name: "Sleight of Hand (Dex)", icon: "magic_button" }, { name: "Driving/Piloting (Dex)", icon: "flight_takeoff" }, { name: "Athletics (Str)", icon: "directions_run" }, { name: "Investigation (Int)", icon: "search" }, { name: "Technology (Int)", icon: "computer" }, { name: "History (Int)", icon: "history_edu" }, { name: "Mechanics/Engineering (Int)", icon: "build" }, { name: "Science (Bio/Chem/Phys) (Int)", icon: "science" }, { name: "Arcana (Int)", icon: "auto_stories" }, { name: "Insight (Wis)", icon: "psychology_alt" }, { name: "Perception (Wis)", icon: "visibility" }, { name: "Medicine (Wis)", icon: "medical_services" }, { name: "Survival (Wis)", icon: "forest" }, { name: "Streetwise (Wis)", icon: "location_city" }, { name: "Deception (Cha)", icon: "theater_comedy" }, { name: "Intimidation (Cha)", icon: "sports_kabaddi" }, { name: "Performance (Cha)", icon: "music_note" }, { name: "Persuasion (Cha)", icon: "record_voice_over" }, { name: "Leadership (Cha)", icon: "groups" } ];
-        const equipmentBase = [ // Utility/Non-Weapon Gear
-            { name: "Utility Belt", icon: "construction", type: ["Gadgeteer", "Infiltrator", "Marksman", "Rogue", "Warrior"] }, // Slightly broader appeal
-            { name: "Grappling Hook & Line", icon: "hook", type: ["Infiltrator", "Rogue", "Gadgeteer", "Speedster"] },
-            { name: "High-Tech Communicator/Scanner", icon: "headset_mic", type: ["Any"] },
-            { name: "Smoke/Flashbang Pellets", icon: "cloud", type: ["Infiltrator", "Rogue", "Gadgeteer"] },
-            { name: "Reinforced Gauntlets/Gloves", icon: "pan_tool_alt", type: ["Brawler", "Tank", "Warrior"] },
-            { name: "Armored Boots (Magnetic/Silent)", icon: "footprint", type: ["Brawler", "Tank", "Warrior", "Infiltrator"] },
-            { name: "Rebreather/Gas Mask", icon: "scuba_diving", type: ["Any"] },
-            { name: "Advanced First-Aid Kit", icon: "medical_information", type: ["Healer/Support", "Medicine Skill"] }, // Tied to archetype/skill
-            { name: "Med-Spray (Quick Heal)", icon: "spray", type: ["Healer/Support", "Medicine Skill", "Tank"] }, // Slightly broader
-            { name: "Universal Tool", icon: "handyman", type: ["Gadgeteer", "Artificer", "Mechanics Skill"] }, // Replaced Multi-tool
-            { name: "Laser Cutter", icon: "laser", type: ["Gadgeteer", "Artificer", "Infiltrator"] }, // Specific Tool
-            { name: "Sonic Screwdriver Analogue", icon: "tune", type: ["Gadgeteer", "Artificer"] }, // Specific Tool
-            { name: "High-Intensity Flashlight/UV Light", icon: "flashlight_on", type: ["Any"] },
-            { name: "Enhanced Binoculars/Thermal Vision", icon: "binoculars", type: ["Marksman", "Infiltrator", "Investigation Skill"] },
-            { name: "Lockpicks/Bypass Kit (Digital/Manual)", icon: "key", type: ["Rogue", "Infiltrator", "Gadgeteer"] },
-            { name: "Throwable Trackers/Audio Bugs", icon: "gps_fixed", type: ["Infiltrator", "Gadgeteer"] },
-            { name: "Personal Cloaking Device (Short Duration)", icon: "visibility_off", type: ["Infiltrator", "Gadgeteer"] },
-            { name: "EMP Emitter (Small Radius)", icon: "settings_input_component", type: ["Gadgeteer", "Controller", "Artificer"] }, // Renamed
-            { name: "Forensic Analysis Kit", icon: "biotech", type: ["Investigation Skill", "Gadgeteer"] },
-            { name: "Survival Gear Pack", icon: "backpack", type: ["Survival Skill", "Any"] },
-            { name: "Holographic Projector (Disguise/Distraction)", icon: "smart_display", type: ["Gadgeteer", "Infiltrator", "Bard"] },
-        ];
-        const weapons = [ // Items primarily used for offense/defense
-            { name: "Energy Sword/Blade", icon: "sword", type: ["Warrior", "Blaster", "Mystic", "Paladin"] },
-            { name: "High-Tech Bow (Trick Arrows)", icon: "archery", type: ["Marksman", "Gadgeteer"] },
-            { name: "Vibro-Blades (Daggers/Sword)", icon: "cut", type: ["Rogue", "Warrior", "Infiltrator"] },
-            { name: "Plasma Pistol/Rifle", icon: "flare", type: ["Marksman", "Blaster", "Gadgeteer"] },
-            { name: "Power Hammer/Maul", icon: "hardware", type: ["Warrior", "Tank", "Brawler"] },
-            { name: "Advanced Throwing Stars/Discs (Returning)", icon: "star", type: ["Rogue", "Marksman", "Infiltrator"] },
-            { name: "Shield (Energy/Physical/Deployable)", icon: "shield", type: ["Tank", "Warrior", "Support", "Paladin"] },
-            { name: "Whip (Monofilament/Energy/Neural)", icon: "whip", type: ["Controller", "Rogue", "Bard"] },
-            { name: "Sonic Emitter/Disruptor", icon: "surround_sound", type: ["Controller", "Gadgeteer", "Bard"] },
-            { name: "Cryo/Incendiary Grenades", icon: "ac_unit", type: ["Gadgeteer", "Blaster", "Controller"] },
-            { name: "Taser Gauntlets/Prods", icon: "flash_on", type: ["Brawler", "Controller", "Rogue"] },
-            { name: "Net Launcher/Bolos", icon: "scatter_plot", type: ["Controller", "Gadgeteer", "Marksman"] },
-            { name: "Railgun Sniper Rifle", icon: "scope", type: ["Marksman", "Gadgeteer"] },
-            { name: "Mystic Staff/Wand/Orb", icon: "magic_button", type: ["Mystic", "Sorcerer", "Elementalist", "Warlock", "Druid"] },
-            { name: "Longsword/Katana (Enchanted?)", icon: "sword", type: ["Warrior", "Tank", "Paladin"] },
-            { name: "Dagger/Kukri (Pair, Concealed)", icon: "cut", type: ["Rogue", "Infiltrator", "Warlock"] },
-            { name: "Mace/Warhammer (Blessed/Cursed?)", icon: "hardware", type: ["Warrior", "Brawler", "Tank", "Paladin"] },
-            { name: "Shortbow/Crossbow (Repeating?)", icon: "archery", type: ["Marksman", "Rogue"] },
-            { name: "Spear/Glaive/Halberd", icon: "horizontal_rule", type: ["Warrior", "Tank", "Paladin"] },
-            { name: "Battleaxe/Greataxe", icon: "axe", type: ["Warrior", "Brawler"] },
-            { name: "Quarterstaff/Bo Staff", icon: "horizontal_rule", type: ["Monk", "Mystic", "Druid"] },
-            { name: "Flail/Morningstar", icon: "flare", type: ["Warrior", "Brawler"] },
-            { name: "Scythe", icon: "agriculture", type: ["Warrior", "Warlock"] },
-            { name: "Holy Symbol (Empowered)", icon: "verified", type: ["Paladin", "Mystic", "Support"] },
-            { name: "Spellbook/Grimoire", icon: "menu_book", type: ["Mystic", "Sorcerer", "Warlock"] },
-            { name: "Heavy Blaster Cannon", icon: "rocket_launch", type: ["Blaster", "Tank", "Warrior"] }, // New heavy weapon
-            { name: "Force Pike/Stun Baton", icon: "electric_bolt", type: ["Warrior", "Controller", "Tank"] }, // New control weapon
-        ];
+        const equipmentBase = [ { name: "Utility Belt", icon: "construction", type: ["Gadgeteer", "Infiltrator", "Marksman", "Rogue", "Warrior"] }, { name: "Grappling Hook & Line", icon: "hook", type: ["Infiltrator", "Rogue", "Gadgeteer", "Speedster"] }, { name: "High-Tech Communicator/Scanner", icon: "headset_mic", type: ["Any"] }, { name: "Smoke/Flashbang Pellets", icon: "cloud", type: ["Infiltrator", "Rogue", "Gadgeteer"] }, { name: "Reinforced Gauntlets/Gloves", icon: "pan_tool_alt", type: ["Brawler", "Tank", "Warrior"] }, { name: "Armored Boots (Magnetic/Silent)", icon: "footprint", type: ["Brawler", "Tank", "Warrior", "Infiltrator"] }, { name: "Rebreather/Gas Mask", icon: "scuba_diving", type: ["Any"] }, { name: "Advanced First-Aid Kit", icon: "medical_information", type: ["Healer/Support", "Medicine Skill"] }, { name: "Med-Spray (Quick Heal)", icon: "spray", type: ["Healer/Support", "Medicine Skill", "Tank"] }, { name: "Universal Tool", icon: "handyman", type: ["Gadgeteer", "Artificer", "Mechanics Skill"] }, { name: "Laser Cutter", icon: "laser", type: ["Gadgeteer", "Artificer", "Infiltrator"] }, { name: "Sonic Screwdriver Analogue", icon: "tune", type: ["Gadgeteer", "Artificer"] }, { name: "High-Intensity Flashlight/UV Light", icon: "flashlight_on", type: ["Any"] }, { name: "Enhanced Binoculars/Thermal Vision", icon: "binoculars", type: ["Marksman", "Infiltrator", "Investigation Skill"] }, { name: "Lockpicks/Bypass Kit (Digital/Manual)", icon: "key", type: ["Rogue", "Infiltrator", "Gadgeteer"] }, { name: "Throwable Trackers/Audio Bugs", icon: "gps_fixed", type: ["Infiltrator", "Gadgeteer"] }, { name: "Personal Cloaking Device (Short Duration)", icon: "visibility_off", type: ["Infiltrator", "Gadgeteer"] }, { name: "EMP Emitter (Small Radius)", icon: "settings_input_component", type: ["Gadgeteer", "Controller", "Artificer"] }, { name: "Forensic Analysis Kit", icon: "biotech", type: ["Investigation Skill", "Gadgeteer"] }, { name: "Survival Gear Pack", icon: "backpack", type: ["Survival Skill", "Any"] }, { name: "Holographic Projector (Disguise/Distraction)", icon: "smart_display", type: ["Gadgeteer", "Infiltrator", "Bard"] }, ];
+        const weapons = [ { name: "Energy Sword/Blade", icon: "sword", type: ["Warrior", "Blaster", "Mystic", "Paladin"] }, { name: "High-Tech Bow (Trick Arrows)", icon: "archery", type: ["Marksman", "Gadgeteer"] }, { name: "Vibro-Blades (Daggers/Sword)", icon: "cut", type: ["Rogue", "Warrior", "Infiltrator"] }, { name: "Plasma Pistol/Rifle", icon: "flare", type: ["Marksman", "Blaster", "Gadgeteer"] }, { name: "Power Hammer/Maul", icon: "hardware", type: ["Warrior", "Tank", "Brawler"] }, { name: "Advanced Throwing Stars/Discs (Returning)", icon: "star", type: ["Rogue", "Marksman", "Infiltrator"] }, { name: "Shield (Energy/Physical/Deployable)", icon: "shield", type: ["Tank", "Warrior", "Support", "Paladin"] }, { name: "Whip (Monofilament/Energy/Neural)", icon: "whip", type: ["Controller", "Rogue", "Bard"] }, { name: "Sonic Emitter/Disruptor", icon: "surround_sound", type: ["Controller", "Gadgeteer", "Bard"] }, { name: "Cryo/Incendiary Grenades", icon: "ac_unit", type: ["Gadgeteer", "Blaster", "Controller"] }, { name: "Taser Gauntlets/Prods", icon: "flash_on", type: ["Brawler", "Controller", "Rogue"] }, { name: "Net Launcher/Bolos", icon: "scatter_plot", type: ["Controller", "Gadgeteer", "Marksman"] }, { name: "Railgun Sniper Rifle", icon: "scope", type: ["Marksman", "Gadgeteer"] }, { name: "Mystic Staff/Wand/Orb", icon: "magic_button", type: ["Mystic", "Sorcerer", "Elementalist", "Warlock", "Druid"] }, { name: "Longsword/Katana (Enchanted?)", icon: "sword", type: ["Warrior", "Tank", "Paladin"] }, { name: "Dagger/Kukri (Pair, Concealed)", icon: "cut", type: ["Rogue", "Infiltrator", "Warlock"] }, { name: "Mace/Warhammer (Blessed/Cursed?)", icon: "hardware", type: ["Warrior", "Brawler", "Tank", "Paladin"] }, { name: "Shortbow/Crossbow (Repeating?)", icon: "archery", type: ["Marksman", "Rogue"] }, { name: "Spear/Glaive/Halberd", icon: "horizontal_rule", type: ["Warrior", "Tank", "Paladin"] }, { name: "Battleaxe/Greataxe", icon: "axe", type: ["Warrior", "Brawler"] }, { name: "Quarterstaff/Bo Staff", icon: "horizontal_rule", type: ["Monk", "Mystic", "Druid"] }, { name: "Flail/Morningstar", icon: "flare", type: ["Warrior", "Brawler"] }, { name: "Scythe", icon: "agriculture", type: ["Warrior", "Warlock"] }, { name: "Holy Symbol (Empowered)", icon: "verified", type: ["Paladin", "Mystic", "Support"] }, { name: "Spellbook/Grimoire", icon: "menu_book", type: ["Mystic", "Sorcerer", "Warlock"] }, { name: "Heavy Blaster Cannon", icon: "rocket_launch", type: ["Blaster", "Tank", "Warrior"] }, { name: "Force Pike/Stun Baton", icon: "electric_bolt", type: ["Warrior", "Controller", "Tank"] }, ];
         const alignments = ["Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "True Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil"];
         const financialStatuses = ["Struggling", "Lower Middle Class", "Comfortable", "Wealthy", "Secretly Rich", "Sponsored (Corporate/Govt)", "Inherited Fortune", "Criminally Acquired Wealth", "Independent Wealth (Mysterious Origin)", "Below Poverty Line"];
         const nemesisConcepts = ["Arch-Rival with Opposite Powers", "Former Mentor Turned Evil", "Corrupt Politician/CEO", "Shadowy Organization", "Extradimensional Threat", "Self-Made Tech Villain", "Monster of the Week", "Psychological Manipulator", "Sympathetic Villain", "Cosmic Entity", "Betrayed Former Ally", "None (Just Starting Out)", "AI Gone Rogue", "Ancient Evil Awakened", "Cult Leader", "Parallel Universe Doppelganger"];
@@ -344,7 +271,7 @@
         const teamAffiliations = ["Solo Operative", "Member of [Generated Team Name]", "Leader of [Generated Team Name]", "Government Agent/Task Force", "Mercenary Group", "Loose Alliance", "Sidekick/Protégé", "Independent Contractor"];
         const teamNamePrefixes = ["Justice", "Power", "Omega", "Alpha", "Guardian", "Sentinel", "Star", "Cosmic", "Shadow", "Night", "Avenging", "Secret", "Global", "Quantum", "Chrono"];
         const teamNameSuffixes = ["League", "Force", "Squad", "Initiative", "Syndicate", "Watch", "Guard", "Collective", "Brigade", "Order", "Agency", "Project", "Knights", "Heroes", "Unit"];
-        const powerSources = ["Genetic Mutation", "Cosmic Radiation", "Magic/Sorcery", "Advanced Technology", "Alien Physiology", "Divine/Celestial Blessing", "Infernal/Demonic Pact", "Cybernetic Enhancement", "Psionic Awakening", "Elemental Infusion", "Unknown/Anomalous", "Training/Discipline"];
+        const powerSources = ["Genetic Mutation", "Cosmic Radiation", "Magic/Sorcery", "Advanced Technology", "Alien Physiology", "Divine/Celestial Blessing", "Infernal/Demonic Pact", "Cybernetic Enhancement", "Psionic Awakening", "Elemental Infusion", "Unknown/Anomalous", "Training/Discipline", "Chemical Exposure", "Mystical Artifact"];
 
         // --- Constants ---
         const MAX_HISTORY = 5;
@@ -376,103 +303,28 @@
 
         // --- Generation Logic ---
         function generateHeroName() { let baseName = ""; const formatChance = Math.random(); if (formatChance < 0.60) { const numParts = Math.random() < 0.6 ? 2 : 3; baseName = getRandomElement(nameStarts); if (numParts === 3) { let middle = getRandomElement(nameMiddles); while (nameMiddles.length > 1 && middle === baseName.slice(-middle.length)) { middle = getRandomElement(nameMiddles); } baseName += middle; } let end = getRandomElement(nameEnds); while (nameEnds.length > 1 && end === baseName.slice(-end.length)) { end = getRandomElement(nameEnds); } baseName += end; baseName = baseName.replace(/([aeiou])\1+/gi, '$1'); baseName = baseName.replace(/([bcdfghjklmnpqrstvwxyz])\1{1,}/gi, '$1'); baseName = baseName.charAt(0).toUpperCase() + baseName.slice(1).toLowerCase(); } else { baseName = `${getRandomElement(heroNamePrefixes)} ${getRandomElement(heroNameSuffixes)}`; } const titleChance = 0.15; if (Math.random() < titleChance) { const title = getRandomElement(heroTitles); if (title) { return `${title} ${baseName}`; } } return baseName; }
-        function generatePowersLogical(archetype, race, level) { // Added level
-            let numPowers = 0;
-            const powerRoll = Math.random();
-
-            // Base number based on level tier
-            if (level <= 4) { // Low Level
-                 if (powerRoll < 0.15) numPowers = 0;      // 15% chance 0
-                 else if (powerRoll < 0.65) numPowers = 1; // 50% chance 1
-                 else numPowers = 2;                       // 35% chance 2
-            } else if (level <= 8) { // Mid Level
-                 if (powerRoll < 0.05) numPowers = 0;      // 5% chance 0
-                 else if (powerRoll < 0.40) numPowers = 1; // 35% chance 1
-                 else if (powerRoll < 0.80) numPowers = 2; // 40% chance 2
-                 else numPowers = 3;                       // 20% chance 3
-            } else { // High Level
-                 if (powerRoll < 0.20) numPowers = 2;      // 20% chance 2
-                 else if (powerRoll < 0.70) numPowers = 3; // 50% chance 3
-                 else numPowers = 4;                       // 30% chance 4
-            }
-
-
-            // Adjust based on race/archetype (more potent races/archetypes get a higher *chance* of an extra power)
-            let bonusChance = 0;
-            if (["Mutant", "Alien", "Metahuman", "Celestial Descendant", "Infernal Scion", "Nephilim", "Cambion"].some(r => race.includes(r))) {
-                bonusChance += 0.20;
-            }
-            if (["Mystic", "Psychic", "Elementalist", "Sorcerer", "Blaster", "Warlock", "Shapeshifter"].includes(archetype)) {
-                 bonusChance += 0.15;
-            }
-            if (Math.random() < bonusChance) numPowers += 1;
-
-            // Skill/Gear focused archetypes might lose a power slot (less likely at higher levels)
-            if (["Gadgeteer", "Warrior", "Rogue", "Artificer", "Monk"].includes(archetype)) {
-                 if (Math.random() < (0.30 - level * 0.015) && numPowers > 0) { // Chance decreases with level
-                     numPowers -= 1;
-                 }
-            }
-
-            numPowers = Math.max(0, Math.min(numPowers, 5)); // Clamp 0-5
-
-            if (numPowers === 0) return [{ name: "None (Relies on Skills/Gear)", icon: "block" }];
-
-            const selectedPowers = [];
-            const availablePowers = [...powers.filter(p => !p.drawback)];
-
-            // Prioritize archetype powers
-            const archetypePowers = availablePowers.filter(p => p.type.includes(archetype));
-            const numArchPowers = Math.min(archetypePowers.length, Math.ceil(numPowers / 2)); // Try to get up to half from archetype
-            for (let i = 0; i < numArchPowers && selectedPowers.length < numPowers; i++) {
-                 if (archetypePowers.length === 0) break;
-                 const idx = Math.floor(Math.random() * archetypePowers.length);
-                 const powerToAdd = archetypePowers[idx];
-                 selectedPowers.push(powerToAdd);
-                 availablePowers.splice(availablePowers.findIndex(p => p.name === powerToAdd.name), 1); // Remove from general pool
-                 archetypePowers.splice(idx, 1); // Remove from archetype pool
-            }
-
-            // Fill remaining slots randomly
-            while (selectedPowers.length < numPowers && availablePowers.length > 0) {
-                 const randomIndex = Math.floor(Math.random() * availablePowers.length);
-                 selectedPowers.push(availablePowers[randomIndex]);
-                 availablePowers.splice(randomIndex, 1);
-            }
-
-            // Chance for a drawback increases slightly with number of powers and level
-            const drawbackChance = 0.15 + (selectedPowers.length * 0.03) + (level * 0.005);
-            if (selectedPowers.length > 0 && Math.random() < drawbackChance) {
-                 const availableDrawbacks = powers.filter(p => p.drawback);
-                 if (availableDrawbacks.length > 0) {
-                     selectedPowers.push(getRandomElement(availableDrawbacks));
-                 }
-            }
-
-            return selectedPowers;
-        }
-
-        function generateEquipmentLogical(archetype, selectedPowers, skillsData, level) { // Added skillsData, level
+        function generatePowersLogical(archetype, race, level) { let numPowers = 0; const powerRoll = Math.random(); if (level <= 4) { if (powerRoll < 0.15) numPowers = 0; else if (powerRoll < 0.65) numPowers = 1; else numPowers = 2; } else if (level <= 8) { if (powerRoll < 0.05) numPowers = 0; else if (powerRoll < 0.40) numPowers = 1; else if (powerRoll < 0.80) numPowers = 2; else numPowers = 3; } else { if (powerRoll < 0.20) numPowers = 2; else if (powerRoll < 0.70) numPowers = 3; else numPowers = 4; } let bonusChance = 0; if (["Mutant", "Alien", "Metahuman", "Celestial Descendant", "Infernal Scion", "Nephilim", "Cambion"].some(r => race.includes(r))) { bonusChance += 0.20; } if (["Mystic", "Psychic", "Elementalist", "Sorcerer", "Blaster", "Warlock", "Shapeshifter"].includes(archetype)) { bonusChance += 0.15; } if (Math.random() < bonusChance) numPowers += 1; if (["Gadgeteer", "Warrior", "Rogue", "Artificer", "Monk"].includes(archetype)) { if (Math.random() < (0.30 - level * 0.015) && numPowers > 0) { numPowers -= 1; } } numPowers = Math.max(0, Math.min(numPowers, 5)); if (numPowers === 0) return [{ name: "None (Relies on Skills/Gear)", icon: "block" }]; const selectedPowers = []; const availablePowers = [...powers.filter(p => !p.drawback)]; const archetypePowers = availablePowers.filter(p => p.type.includes(archetype)); const numArchPowers = Math.min(archetypePowers.length, Math.ceil(numPowers / 2)); for (let i = 0; i < numArchPowers && selectedPowers.length < numPowers; i++) { if (archetypePowers.length === 0) break; const idx = Math.floor(Math.random() * archetypePowers.length); const powerToAdd = archetypePowers[idx]; selectedPowers.push(powerToAdd); availablePowers.splice(availablePowers.findIndex(p => p.name === powerToAdd.name), 1); archetypePowers.splice(idx, 1); } while (selectedPowers.length < numPowers && availablePowers.length > 0) { const randomIndex = Math.floor(Math.random() * availablePowers.length); selectedPowers.push(availablePowers[randomIndex]); availablePowers.splice(randomIndex, 1); } const drawbackChance = 0.15 + (selectedPowers.length * 0.03) + (level * 0.005); if (selectedPowers.length > 0 && Math.random() < drawbackChance) { const availableDrawbacks = powers.filter(p => p.drawback); if (availableDrawbacks.length > 0) { selectedPowers.push(getRandomElement(availableDrawbacks)); } } return selectedPowers; }
+        function generateEquipmentLogical(archetype, selectedPowers, skillsData, level) {
             let items = [];
-            const maxItems = Math.min(6, rollDice(2) + Math.floor(level / 4) + 1); // 2-7 items, scales slightly with level
+            const maxItems = Math.min(6, rollDice(2) + Math.floor(level / 4) + 1);
 
             const hasSkill = (skillName) => skillsData.some(s => s.name.includes(skillName));
             const hasPower = (powerName) => selectedPowers.some(p => p.name.includes(powerName));
+            const isCombatArchetype = ["Warrior", "Marksman", "Rogue", "Brawler", "Paladin", "Warlock", "Blaster", "Tank"].includes(archetype);
 
-            // 1. Add archetype/skill-specific base items
-            const archetypeBaseItems = equipmentBase.filter(item =>
-                (item.type.includes(archetype) || item.type.includes("Any") || (item.type.some(t => t.endsWith("Skill") && hasSkill(t.replace(" Skill", ""))))) &&
-                // Specific logic for items like First Aid
-                !(item.name.includes("First-Aid") && !(archetype === "Healer/Support" || hasSkill("Medicine"))) &&
-                !(item.name.includes("Med-Spray") && !(archetype === "Healer/Support" || hasSkill("Medicine") || archetype === "Tank")) &&
-                !(item.name.includes("Universal Tool") && !(archetype === "Gadgeteer" || archetype === "Artificer" || hasSkill("Mechanics"))) &&
-                !(item.name.includes("Laser Cutter") && !(archetype === "Gadgeteer" || archetype === "Artificer" || archetype === "Infiltrator")) &&
-                !(item.name.includes("Sonic Screwdriver") && !(archetype === "Gadgeteer" || archetype === "Artificer")) &&
-                !(item.name.includes("Forensic") && !(hasSkill("Investigation") || archetype === "Gadgeteer")) &&
-                !(item.name.includes("Survival Gear") && !hasSkill("Survival"))
-            );
+            const filterBaseEquipment = (item) => {
+                if (item.name.includes("First-Aid") && !(archetype === "Healer/Support" || hasSkill("Medicine"))) return false;
+                if (item.name.includes("Med-Spray") && !(archetype === "Healer/Support" || hasSkill("Medicine") || archetype === "Tank")) return false;
+                if (item.name.includes("Universal Tool") && !(archetype === "Gadgeteer" || archetype === "Artificer" || hasSkill("Mechanics"))) return false;
+                if (item.name.includes("Laser Cutter") && !(archetype === "Gadgeteer" || archetype === "Artificer" || archetype === "Infiltrator")) return false;
+                if (item.name.includes("Sonic Screwdriver") && !(archetype === "Gadgeteer" || archetype === "Artificer")) return false;
+                if (item.name.includes("Forensic") && !(hasSkill("Investigation") || archetype === "Gadgeteer")) return false;
+                if (item.name.includes("Survival Gear") && !hasSkill("Survival")) return false;
+                return item.type.includes(archetype) || item.type.includes("Any") || item.type.some(t => t.endsWith("Skill") && hasSkill(t.replace(" Skill", "")));
+            };
 
-            const numBaseItems = Math.min(rollDice(2) + Math.floor(level / 5), archetypeBaseItems.length); // 1-3 base items, scales slightly
+            const archetypeBaseItems = equipmentBase.filter(filterBaseEquipment);
+            const numBaseItems = Math.min(rollDice(2) + Math.floor(level / 5), archetypeBaseItems.length);
             for(let i=0; i < numBaseItems && items.length < maxItems; i++) {
                 if (archetypeBaseItems.length === 0) break;
                 const idx = Math.floor(Math.random() * archetypeBaseItems.length);
@@ -480,56 +332,45 @@
                 archetypeBaseItems.splice(idx, 1);
             }
 
-            // 2. Determine weapon need & selection
             const offensivePowers = ["Super Strength", "Energy Blasts", "Bone/Claw", "Weapon Summoning", "Acid/Poison Generation", "Explosion Generation"];
             const hasCombatPower = selectedPowers.some(p => offensivePowers.some(op => p.name.includes(op)));
-            const combatArchetypes = ["Warrior", "Marksman", "Rogue", "Brawler", "Paladin", "Warlock", "Blaster", "Tank"]; // Expanded list
-            const needsWeapon = !hasCombatPower || combatArchetypes.includes(archetype);
-            const weaponChance = needsWeapon ? (0.80 + level * 0.01) : (0.20 + level * 0.01); // Chance increases slightly with level
+            const needsWeapon = !hasCombatPower || isCombatArchetype;
+            const weaponChance = needsWeapon ? (0.80 + level * 0.01) : (0.20 + level * 0.01);
+
+            const filterWeapon = (w) => {
+                if ((w.name.includes("Spellbook") || w.name.includes("Holy Symbol")) &&
+                    !["Mystic", "Sorcerer", "Warlock", "Paladin", "Support", "Healer/Support"].includes(archetype)) {
+                    return false;
+                }
+                return w.type.includes(archetype) || w.type.includes("Any");
+            };
 
             if (items.length < maxItems && Math.random() < weaponChance) {
-                const relevantWeapons = weapons.filter(w => w.type.includes(archetype) || w.type.includes("Any"));
-                const weaponPool = relevantWeapons.length > 0 ? relevantWeapons : weapons;
-                // Avoid giving spellbooks/symbols if not a caster type
-                const filteredPool = weaponPool.filter(w =>
-                    !(w.name.includes("Spellbook") || w.name.includes("Holy Symbol")) ||
-                    ["Mystic", "Sorcerer", "Warlock", "Paladin", "Support"].includes(archetype)
-                );
-                if (filteredPool.length > 0) {
-                    items.push(getRandomElement(filteredPool));
-                } else if (weaponPool.length > 0) { // Fallback if filtering removed everything
-                     items.push(getRandomElement(weaponPool));
+                const relevantWeapons = weapons.filter(filterWeapon);
+                const weaponPool = relevantWeapons.length > 0 ? relevantWeapons : weapons.filter(w => w.type.includes("Any"));
+                 if (weaponPool.length > 0) {
+                    items.push(getRandomElement(weaponPool));
                 }
             }
 
-             // 3. Fill remaining slots with generic utility or maybe a secondary weapon/tool
              while (items.length < maxItems) {
                  const fillChance = Math.random();
-                 const remainingBase = equipmentBase.filter(item => !items.some(existing => existing.name === item.name) &&
-                    // Re-apply specific filters for remaining slots
-                    !(item.name.includes("First-Aid") && !(archetype === "Healer/Support" || hasSkill("Medicine"))) &&
-                    !(item.name.includes("Med-Spray") && !(archetype === "Healer/Support" || hasSkill("Medicine") || archetype === "Tank"))
-                 );
-                 const remainingWeapons = weapons.filter(w => !items.some(existing => existing.name === w.name));
+                 const remainingBase = equipmentBase.filter(item => !items.some(existing => existing.name === item.name) && filterBaseEquipment(item));
+                 const remainingWeapons = weapons.filter(w => !items.some(existing => existing.name === w.name) && filterWeapon(w));
+                 const weaponCount = items.filter(i => weapons.some(w => w.name === i.name)).length;
 
-                 if (fillChance < 0.6 && remainingBase.length > 0) { // Prioritize base utility
+                 if (fillChance < 0.6 && remainingBase.length > 0) {
                      items.push(getRandomElement(remainingBase));
-                 } else if (fillChance < 0.75 && remainingWeapons.length > 0 && items.filter(i => weapons.some(w => w.name === i.name)).length < 2 && combatArchetypes.includes(archetype)) { // Chance for a *second* weapon only for combat types, max 2 weapons total
-                     const weaponPool = remainingWeapons.filter(w => w.type.includes(archetype) || w.type.includes("Any"));
-                     const filteredPool = weaponPool.filter(w =>
-                        !(w.name.includes("Spellbook") || w.name.includes("Holy Symbol")) ||
-                        ["Mystic", "Sorcerer", "Warlock", "Paladin", "Support"].includes(archetype)
-                     );
-                     if (filteredPool.length > 0) items.push(getRandomElement(filteredPool));
-                     else if (weaponPool.length > 0) items.push(getRandomElement(weaponPool)); // Fallback
-                 } else { // Fallback to any remaining base equipment
+                 } else if (fillChance < 0.75 && remainingWeapons.length > 0 && weaponCount < 2 && isCombatArchetype) {
+                     items.push(getRandomElement(remainingWeapons));
+                 } else {
                      if (remainingBase.length > 0) {
                          items.push(getRandomElement(remainingBase));
                      } else {
-                         break; // No more unique items
+                         break;
                      }
                  }
-                 items = items.filter((item, index, self) => index === self.findIndex((t) => t.name === item.name)); // Ensure uniqueness after adding
+                 items = items.filter((item, index, self) => index === self.findIndex((t) => t.name === item.name));
                  if (items.length >= maxItems) break;
              }
 
@@ -543,16 +384,16 @@
         }
         function generateTeamName() { return `${getRandomElement(teamNamePrefixes)} ${getRandomElement(teamNameSuffixes)}`; }
 
-        // --- Core Character Generation Function (Expanded) ---
+        // --- Core Character Generation Function ---
         function createCharacterObject() {
             const firstName = getRandomElement(firstNames);
             const lastName = getRandomElement(lastNames);
             const heroName = generateHeroName();
             const age = Math.floor(Math.random() * 33) + 17;
             const selectedRace = getRandomElement(races);
-            const selectedArchetype = getRandomElement(archetypes);
+            const selectedArchetype = getRandomElement(archetypes); // Correct variable declared here
             const selectedAlignment = getRandomElement(alignments);
-            const characterLevel = rollDice(6) + rollDice(6); // Level 2-12
+            const characterLevel = rollDice(6) + rollDice(6);
             const selectedFinancialStatus = getRandomElement(financialStatuses);
             const fameLevel = Math.floor(Math.random() * 6);
             const selectedNemesis = getRandomElement(nemesisConcepts);
@@ -567,10 +408,10 @@
             const selectedFeatures = getRandomElement(distinguishingFeatures);
             const selectedOutfit = getRandomElement(outfitStyles);
             const randomPalette = [generateRandomHexColor(), generateRandomHexColor(), generateRandomHexColor()];
-            const selectedPowers = generatePowersLogical(selectedArchetype, selectedRace, characterLevel); // Pass level
-            const numSkills = Math.min(skills.length, rollDice(4) + Math.floor(characterLevel / 3)); // Limit max skills
+            const selectedPowers = generatePowersLogical(selectedArchetype, selectedRace, characterLevel);
+            const numSkills = Math.min(skills.length, rollDice(4) + Math.floor(characterLevel / 3));
             const selectedSkills = generateUniqueList(skills, numSkills);
-            const selectedEquipment = generateEquipmentLogical(selectedArchetype, selectedPowers, selectedSkills, characterLevel); // Pass skills & level
+            const selectedEquipment = generateEquipmentLogical(selectedArchetype, selectedPowers, selectedSkills, characterLevel);
             const id = Date.now() + Math.random().toString(16).slice(2);
             const selectedOrigin = getRandomElement(originHooks);
             const selectedMotivation = getRandomElement(motivations);
@@ -580,33 +421,31 @@
             if (selectedAffiliation.includes("[Generated Team Name]")) { selectedAffiliation = selectedAffiliation.replace("[Generated Team Name]", generateTeamName()); }
 
             // Refined Power Source Logic
-            let potentialSources = [...powerSources]; // Copy array
+            let potentialSources = [...powerSources];
             if (selectedRace.includes("Alien")) potentialSources = ["Alien Physiology", "Cosmic Event"];
             else if (selectedRace.includes("Cyborg") || selectedRace.includes("Android") || selectedRace.includes("Synthezoid")) potentialSources = ["Technological Augmentation", "Cybernetic Enhancement", "Advanced Technology"];
             else if (selectedRace.includes("Mystical") || selectedRace.includes("Celestial") || selectedRace.includes("Infernal") || selectedRace.includes("Fae") || selectedRace.includes("Nephilim") || selectedRace.includes("Cambion") || selectedRace.includes("Elemental")) potentialSources = ["Magic/Sorcery", "Divine/Celestial Blessing", "Infernal/Demonic Pact", "Elemental Infusion", "Ancient Prophecy"];
-            else if (selectedRace === "Mutant") potentialSources = ["Genetic Mutation", "Experimental Subject"];
-            else if (selectedRace === "Metahuman (Genetic)") potentialSources = ["Genetic Mutation", "Experimental Subject"];
+            else if (selectedRace === "Mutant" || selectedRace === "Metahuman (Genetic)") potentialSources = ["Genetic Mutation", "Experimental Subject"];
             else if (selectedRace === "Metahuman (Mystical Origin)") potentialSources = ["Magic/Sorcery", "Mystical Artifact", "Cursed"];
             else if (selectedRace === "Undead") potentialSources = ["Necromancy (Limited)", "Cursed", "Infernal/Demonic Pact"];
 
-            // Origin can override race-based source
             if (selectedOrigin === "Lab Accident") potentialSources = ["Cosmic Radiation", "Chemical Exposure", "Experimental Subject", "Genetic Mutation"];
             else if (selectedOrigin === "Technological Augmentation") potentialSources = ["Technological Augmentation", "Cybernetic Enhancement", "Advanced Technology"];
             else if (selectedOrigin === "Mystical Artifact" || selectedOrigin === "Ancient Prophecy" || selectedOrigin === "Cursed") potentialSources = ["Magic/Sorcery", "Mystical Artifact", "Cursed", "Divine/Celestial Blessing", "Infernal/Demonic Pact"];
             else if (selectedOrigin === "Cosmic Event") potentialSources = ["Cosmic Radiation", "Cosmic Event", "Unknown/Anomalous"];
-            else if (selectedOrigin === "Inherited Powers") potentialSources = ["Genetic Mutation", "Inherited Powers"]; // Keep it vague or link to race
+            else if (selectedOrigin === "Inherited Powers") potentialSources = ["Genetic Mutation", "Inherited Powers"];
 
-            // Archetype influence
-            if (archetype === "Psychic") potentialSources = ["Psionic Awakening", "Genetic Mutation", "Experimental Subject"];
-            else if (archetype === "Gadgeteer" || archetype === "Artificer") potentialSources = ["Advanced Technology", "Training/Discipline", "Self-Taught/Trained"];
-            else if (archetype === "Monk") potentialSources = ["Training/Discipline", "Psionic Awakening", "Elemental Infusion"];
+            // Archetype influence <-- CORRECTED HERE
+            if (selectedArchetype === "Psychic") potentialSources = ["Psionic Awakening", "Genetic Mutation", "Experimental Subject"];
+            else if (selectedArchetype === "Gadgeteer" || selectedArchetype === "Artificer") potentialSources = ["Advanced Technology", "Training/Discipline", "Self-Taught/Trained"];
+            else if (selectedArchetype === "Monk") potentialSources = ["Training/Discipline", "Psionic Awakening", "Elemental Infusion"];
 
             // If no powers, source is likely training or tech
             if (selectedPowers.length === 1 && selectedPowers[0].name.includes("None")) {
                  potentialSources = ["Training/Discipline", "Advanced Technology", "Self-Taught/Trained"];
             }
 
-            const selectedPowerSource = getRandomElement(potentialSources.filter(s => s !== undefined && s !== null)); // Ensure valid selection
+            const selectedPowerSource = getRandomElement(potentialSources.filter(s => s !== undefined && s !== null)) || "Unknown/Anomalous";
 
 
             return {
@@ -631,8 +470,12 @@
             if (!data) return;
             currentCharacterData = data;
 
+            const placeholder = document.getElementById('placeholderText');
+            if (placeholder) {
+                placeholder.remove();
+            }
+
             characterSheet.innerHTML = '';
-            placeholderText.classList.add('hidden');
             characterSheet.classList.remove('hidden');
 
             const col1 = document.createElement('div'); col1.className = 'sheet-column';
@@ -720,17 +563,15 @@
                     <span>${s.name}</span>
                 </li>`).join('') : `<li class="list-item text-subtle italic"><span class="material-symbols-outlined">block</span><span>Untrained</span></li>`;
 
-            // FIX: Corrected equipmentHTML generation
             const equipmentHTML = data.equipment.length > 0 ? data.equipment.map(e => {
                  let icon = e.icon;
-                 // Specific icon overrides based on name
                  if (e.name.toLowerCase().includes('cryo')) icon = 'ac_unit';
                  if (e.name.toLowerCase().includes('incendiary')) icon = 'local_fire_department';
-                 if (e.name.toLowerCase().includes('laser cutter')) icon = 'laser'; // Added specific icon
-                 if (e.name.toLowerCase().includes('sonic screwdriver')) icon = 'tune'; // Added specific icon
-                 if (e.name.toLowerCase().includes('med-spray')) icon = 'spray'; // Added specific icon
-                 if (e.name.toLowerCase().includes('holographic projector')) icon = 'smart_display'; // Added specific icon
-                 if (e.name.toLowerCase().includes('universal tool')) icon = 'handyman'; // Added specific icon
+                 if (e.name.toLowerCase().includes('laser cutter')) icon = 'laser';
+                 if (e.name.toLowerCase().includes('sonic screwdriver')) icon = 'tune';
+                 if (e.name.toLowerCase().includes('med-spray')) icon = 'spray';
+                 if (e.name.toLowerCase().includes('holographic projector')) icon = 'smart_display';
+                 if (e.name.toLowerCase().includes('universal tool')) icon = 'handyman';
 
                  return `
                     <li class="list-item">
@@ -759,9 +600,12 @@
             characterSheet.appendChild(col3);
 
             copyButton.disabled = false;
+
             characterSheet.classList.remove('visible');
-            void characterSheet.offsetWidth;
-            characterSheet.classList.add('visible');
+            setTimeout(() => {
+                characterSheet.classList.add('visible');
+            }, 0);
+
             updateHistoryActiveStyle();
         }
 
@@ -782,22 +626,28 @@
         function loadHistory() {
             const storedHistory = localStorage.getItem(HISTORY_KEY);
             if (storedHistory) {
-                try { // Add error handling for corrupted JSON
+                try {
                     generationHistory = JSON.parse(storedHistory);
-                    if (!Array.isArray(generationHistory)) { // Basic validation
+                    if (!Array.isArray(generationHistory)) {
                          generationHistory = [];
-                         localStorage.removeItem(HISTORY_KEY); // Clear corrupted data
+                         localStorage.removeItem(HISTORY_KEY);
                     }
                 } catch (e) {
                     console.error("Error parsing history from localStorage:", e);
                     generationHistory = [];
-                    localStorage.removeItem(HISTORY_KEY); // Clear corrupted data
+                    localStorage.removeItem(HISTORY_KEY);
                 }
                 renderHistoryList();
             }
             if (generationHistory.length > 0) {
                 activeHistoryIndex = 0;
                 displayCharacter(generationHistory[0]);
+            } else {
+                // Ensure placeholder is present if no history
+                if (!document.getElementById('placeholderText')) {
+                    characterSheet.innerHTML = `<div class="text-center text-xl text-subtle italic py-10 md:col-span-3" id="placeholderText">Click the button below to forge your hero...</div>`;
+                }
+                characterSheet.classList.remove('visible'); // Keep it hidden initially
             }
         }
 
@@ -808,7 +658,6 @@
                 localStorage.setItem(HISTORY_KEY, JSON.stringify(generationHistory));
             } catch (e) {
                 console.error("Error saving history to localStorage:", e);
-                // Potentially notify user or handle storage quota exceeded
             }
             renderHistoryList();
         }
