@@ -1,0 +1,16 @@
+// data-names.js
+
+const firstNames = ["Alex", "Jordan", "Morgan", "Taylor", "Casey", "Riley", "Jamie", "Kai", "Rowan", "Skyler", "Max", "Nico", "Sam", "Ren", "Blake", "Drew", "Avery", "Chris", "Pat", "Dana", "Kenji", "Mei", "Javier", "Priya", "Kwame", "Fatima", "Dmitri", "Aisha", "Mateo", "Leilani", "Omar", "Chloé", "Vikram", "Nadia", "Andrés", "Yara", "Ivan", "Seraphina", "Raj", "Astrid"];
+const lastNames = ["Sterling", "Volkov", "Hayes", "Chen", "Garcia", "Kim", "Sinclair", "Mercer", "Thorne", "Bellweather", "Knight", "Cross", "Vance", "Reed", "Shaw", "Miller", "Jones", "Williams", "Brown", "Davis", "Sato", "Li", "Rodriguez", "Khan", "Adekunle", "Al-Farsi", "Ivanov", "Abara", "Silva", "Kekoa", "Hassan", "Dubois", "Singh", "Petrov", "Martinez", "Santos", "Popov", "Rossi", "Müller", "Nowak"];
+
+const heroTitles = ["Captain", "Doctor", "Agent", "The", "Mister", "Miss", "Lady", "Lord", "Professor", "Commander", ""];
+
+const heroNamePrefixes = ["Crimson", "Shadow", "Azure", "Emerald", "Golden", "Silver", "Night", "Star", "Quantum", "Cosmic", "Iron", "Steel", "Phantom", "Blaze", "Arctic", "Solar", "Lunar", "Nova", "Vector", "Apex", "Omega", "Titan", "Void", "Giga", "Nano", "Chrono", "Psy", "Bio", "Inferno", "Tempest", "Astro", "Meta", "Hyper", "Ultra", "Dark", "Light", "Rune", "Storm"];
+const heroNameSuffixes = ["Comet", "Specter", "Guardian", "Blade", "Arrow", "Fury", "Hawk", "Jaguar", "Phoenix", "Sentinel", "Striker", "Wraith", "Bolt", "Rider", "Knight", "Mage", "Hunter", "Dynamo", "Viper", "Warden", "X", "Zero", "Prime", "Core", "Heart", "Mind", "Soul", "Wing", "Fang", "Claw", "Spark", "Flare", "Shard", "Echo", "Drift", "Surge", "Saint", "Sinner"];
+
+const nameStarts = ["Al", "Ar", "Az", "Bel", "Cor", "Cy", "Dar", "Del", "El", "Er", "Fen", "Gal", "Gor", "Hel", "In", "Ja", "Kel", "Kor", "Lex", "Mal", "Mor", "Nal", "Nex", "Or", "Py", "Qua", "Ra", "Ren", "Sar", "Sol", "Syn", "Tar", "Tor", "Um", "Val", "Ver", "Xan", "Zar", "Zeph", "Bri", "Cri", "Dro", "Esh", "Fli", "Glo", "Hyd", "Ign", "Jyn", "Kry", "Lys", "Myr", "Nyx", "Oph", "Psi", "Rhy", "Sha", "Thy", "Uri", "Vex", "Wyr", "Ysm", "Zil"];
+const nameMiddles = ["an", "ar", "en", "er", "ia", "io", "on", "or", "ul", "yr", "ax", "eb", "ik", "om", "us", "al", "el", "il", "ol", "eth", "ath", "ith", "oth", "az", "ez", "iz", "oz", "um", "ium", "ian", "ion", "ant", "ent", "int", "ont", "und", "yst", "adr", "etr", "itr", "otr", "udr", "esk", "ask", "isk", "osk", "usk"];
+const nameEnds = ["an", "ar", "as", "ax", "el", "en", "er", "es", "ex", "ia", "ik", "il", "in", "ion", "ir", "is", "ith", "ix", "on", "or", "os", "oth", "ox", "ul", "um", "un", "ur", "us", "ux", "yr", "ys", "yx", "zar", "zor", "zeer", "thor", "dax", "nar", "mar", "ius", "eus", "a", "o", "e", "is", "or", "and", "end", "ind", "ond", "und", "ight", "ite", "oid", "ade", "yne", "yst"];
+
+const teamNamePrefixes = ["Justice", "Power", "Omega", "Alpha", "Guardian", "Sentinel", "Star", "Cosmic", "Shadow", "Night", "Avenging", "Secret", "Global", "Quantum", "Chrono"];
+const teamNameSuffixes = ["League", "Force", "Squad", "Initiative", "Syndicate", "Watch", "Guard", "Collective", "Brigade", "Order", "Agency", "Project", "Knights", "Heroes", "Unit"];
