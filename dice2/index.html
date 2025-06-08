@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D20 Dice Roller</title>
+    <style>
+        /* Minimalistic Black & White CSS */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        canvas {
+            display: block; /* Remove extra space below canvas */
+            border: 1px solid white; /* Simple white border for the canvas */
+            margin-bottom: 20px; /* Space between canvas and button */
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s; /* Smooth hover effect */
+            margin-bottom: 20px; /* Space between button and result */
+            outline: none; /* Remove default focus outline */
+        }
+
+        button:hover:not(:disabled) {
+            background-color: white;
+            color: black;
+        }
+
+        button:disabled {
+            opacity: 0.5; /* Dim when disabled */
+            cursor: not-allowed;
+        }
+
+        #result {
+            font-size: 3em; /* Large font for the result */
+            font-weight: bold;
+            min-height: 1.5em; /* Reserve space to prevent layout shift when result appears */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="diceCanvas"></canvas>
+    <button id="rollButton">Roll D20</button>
+    <div id="result"></div>
+
+    <script type="module">
+        // This JavaScript code is the compiled output from TypeScript.
+        // It uses Three.js for 3D rendering, imported via a CDN for convenience.
+
+        // Import Three.js library
+        import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+
+        // Get DOM elements
+        const canvas = document.getElementById('diceCanvas');
+        const rollButton = document.getElementById('rollButton');
+        const resultDiv = document.getElementById('result');
+
+        // Three.js variables
+        let scene, camera, renderer;
+        let icosahedron;
+        let animationFrameId; // To store the requestAnimationFrame ID
+        let isRolling = false;
+        let rollStartTime;
+        const rollDuration = 2000; // 2 seconds for the roll animation
+
+        /**
+         * Initializes the Three.js scene, camera, renderer, and icosahedron.
+         */
+        function init() {
+            // Scene: The container for all 3D objects
+            scene = new THREE.Scene();
+
+            // Camera: Defines what is visible in the scene
+            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000); // FOV, Aspect, Near, Far
+            camera.position.z = 2; // Position the camera to see the icosahedron
+
+            // Renderer: Renders the scene using WebGL
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setClearColor(0x000000); // Set background color to black
+            resizeCanvas(); // Set initial canvas size
+
+            // Lights: Essential for seeing objects with MeshLambertMaterial
+            const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light from all directions
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Stronger white light from a specific direction
+            directionalLight.position.set(1, 1, 1).normalize(); // Position the light
+            scene.add(directionalLight);
+
+            // Icosahedron (D20): A 20-sided geometric shape
+            const geometry = new THREE.IcosahedronGeometry(1, 0); // Radius 1, detail 0 (perfect icosahedron)
+            const material = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe: false }); // White, non-wireframe material
+            icosahedron = new THREE.Mesh(geometry, material);
+            scene.add(icosahedron);
+
+            // Initial slight rotation for a better starting view
+            icosahedron.rotation.x = Math.PI / 4;
+            icosahedron.rotation.y = Math.PI / 4;
+
+            // Event Listeners
+            window.addEventListener('resize', resizeCanvas); // Adjust canvas size on window resize
+            rollButton.addEventListener('click', rollDice); // Trigger roll on button click
+
+            // Start the animation loop
+            animate();
+        }
+
+        /**
+         * Adjusts the canvas size and camera aspect ratio based on window size.
+         */
+        function resizeCanvas() {
+            // Determine a square size for the canvas, max 300px or 60% of viewport
+            const size = Math.min(window.innerWidth * 0.6, window.innerHeight * 0.6, 300);
+            renderer.setSize(size, size);
+            camera.aspect = 1; // Keep aspect ratio square
+            camera.updateProjectionMatrix(); // Update camera projection after aspect change
+        }
+
+        /**
+         * The main animation loop for rendering and spinning the die.
+         */
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate); // Request next frame
+
+            if (isRolling) {
+                const elapsed = Date.now() - rollStartTime;
+                const progress = elapsed / rollDuration;
+
+                // Calculate spin speed: starts fast and slows down towards the end
+                // Math.max(0, 1 - progress) ensures speed doesn't go negative
+                // Multiplied by 0.1 for initial speed, plus 0.01 to ensure it keeps spinning slightly
+                const spinSpeed = Math.max(0, 1 - progress) * 0.1 + 0.01;
+                icosahedron.rotation.x += spinSpeed * 0.5; // Rotate on X-axis
+                icosahedron.rotation.y += spinSpeed;     // Rotate on Y-axis (faster)
+                icosahedron.rotation.z += spinSpeed * 0.2; // Rotate on Z-axis
+
+                if (elapsed >= rollDuration) {
+                    stopRoll(); // Stop the roll after the duration
+                }
+            }
+
+            renderer.render(scene, camera); // Render the scene
+        }
+
+        /**
+         * Initiates the dice rolling process.
+         */
+        function rollDice() {
+            if (isRolling) return; // Prevent multiple rolls at once
+
+            isRolling = true;
+            rollButton.disabled = true; // Disable button during roll
+            resultDiv.textContent = ''; // Clear any previous result
+            rollStartTime = Date.now(); // Record start time for duration calculation
+
+            // Apply a random initial rotation for a fresh spin appearance
+            icosahedron.rotation.x = Math.random() * Math.PI * 2;
+            icosahedron.rotation.y = Math.random() * Math.PI * 2;
+            icosahedron.rotation.z = Math.random() * Math.PI * 2;
+
+            // The `animate` function will handle the continuous spinning and eventual stopping.
+        }
+
+        /**
+         * Stops the dice roll and displays the result.
+         */
+        function stopRoll() {
+            isRolling = false;
+            rollButton.disabled = false; // Re-enable button
+
+            // Generate a random number between 1 and 20
+            const result = Math.floor(Math.random() * 20) + 1;
+            resultDiv.textContent = result; // Display the result
+
+            // Apply a slight random final rotation to make the stop look more natural
+            icosahedron.rotation.x += (Math.random() - 0.5) * 0.5;
+            icosahedron.rotation.y += (Math.random() - 0.5) * 0.5;
+            icosahedron.rotation.z += (Math.random() - 0.5) * 0.5;
+        }
+
+        // Initialize the scene when the entire page has loaded
+        window.onload = init;
+    </script>
+</body>
+</html>
