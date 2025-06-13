@@ -1,698 +1,1164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Character Sheet</title>
-  <!-- Fonts & Icons -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ctext x='0' y='14' font-size='14'%3E⭐%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arcane Grimoire - D&D Character Dashboard</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    rel="stylesheet"
-  />
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="styles.css" />
+    <!-- Favicon - A simple star emoji for a magical touch -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E✨%3C/text%3E%3C/svg%3E">
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /*=============================================
+          =            CSS STYLESHEET                 =
+          =============================================*/
+
+        /*------------------------------------
+        -          RESET & ROOT VARIABLES    -
+        ------------------------------------*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #f59e0b; /* A vibrant, warm amber */
+            --primary-glow: rgba(245, 158, 11, 0.3);
+            --bg-dark: #110808; /* A very dark, almost black red */
+            --bg-primary: #1f1010;
+            --bg-secondary: #2a1010;
+            --glass-bg: rgba(42, 16, 16, 0.25);
+            --glass-border: rgba(245, 158, 11, 0.15);
+            --glass-hover: rgba(42, 16, 16, 0.4);
+            --text-primary: #fde68a; /* A softer, creamy color for text */
+            --text-secondary: rgba(253, 230, 138, 0.7);
+            --hp-high: #10b981; /* Emerald 500 */
+            --hp-medium: #f59e0b; /* Amber 500 */
+            --hp-low: #ef4444; /* Red 500 */
+            --hp-temp: #3b82f6; /* Blue 500 */
+        }
+
+        /*------------------------------------
+        -          KEYFRAME ANIMATIONS       -
+        ------------------------------------*/
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 4px var(--primary-glow), 0 0 8px var(--primary-glow); }
+            50% { box-shadow: 0 0 16px var(--primary-glow), 0 0 24px var(--primary-glow); }
+            100% { box-shadow: 0 0 4px var(--primary-glow), 0 0 8px var(--primary-glow); }
+        }
+
+        @keyframes magicalAppear {
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes diceRollerSpin {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        @keyframes burst {
+            0% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 1; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0; }
+        }
+
+        /*------------------------------------
+        -          BODY & LAYOUT             -
+        ------------------------------------*/
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(127, 29, 29, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(153, 27, 27, 0.3) 0%, transparent 50%);
+            color: var(--text-primary);
+            padding: 1.5rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /*------------------------------------
+        -          GLASSMORPHISM & CARDS     -
+        ------------------------------------*/
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem; /* 24px */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .glass:hover {
+            background: var(--glass-hover);
+            border-color: var(--primary-glow);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /*------------------------------------
+        -          HEADER & NAVIGATION       -
+        ------------------------------------*/
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            animation: magicalAppear 0.8s ease-out forwards;
+        }
+
+        .nav { display: flex; gap: 1rem; }
+        .nav-btn {
+            position: relative; flex: 1; padding: 1rem; background: var(--glass-bg);
+            border: 1px solid var(--glass-border); border-radius: 1rem; color: var(--text-secondary);
+            cursor: pointer; transition: all 0.3s ease; font-size: 1rem; font-weight: 500;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .nav-btn i { font-size: 1.25rem; transition: transform 0.3s ease; }
+        .nav-btn:hover { color: var(--primary); background: var(--glass-hover); transform: translateY(-2px); }
+        .nav-btn:hover i { transform: scale(1.1); }
+        .nav-btn.active {
+            background: var(--primary-glow); color: var(--primary); transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2); border-color: var(--primary);
+            animation: glow 3s infinite ease-in-out;
+        }
+        .nav-btn .tooltip {
+            visibility: hidden; background-color: rgba(0, 0, 0, 0.85); color: #fff; text-align: center;
+            border-radius: 0.5rem; padding: 0.5rem 0.75rem; position: absolute; z-index: 100;
+            bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s;
+            white-space: nowrap; font-size: 0.875rem;
+        }
+        .nav-btn:hover .tooltip { visibility: visible; opacity: 1; }
+        .hamburger { display: none; font-size: 1.75rem; cursor: pointer; color: var(--primary); padding: 0.5rem; }
+        .mobile-nav { display: none; flex-direction: column; gap: 1rem; width: 100%; }
+        .mobile-nav.active { display: flex; }
+        .rest-buttons { display: flex; gap: 1rem; }
+        .rest-btn {
+            flex: 1; padding: 1rem; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 1rem; color: var(--text-primary); cursor: pointer; transition: all 0.3s ease;
+            font-size: 1rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+        }
+        .rest-btn i { transition: transform 0.5s ease; }
+        .rest-btn:hover { background: var(--glass-hover); color: var(--primary); transform: translateY(-2px); }
+        .rest-btn:hover i { transform: rotate(360deg); }
+
+        /*------------------------------------
+        -          CONTENT & SECTIONS        -
+        ------------------------------------*/
+        .content { display: none; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
+        .content.active { display: block; opacity: 1; animation: magicalAppear 0.6s ease-out forwards; }
+        .section-title {
+            font-size: 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center;
+            gap: 1rem; font-weight: 600; color: var(--primary); border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+        .section-title i { font-size: 1.5rem; }
+        .sub-section { margin-bottom: 2rem; }
+        .sub-section h3 {
+            margin-bottom: 1rem; font-size: 1.25rem; font-weight: 500; color: var(--text-primary);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .sub-section h3 i { color: var(--primary); opacity: 0.8; }
+
+        /*------------------------------------
+        -          FORM ELEMENTS             -
+        ------------------------------------*/
+        .glass-input, .spell-input, .spell-select, .dice-input input, .dice-input select, .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--glass-border);
+            border-radius: 0.75rem; background: var(--glass-bg); color: var(--text-primary);
+            font-size: 1rem; transition: all 0.3s ease;
+        }
+        .glass-input::placeholder, .spell-input::placeholder { color: var(--text-secondary); }
+        .glass-input:focus, .spell-input:focus, .spell-select:focus, .dice-input input:focus, .dice-input select:focus, .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); background: var(--glass-hover);
+        }
+
+        /*------------------------------------
+        -          CHARACTER SHEET           -
+        ------------------------------------*/
+        .ability-scores, .levels, .race-class { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .ability, .level, .race, .class { display: flex; flex-direction: column; gap: 0.5rem; }
+        .ability label, .level label, .race label, .class label { font-weight: 500; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); }
+        .ability .modifier { font-size: 0.9rem; color: var(--primary); font-weight: 600; margin-left: auto; }
+        
+        /* HP Bar Styling */
+        .hp-bar-container { position: relative; width: 100%; height: 24px; background-color: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); }
+        .hp-bar { height: 100%; border-radius: 12px; transition: width 0.5s ease, background-color 0.5s ease; }
+        .hp-bar.hp-high { background-color: var(--hp-high); }
+        .hp-bar.hp-medium { background-color: var(--hp-medium); }
+        .hp-bar.hp-low { background-color: var(--hp-low); }
+        .hp-bar-temp { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--hp-temp); opacity: 0.8; border-radius: 12px; transition: width 0.5s ease; }
+        .hp-bar-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: 600; color: white; text-shadow: 1px 1px 2px black; }
+
+        .hp-controls { display: flex; align-items: center; gap: 1rem; background: var(--glass-bg); padding: 0.5rem; border-radius: 2rem; border: 1px solid var(--glass-border); }
+        #current-hp-display { min-width: 50px; text-align: center; font-weight: 700; font-size: 1.25rem; color: var(--primary); }
+        .hp-adjust-btn {
+            background: transparent; border: none; border-radius: 50%; width: 2.5rem; height: 2.5rem;
+            cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .hp-adjust-btn:hover { background: var(--glass-hover); color: var(--primary); transform: scale(1.1); }
+
+        /* Custom AC Slider */
+        .custom-slider { -webkit-appearance: none; width: 100%; height: 8px; background: var(--glass-bg); border-radius: 4px; outline: none; border: 1px solid var(--glass-border); transition: background 0.3s; }
+        .custom-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg-dark); box-shadow: 0 0 8px var(--primary-glow); }
+        .custom-slider::-moz-range-thumb { width: 20px; height: 20px; background: var(--primary); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg-dark); box-shadow: 0 0 8px var(--primary-glow); }
+
+        .proficiencies { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .proficiency {
+            display: flex; align-items: center; gap: 0.75rem; background: var(--glass-bg);
+            padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); transition: all 0.3s ease;
+        }
+        .proficiency:hover { background: var(--glass-hover); border-color: var(--primary-glow); }
+        .proficiency label { font-weight: 500; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; flex: 1; cursor: pointer; color: var(--text-primary); }
+        .proficiency input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+        .skill-mod { font-weight: 600; font-size: 1rem; color: var(--primary); }
+
+        /*------------------------------------
+        -          SPELL SLOTS & SPELLBOOK   -
+        ------------------------------------*/
+        #spell-slots-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .spell-slot { padding: 1.5rem; position: relative; overflow: hidden; }
+        .slot-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 1.1rem; font-weight: 600; }
+        .slot-circles { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .slot-circle {
+            width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--primary);
+            background: rgba(245, 158, 11, 0.1); cursor: pointer; transition: all 0.3s ease; position: relative;
+        }
+        .slot-circle:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--primary-glow); }
+        .slot-circle.used { border-color: var(--glass-border); background: transparent; }
+        .burst-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        .burst {
+            position: absolute; width: 10px; height: 10px; background: var(--primary);
+            border-radius: 50%; animation: burst 0.7s ease-out forwards;
+        }
+        .spell-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 1rem;
+            margin-bottom: 0.75rem; transition: all 0.3s ease;
+        }
+        .spell-item:hover { background: var(--glass-hover); transform: translateX(5px); border-left: 4px solid var(--primary); }
+        .spell-btn {
+            padding: 0.75rem 1.25rem; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 0.75rem; color: var(--text-primary); cursor: pointer; transition: all 0.3s ease;
+            font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500;
+        }
+        .spell-btn:hover:not(:disabled) { background: var(--glass-hover); color: var(--primary); transform: translateY(-2px); }
+        .spell-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+        .spell-btn.prepared { background: var(--primary-glow); border-color: var(--primary); color: var(--primary); }
+
+        /*------------------------------------
+        -          DICE ROLLER               -
+        ------------------------------------*/
+        .dice-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; align-items: end; margin-bottom: 2rem; }
+        .dice-results { margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        .dice-result {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 1rem;
+            padding: 1rem; display: flex; align-items: center; gap: 1rem; animation: magicalAppear 0.5s ease-out;
+        }
+        .dice-animation { width: 50px; height: 50px; perspective: 1000px; }
+        .dice-animation .cube {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            animation: diceRollerSpin 1s ease-out; display: flex; align-items: center; justify-content: center;
+            background: var(--primary); color: var(--bg-dark); font-weight: 700; font-size: 1.5rem; border-radius: 0.5rem;
+        }
+
+        /*------------------------------------
+        -          INVENTORY & NOTES         -
+        ------------------------------------*/
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .inventory-item {
+            position: relative; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
+            aspect-ratio: 1; font-size: 2.5rem; cursor: pointer; transition: all 0.3s ease;
+        }
+        .inventory-item:hover { background: var(--glass-hover); border-color: var(--primary); transform: scale(1.05); }
+        .item-name-tooltip {
+            visibility: hidden; opacity: 0; position: absolute; bottom: 105%; left: 50%;
+            transform: translateX(-50%); background-color: rgba(0,0,0,0.85); padding: 4px 8px;
+            border-radius: 4px; font-size: 0.8rem; color: #fff; white-space: nowrap; transition: all 0.2s;
+        }
+        .inventory-item:hover .item-name-tooltip { visibility: visible; opacity: 1; }
+        .item-actions {
+            position: absolute; top: 4px; right: 4px; display: flex; flex-direction: column; gap: 4px;
+            opacity: 0; visibility: hidden; transform: scale(0.8); transition: all 0.2s ease;
+        }
+        .inventory-item:hover .item-actions { opacity: 1; visibility: visible; transform: scale(1); }
+        .item-action-btn {
+            width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+            background: var(--glass-hover); border: 1px solid var(--glass-border); border-radius: 50%;
+            color: var(--text-secondary);
+        }
+        .item-action-btn:hover { color: var(--primary); background: var(--bg-dark); }
+
+        .notes-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+        .note-item {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 1rem;
+            padding: 1.5rem; position: relative; transition: all 0.3s ease; display: flex; flex-direction: column;
+        }
+        .note-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary); }
+        .note-content { font-size: 1rem; color: var(--text-secondary); white-space: pre-wrap; flex-grow: 1; }
+        .note-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; opacity: 0; transition: opacity 0.3s; }
+        .note-item:hover .note-actions { opacity: 1; }
+
+        /*------------------------------------
+        -          MODALS                    -
+        ------------------------------------*/
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); overflow: auto; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { margin: 10vh auto; padding: 2rem; width: 90%; max-width: 500px; position: relative; animation: magicalAppear 0.5s ease-out; }
+        .modal-title { margin-bottom: 1.5rem; color: var(--primary); font-size: 1.5rem; font-weight: 600; }
+        .close-btn {
+            color: var(--text-secondary); position: absolute; top: 1rem; right: 1.5rem;
+            font-size: 2rem; font-weight: bold; cursor: pointer; transition: color 0.3s, transform 0.3s;
+        }
+        .close-btn:hover { color: var(--primary); transform: rotate(90deg); }
+
+        /*------------------------------------
+        -          RESPONSIVE DESIGN         -
+        ------------------------------------*/
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header-section { flex-direction: column; align-items: stretch; }
+            .header-section > div:first-child { display: flex; justify-content: space-between; align-items: center; }
+            .hamburger { display: block; }
+            .nav { display: none; }
+            .rest-buttons { flex-direction: column; width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <!-- Particles Background -->
-  <div id="particles-js"></div>
-  
-  <!-- Main Container -->
-  <div class="container">
-    <!-- Navigation & Rest Buttons -->
-    <section class="header-section">
-      <!-- Hamburger (Mobile) -->
-      <div class="hamburger" id="hamburger">
-        <i class="fas fa-bars"></i>
-      </div>
+    <!-- Main Application Container -->
+    <div class="container">
+        <!-- Header: Contains main navigation and utility buttons -->
+        <header class="header-section">
+            <div>
+                <h1 id="main-title" class="text-2xl font-bold text-amber-400 truncate">Arcane Grimoire</h1>
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
 
-      <!-- Navigation (Desktop) -->
-      <nav class="nav">
-        <button class="nav-btn active" data-tab="character-sheet">
-          <i class="fas fa-user"></i>
-          <span class="tooltip">Character Sheet</span>
-        </button>
-        <button class="nav-btn" data-tab="spellbook">
-          <i class="fas fa-book-open"></i>
-          <span class="tooltip">Spellbook</span>
-        </button>
-        <button class="nav-btn" data-tab="slots">
-          <i class="fas fa-scroll"></i>
-          <span class="tooltip">Spell Slots</span>
-        </button>
-        <button class="nav-btn" data-tab="dice-roller">
-          <i class="fas fa-dice-d20"></i>
-          <span class="tooltip">Dice Roller</span>
-        </button>
-        <button class="nav-btn" data-tab="inventory">
-          <i class="fas fa-boxes"></i>
-          <span class="tooltip">Inventory</span>
-        </button>
-        <button class="nav-btn" data-tab="notes">
-          <i class="fas fa-sticky-note"></i>
-          <span class="tooltip">Notes</span>
-        </button>
-      </nav>
+            <!-- Desktop Navigation -->
+            <nav class="nav">
+                <button class="nav-btn active" data-tab="character-sheet"><i class="fa-solid fa-user-shield"></i><span class="hidden md:inline">Sheet</span><span class="tooltip">Character Sheet</span></button>
+                <button class="nav-btn" data-tab="spellbook"><i class="fa-solid fa-book-sparkles"></i><span class="hidden md:inline">Spells</span><span class="tooltip">Spellbook</span></button>
+                <button class="nav-btn" data-tab="slots"><i class="fa-solid fa-stars"></i><span class="hidden md:inline">Slots</span><span class="tooltip">Spell Slots</span></button>
+                <button class="nav-btn" data-tab="inventory"><i class="fa-solid fa-backpack"></i><span class="hidden md:inline">Inventory</span><span class="tooltip">Inventory</span></button>
+                <button class="nav-btn" data-tab="dice-roller"><i class="fa-solid fa-dice-d20"></i><span class="hidden md:inline">Dice</span><span class="tooltip">Dice Roller</span></button>
+                <button class="nav-btn" data-tab="notes"><i class="fa-solid fa-scroll-old"></i><span class="hidden md:inline">Notes</span><span class="tooltip">Notes</span></button>
+            </nav>
 
-      <!-- Navigation (Mobile) -->
-      <nav class="mobile-nav" id="mobile-nav">
-        <button class="nav-btn active" data-tab="character-sheet">
-          <i class="fas fa-user"></i>
-          <span class="tooltip">Character Sheet</span>
-        </button>
-        <button class="nav-btn" data-tab="spellbook">
-          <i class="fas fa-book-open"></i>
-          <span class="tooltip">Spellbook</span>
-        </button>
-        <button class="nav-btn" data-tab="slots">
-          <i class="fas fa-scroll"></i>
-          <span class="tooltip">Spell Slots</span>
-        </button>
-        <button class="nav-btn" data-tab="dice-roller">
-          <i class="fas fa-dice-d20"></i>
-          <span class="tooltip">Dice Roller</span>
-        </button>
-        <button class="nav-btn" data-tab="inventory">
-          <i class="fas fa-boxes"></i>
-          <span class="tooltip">Inventory</span>
-        </button>
-        <button class="nav-btn" data-tab="notes">
-          <i class="fas fa-sticky-note"></i>
-          <span class="tooltip">Notes</span>
-        </button>
-      </nav>
+            <!-- Mobile Navigation (hidden by default) -->
+            <nav class="mobile-nav" id="mobile-nav"></nav>
 
-      <!-- Rest Buttons & Import/Export -->
-      <div class="rest-buttons">
-        <button class="rest-btn" data-rest="long">
-          <i class="fas fa-bed"></i>
-          <span>Long Rest</span>
-        </button>
-        <!-- Export Button -->
-        <button class="rest-btn" id="export-btn">
-          <i class="fas fa-file-export"></i>
-          <span>Export</span>
-        </button>
-        <!-- Import Button -->
-        <button class="rest-btn" id="import-btn">
-          <i class="fas fa-file-import"></i>
-          <span>Import</span>
-        </button>
-        <!-- Hidden File Input for Import -->
-        <input type="file" id="import-file" accept=".json" style="display: none;" />
-      </div>
-    </section>
+            <!-- Utility Buttons -->
+            <div class="rest-buttons">
+                <button class="rest-btn" id="long-rest-btn"><i class="fas fa-bed"></i><span>Long Rest</span></button>
+                <button class="rest-btn" id="export-btn"><i class="fas fa-file-export"></i><span>Export</span></button>
+                <button class="rest-btn" id="import-btn"><i class="fas fa-file-import"></i><span>Import</span></button>
+                <input type="file" id="import-file" accept=".json" class="hidden" />
+            </div>
+        </header>
 
-    <!-- Character Sheet Tab -->
-    <div id="character-sheet" class="content active">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-user"></i>
-          <span>Character Sheet</span>
-        </div>
+        <main>
+            <!-- Character Sheet Tab -->
+            <div id="character-sheet" class="content active">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-id-card"></i><span>Identity & Vitals</span></h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <!-- Identity -->
+                        <div class="sub-section">
+                            <h3><i class="fas fa-signature"></i> Character Name</h3>
+                            <input type="text" id="character-name" class="glass-input" placeholder="e.g., Eldrin Shadoweaver" />
+                        </div>
+                        <div class="sub-section">
+                            <h3><i class="fas fa-dragon"></i> Race & Class</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" id="race" class="glass-input" placeholder="Race" />
+                                <input type="text" id="class" class="glass-input" placeholder="Class" />
+                            </div>
+                        </div>
+                        <!-- Vitals -->
+                        <div class="sub-section">
+                            <h3><i class="fas fa-heartbeat"></i> Hit Points</h3>
+                            <div class="space-y-3">
+                                <div class="hp-bar-container">
+                                    <div id="hp-bar-temp" class="hp-bar-temp"></div>
+                                    <div id="hp-bar" class="hp-bar"></div>
+                                    <div id="hp-bar-text" class="hp-bar-text"></div>
+                                </div>
+                                <div class="flex items-center justify-between gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <label for="maxHP" class="text-sm">Max:</label>
+                                        <input type="number" id="maxHP" class="glass-input w-24" />
+                                    </div>
+                                    <div class="hp-controls">
+                                        <button class="hp-adjust-btn" id="hp-minus"><i class="fas fa-minus"></i></button>
+                                        <span id="current-hp-display" class="text-lg font-bold"></span>
+                                        <button class="hp-adjust-btn" id="hp-plus"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label for="temporaryHP" class="text-sm">Temp:</label>
+                                        <input type="number" id="temporaryHP" class="glass-input w-24" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h3><i class="fas fa-shield-alt"></i> Armor Class</h3>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="ac" min="1" max="30" class="custom-slider flex-1" />
+                                <span id="ac-display" class="font-bold text-2xl w-12 text-center text-amber-400"></span>
+                            </div>
+                        </div>
+                        <div class="sub-section">
+                            <h3><i class="fas fa-level-up-alt"></i> Level & Experience</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label for="level" class="block mb-2 text-sm">Level</label><input type="number" id="level" value="1" min="1" class="glass-input" /></div>
+                                <div><label for="experience" class="block mb-2 text-sm">Experience</label><input type="number" id="experience" value="0" min="0" class="glass-input" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-brain"></i><span>Ability Scores</span></h2>
+                    <div class="ability-scores">
+                        <!-- Ability score inputs will be generated by JS -->
+                    </div>
+                </div>
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-tools"></i><span>Skills & Proficiencies</span></h2>
+                    <div class="proficiencies">
+                        <!-- Skill proficiency checkboxes will be generated by JS -->
+                    </div>
+                </div>
+            </div>
 
-        <!-- Character Name -->
-        <div class="sub-section">
-          <h3><i class="fas fa-id-card"></i> Character Name</h3>
-          <input
-            type="text"
-            id="character-name"
-            class="glass-input"
-            placeholder="Enter character name..."
-          />
-        </div>
+            <!-- Spellbook Tab -->
+            <div id="spellbook" class="content">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-book-open"></i><span>Add New Spell</span></h2>
+                    <div class="spell-form grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <input type="text" class="spell-input md:col-span-2" id="spell-name" placeholder="New spell name" />
+                        <select class="spell-select" id="spell-level">
+                            <option value="0">Cantrip</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4</option>
+                            <option value="5">Level 5</option>
+                            <option value="6">Level 6</option>
+                            <option value="7">Level 7</option>
+                            <option value="8">Level 8</option>
+                            <option value="9">Level 9</option>
+                        </select>
+                        <button class="spell-btn justify-center md:col-start-3" id="add-spell-btn"><i class="fas fa-plus"></i><span>Add Spell</span></button>
+                    </div>
+                </div>
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-wand-sparkles"></i><span>Cantrips</span></h2>
+                    <div id="cantrips-container" class="flex flex-col gap-3"></div>
+                </div>
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-fire-alt"></i><span>Leveled Spells</span></h2>
+                    <div id="spells-container" class="flex flex-col gap-3"></div>
+                </div>
+            </div>
 
-        <!-- Levels -->
-        <div class="sub-section">
-          <h3><i class="fas fa-level-up-alt"></i> Levels</h3>
-          <div class="levels">
-            <div class="level">
-              <label for="level"
-                ><i class="fas fa-trophy"></i> Level</label
-              >
-              <input
-                type="number"
-                id="level"
-                value="1"
-                min="1"
-                class="glass-input"
-              />
+            <!-- Spell Slots Tab -->
+            <div id="slots" class="content">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-star"></i><span>Spell Slots</span></h2>
+                    <div id="spell-slots-container"></div>
+                </div>
             </div>
-            <div class="level">
-              <label for="experience"
-                ><i class="fas fa-medal"></i> Experience</label
-              >
-              <input
-                type="number"
-                id="experience"
-                value="0"
-                min="0"
-                class="glass-input"
-              />
-            </div>
-          </div>
-        </div>
 
-        <!-- Race & Class -->
-        <div class="sub-section">
-          <h3><i class="fas fa-dragon"></i> Race & Class</h3>
-          <div class="race-class">
-            <div class="race">
-              <label for="race"
-                ><i class="fas fa-paw"></i> Race</label
-              >
-              <input
-                type="text"
-                id="race"
-                class="glass-input"
-                placeholder="e.g., Elf"
-              />
+            <!-- Inventory Tab -->
+            <div id="inventory" class="content">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-backpack"></i><span>Inventory</span></h2>
+                    <button class="spell-btn mb-6" id="add-item-btn"><i class="fas fa-plus"></i><span>Add Item</span></button>
+                    <div class="inventory-grid" id="inventory-grid"></div>
+                </div>
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-coins"></i><span>Currency</span></h2>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="coins-container">
+                        <!-- Coin inputs will be generated by JS -->
+                    </div>
+                </div>
             </div>
-            <div class="class">
-              <label for="class"
-                ><i class="fas fa-crown"></i> Class</label
-              >
-              <input
-                type="text"
-                id="class"
-                class="glass-input"
-                placeholder="e.g., Wizard"
-              />
-            </div>
-          </div>
-        </div>
 
-        <!-- Ability Scores -->
-        <div class="sub-section">
-          <h3><i class="fas fa-brain"></i> Ability Scores</h3>
-          <div class="ability-scores">
-            <div class="ability">
-              <label for="strength">
-                <i class="fas fa-dumbbell"></i> Strength
-                <span class="modifier" id="strength-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="strength"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
+            <!-- Dice Roller Tab -->
+            <div id="dice-roller" class="content">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-dice-d20"></i><span>Dice Roller</span></h2>
+                    <div class="dice-form">
+                        <div class="dice-input"><label for="dice-count" class="block mb-2"><i class="fas fa-dice-six"></i> Number</label><input type="number" id="dice-count" min="1" value="1" /></div>
+                        <div class="dice-input"><label for="dice-type" class="block mb-2"><i class="fas fa-dice"></i> Type</label><select id="dice-type"><option value="4">d4</option><option value="6">d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20" selected>d20</option><option value="100">d100</option></select></div>
+                        <button class="spell-btn justify-center" id="roll-dice-btn"><i class="fas fa-play"></i><span>Roll</span></button>
+                    </div>
+                    <div class="dice-results" id="dice-results"></div>
+                    <div class="mt-8">
+                        <h3 class="sub-section-title text-lg mb-2"><i class="fas fa-history"></i> Roll History</h3>
+                        <div id="roll-history" class="p-4 rounded-lg bg-black bg-opacity-20 h-32 overflow-y-auto"></div>
+                    </div>
+                </div>
             </div>
-            <div class="ability">
-              <label for="dexterity">
-                <i class="fas fa-running"></i> Dexterity
-                <span class="modifier" id="dexterity-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="dexterity"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
-            </div>
-            <div class="ability">
-              <label for="constitution">
-                <i class="fas fa-heartbeat"></i> Constitution
-                <span class="modifier" id="constitution-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="constitution"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
-            </div>
-            <div class="ability">
-              <label for="intelligence">
-                <i class="fas fa-flask"></i> Intelligence
-                <span class="modifier" id="intelligence-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="intelligence"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
-            </div>
-            <div class="ability">
-              <label for="wisdom">
-                <i class="fas fa-eye"></i> Wisdom
-                <span class="modifier" id="wisdom-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="wisdom"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
-            </div>
-            <div class="ability">
-              <label for="charisma">
-                <i class="fas fa-theater-masks"></i> Charisma
-                <span class="modifier" id="charisma-mod">(+0)</span>
-              </label>
-              <input
-                type="number"
-                id="charisma"
-                value="10"
-                min="1"
-                class="glass-input"
-              />
-            </div>
-          </div>
-        </div>
 
-        <!-- HP & AC -->
-        <div class="sub-section">
-          <h3><i class="fas fa-heart"></i> Hit Points &amp; AC</h3>
-          <div class="hp-ac-row">
-            <label for="max-hp" class="slider-label">Max HP:</label>
-            <input
-              type="number"
-              id="max-hp"
-              class="glass-input"
-              min="1"
-              value="20"
-            />
-          </div>
-          <div class="hp-ac-row">
-            <label for="current-hp" class="slider-label">Current HP:</label>
-            <div class="hp-controls">
-              <button class="hp-adjust-btn" id="hp-minus">
-                <i class="fas fa-minus"></i>
-              </button>
-              <span id="current-hp-display"></span>
-              <button class="hp-adjust-btn" id="hp-plus">
-                <i class="fas fa-plus"></i>
-              </button>
+            <!-- Notes Tab -->
+            <div id="notes" class="content">
+                <div class="card glass">
+                    <h2 class="section-title"><i class="fas fa-scroll-old"></i><span>Notes</span></h2>
+                    <div class="flex gap-4 mb-6">
+                        <button class="spell-btn" id="add-note-btn"><i class="fas fa-plus"></i><span>Add Note</span></button>
+                        <input type="text" id="search-notes" class="glass-input flex-1" placeholder="Search notes..." />
+                    </div>
+                    <div class="notes-list" id="notes-list"></div>
+                </div>
             </div>
-          </div>
-          <div class="hp-animate" id="hp-animate"></div>
-          <div class="hp-ac-row">
-            <label for="ac" class="slider-label">AC:</label>
-            <input type="range" id="ac" min="1" max="30" value="10" />
-            <span id="ac-display"></span>
-          </div>
-        </div>
-
-        <!-- Skills/Proficiencies -->
-        <div class="sub-section">
-          <h3><i class="fas fa-tools"></i> Skills</h3>
-          <div class="proficiencies">
-            <div class="proficiency">
-              <label for="arcana"><i class="fas fa-hat-wizard"></i> Arcana</label>
-              <input type="checkbox" id="arcana-proficient" />
-              <span class="skill-mod" id="arcana-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="history"><i class="fas fa-landmark"></i> History</label>
-              <input type="checkbox" id="history-proficient" />
-              <span class="skill-mod" id="history-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="insight"><i class="fas fa-user-secret"></i> Insight</label>
-              <input type="checkbox" id="insight-proficient" />
-              <span class="skill-mod" id="insight-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="athletics"><i class="fas fa-dumbbell"></i> Athletics</label>
-              <input type="checkbox" id="athletics-proficient" />
-              <span class="skill-mod" id="athletics-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="acrobatics"><i class="fas fa-runner"></i> Acrobatics</label>
-              <input type="checkbox" id="acrobatics-proficient" />
-              <span class="skill-mod" id="acrobatics-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="stealth"><i class="fas fa-user-ninja"></i> Stealth</label>
-              <input type="checkbox" id="stealth-proficient" />
-              <span class="skill-mod" id="stealth-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="perception"><i class="fas fa-eye"></i> Perception</label>
-              <input type="checkbox" id="perception-proficient" />
-              <span class="skill-mod" id="perception-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="investigation"><i class="fas fa-search"></i> Investigation</label>
-              <input type="checkbox" id="investigation-proficient" />
-              <span class="skill-mod" id="investigation-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="performance"><i class="fas fa-music"></i> Performance</label>
-              <input type="checkbox" id="performance-proficient" />
-              <span class="skill-mod" id="performance-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="persuasion"><i class="fas fa-comments"></i> Persuasion</label>
-              <input type="checkbox" id="persuasion-proficient" />
-              <span class="skill-mod" id="persuasion-mod">+0</span>
-            </div>
-            <div class="proficiency">
-              <label for="intimidation"><i class="fas fa-angry"></i> Intimidation</label>
-              <input type="checkbox" id="intimidation-proficient" />
-              <span class="skill-mod" id="intimidation-mod">+0</span>
-            </div>
-          </div>
-        </div>
-      </div>
+        </main>
     </div>
 
-    <!-- Spellbook Tab -->
-    <div id="spellbook" class="content">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-book-open"></i>
-          <span>Spellbook</span>
-        </div>
+    <!-- MODALS SECTION -->
+    <div id="item-modal" class="modal"><div class="modal-content glass"><span class="close-btn">&times;</span><h2 id="item-modal-title" class="modal-title">Add Item</h2><form id="item-form" class="flex flex-col gap-4"><div class="form-group"><label for="item-name">Item Name</label><input type="text" id="item-name" required /></div><div class="grid grid-cols-2 gap-4"><div class="form-group"><label for="item-emoji">Emoji</label><input type="text" id="item-emoji" required placeholder="e.g., ⚔️" /></div><div class="form-group"><label for="item-quantity">Quantity</label><input type="number" id="item-quantity" min="1" value="1" required /></div></div><div class="form-group"><label for="item-description">Description</label><textarea id="item-description" rows="4"></textarea></div><div class="flex justify-end gap-4 mt-4"><button type="button" class="spell-btn" onclick="this.closest('.modal').style.display='none'">Cancel</button><button type="submit" class="spell-btn prepared" id="save-item-btn">Add</button></div></form></div></div>
+    <div id="item-view-modal" class="modal"><div class="modal-content glass text-center"><span class="close-btn">&times;</span><div id="item-view-emoji" class="text-6xl mb-4"></div><h2 id="item-view-title" class="modal-title">Item Details</h2><p class="text-lg mb-2"><strong>Quantity:</strong> <span id="item-view-quantity"></span></p><p id="item-view-description" class="text-base text-amber-200"></p></div></div>
+    <div id="note-modal" class="modal"><div class="modal-content glass"><span class="close-btn">&times;</span><h2 id="note-modal-title" class="modal-title">Add Note</h2><form id="note-form" class="flex flex-col gap-4"><div class="form-group"><label for="note-title">Title</label><input type="text" id="note-title" required /></div><div class="form-group"><label for="note-content">Content</label><textarea id="note-content" rows="8" required></textarea></div><div class="flex justify-end gap-4 mt-4"><button type="button" class="spell-btn" onclick="this.closest('.modal').style.display='none'">Cancel</button><button type="submit" class="spell-btn prepared" id="save-note-btn">Add</button></div></form></div></div>
+    <div id="spell-slot-modal" class="modal"><div class="modal-content glass"><span class="close-btn">&times;</span><h2 id="spell-slot-modal-title" class="modal-title">Cast Using Which Slot?</h2><div id="spell-slot-modal-body" class="flex flex-wrap gap-4 justify-center"></div></div></div>
 
-        <!-- Add Spell Form -->
-        <div class="spell-form">
-          <input
-            type="text"
-            class="spell-input"
-            id="spell-name"
-            placeholder="New spell name"
-          />
-          <select class="spell-select" id="spell-level">
-            <option value="0">Cantrip</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-            <option value="4">Level 4</option>
-            <option value="5">Level 5</option>
-            <option value="6">Level 6</option>
-            <option value="7">Level 7</option>
-            <option value="8">Level 8</option>
-            <option value="9">Level 9</option>
-          </select>
-          <button class="spell-btn" id="add-spell">
-            <i class="fas fa-plus"></i>
-            <span>Add</span>
-          </button>
-        </div>
+    <script>
+    /*=============================================
+      =            JAVASCRIPT LOGIC                 =
+      =============================================*/
+    document.addEventListener('DOMContentLoaded', () => {
 
-        <!-- Cantrips Section -->
-        <div class="section-title">
-          <i class="fas fa-snowflake"></i>
-          <span>Cantrips</span>
-        </div>
-        <div id="cantrips-container"></div>
+        /*------------------------------------
+        -          GLOBAL STATE & DATA       -
+        ------------------------------------*/
+        const ABILITIES = {
+            strength: { name: 'Strength', icon: 'fa-dumbbell' },
+            dexterity: { name: 'Dexterity', icon: 'fa-running' },
+            constitution: { name: 'Constitution', icon: 'fa-heart-pulse' },
+            intelligence: { name: 'Intelligence', icon: 'fa-flask' },
+            wisdom: { name: 'Wisdom', icon: 'fa-eye' },
+            charisma: { name: 'Charisma', icon: 'fa-masks-theater' }
+        };
 
-        <!-- Spells Section -->
-        <div class="section-title">
-          <i class="fas fa-fire"></i>
-          <span>Spells</span>
-        </div>
-        <div id="spells-container"></div>
-      </div>
-    </div>
+        const SKILLS = {
+            acrobatics: { name: 'Acrobatics', ability: 'dexterity', icon: 'fa-person-running' },
+            animalHandling: { name: 'Animal Handling', ability: 'wisdom', icon: 'fa-dog' },
+            arcana: { name: 'Arcana', ability: 'intelligence', icon: 'fa-hat-wizard' },
+            athletics: { name: 'Athletics', ability: 'strength', icon: 'fa-dumbbell' },
+            deception: { name: 'Deception', ability: 'charisma', icon: 'fa-user-secret' },
+            history: { name: 'History', ability: 'intelligence', icon: 'fa-landmark' },
+            insight: { name: 'Insight', ability: 'wisdom', icon: 'fa-lightbulb' },
+            intimidation: { name: 'Intimidation', ability: 'charisma', icon: 'fa-face-angry' },
+            investigation: { name: 'Investigation', ability: 'intelligence', icon: 'fa-magnifying-glass' },
+            medicine: { name: 'Medicine', ability: 'wisdom', icon: 'fa-briefcase-medical' },
+            nature: { name: 'Nature', ability: 'intelligence', icon: 'fa-leaf' },
+            perception: { name: 'Perception', ability: 'wisdom', icon: 'fa-eye' },
+            performance: { name: 'Performance', ability: 'charisma', icon: 'fa-guitar' },
+            persuasion: { name: 'Persuasion', ability: 'charisma', icon: 'fa-comments' },
+            religion: { name: 'Religion', ability: 'intelligence', icon: 'fa-ankh' },
+            sleightOfHand: { name: 'Sleight of Hand', ability: 'dexterity', icon: 'fa-hand-sparkles' },
+            stealth: { name: 'Stealth', ability: 'dexterity', icon: 'fa-user-ninja' },
+            survival: { name: 'Survival', ability: 'wisdom', icon: 'fa-compass' }
+        };
 
-    <!-- Spell Slots Tab -->
-    <div id="slots" class="content">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-star"></i>
-          <span>Spell Slots</span>
-        </div>
-        <div id="spell-slots-container"></div>
-      </div>
-    </div>
+        const COINS = {
+            platinum: { name: 'Platinum', short: 'PP' },
+            gold: { name: 'Gold', short: 'GP' },
+            electrum: { name: 'Electrum', short: 'EP' },
+            silver: { name: 'Silver', short: 'SP' },
+            copper: { name: 'Copper', short: 'CP' }
+        };
 
-    <!-- Dice Roller Tab -->
-    <div id="dice-roller" class="content">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-dice-d20"></i>
-          <span>Dice Roller</span>
-        </div>
+        let state = {
+            characterSheet: {
+                name: "New Adventurer",
+                race: "",
+                class: "",
+                level: 1,
+                experience: 0,
+                maxHP: 10,
+                currentHP: 10,
+                temporaryHP: 0,
+                ac: 10,
+                abilityScores: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+                skillProficiencies: Object.keys(SKILLS).reduce((acc, key) => ({ ...acc, [key]: false }), {})
+            },
+            spellSlots: { 1: { total: 0, used: 0 }, 2: { total: 0, used: 0 }, 3: { total: 0, used: 0 }, 4: { total: 0, used: 0 }, 5: { total: 0, used: 0 }, 6: { total: 0, used: 0 }, 7: { total: 0, used: 0 }, 8: { total: 0, used: 0 }, 9: { total: 0, used: 0 } },
+            spellbook: [],
+            inventory: [],
+            coins: { platinum: 0, gold: 10, electrum: 0, silver: 0, copper: 0 },
+            notes: [],
+            diceRollHistory: []
+        };
 
-        <div class="dice-form">
-          <div class="dice-input">
-            <label for="dice-count"
-              ><i class="fas fa-dice-six"></i> Number of Dice:</label
-            >
-            <input type="number" id="dice-count" min="1" value="1" />
-          </div>
-          <div class="dice-input">
-            <label for="dice-type"
-              ><i class="fas fa-dice"></i> Type of Dice:</label
-            >
-            <select id="dice-type">
-              <option value="4">d4</option>
-              <option value="6">d6</option>
-              <option value="8">d8</option>
-              <option value="10">d10</option>
-              <option value="12">d12</option>
-              <option value="20">d20</option>
-              <option value="100">d100</option>
-            </select>
-          </div>
-          <button class="spell-btn" id="roll-dice">
-            <i class="fas fa-play"></i>
-            <span>Roll</span>
-          </button>
-        </div>
+        /*------------------------------------
+        -          STATE MANAGEMENT          -
+        ------------------------------------*/
+        function loadState() {
+            const savedState = localStorage.getItem('dndCharacterState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                state = {
+                    ...state,
+                    ...parsedState,
+                    characterSheet: { ...state.characterSheet, ...parsedState.characterSheet },
+                    spellSlots: { ...state.spellSlots, ...parsedState.spellSlots },
+                    coins: { ...state.coins, ...parsedState.coins }
+                };
+            }
+        }
 
-        <!-- Dice Roll History -->
-        <div class="section-title">
-          <i class="fas fa-history"></i>
-          <span>Roll History</span>
-        </div>
-        <div id="roll-history" class="roll-history">
-          <!-- Last 5 rolls will be displayed here -->
-        </div>
+        function saveState() {
+            localStorage.setItem('dndCharacterState', JSON.stringify(state));
+        }
 
-        <div id="dice-results" class="dice-results">
-          <!-- Dice results will appear here -->
-        </div>
-      </div>
-    </div>
+        /*------------------------------------
+        -          UTILITY FUNCTIONS         -
+        ------------------------------------*/
+        const calculateModifier = (score) => Math.floor((score - 10) / 2);
+        const getProficiencyBonus = (level) => Math.ceil(level / 4) + 1;
 
-    <!-- Inventory Tab -->
-    <div id="inventory" class="content">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-boxes"></i>
-          <span>Inventory</span>
-        </div>
-        <button class="spell-btn" id="add-item-btn">
-          <i class="fas fa-plus"></i>
-          <span>Add Item</span>
-        </button>
+        /*------------------------------------
+        -          RENDER FUNCTIONS          -
+        ------------------------------------*/
+        function renderAll() {
+            renderCharacterSheet();
+            renderSpellSlots();
+            renderSpellbook();
+            renderInventory();
+            renderCoins();
+            renderNotes();
+            renderRollHistory();
+        }
 
-        <!-- Grid for Minecraft-Style Items -->
-        <div class="inventory-grid" id="inventory-grid"></div>
-      </div>
+        function renderCharacterSheet() {
+            const { name, race, class: charClass, level, experience, maxHP, currentHP, temporaryHP, ac, abilityScores, skillProficiencies } = state.characterSheet;
 
-      <!-- Currency Management -->
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-coins"></i>
-          <span>Currency</span>
-        </div>
-        <div class="coins-container">
-          <div class="sub-section">
-            <label for="platinum" class="slider-label"
-              >Platinum (PP):</label
-            >
-            <input
-              type="number"
-              id="platinum"
-              class="glass-input"
-              min="0"
-              value="0"
-            />
-          </div>
-          <div class="sub-section">
-            <label for="gold" class="slider-label">Gold (GP):</label>
-            <input
-              type="number"
-              id="gold"
-              class="glass-input"
-              min="0"
-              value="0"
-            />
-          </div>
-          <div class="sub-section">
-            <label for="electrum" class="slider-label"
-              >Electrum (EP):</label
-            >
-            <input
-              type="number"
-              id="electrum"
-              class="glass-input"
-              min="0"
-              value="0"
-            />
-          </div>
-          <div class="sub-section">
-            <label for="silver" class="slider-label">Silver (SP):</label>
-            <input
-              type="number"
-              id="silver"
-              class="glass-input"
-              min="0"
-              value="0"
-            />
-          </div>
-          <div class="sub-section">
-            <label for="copper" class="slider-label">Copper (CP):</label>
-            <input
-              type="number"
-              id="copper"
-              class="glass-input"
-              min="0"
-              value="0"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+            document.getElementById('main-title').textContent = name || 'Arcane Grimoire';
+            document.getElementById('character-name').value = name;
+            document.getElementById('race').value = race;
+            document.getElementById('class').value = charClass;
+            document.getElementById('level').value = level;
+            document.getElementById('experience').value = experience;
+            document.getElementById('ac').value = ac;
+            document.getElementById('ac-display').textContent = ac;
 
-    <!-- Notes Tab -->
-    <div id="notes" class="content">
-      <div class="card glass">
-        <div class="section-title">
-          <i class="fas fa-sticky-note"></i>
-          <span>Notes</span>
-        </div>
-        <div class="notes-controls">
-          <button class="spell-btn" id="add-note-btn">
-            <i class="fas fa-plus"></i>
-            <span>Add Note</span>
-          </button>
-          <input type="text" id="search-notes" placeholder="Search notes..." />
-        </div>
-        <div class="notes-list" id="notes-list"></div>
-      </div>
-    </div>
-  </div>
+            document.getElementById('maxHP').value = maxHP;
+            document.getElementById('temporaryHP').value = temporaryHP;
+            document.getElementById('current-hp-display').textContent = currentHP;
+            
+            const hpPercent = maxHP > 0 ? (currentHP / maxHP) * 100 : 0;
+            const tempHpPercent = maxHP > 0 ? (temporaryHP / maxHP) * 100 : 0;
+            const hpBar = document.getElementById('hp-bar');
+            const hpBarTemp = document.getElementById('hp-bar-temp');
+            const hpBarText = document.getElementById('hp-bar-text');
 
-  <!-- ITEM MODALS -->
-  <div id="item-modal" class="modal">
-    <div class="modal-content glass">
-      <span class="close" id="close-item-modal">&times;</span>
-      <h2 id="item-modal-title" class="modal-title">Add Item</h2>
-      <form id="item-form">
-        <div class="form-group">
-          <label for="item-name">Item Name</label>
-          <input type="text" id="item-name" required />
-        </div>
-        <div class="form-group">
-          <label for="item-emoji">Emoji</label>
-          <select id="item-emoji" required>
-            <option>⚔️</option>
-            <option>🛡️</option>
-            <option>🏹</option>
-            <option>🪄</option>
-            <option>📜</option>
-            <option>🗡️</option>
-            <option>🪙</option>
-            <option>🧪</option>
-            <option>🗝️</option>
-            <option>👚</option>
-            <option>📦</option>
-            <option>📕</option>
-            <option>⭐</option>
-            <option>🔮</option>
-            <option>🗝️</option>
-            <option>💎</option>
-            <option>🍖</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="item-quantity">Quantity</label>
-          <input type="number" id="item-quantity" min="1" value="1" required />
-        </div>
-        <div class="form-group">
-          <label for="item-description">Description</label>
-          <textarea id="item-description" rows="4" required></textarea>
-        </div>
-        <div class="button-group">
-          <button type="button" class="spell-btn" onclick="closeItemModal()">
-            <i class="fas fa-times"></i>
-            <span>Cancel</span>
-          </button>
-          <button type="submit" class="spell-btn" id="save-item-btn">
-            <i class="fas fa-save"></i>
-            <span>Add</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+            hpBar.style.width = `${hpPercent}%`;
+            hpBarTemp.style.width = `${tempHpPercent}%`;
+            hpBarText.textContent = `${currentHP} / ${maxHP}` + (temporaryHP > 0 ? ` (+${temporaryHP})` : '');
 
-  <!-- ITEM VIEW MODAL -->
-  <div id="item-view-modal" class="modal">
-    <div class="modal-content glass">
-      <span class="close" id="close-item-view-modal">&times;</span>
-      <h2 id="item-view-title" class="modal-title">Item Details</h2>
-      <p id="item-view-emoji" style="font-size: 2rem; text-align: center;"></p>
-      <p id="item-view-description"></p>
-      <p>
-        <strong>Quantity:</strong>
-        <span id="item-view-quantity"></span>
-      </p>
-    </div>
-  </div>
+            hpBar.classList.remove('hp-high', 'hp-medium', 'hp-low');
+            if (hpPercent > 50) hpBar.classList.add('hp-high');
+            else if (hpPercent > 25) hpBar.classList.add('hp-medium');
+            else hpBar.classList.add('hp-low');
 
-  <!-- NOTE MODALS -->
-  <div id="note-modal" class="modal">
-    <div class="modal-content glass">
-      <span class="close" id="close-note-modal">&times;</span>
-      <h2 id="note-modal-title" class="modal-title">Add Note</h2>
-      <form id="note-form">
-        <div class="form-group">
-          <label for="note-title">Title</label>
-          <input type="text" id="note-title" required />
-        </div>
-        <div class="form-group">
-          <label for="note-content">Content</label>
-          <textarea id="note-content" rows="6" required></textarea>
-        </div>
-        <div class="button-group">
-          <button
-            type="button"
-            class="spell-btn"
-            onclick="closeNoteModal()"
-          >
-            <i class="fas fa-times"></i>
-            <span>Cancel</span>
-          </button>
-          <button type="submit" class="spell-btn" id="save-note-btn">
-            <i class="fas fa-save"></i>
-            <span>Add</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+            const abilityContainer = document.querySelector('.ability-scores');
+            abilityContainer.innerHTML = Object.entries(ABILITIES).map(([key, { name, icon }]) => {
+                const score = abilityScores[key];
+                const mod = calculateModifier(score);
+                return `
+                    <div class="ability">
+                        <label for="${key}" class="flex items-center">
+                            <i class="fas ${icon} w-6 text-center"></i> ${name}
+                            <span class="modifier" id="${key}-mod">(${mod >= 0 ? '+' : ''}${mod})</span>
+                        </label>
+                        <input type="number" id="${key}" value="${score}" min="1" class="glass-input" data-ability="${key}" />
+                    </div>`;
+            }).join('');
 
-  <!-- SPELL SLOT SELECTION MODAL -->
-  <div id="spell-slot-modal" class="modal">
-    <div class="modal-content glass">
-      <span class="close" id="close-spell-slot-modal">&times;</span>
-      <h2 id="spell-slot-modal-title" class="modal-title">Cast Spell Slot</h2>
-      <div id="spell-slot-modal-body">
-        <!-- Dynamically generated buttons for available levels -->
-      </div>
-    </div>
-  </div>
+            const proficiencyContainer = document.querySelector('.proficiencies');
+            const profBonus = getProficiencyBonus(level);
+            proficiencyContainer.innerHTML = Object.entries(SKILLS).map(([key, { name, ability, icon }]) => {
+                const abilityMod = calculateModifier(abilityScores[ability]);
+                const skillMod = abilityMod + (skillProficiencies[key] ? profBonus : 0);
+                return `
+                    <div class="proficiency">
+                        <label for="${key}-proficient" class="flex-1">
+                            <i class="fas ${icon} w-6 text-center"></i> ${name}
+                        </label>
+                        <input type="checkbox" id="${key}-proficient" data-skill="${key}" ${skillProficiencies[key] ? 'checked' : ''} />
+                        <span class="skill-mod" id="${key}-mod">${skillMod >= 0 ? '+' : ''}${skillMod}</span>
+                    </div>`;
+            }).join('');
+        }
 
-  <!-- Particle.js Library + Main Script -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
-  <script src="script.js"></script>
+        function renderSpellSlots() {
+            const container = document.getElementById('spell-slots-container');
+            container.innerHTML = Object.entries(state.spellSlots).map(([lvl, { total, used }]) => `
+                <div class="spell-slot glass">
+                    <div class="slot-header">
+                        <div><i class="fas fa-star"></i> Level ${lvl}</div>
+                        <div class="flex items-center gap-2">
+                            <button class="hp-adjust-btn" onclick="window.app.adjustSlots(${lvl}, false)"><i class="fas fa-minus"></i></button>
+                            <span class="font-bold text-lg">${total}</span>
+                            <button class="hp-adjust-btn" onclick="window.app.adjustSlots(${lvl}, true)"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="slot-circles">
+                        ${Array.from({ length: total }, (_, i) => `
+                            <div class="slot-circle ${i < used ? 'used' : ''}" onclick="window.app.toggleSlot(${lvl}, ${i})"></div>
+                        `).join('')}
+                    </div>
+                    <div class="burst-container"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderSpellbook() {
+            const cantripsContainer = document.getElementById('cantrips-container');
+            const spellsContainer = document.getElementById('spells-container');
+            cantripsContainer.innerHTML = '';
+            spellsContainer.innerHTML = '';
+
+            state.spellbook.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name)).forEach(spell => {
+                const isCantrip = spell.level === 0;
+                const spellHtml = `
+                    <div class="spell-item">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-wand-sparkles text-amber-400 ${spell.prepared ? 'opacity-100' : 'opacity-30'}"></i>
+                            <div>
+                                <div class="font-semibold">${spell.name}</div>
+                                <div class="text-sm text-amber-200 opacity-70">${isCantrip ? 'Cantrip' : `Level ${spell.level}`}</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="spell-btn ${spell.prepared ? 'prepared' : ''}" onclick="window.app.togglePrepared('${spell.name}')" ${isCantrip ? 'disabled' : ''}>
+                                ${isCantrip ? 'Known' : (spell.prepared ? 'Prepared' : 'Prepare')}
+                            </button>
+                            <button class="spell-btn" onclick="window.app.removeSpell('${spell.name}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>`;
+                if (isCantrip) {
+                    cantripsContainer.innerHTML += spellHtml;
+                } else {
+                    spellsContainer.innerHTML += spellHtml;
+                }
+            });
+        }
+        
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            grid.innerHTML = state.inventory.map((item, index) => `
+                <div class="inventory-item" data-index="${index}">
+                    ${item.emoji}
+                    <span class="item-name-tooltip">${item.name} (x${item.quantity})</span>
+                    <div class="item-actions">
+                        <button class="item-action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                        <button class="item-action-btn delete-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCoins() {
+            const container = document.getElementById('coins-container');
+            container.innerHTML = Object.entries(COINS).map(([key, { name, short }]) => `
+                <div>
+                    <label for="${key}" class="block mb-1 text-sm">${name} (${short})</label>
+                    <input type="number" id="${key}" data-coin="${key}" value="${state.coins[key]}" min="0" class="glass-input" />
+                </div>
+            `).join('');
+        }
+
+        function renderNotes(filteredNotes = state.notes) {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = filteredNotes.map((note) => {
+                const originalIndex = state.notes.indexOf(note);
+                return `
+                <div class="note-item glass">
+                    <div class="note-title">${note.title}</div>
+                    <p class="note-content">${note.content}</p>
+                    <div class="note-actions">
+                        <button class="spell-btn" onclick="window.app.editNote(${originalIndex})"><i class="fas fa-edit"></i></button>
+                        <button class="spell-btn" onclick="window.app.deleteNote(${originalIndex})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderRollHistory() {
+            const historyContainer = document.getElementById('roll-history');
+            historyContainer.innerHTML = state.diceRollHistory.map(roll => `<p class="text-amber-200 opacity-80">${roll}</p>`).join('');
+        }
+
+        /*------------------------------------
+        -          EVENT HANDLERS & LOGIC    -
+        ------------------------------------*/
+        
+        function handleCharacterSheetChange(e) {
+            const { id, value, type, checked, dataset } = e.target;
+            const sheet = state.characterSheet;
+            let needsFullRender = true;
+
+            if (id === 'character-name') {
+                sheet.name = value;
+                document.getElementById('main-title').textContent = value || 'Arcane Grimoire';
+                needsFullRender = false; // Prevent re-rendering the input
+            } else if (dataset.ability) {
+                sheet.abilityScores[dataset.ability] = parseInt(value) || 0;
+            } else if (dataset.skill) {
+                sheet.skillProficiencies[dataset.skill] = checked;
+            } else if (dataset.coin) {
+                state.coins[dataset.coin] = parseInt(value) || 0;
+                needsFullRender = false; // No need to re-render whole sheet for coins
+            } else if (['maxHP', 'temporaryHP', 'ac', 'level', 'experience'].includes(id)) {
+                sheet[id] = parseInt(value) || 0;
+            } else if (['race', 'class'].includes(id)) {
+                sheet[id] = value;
+                needsFullRender = false;
+            }
+            
+            if (sheet.currentHP > sheet.maxHP) sheet.currentHP = sheet.maxHP;
+
+            saveState();
+            if (needsFullRender) {
+                renderAll();
+            } else {
+                renderCharacterSheet(); // Re-render just the sheet for HP/AC bar updates
+            }
+        }
+
+        document.getElementById('hp-minus').addEventListener('click', () => {
+            if (state.characterSheet.temporaryHP > 0) {
+                state.characterSheet.temporaryHP--;
+            } else if (state.characterSheet.currentHP > 0) {
+                state.characterSheet.currentHP--;
+            }
+            saveState();
+            renderCharacterSheet();
+        });
+
+        document.getElementById('hp-plus').addEventListener('click', () => {
+            if (state.characterSheet.currentHP < state.characterSheet.maxHP) {
+                state.characterSheet.currentHP++;
+            }
+            saveState();
+            renderCharacterSheet();
+        });
+
+        window.app = {};
+        window.app.adjustSlots = (level, increment) => {
+            const newTotal = Math.max(0, state.spellSlots[level].total + (increment ? 1 : -1));
+            state.spellSlots[level].total = newTotal;
+            state.spellSlots[level].used = Math.min(state.spellSlots[level].used, newTotal);
+            saveState();
+            renderSpellSlots();
+        };
+
+        window.app.toggleSlot = (level, index) => {
+            const slot = state.spellSlots[level];
+            slot.used = (index + 1 === slot.used) ? index : index + 1;
+            if (slot.used > index) triggerBurstEffect(level, index);
+            saveState();
+            renderSpellSlots();
+        };
+
+        function triggerBurstEffect(level, index) {
+            const slotElement = document.querySelector(`#spell-slots-container > div:nth-child(${level}) .slot-circles > div:nth-child(${index + 1})`);
+            if (!slotElement) return;
+            
+            const burstContainer = slotElement.closest('.spell-slot').querySelector('.burst-container');
+            for (let i = 0; i < 15; i++) {
+                const burst = document.createElement('div');
+                burst.className = 'burst';
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 40 + 20;
+                burst.style.left = `${slotElement.offsetLeft + slotElement.offsetWidth / 2}px`;
+                burst.style.top = `${slotElement.offsetTop + slotElement.offsetHeight / 2}px`;
+                burst.style.setProperty('--dx', `${Math.cos(angle) * radius}px`);
+                burst.style.setProperty('--dy', `${Math.sin(angle) * radius}px`);
+                burst.style.animation = `burst 0.7s ${Math.random() * 0.2}s ease-out forwards`;
+                burstContainer.appendChild(burst);
+                setTimeout(() => burst.remove(), 1000);
+            }
+        }
+
+        document.getElementById('add-spell-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('spell-name');
+            const levelInput = document.getElementById('spell-level');
+            const name = nameInput.value.trim();
+            const level = parseInt(levelInput.value);
+
+            if (name && !state.spellbook.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+                const isCantrip = level === 0;
+                state.spellbook.push({ name, level, prepared: isCantrip });
+                nameInput.value = '';
+                saveState();
+                renderSpellbook();
+            } else {
+                alert('Spell name must be unique and not empty.');
+            }
+        });
+
+        window.app.togglePrepared = (spellName) => {
+            const spell = state.spellbook.find(s => s.name === spellName);
+            if (spell && spell.level > 0) {
+                spell.prepared = !spell.prepared;
+                saveState();
+                renderSpellbook();
+            }
+        };
+
+        window.app.removeSpell = (spellName) => {
+            if (confirm(`Are you sure you want to remove "${spellName}"?`)) {
+                state.spellbook = state.spellbook.filter(s => s.name !== spellName);
+                saveState();
+                renderSpellbook();
+            }
+        };
+
+        document.getElementById('roll-dice-btn').addEventListener('click', () => {
+            const count = parseInt(document.getElementById('dice-count').value);
+            const type = parseInt(document.getElementById('dice-type').value);
+            const resultsContainer = document.getElementById('dice-results');
+            resultsContainer.innerHTML = '';
+            let total = 0;
+            let rolls = [];
+
+            for (let i = 0; i < count; i++) {
+                const roll = Math.floor(Math.random() * type) + 1;
+                total += roll;
+                rolls.push(roll);
+                resultsContainer.innerHTML += `
+                    <div class="dice-result">
+                        <div class="dice-animation"><div class="cube">${roll}</div></div>
+                        <span class="font-bold text-lg">d${type}: ${roll}</span>
+                    </div>`;
+            }
+            const historyEntry = `${count}d${type} = ${total} (${rolls.join(', ')})`;
+            state.diceRollHistory.unshift(historyEntry);
+            if (state.diceRollHistory.length > 10) state.diceRollHistory.pop();
+            saveState();
+            renderRollHistory();
+        });
+
+        document.getElementById('add-item-btn').addEventListener('click', () => openModal('item-modal'));
+        document.getElementById('inventory-grid').addEventListener('click', (e) => {
+            const itemDiv = e.target.closest('.inventory-item');
+            if (!itemDiv) return;
+            const index = itemDiv.dataset.index;
+
+            if (e.target.closest('.delete-btn')) {
+                if (confirm(`Are you sure you want to delete "${state.inventory[index].name}"?`)) {
+                    state.inventory.splice(index, 1);
+                    saveState();
+                    renderInventory();
+                }
+            } else if (e.target.closest('.edit-btn')) {
+                openModal('item-modal', { index });
+            } else {
+                openModal('item-view-modal', { index });
+            }
+        });
+
+        document.getElementById('add-note-btn').addEventListener('click', () => openModal('note-modal'));
+        document.getElementById('search-notes').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = state.notes.filter(n => n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query));
+            renderNotes(filtered);
+        });
+        window.app.editNote = (index) => openModal('note-modal', { index });
+        window.app.deleteNote = (index) => {
+            if (confirm(`Delete note "${state.notes[index].title}"?`)) {
+                state.notes.splice(index, 1);
+                saveState();
+                renderNotes();
+            }
+        };
+
+        document.getElementById('long-rest-btn').addEventListener('click', () => {
+            if (confirm('Take a long rest? This will restore all spell slots and HP.')) {
+                state.characterSheet.currentHP = state.characterSheet.maxHP;
+                state.characterSheet.temporaryHP = 0;
+                Object.keys(state.spellSlots).forEach(lvl => state.spellSlots[lvl].used = 0);
+                saveState();
+                renderAll();
+            }
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const dataStr = JSON.stringify(state, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.characterSheet.name.replace(/\s+/g, '_') || 'character'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
+        document.getElementById('import-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const importedState = JSON.parse(event.target.result);
+                    if (importedState.characterSheet && importedState.spellbook) {
+                        state = { ...state, ...importedState };
+                        saveState();
+                        renderAll();
+                        alert('Character imported successfully!');
+                    } else {
+                        alert('Invalid character file format.');
+                    }
+                } catch (err) {
+                    alert('Error reading file. Please ensure it is a valid JSON file.');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function openModal(modalId, data = {}) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            if (modalId === 'item-modal') {
+                const form = modal.querySelector('form');
+                form.reset();
+                if (data.index !== undefined) {
+                    const item = state.inventory[data.index];
+                    modal.querySelector('.modal-title').textContent = 'Edit Item';
+                    modal.querySelector('#item-name').value = item.name;
+                    modal.querySelector('#item-emoji').value = item.emoji;
+                    modal.querySelector('#item-quantity').value = item.quantity;
+                    modal.querySelector('#item-description').value = item.description;
+                    form.dataset.index = data.index;
+                } else {
+                    modal.querySelector('.modal-title').textContent = 'Add Item';
+                    delete form.dataset.index;
+                }
+            } else if (modalId === 'item-view-modal') {
+                const item = state.inventory[data.index];
+                modal.querySelector('#item-view-emoji').textContent = item.emoji;
+                modal.querySelector('#item-view-title').textContent = item.name;
+                modal.querySelector('#item-view-quantity').textContent = item.quantity;
+                modal.querySelector('#item-view-description').textContent = item.description;
+            } else if (modalId === 'note-modal') {
+                const form = modal.querySelector('form');
+                form.reset();
+                if (data.index !== undefined) {
+                    const note = state.notes[data.index];
+                    modal.querySelector('.modal-title').textContent = 'Edit Note';
+                    modal.querySelector('#note-title').value = note.title;
+                    modal.querySelector('#note-content').value = note.content;
+                    form.dataset.index = data.index;
+                } else {
+                    modal.querySelector('.modal-title').textContent = 'Add Note';
+                    delete form.dataset.index;
+                }
+            }
+            modal.style.display = 'block';
+        }
+
+        document.getElementById('item-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const { index } = e.target.dataset;
+            const itemData = {
+                name: document.getElementById('item-name').value,
+                emoji: document.getElementById('item-emoji').value,
+                quantity: parseInt(document.getElementById('item-quantity').value),
+                description: document.getElementById('item-description').value
+            };
+            if (index) state.inventory[index] = itemData;
+            else state.inventory.push(itemData);
+            saveState();
+            renderInventory();
+            e.target.closest('.modal').style.display = 'none';
+        });
+
+        document.getElementById('note-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const { index } = e.target.dataset;
+            const noteData = { title: document.getElementById('note-title').value, content: document.getElementById('note-content').value };
+            if (index) state.notes[index] = noteData;
+            else state.notes.push(noteData);
+            saveState();
+            renderNotes();
+            e.target.closest('.modal').style.display = 'none';
+        });
+        
+        document.querySelectorAll('.close-btn, .modal').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (e.target === el) {
+                    el.closest('.modal').style.display = 'none';
+                }
+            });
+        });
+
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const mobileNavContainer = document.getElementById('mobile-nav');
+        
+        function switchTab(tabId) {
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+            mobileNavContainer.classList.remove('active');
+        }
+
+        navButtons.forEach(btn => {
+            const mobileBtn = btn.cloneNode(true);
+            mobileBtn.addEventListener('click', () => switchTab(mobileBtn.dataset.tab));
+            mobileNavContainer.appendChild(mobileBtn);
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        document.getElementById('hamburger').addEventListener('click', () => mobileNavContainer.classList.toggle('active'));
+
+        loadState();
+        renderAll();
+
+        document.getElementById('character-sheet').addEventListener('input', handleCharacterSheetChange);
+        document.getElementById('coins-container').addEventListener('input', handleCharacterSheetChange);
+    });
+    </script>
 </body>
 </html>
