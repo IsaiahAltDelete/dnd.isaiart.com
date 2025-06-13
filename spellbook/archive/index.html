@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Character Sheet</title>
+  <!-- Fonts & Icons -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ctext x='0' y='14' font-size='14'%3E⭐%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Particles Background -->
+  <div id="particles-js"></div>
+  
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Navigation & Rest Buttons -->
+    <section class="header-section">
+      <!-- Hamburger (Mobile) -->
+      <div class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+
+      <!-- Navigation (Desktop) -->
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="character-sheet">
+          <i class="fas fa-user"></i>
+          <span class="tooltip">Character Sheet</span>
+        </button>
+        <button class="nav-btn" data-tab="spellbook">
+          <i class="fas fa-book-open"></i>
+          <span class="tooltip">Spellbook</span>
+        </button>
+        <button class="nav-btn" data-tab="slots">
+          <i class="fas fa-scroll"></i>
+          <span class="tooltip">Spell Slots</span>
+        </button>
+        <button class="nav-btn" data-tab="dice-roller">
+          <i class="fas fa-dice-d20"></i>
+          <span class="tooltip">Dice Roller</span>
+        </button>
+        <button class="nav-btn" data-tab="inventory">
+          <i class="fas fa-boxes"></i>
+          <span class="tooltip">Inventory</span>
+        </button>
+        <button class="nav-btn" data-tab="notes">
+          <i class="fas fa-sticky-note"></i>
+          <span class="tooltip">Notes</span>
+        </button>
+      </nav>
+
+      <!-- Navigation (Mobile) -->
+      <nav class="mobile-nav" id="mobile-nav">
+        <button class="nav-btn active" data-tab="character-sheet">
+          <i class="fas fa-user"></i>
+          <span class="tooltip">Character Sheet</span>
+        </button>
+        <button class="nav-btn" data-tab="spellbook">
+          <i class="fas fa-book-open"></i>
+          <span class="tooltip">Spellbook</span>
+        </button>
+        <button class="nav-btn" data-tab="slots">
+          <i class="fas fa-scroll"></i>
+          <span class="tooltip">Spell Slots</span>
+        </button>
+        <button class="nav-btn" data-tab="dice-roller">
+          <i class="fas fa-dice-d20"></i>
+          <span class="tooltip">Dice Roller</span>
+        </button>
+        <button class="nav-btn" data-tab="inventory">
+          <i class="fas fa-boxes"></i>
+          <span class="tooltip">Inventory</span>
+        </button>
+        <button class="nav-btn" data-tab="notes">
+          <i class="fas fa-sticky-note"></i>
+          <span class="tooltip">Notes</span>
+        </button>
+      </nav>
+
+      <!-- Rest Buttons & Import/Export -->
+      <div class="rest-buttons">
+        <button class="rest-btn" data-rest="long">
+          <i class="fas fa-bed"></i>
+          <span>Long Rest</span>
+        </button>
+        <!-- Export Button -->
+        <button class="rest-btn" id="export-btn">
+          <i class="fas fa-file-export"></i>
+          <span>Export</span>
+        </button>
+        <!-- Import Button -->
+        <button class="rest-btn" id="import-btn">
+          <i class="fas fa-file-import"></i>
+          <span>Import</span>
+        </button>
+        <!-- Hidden File Input for Import -->
+        <input type="file" id="import-file" accept=".json" style="display: none;" />
+      </div>
+    </section>
+
+    <!-- Character Sheet Tab -->
+    <div id="character-sheet" class="content active">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-user"></i>
+          <span>Character Sheet</span>
+        </div>
+
+        <!-- Character Name -->
+        <div class="sub-section">
+          <h3><i class="fas fa-id-card"></i> Character Name</h3>
+          <input
+            type="text"
+            id="character-name"
+            class="glass-input"
+            placeholder="Enter character name..."
+          />
+        </div>
+
+        <!-- Levels -->
+        <div class="sub-section">
+          <h3><i class="fas fa-level-up-alt"></i> Levels</h3>
+          <div class="levels">
+            <div class="level">
+              <label for="level"
+                ><i class="fas fa-trophy"></i> Level</label
+              >
+              <input
+                type="number"
+                id="level"
+                value="1"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="level">
+              <label for="experience"
+                ><i class="fas fa-medal"></i> Experience</label
+              >
+              <input
+                type="number"
+                id="experience"
+                value="0"
+                min="0"
+                class="glass-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Race & Class -->
+        <div class="sub-section">
+          <h3><i class="fas fa-dragon"></i> Race & Class</h3>
+          <div class="race-class">
+            <div class="race">
+              <label for="race"
+                ><i class="fas fa-paw"></i> Race</label
+              >
+              <input
+                type="text"
+                id="race"
+                class="glass-input"
+                placeholder="e.g., Elf"
+              />
+            </div>
+            <div class="class">
+              <label for="class"
+                ><i class="fas fa-crown"></i> Class</label
+              >
+              <input
+                type="text"
+                id="class"
+                class="glass-input"
+                placeholder="e.g., Wizard"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ability Scores -->
+        <div class="sub-section">
+          <h3><i class="fas fa-brain"></i> Ability Scores</h3>
+          <div class="ability-scores">
+            <div class="ability">
+              <label for="strength">
+                <i class="fas fa-dumbbell"></i> Strength
+                <span class="modifier" id="strength-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="strength"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="dexterity">
+                <i class="fas fa-running"></i> Dexterity
+                <span class="modifier" id="dexterity-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="dexterity"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="constitution">
+                <i class="fas fa-heartbeat"></i> Constitution
+                <span class="modifier" id="constitution-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="constitution"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="intelligence">
+                <i class="fas fa-flask"></i> Intelligence
+                <span class="modifier" id="intelligence-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="intelligence"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="wisdom">
+                <i class="fas fa-eye"></i> Wisdom
+                <span class="modifier" id="wisdom-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="wisdom"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+            <div class="ability">
+              <label for="charisma">
+                <i class="fas fa-theater-masks"></i> Charisma
+                <span class="modifier" id="charisma-mod">(+0)</span>
+              </label>
+              <input
+                type="number"
+                id="charisma"
+                value="10"
+                min="1"
+                class="glass-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- HP & AC -->
+        <div class="sub-section">
+          <h3><i class="fas fa-heart"></i> Hit Points &amp; AC</h3>
+          <div class="hp-ac-row">
+            <label for="max-hp" class="slider-label">Max HP:</label>
+            <input
+              type="number"
+              id="max-hp"
+              class="glass-input"
+              min="1"
+              value="20"
+            />
+          </div>
+          <div class="hp-ac-row">
+            <label for="current-hp" class="slider-label">Current HP:</label>
+            <div class="hp-controls">
+              <button class="hp-adjust-btn" id="hp-minus">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span id="current-hp-display"></span>
+              <button class="hp-adjust-btn" id="hp-plus">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="hp-animate" id="hp-animate"></div>
+          <div class="hp-ac-row">
+            <label for="ac" class="slider-label">AC:</label>
+            <input type="range" id="ac" min="1" max="30" value="10" />
+            <span id="ac-display"></span>
+          </div>
+        </div>
+
+        <!-- Skills/Proficiencies -->
+        <div class="sub-section">
+          <h3><i class="fas fa-tools"></i> Skills</h3>
+          <div class="proficiencies">
+            <div class="proficiency">
+              <label for="arcana"><i class="fas fa-hat-wizard"></i> Arcana</label>
+              <input type="checkbox" id="arcana-proficient" />
+              <span class="skill-mod" id="arcana-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="history"><i class="fas fa-landmark"></i> History</label>
+              <input type="checkbox" id="history-proficient" />
+              <span class="skill-mod" id="history-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="insight"><i class="fas fa-user-secret"></i> Insight</label>
+              <input type="checkbox" id="insight-proficient" />
+              <span class="skill-mod" id="insight-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="athletics"><i class="fas fa-dumbbell"></i> Athletics</label>
+              <input type="checkbox" id="athletics-proficient" />
+              <span class="skill-mod" id="athletics-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="acrobatics"><i class="fas fa-runner"></i> Acrobatics</label>
+              <input type="checkbox" id="acrobatics-proficient" />
+              <span class="skill-mod" id="acrobatics-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="stealth"><i class="fas fa-user-ninja"></i> Stealth</label>
+              <input type="checkbox" id="stealth-proficient" />
+              <span class="skill-mod" id="stealth-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="perception"><i class="fas fa-eye"></i> Perception</label>
+              <input type="checkbox" id="perception-proficient" />
+              <span class="skill-mod" id="perception-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="investigation"><i class="fas fa-search"></i> Investigation</label>
+              <input type="checkbox" id="investigation-proficient" />
+              <span class="skill-mod" id="investigation-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="performance"><i class="fas fa-music"></i> Performance</label>
+              <input type="checkbox" id="performance-proficient" />
+              <span class="skill-mod" id="performance-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="persuasion"><i class="fas fa-comments"></i> Persuasion</label>
+              <input type="checkbox" id="persuasion-proficient" />
+              <span class="skill-mod" id="persuasion-mod">+0</span>
+            </div>
+            <div class="proficiency">
+              <label for="intimidation"><i class="fas fa-angry"></i> Intimidation</label>
+              <input type="checkbox" id="intimidation-proficient" />
+              <span class="skill-mod" id="intimidation-mod">+0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spellbook Tab -->
+    <div id="spellbook" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-book-open"></i>
+          <span>Spellbook</span>
+        </div>
+
+        <!-- Add Spell Form -->
+        <div class="spell-form">
+          <input
+            type="text"
+            class="spell-input"
+            id="spell-name"
+            placeholder="New spell name"
+          />
+          <select class="spell-select" id="spell-level">
+            <option value="0">Cantrip</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+            <option value="7">Level 7</option>
+            <option value="8">Level 8</option>
+            <option value="9">Level 9</option>
+          </select>
+          <button class="spell-btn" id="add-spell">
+            <i class="fas fa-plus"></i>
+            <span>Add</span>
+          </button>
+        </div>
+
+        <!-- Cantrips Section -->
+        <div class="section-title">
+          <i class="fas fa-snowflake"></i>
+          <span>Cantrips</span>
+        </div>
+        <div id="cantrips-container"></div>
+
+        <!-- Spells Section -->
+        <div class="section-title">
+          <i class="fas fa-fire"></i>
+          <span>Spells</span>
+        </div>
+        <div id="spells-container"></div>
+      </div>
+    </div>
+
+    <!-- Spell Slots Tab -->
+    <div id="slots" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-star"></i>
+          <span>Spell Slots</span>
+        </div>
+        <div id="spell-slots-container"></div>
+      </div>
+    </div>
+
+    <!-- Dice Roller Tab -->
+    <div id="dice-roller" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-dice-d20"></i>
+          <span>Dice Roller</span>
+        </div>
+
+        <div class="dice-form">
+          <div class="dice-input">
+            <label for="dice-count"
+              ><i class="fas fa-dice-six"></i> Number of Dice:</label
+            >
+            <input type="number" id="dice-count" min="1" value="1" />
+          </div>
+          <div class="dice-input">
+            <label for="dice-type"
+              ><i class="fas fa-dice"></i> Type of Dice:</label
+            >
+            <select id="dice-type">
+              <option value="4">d4</option>
+              <option value="6">d6</option>
+              <option value="8">d8</option>
+              <option value="10">d10</option>
+              <option value="12">d12</option>
+              <option value="20">d20</option>
+              <option value="100">d100</option>
+            </select>
+          </div>
+          <button class="spell-btn" id="roll-dice">
+            <i class="fas fa-play"></i>
+            <span>Roll</span>
+          </button>
+        </div>
+
+        <!-- Dice Roll History -->
+        <div class="section-title">
+          <i class="fas fa-history"></i>
+          <span>Roll History</span>
+        </div>
+        <div id="roll-history" class="roll-history">
+          <!-- Last 5 rolls will be displayed here -->
+        </div>
+
+        <div id="dice-results" class="dice-results">
+          <!-- Dice results will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div id="inventory" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-boxes"></i>
+          <span>Inventory</span>
+        </div>
+        <button class="spell-btn" id="add-item-btn">
+          <i class="fas fa-plus"></i>
+          <span>Add Item</span>
+        </button>
+
+        <!-- Grid for Minecraft-Style Items -->
+        <div class="inventory-grid" id="inventory-grid"></div>
+      </div>
+
+      <!-- Currency Management -->
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-coins"></i>
+          <span>Currency</span>
+        </div>
+        <div class="coins-container">
+          <div class="sub-section">
+            <label for="platinum" class="slider-label"
+              >Platinum (PP):</label
+            >
+            <input
+              type="number"
+              id="platinum"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="gold" class="slider-label">Gold (GP):</label>
+            <input
+              type="number"
+              id="gold"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="electrum" class="slider-label"
+              >Electrum (EP):</label
+            >
+            <input
+              type="number"
+              id="electrum"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="silver" class="slider-label">Silver (SP):</label>
+            <input
+              type="number"
+              id="silver"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+          <div class="sub-section">
+            <label for="copper" class="slider-label">Copper (CP):</label>
+            <input
+              type="number"
+              id="copper"
+              class="glass-input"
+              min="0"
+              value="0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div id="notes" class="content">
+      <div class="card glass">
+        <div class="section-title">
+          <i class="fas fa-sticky-note"></i>
+          <span>Notes</span>
+        </div>
+        <div class="notes-controls">
+          <button class="spell-btn" id="add-note-btn">
+            <i class="fas fa-plus"></i>
+            <span>Add Note</span>
+          </button>
+          <input type="text" id="search-notes" placeholder="Search notes..." />
+        </div>
+        <div class="notes-list" id="notes-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM MODALS -->
+  <div id="item-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-item-modal">&times;</span>
+      <h2 id="item-modal-title" class="modal-title">Add Item</h2>
+      <form id="item-form">
+        <div class="form-group">
+          <label for="item-name">Item Name</label>
+          <input type="text" id="item-name" required />
+        </div>
+        <div class="form-group">
+          <label for="item-emoji">Emoji</label>
+          <select id="item-emoji" required>
+            <option>⚔️</option>
+            <option>🛡️</option>
+            <option>🏹</option>
+            <option>🪄</option>
+            <option>📜</option>
+            <option>🗡️</option>
+            <option>🪙</option>
+            <option>🧪</option>
+            <option>🗝️</option>
+            <option>👚</option>
+            <option>📦</option>
+            <option>📕</option>
+            <option>⭐</option>
+            <option>🔮</option>
+            <option>🗝️</option>
+            <option>💎</option>
+            <option>🍖</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="item-quantity">Quantity</label>
+          <input type="number" id="item-quantity" min="1" value="1" required />
+        </div>
+        <div class="form-group">
+          <label for="item-description">Description</label>
+          <textarea id="item-description" rows="4" required></textarea>
+        </div>
+        <div class="button-group">
+          <button type="button" class="spell-btn" onclick="closeItemModal()">
+            <i class="fas fa-times"></i>
+            <span>Cancel</span>
+          </button>
+          <button type="submit" class="spell-btn" id="save-item-btn">
+            <i class="fas fa-save"></i>
+            <span>Add</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ITEM VIEW MODAL -->
+  <div id="item-view-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-item-view-modal">&times;</span>
+      <h2 id="item-view-title" class="modal-title">Item Details</h2>
+      <p id="item-view-emoji" style="font-size: 2rem; text-align: center;"></p>
+      <p id="item-view-description"></p>
+      <p>
+        <strong>Quantity:</strong>
+        <span id="item-view-quantity"></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- NOTE MODALS -->
+  <div id="note-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-note-modal">&times;</span>
+      <h2 id="note-modal-title" class="modal-title">Add Note</h2>
+      <form id="note-form">
+        <div class="form-group">
+          <label for="note-title">Title</label>
+          <input type="text" id="note-title" required />
+        </div>
+        <div class="form-group">
+          <label for="note-content">Content</label>
+          <textarea id="note-content" rows="6" required></textarea>
+        </div>
+        <div class="button-group">
+          <button
+            type="button"
+            class="spell-btn"
+            onclick="closeNoteModal()"
+          >
+            <i class="fas fa-times"></i>
+            <span>Cancel</span>
+          </button>
+          <button type="submit" class="spell-btn" id="save-note-btn">
+            <i class="fas fa-save"></i>
+            <span>Add</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SPELL SLOT SELECTION MODAL -->
+  <div id="spell-slot-modal" class="modal">
+    <div class="modal-content glass">
+      <span class="close" id="close-spell-slot-modal">&times;</span>
+      <h2 id="spell-slot-modal-title" class="modal-title">Cast Spell Slot</h2>
+      <div id="spell-slot-modal-body">
+        <!-- Dynamically generated buttons for available levels -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Particle.js Library + Main Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
