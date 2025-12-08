@@ -4,55 +4,892 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>D&D Monster Generator</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Cinzel for headers, Libre Baskerville for body text -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* --- Base Styles --- */
+    :root {
+      --dnd-red: #7a200d;
+      --parchment-bg: #fdf1dc;
+      --wood-dark: #3e2723;
+      --wood-light: #5d4037;
+      --gold-accent: #c0a062;
+    }
+
+    body {
+      /* User's scrolling background */
+      background-image: url('https://i.imgur.com/B1kEKpW.png');
+      background-repeat: repeat;
+      background-size: 400px;
+      font-family: 'Libre Baskerville', serif;
+      color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      animation: scrollBackground 60s linear infinite;
+    }
+
+    @keyframes scrollBackground {
+      from { background-position: 0 0; }
+      to { background-position: 400px 0; }
+    }
+
+    /* --- Headers --- */
+    h1 {
+      margin: 20px 0 10px 0;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 3rem;
+      text-align: center;
+      color: #2b1100;
+      text-shadow: 2px 2px 0px #c0a062;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* --- Controls Area --- */
+    .options {
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--gold-accent);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    .options div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .options label {
+      margin-bottom: 5px;
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .options select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 2px solid var(--wood-dark);
+      font-size: 1rem;
+      font-family: 'Libre Baskerville', serif;
+      background-color: var(--parchment-bg);
+      color: #333;
+      cursor: pointer;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .options select:focus {
+      outline: none;
+      border-color: var(--gold-accent);
+    }
+
+    /* --- Buttons --- */
+    .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      gap: 15px;
+    }
+
+    button {
+      background: linear-gradient(to bottom, var(--wood-light), var(--wood-dark));
+      color: #f0e6d2;
+      border: 2px solid #2b1100;
+      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 1px 1px 2px black;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      filter: brightness(1.1);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    button .icon {
+      margin-right: 8px;
+      color: var(--gold-accent);
+    }
+
+    .tool-btn {
+      padding: 12px 16px; /* Square-ish for icon */
+    }
+
+    /* --- Monster Stat Block (The Card) --- */
+    .monster-card {
+      background-color: var(--parchment-bg);
+      /* Stat block border looks */
+      border: 1px solid #dcdcdc; /* Subtle outer border */
+      box-shadow: 
+        0 0 0 5px #e0e5c1, /* Inner light border */
+        0 0 20px rgba(0,0,0,0.5); /* Deep shadow */
+      width: 95%;
+      max-width: 650px;
+      padding: 25px;
+      margin: 20px auto;
+      position: relative;
+      box-sizing: border-box;
+      /* Subtle texture overlay for paper effect */
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(0,0,0,0.03) 20px);
+    }
+    
+    /* Top and Bottom Gold Bars (Classic look) */
+    .monster-card::before, .monster-card::after {
+      content: "";
+      display: block;
+      height: 5px;
+      background: var(--gold-accent);
+      margin-bottom: 15px;
+      border-radius: 2px;
+    }
+    .monster-card::after {
+      margin-top: 15px;
+      margin-bottom: 0;
+    }
+
+    /* Monster Name */
+    .monster-card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.4rem;
+      color: var(--dnd-red);
+      margin: 0;
+      font-weight: 700;
+      line-height: 1.1;
+      text-transform: small-caps;
+    }
+
+    /* Monster Meta (Size, Type, Alignment) */
+    .monster-card .meta {
+      font-style: italic;
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Tapered Red Divider */
+    .tapered-rule {
+      display: block;
+      height: 2px;
+      border: 0;
+      background: linear-gradient(to right, transparent, var(--dnd-red), transparent);
+      margin: 10px 0;
+    }
+
+    /* Property Lines (Armor Class, HP, etc) */
+    .property-line {
+      color: var(--dnd-red);
+      font-weight: bold;
+      display: inline;
+    }
+    
+    .monster-card p {
+      margin: 5px 0;
+      line-height: 1.4;
+      font-size: 0.95rem;
+    }
+
+    /* Ability Scores Table */
+    .ability-scores {
+      display: flex;
+      justify-content: space-between; /* Spread evenly */
+      margin: 15px 0;
+      text-align: center;
+      color: var(--dnd-red);
+    }
+    
+    .ability-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .ability-score strong {
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    .ability-score span {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1rem;
+      color: black;
+    }
+
+    /* Section Titles (Actions, etc) */
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: var(--dnd-red);
+      border-bottom: 1px solid var(--dnd-red);
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-weight: normal;
+      letter-spacing: 1px;
+    }
+    
+    /* Physical Description Grid */
+    .grid-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 20px;
+        margin-top: 10px;
+    }
+    
+    .grid-list p {
+        margin: 2px 0;
+        border-bottom: 1px dashed rgba(122, 32, 13, 0.2);
+        padding-bottom: 2px;
+    }
+
+    /* Abilities / Actions List */
+    .abilities-list {
+      list-style-type: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .abilities-list li {
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    /* The Name of the Ability (e.g., "Multiattack.") */
+    .ability-name {
+      font-weight: bold;
+      font-style: italic;
+      color: #1a1a1a;
+    }
+
+    /* Icons within text - Thematic Red */
+    .icon-inline {
+      color: var(--dnd-red);
+      margin-right: 6px;
+      width: 16px;
+      text-align: center;
+    }
+
+    /* Color Box */
+    .color-box {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid #000;
+      margin-right: 4px;
+      vertical-align: middle;
+      box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* --- Toast Notification --- */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .toast {
+      background-color: var(--wood-dark);
+      color: var(--gold-accent);
+      padding: 12px 24px;
+      border-radius: 4px;
+      border: 1px solid var(--gold-accent);
+      margin-bottom: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-family: 'Cinzel', serif;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .monster-card { width: 95%; padding: 15px; }
+      .ability-scores { font-size: 0.8rem; }
+      .grid-list { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <h1>D&D MONSTER MAKER</h1>
+  <h1>Monster Manual</h1>
   
   <div class="options">
     <div>
-      <label for="monsterTypeSelect">Monster Type:</label>
-      <select id="monsterTypeSelect">
-        <option value="Any">Any</option>
-      </select>
+      <label for="monsterTypeSelect">Type</label>
+      <select id="monsterTypeSelect"><option value="Any">Any</option></select>
     </div>
     <div>
-      <label for="styleSelect">Style:</label>
-      <select id="styleSelect">
-        <option value="Any">Any</option>
-      </select>
+      <label for="styleSelect">Style</label>
+      <select id="styleSelect"><option value="Any">Any</option></select>
     </div>
     <div>
-      <label for="crSelect">Challenge Rating:</label>
-      <select id="crSelect">
-        <option value="Any">Any</option>
-      </select>
+      <label for="crSelect">CR</label>
+      <select id="crSelect"><option value="Any">Any</option></select>
     </div>
     <div>
-      <label for="habitatSelect">Habitat:</label>
-      <select id="habitatSelect">
-        <option value="Any">Any</option>
-      </select>
+      <label for="habitatSelect">Habitat</label>
+      <select id="habitatSelect"><option value="Any">Any</option></select>
     </div>
   </div>
   
   <div class="monster-card" id="monsterDisplay">
-    <p>Click the button to conjure a monstrous creation!</p>
+    <div style="text-align: center; color: var(--dnd-red); font-family: 'Cinzel', serif;">
+      <h3>Awaiting Conjuration...</h3>
+      <p style="color: #333; font-style: italic;">Select your parameters and roll the dice.</p>
+    </div>
   </div>
   
+  <!-- Hidden input for Image Prompt generation -->
+  <input type="hidden" id="imagePromptStorage" value="">
+
   <div class="button-container">
-    <button id="generateBtn"><i class="fas fa-dice icon"></i>Generate Monster</button>
-    <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i></button>
+    <button id="generateBtn"><i class="fas fa-dice-d20 icon-inline" style="color: var(--gold-accent);"></i>Conjure Monster</button>
+    <button class="tool-btn" id="copyBtn" title="Copy Stat Block"><i class="fas fa-scroll"></i></button>
+    <button class="tool-btn" id="copyPromptBtn" title="Copy Image Generation Prompt"><i class="fas fa-paint-brush"></i></button>
   </div>
   
   <div id="toast-container"></div>
   
   <!-- Main JavaScript -->
-  <script src="script.js"></script>
+  <script>
+    /* --- Data Arrays --- */
+    const monsterTypes = [
+        "Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend",
+        "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead", "Swarm", "Titan",
+        "Snake", "Bat", "Big Cat", "Bear", "Wolf", "Spider", "Rat", "Crocodile", "Ape", "Boar",
+        "Eagle", "Owl", "Shark", "Squid", "Scorpion", "Beetle", "Centipede", "Lizard", "Frog", "Toad",
+        "Mermaid", "Centaur", "Harpy", "Griffin", "Sphinx", "Gorgon", "Minotaur", "Satyr", "Dryad", "Nymph",
+        "Banshee", "Ghoul", "Lich", "Mummy", "Specter", "Wraith", "Golem", "Homunculus", "Animated Armor",
+        "Treant", "Shambling Mound", "Myconid", "Blink Dog", "Displacer Beast", "Rust Monster", "Mimic",
+        "Beholder", "Mind Flayer", "Aboleth", "Slaad", "Yuan-ti", "Githyanki", "Githzerai", "Modron",
+        "Couatl", "Deva", "Planetar", "Solar", "Erinyes", "Imp", "Succubus", "Pit Fiend", "Balor",
+        "Efreeti", "Djinn", "Marid", "Dao", "Salamander", "Gargoyle", "Medusa", "Lamia", "Naga",
+        "Tarrasque", "Kraken", "Leviathan", "Phoenix", "Unicorn", "Pegasus", "Basilisk", "Cockatrice"
+    ];
+    
+    const monsterStyles = [
+        "Skeletal", "Armored", "Fleshy", "Gaseous", "Crystalline", "Shadowy", "Ethereal", "Mechanical",
+        "Plant-like", "Insectoid", "Aquatic", "Avian", "Reptilian", "Fungal", "Demonic", "Angelic",
+        "Chaotic", "Orderly", "Primal", "Ancient", "Futuristic", "Magical", "Psionic", "Mutated",
+        "Corrupted", "Radiant", "Abyssal", "Celestial", "Infernal", "Feywild", "Shadowfell", "Astral",
+        "Elemental", "Clockwork", "Golemic", "Spectral", "Venomous", "Bioluminescent",
+        "Chitinous", "Scaly", "Feathered", "Furred", "Spiked", "Tendriled", "Segmented", "Amorphous"
+    ];
+    
+    const monsterColors = [
+        { name: "Crimson", hex: "#DC143C" }, { name: "Emerald", hex: "#50C878" },
+        { name: "Sapphire", hex: "#0F52BA" }, { name: "Amethyst", hex: "#9966CC" },
+        { name: "Obsidian", hex: "#2A2A2A" }, { name: "Golden", hex: "#FFD700" },
+        { name: "Silver", hex: "#C0C0C0" }, { name: "Bronze", hex: "#CD7F32" },
+        { name: "Ruby", hex: "#E0115F" }, { name: "Topaz", hex: "#FFC87C" },
+        { name: "Turquoise", hex: "#40E0D0" }, { name: "Magenta", hex: "#FF00FF" },
+        { name: "Bone White", hex: "#F0E68C" }, { name: "Forest Green", hex: "#228B22" },
+        { name: "Sky Blue", hex: "#87CEEB" }, { name: "Rust Brown", hex: "#A0522D" },
+        { name: "Midnight Black", hex: "#191970" }, { name: "Coral Pink", hex: "#FF7F50" },
+        { name: "Lavender", hex: "#E6E6FA" }, { name: "Charcoal Gray", hex: "#36454F" },
+        { name: "Lime Green", hex: "#32CD32" }, { name: "Violet", hex: "#EE82EE" }
+    ];
+    
+    const monsterAbilities = [
+        { name: "Claws", type: "melee", damage: "1d6 slashing" },
+        { name: "Bite", type: "melee", damage: "1d6 piercing" },
+        { name: "Stomp", type: "melee", damage: "1d8 bludgeoning" },
+        { name: "Tail Whip", type: "melee", damage: "1d6 bludgeoning" },
+        { name: "Acid Spit", type: "ranged", damage: "2d6 acid" },
+        { name: "Fire Breath", type: "ranged", damage: "3d6 fire", recharge: "5-6" },
+        { name: "Ice Blast", type: "ranged", damage: "3d6 cold", recharge: "5-6" },
+        { name: "Lightning Bolt", type: "ranged", damage: "3d6 lightning", recharge: "5-6" },
+        { name: "Teleportation", type: "movement", description: "Teleports up to 30 feet" },
+        { name: "Invisibility", type: "defense", description: "Becomes invisible for 1 minute" },
+        { name: "Mind Control", type: "spell", description: "Attempts to control the mind of a target", save: "Wisdom" },
+        { name: "Regeneration", type: "defense", description: "Regains 5 hit points at the start of its turn" },
+        { name: "Flight", type: "movement", description: "Has a flying speed of 60 feet" },
+        { name: "Burrowing", type: "movement", description: "Has a burrowing speed of 30 feet" },
+        { name: "Camouflage", type: "defense", description: "Has advantage on stealth checks in its natural environment" },
+        { name: "Webbing", type: "ranged", description: "Shoots webs to restrain targets", save: "Strength" },
+        { name: "Poison Sting", type: "melee", damage: "1d4 piercing + 2d4 poison", save: "Constitution" },
+        { name: "Sonic Scream", type: "ranged", damage: "2d6 thunder", description: "Can knock targets prone", save: "Constitution" },
+        { name: "Petrification Gaze", type: "ranged", description: "Attempts to petrify a target", save: "Constitution" },
+        { name: "Shadow Step", type: "movement", description: "Teleports between shadows" },
+        { name: "Ethereal Jaunt", type: "movement", description: "Can move into the Ethereal Plane" },
+        { name: "Spellcasting", type: "spell", description: "Can cast spells" },
+        { name: "Aura of Fear", type: "defense", description: "Frightens nearby enemies", save: "Wisdom" },
+        { name: "Life Drain", type: "melee", damage: "1d6 necrotic", description: "Heals for half the damage dealt" },
+        { name: "Energy Drain", type: "melee", damage: "1d6 necrotic", description: "Reduces a target's ability score", save: "Constitution" },
+        { name: "Summoning", type: "spell", description: "Can summon allies" },
+        { name: "Telekinesis", type: "spell", description: "Can move objects with its mind" },
+        { name: "Shapechanging", type: "defense", description: "Can change its form" },
+        { name: "Mimicry", type: "defense", description: "Can mimic sounds and voices" },
+        { name: "Amphibious", type: "movement", description: "Can breathe air and water" },
+        { name: "Trampling Charge", type: "melee", damage: "2d8 bludgeoning", description: "Can charge and trample enemies" },
+        { name: "Constrict", type: "melee", damage: "1d8 bludgeoning", description: "Can constrict targets", save: "Strength" },
+        { name: "Venomous Bite", type: "melee", damage: "1d4 piercing + 2d6 poison", save: "Constitution" },
+        { name: "Acidic Blood", type: "defense", description: "Deals acid damage to attackers" },
+        { name: "Freezing Touch", type: "melee", damage: "1d4 cold", description: "Reduces a target's speed", save: "Constitution" },
+        { name: "Thunderous Roar", type: "ranged", damage: "2d8 thunder", description: "Can knock targets prone", save: "Constitution" },
+        { name: "Hypnotic Gaze", type: "ranged", description: "Attempts to charm a target", save: "Wisdom" },
+        { name: "Illusory Form", type: "defense", description: "Can create illusions of itself" },
+        { name: "Berserk Rage", type: "buff", description: "Enters a rage, gaining strength and damage" },
+        { name: "Divine Smite", type: "melee", damage: "2d8 radiant", description: "Deals extra radiant damage" },
+        { name: "Unholy Aura", type: "defense", description: "Reduces the saving throws of nearby enemies", save: "Wisdom" },
+        { name: "Elemental Absorption", type: "defense", description: "Absorbs elemental damage to heal itself" },
+        { name: "Gravity Manipulation", type: "spell", description: "Can manipulate gravity" },
+        { name: "Time Manipulation", type: "spell", description: "Can manipulate time" },
+        { name: "Reality Warping", type: "spell", description: "Can warp reality" },
+        { name: "Astral Projection", type: "movement", description: "Can project its consciousness into the Astral Plane" }
+    ];
+    
+    const monsterOrigins = [
+        "Material Plane", "Plane of Fire", "Plane of Water", "Plane of Earth", "Plane of Air",
+        "Feywild", "Shadowfell", "Nine Hells", "Abyss", "Astral Plane", "Ethereal Plane",
+        "Mount Celestia", "Bytopia", "Elysium", "The Beastlands", "Arborea", "Ysgard", "Limbo",
+        "Pandemonium", "The Gray Waste", "Carceri", "Hades", "Gehenna", "Baator", "Acheron",
+        "Arctic Tundra", "Tropical Rainforest", "Volcanic Mountains", "Deep Ocean Trenches", "Desolate Desert",
+        "Ancient Ruins", "Forgotten Caves", "Haunted Forests", "Floating Islands", "Underground Cities",
+        "The Elemental Chaos", "The Far Realm", "The Positive Energy Plane", "The Negative Energy Plane"
+    ];
+    
+    const monsterSizes = ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"];
+    
+    const monsterAlignments = [
+        "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "True Neutral",
+        "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Unaligned"
+    ];
+    
+    const monsterSenses = [
+        "Darkvision 60 ft.", "Blindsight 30 ft.", "Truesight 120 ft.", "Tremorsense 60 ft.", "Keen Smell", "Keen Hearing", "Keen Sight"
+    ];
+    
+    const monsterLanguages = {
+        "Material Plane": ["Common"],
+        "Plane of Fire": ["Primordial", "Infernal"],
+        "Plane of Water": ["Primordial", "Aquan"],
+        "Plane of Earth": ["Primordial", "Terran"],
+        "Plane of Air": ["Primordial", "Auran"],
+        "Feywild": ["Sylvan", "Elvish"],
+        "Shadowfell": ["Undercommon", "Abyssal"],
+        "Nine Hells": ["Infernal", "Common"],
+        "Abyss": ["Abyssal", "Common"],
+        "Astral Plane": ["Telepathy", "Celestial"],
+        "Ethereal Plane": ["Telepathy"],
+        "Mount Celestia": ["Celestial", "Common"],
+        "Bytopia": ["Celestial", "Common"],
+        "Elysium": ["Celestial", "Elvish"],
+        "The Beastlands": ["Sylvan", "Common"],
+        "Arborea": ["Elvish", "Sylvan"],
+        "Ysgard": ["Giant", "Common"],
+        "Limbo": ["Primordial", "Telepathy"],
+        "Pandemonium": ["Abyssal", "Infernal"],
+        "The Gray Waste": ["Infernal", "Abyssal"],
+        "Carceri": ["Infernal", "Abyssal"],
+        "Hades": ["Infernal", "Abyssal"],
+        "Gehenna": ["Infernal", "Abyssal"],
+        "Baator": ["Infernal", "Abyssal"],
+        "Acheron": ["Infernal", "Abyssal"],
+        "Arctic Tundra": ["Giant", "Common"],
+        "Tropical Rainforest": ["Sylvan", "Common"],
+        "Volcanic Mountains": ["Primordial", "Infernal"],
+        "Deep Ocean Trenches": ["Aquan", "Common"],
+        "Desolate Desert": ["Common", "Primordial"],
+        "Ancient Ruins": ["Undercommon", "Common"],
+        "Forgotten Caves": ["Undercommon", "Common"],
+        "Haunted Forests": ["Sylvan", "Common"],
+        "Floating Islands": ["Auran", "Common"],
+        "Underground Cities": ["Undercommon", "Common"],
+        "The Elemental Chaos": ["Primordial", "Telepathy"],
+        "The Far Realm": ["Telepathy", "Deep Speech"],
+        "The Positive Energy Plane": ["Celestial", "Telepathy"],
+        "The Negative Energy Plane": ["Abyssal", "Telepathy"]
+    };
+    
+    // Explicit characteristics logic from original files
+    const monsterCharacteristics = {
+        "wings": ["Has Wings", "No Wings"],
+        "scales": ["Has Scales", "No Scales"],
+        "hair": ["Has Hair", "Hairless"],
+        "horns": ["Has Horns", "No Horns"],
+        "tail": ["Has Tail", "No Tail"],
+        "extraLimbs": ["Has Extra Limbs", "No Extra Limbs"],
+        "eyes": ["Multiple Eyes", "Two Eyes", "No Eyes"]
+    };
+    
+    const monsterShapes = [
+        "Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend",
+        "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead", "Swarm", "Titan"
+    ];
+    
+    const namePrefixes = ["Gnar", "Vor", "Xyl", "Zar", "Kry", "Mor", "Thal", "Vex", "Jor", "Fey", "Gloom", "Shad", "Ebon", "Crim", "Aeth", "Lum", "Sol", "Ter", "Aqua", "Pyro", "Cryo", "Geo", "Aero"];
+    const nameMiddles = ["ath", "oth", "yth", "eth", "ith", "ar", "or", "yr", "er", "ir", "ax", "ox", "yx", "ex", "ix", "un", "en", "in", "on", "an"];
+    const nameSuffixes = ["os", "us", "is", "as", "es", "on", "an", "en", "in", "ar", "or", "yr", "er", "ir", "ax", "ox", "yx", "ex", "ix"];
+    
+    const monsterQuirks = [
+        "Has a collection of shiny objects", "Hums a strange melody when idle", "Is afraid of heights",
+        "Speaks in riddles", "Has a third eye", "Is always hungry", "Glows in the dark",
+        "Leaves a trail of slime", "Has a habit of collecting teeth", "Is obsessed with cleanliness",
+        "Has a terrible sense of direction", "Can only speak in rhymes", "Is always telling bad jokes",
+        "Has a fear of open spaces", "Can predict the weather", "Is always covered in mud",
+        "Has a collection of bones", "Is afraid of its own shadow", "Can only see in black and white",
+        "Has a habit of hoarding food", "Is always trying to make friends", "Is obsessed with shiny objects",
+        "Has a fear of small creatures", "Can only speak in whispers", "Is always covered in feathers",
+        "Has a collection of rocks", "Is afraid of loud noises", "Can only see in shades of green",
+        "Has a habit of collecting buttons", "Is always trying to start a fight", "Is obsessed with cleanliness",
+        "Has a fear of water", "Can only speak in song", "Is always covered in leaves",
+        "Has a collection of keys", "Is afraid of the dark", "Can only see in shades of blue",
+        "Has a habit of collecting string", "Is always trying to help others", "Is obsessed with patterns",
+        "Has a fear of enclosed spaces", "Can only speak in questions", "Is always covered in fur",
+        "Has a collection of maps", "Is afraid of fire", "Can only see in shades of red",
+        "Has a habit of collecting coins", "Is always trying to steal things", "Is obsessed with symmetry",
+        "Has a fear of heights", "Can only speak in gibberish", "Is always covered in scales",
+        "Has a collection of books", "Is afraid of magic", "Can only see in shades of yellow",
+        "Has a habit of collecting flowers", "Is always trying to impress others", "Is obsessed with order",
+        "Has a fear of crowds", "Can only speak in quotes", "Is always covered in vines",
+        "Has a collection of tools", "Is afraid of silence", "Can only see in shades of purple",
+        "Has a habit of collecting feathers", "Is always trying to trick others", "Is obsessed with chaos",
+        "Has a fear of the unknown", "Can only speak in rhymes", "Is always covered in moss",
+        "Has a collection of gems", "Is afraid of ghosts", "Can only see in shades of orange",
+        "Has a habit of collecting shells", "Is always trying to be the center of attention", "Is obsessed with cleanliness"
+    ];
+    
+    const monsterHabitats = [
+        "Forest", "Desert", "Cave", "Swamp", "Urban Ruins", "Mountains", "Underwater", "Volcano", "Grassland", "Tundra", "Ruins"
+    ];
+    
+    const conditionImmunities = ["Charmed", "Exhaustion", "Frightened", "Paralyzed", "Poisoned", "Stunned"];
+    const vulnerabilities = ["Fire", "Cold", "Lightning", "Acid", "Necrotic", "Radiant", "Psychic"];
+    const monsterLoot = ["Coins", "Magical Artifact", "Potion of Healing", "Ancient Scroll", "Gemstone", "Weapon", "Armor", "Ring", "Cursed Item", "Spellbook"];
+    const monsterBehavior = ["Aggressive", "Territorial", "Solitary", "Pack Hunter", "Mischievous", "Cunning", "Lazy", "Curious", "Reclusive", "Bloodthirsty"];
+    
+    /* --- Utility Functions --- */
+    function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randomNumber(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    
+    function generateAbilityScore() { return randomNumber(3, 18); }
+    function getModifier(score) { return Math.floor((score - 10) / 2); }
+    function formatModifier(mod) { return mod >= 0 ? `+${mod}` : `${mod}`; }
+    
+    function generateChallengeRating() {
+        const crValues = ["0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"];
+        return randomItem(crValues);
+    }
+    
+    function generateMonsterName(monsterType, monsterStyle, mainColorName) {
+        if (Math.random() < 0.7) { 
+            const prefix = randomItem(namePrefixes);
+            const middle = randomItem(nameMiddles);
+            const suffix = randomItem(nameSuffixes);
+            return `${prefix}${middle}${suffix}`;
+        } else { 
+            return `${mainColorName} ${monsterStyle} ${monsterType}`;
+        }
+    }
+    
+    function showToast(message) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.classList.add('toast');
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => { toast.classList.add('show'); }, 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => { toastContainer.removeChild(toast); }, 300);
+        }, 3000);
+    }
+    
+    function generateHitPoints(cr, con) {
+        let baseHP = 0, diceType = 8, numDice = 0;
+        let conMod = Math.floor((con - 10) / 2);
+        switch (cr) {
+            case "0": baseHP = 1; numDice = 1; diceType = 4; break;
+            case "1/8": baseHP = 5; numDice = 1; diceType = 6; break;
+            case "1/4": baseHP = 10; numDice = 2; diceType = 6; break;
+            case "1/2": baseHP = 20; numDice = 3; diceType = 8; break;
+            case "1": baseHP = 30; numDice = 4; diceType = 8; break;
+            case "2": baseHP = 50; numDice = 5; diceType = 8; break;
+            case "3": baseHP = 70; numDice = 6; diceType = 8; break;
+            case "4": baseHP = 90; numDice = 7; diceType = 8; break;
+            case "5": baseHP = 110; numDice = 8; diceType = 10; break;
+            case "6": baseHP = 130; numDice = 9; diceType = 10; break;
+            case "7": baseHP = 150; numDice = 10; diceType = 10; break;
+            case "8": baseHP = 170; numDice = 11; diceType = 10; break;
+            case "9": baseHP = 190; numDice = 12; diceType = 10; break;
+            case "10": baseHP = 210; numDice = 13; diceType = 10; break;
+            case "11": baseHP = 230; numDice = 14; diceType = 10; break;
+            case "12": baseHP = 250; numDice = 15; diceType = 10; break;
+            case "13": baseHP = 270; numDice = 16; diceType = 10; break;
+            case "14": baseHP = 290; numDice = 17; diceType = 10; break;
+            case "15": baseHP = 310; numDice = 18; diceType = 10; break;
+            case "16": baseHP = 330; numDice = 19; diceType = 10; break;
+            case "17": baseHP = 350; numDice = 20; diceType = 10; break;
+            case "18": baseHP = 370; numDice = 21; diceType = 10; break;
+            case "19": baseHP = 390; numDice = 22; diceType = 10; break;
+            case "20": baseHP = 410; numDice = 23; diceType = 10; break;
+            default: baseHP = 410 + (parseInt(cr) * 10); numDice = 25; diceType = 10; break;
+        }
+        let hp = baseHP + (numDice * conMod);
+        if (hp < 1) hp = 1; 
+        return `${hp} (${numDice}d${diceType} ${conMod >= 0 ? '+' : ''} ${numDice * conMod})`;
+    }
+    
+    /* --- Populate Select Options --- */
+    const monsterTypeSelect = document.getElementById("monsterTypeSelect");
+    monsterTypes.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        monsterTypeSelect.appendChild(option);
+    });
+    
+    const styleSelect = document.getElementById("styleSelect");
+    monsterStyles.forEach(style => {
+        const option = document.createElement("option");
+        option.value = style;
+        option.textContent = style;
+        styleSelect.appendChild(option);
+    });
+    
+    const crSelect = document.getElementById("crSelect");
+    const crValues = ["Any", "0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"];
+    crValues.forEach(cr => {
+        const option = document.createElement("option");
+        option.value = cr;
+        option.textContent = cr;
+        crSelect.appendChild(option);
+    });
+    
+    const habitatSelect = document.getElementById("habitatSelect");
+    monsterHabitats.forEach(habitat => {
+        const option = document.createElement("option");
+        option.value = habitat;
+        option.textContent = habitat;
+        habitatSelect.appendChild(option);
+    });
+    
+    /* --- Main Generation Function --- */
+    function generateMonster() {
+        // Retrieve user selections
+        const selectedMonsterType = monsterTypeSelect.value;
+        const selectedStyle = styleSelect.value;
+        const selectedCR = crSelect.value;
+        const selectedHabitat = habitatSelect.value;
+        
+        const monsterType = (selectedMonsterType === "Any") ? randomItem(monsterTypes) : selectedMonsterType;
+        const monsterStyle = (selectedStyle === "Any") ? randomItem(monsterStyles) : selectedStyle;
+        const mainColor = randomItem(monsterColors);
+        let accentColor = null;
+        if (Math.random() < 0.4) {
+            accentColor = randomItem(monsterColors);
+            while (accentColor === mainColor) accentColor = randomItem(monsterColors);
+        }
+        
+        const ability1 = randomItem(monsterAbilities);
+        let ability2 = randomItem(monsterAbilities);
+        while(ability2 === ability1) ability2 = randomItem(monsterAbilities);
+
+        const origin = randomItem(monsterOrigins);
+        const size = randomItem(monsterSizes);
+        const alignment = randomItem(monsterAlignments);
+        const senses = randomItem(monsterSenses);
+        
+        let language1 = "Common", language2 = "Common";
+        if (monsterLanguages[origin]) {
+            language1 = randomItem(monsterLanguages[origin]);
+            language2 = randomItem(monsterLanguages[origin]);
+            if (language1 === language2 && monsterLanguages[origin].length > 1) {
+                language2 = randomItem(monsterLanguages[origin].filter(lang => lang !== language1));
+            }
+        }
+        const cr = (selectedCR === "Any") ? generateChallengeRating() : selectedCR;
+        
+        // Stats
+        const str = generateAbilityScore();
+        const dex = generateAbilityScore();
+        const con = generateAbilityScore();
+        const int = generateAbilityScore();
+        const wis = generateAbilityScore();
+        const cha = generateAbilityScore();
+        
+        const hasWings = randomItem(monsterCharacteristics.wings);
+        const hasScales = randomItem(monsterCharacteristics.scales);
+        const hasHair = randomItem(monsterCharacteristics.hair);
+        const hasHorns = randomItem(monsterCharacteristics.horns);
+        const hasTail = randomItem(monsterCharacteristics.tail);
+        const hasExtraLimbs = randomItem(monsterCharacteristics.extraLimbs);
+        const hasEyes = randomItem(monsterCharacteristics.eyes);
+        const shape = randomItem(monsterShapes);
+        
+        const monsterName = generateMonsterName(monsterType, monsterStyle, mainColor.name);
+        
+        // Color markup
+        const mainColorMarkup = `<span class="color-box" style="background: ${mainColor.hex};"></span>${mainColor.name}`;
+        const accentColorMarkup = accentColor ? `, <span class="color-box" style="background: ${accentColor.hex};"></span>${accentColor.name}` : "";
+        
+        let quirkInfo = "";
+        let quirkText = "";
+        if (Math.random() < 0.5) {
+            quirkText = randomItem(monsterQuirks);
+            quirkInfo = `<p><i class="fas fa-question-circle icon-inline"></i><strong>Quirk:</strong> ${quirkText}</p>`;
+        }
+        
+        const hp = generateHitPoints(cr, con);
+        const ac = randomNumber(10, 20);
+        const landSpeed = randomNumber(20, 60);
+        let flySpeed = (hasWings.includes("Wings")) ? randomNumber(30, 80) : null;
+        const habitat = (selectedHabitat === "Any") ? randomItem(monsterHabitats) : selectedHabitat;
+        let swimSpeed = (habitat === "Underwater") ? randomNumber(20, 60) : null;
+        
+        let condImmunities = [];
+        if (Math.random() < 0.2) condImmunities.push(randomItem(conditionImmunities));
+        
+        let vulnerability = [];
+        if (Math.random() < 0.2) vulnerability.push(randomItem(vulnerabilities));
+        
+        const behavior = randomItem(monsterBehavior);
+        let loot = (Math.random() < 0.3) ? randomItem(monsterLoot) : null;
+
+        // --- Build Smart Image Prompt (Hidden but functional) ---
+        let positiveTraits = [];
+        if (hasWings !== "No Wings") positiveTraits.push(hasWings);
+        if (hasScales !== "No Scales") positiveTraits.push(hasScales);
+        if (hasHorns !== "No Horns") positiveTraits.push(hasHorns);
+        if (hasTail !== "No Tail") positiveTraits.push(hasTail);
+        if (hasExtraLimbs !== "No Extra Limbs") positiveTraits.push(hasExtraLimbs);
+        if (hasEyes !== "Two Eyes") positiveTraits.push(hasEyes);
+        
+        // UPDATED: Removed "Fantasy art, D&D style" to focus on appearance only
+        let promptBase = `${monsterStyle} ${monsterType}, ${size}, ${mainColor.name} skin`;
+        if (accentColor) promptBase += `, ${accentColor.name} details`;
+        if (positiveTraits.length > 0) promptBase += `, ${positiveTraits.join(", ")}`;
+        promptBase += `, ${habitat} environment, cinematic lighting, detailed texture`;
+        
+        // Store prompt in hidden input
+        document.getElementById("imagePromptStorage").value = promptBase;
+        
+        // Build the HTML with the Stat Block Structure AND the Fleshed Out Data
+        const description = `
+            <h2>${monsterName}</h2>
+            <div class="meta"><i class="fas fa-paw icon-inline"></i> ${size} ${monsterType.toLowerCase()}, ${alignment}</div>
+            
+            <hr class="tapered-rule">
+            
+            <p><i class="fas fa-shield-alt icon-inline"></i><span class="property-line">Armor Class</span> ${ac}</p>
+            <p><i class="fas fa-heart icon-inline"></i><span class="property-line">Hit Points</span> ${hp}</p>
+            <p><i class="fas fa-running icon-inline"></i><span class="property-line">Speed</span> ${landSpeed} ft.${flySpeed ? `, fly ${flySpeed} ft.` : ""}${swimSpeed ? `, swim ${swimSpeed} ft.` : ""}</p>
+            
+            <hr class="tapered-rule">
+            
+            <div class="ability-scores">
+                <div class="ability-score"><strong>STR</strong><span>${str} (${formatModifier(getModifier(str))})</span></div>
+                <div class="ability-score"><strong>DEX</strong><span>${dex} (${formatModifier(getModifier(dex))})</span></div>
+                <div class="ability-score"><strong>CON</strong><span>${con} (${formatModifier(getModifier(con))})</span></div>
+                <div class="ability-score"><strong>INT</strong><span>${int} (${formatModifier(getModifier(int))})</span></div>
+                <div class="ability-score"><strong>WIS</strong><span>${wis} (${formatModifier(getModifier(wis))})</span></div>
+                <div class="ability-score"><strong>CHA</strong><span>${cha} (${formatModifier(getModifier(cha))})</span></div>
+            </div>
+            
+            <hr class="tapered-rule">
+            
+            <p><i class="fas fa-eye icon-inline"></i><span class="property-line">Senses</span> ${senses}, Passive Perception ${10 + getModifier(wis)}</p>
+            <p><i class="fas fa-language icon-inline"></i><span class="property-line">Languages</span> ${language1}${language2 !== language1 ? `, ${language2}` : ""}</p>
+            <p><i class="fas fa-balance-scale icon-inline"></i><span class="property-line">Challenge</span> ${cr}</p>
+            
+            ${vulnerability.length > 0 ? `<p><i class="fas fa-exclamation-triangle icon-inline"></i><span class="property-line">Vulnerabilities</span> ${vulnerability.join(", ")}</p>` : ""}
+            ${condImmunities.length > 0 ? `<p><i class="fas fa-ban icon-inline"></i><span class="property-line">Immunities</span> ${condImmunities.join(", ")}</p>` : ""}
+            
+            <div class="section-title">Actions</div>
+            <ul class="abilities-list">
+                <li><i class="fas fa-bolt icon-inline"></i><span class="ability-name">${ability1.name}.</span> <span style="font-style:italic;">${ability1.type}:</span> ${ability1.description || "Attacks the enemy."} ${ability1.damage ? `Hit: ${ability1.damage}.` : ""} ${ability1.save ? `(DC ${10 + getModifier(str) + 2} ${ability1.save} Save)` : ""}</li>
+                <li><i class="fas fa-bolt icon-inline"></i><span class="ability-name">${ability2.name}.</span> <span style="font-style:italic;">${ability2.type}:</span> ${ability2.description || "Attacks the enemy."} ${ability2.damage ? `Hit: ${ability2.damage}.` : ""} ${ability2.save ? `(DC ${10 + getModifier(str) + 2} ${ability2.save} Save)` : ""}</li>
+            </ul>
+
+            <div class="section-title">Physiology & Ecology</div>
+            <div class="grid-list">
+                <p><i class="fas fa-palette icon-inline"></i><strong>Color:</strong> ${mainColorMarkup}${accentColorMarkup}</p>
+                <p><i class="fas fa-shapes icon-inline"></i><strong>Form:</strong> ${shape}</p>
+                <p><i class="fas fa-feather icon-inline"></i><strong>Wings:</strong> ${hasWings}</p>
+                <p><i class="fas fa-shield-alt icon-inline"></i><strong>Scales:</strong> ${hasScales}</p>
+                <p><i class="fas fa-user icon-inline"></i><strong>Hair:</strong> ${hasHair}</p>
+                <p><i class="fas fa-bullhorn icon-inline"></i><strong>Horns:</strong> ${hasHorns}</p>
+                <p><i class="fas fa-long-arrow-alt-down icon-inline"></i><strong>Tail:</strong> ${hasTail}</p>
+                <p><i class="fas fa-hand-spock icon-inline"></i><strong>Limbs:</strong> ${hasExtraLimbs}</p>
+                <p><i class="fas fa-eye-slash icon-inline"></i><strong>Eyes:</strong> ${hasEyes}</p>
+                <p><i class="fas fa-tree icon-inline"></i><strong>Habitat:</strong> ${habitat}</p>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <p><i class="fas fa-brain icon-inline"></i><strong>Behavior:</strong> ${behavior}</p>
+                ${loot ? `<p><i class="fas fa-gem icon-inline"></i><strong>Treasure:</strong> ${loot}</p>` : ""}
+            </div>
+            
+            ${quirkInfo}
+        `;
+        
+        document.getElementById("monsterDisplay").innerHTML = description;
+    }
+    
+    function copyMonsterDetails() {
+        const monsterText = document.getElementById("monsterDisplay").innerText;
+        copyToClipboard(monsterText, "Monster stats scribed to clipboard!");
+    }
+
+    function copyImagePrompt() {
+      const prompt = document.getElementById("imagePromptStorage").value;
+      if (!prompt) {
+        showToast("Conjure a monster first!");
+        return;
+      }
+      copyToClipboard(prompt, "Image generation prompt copied!");
+    }
+
+    function copyToClipboard(text, successMessage) {
+        const tempInput = document.createElement("textarea");
+        tempInput.style.position = "absolute";
+        tempInput.style.left = "-9999px";
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        showToast(successMessage);
+    }
+    
+    document.getElementById("generateBtn").addEventListener("click", generateMonster);
+    document.getElementById("copyBtn").addEventListener("click", copyMonsterDetails);
+    document.getElementById("copyPromptBtn").addEventListener("click", copyImagePrompt);
+  </script>
 </body>
 </html>
