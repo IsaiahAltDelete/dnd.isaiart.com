@@ -157,6 +157,19 @@
         }
         .align-cell:hover { transform: scale(1.05); color: #fff; border-color: #fff; }
         
+        /* Dice Grid */
+        .dice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .dice-btn {
+            background: var(--bg-element); border: 1px solid var(--line); padding: 12px;
+            font-weight: 900; color: var(--text-muted); transition: all 0.1s; text-transform: uppercase;
+        }
+        .dice-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .dice-btn:active { transform: scale(0.95); }
+        .dice-log {
+            height: 100px; overflow-y: auto; background: var(--bg-body); border: 1px solid var(--line);
+            padding: 8px; font-family: 'Courier New', monospace; font-size: 0.8rem;
+        }
+
         /* Alignment Colors */
         .lg { background: #1e3a8a; } .ng { background: #3b82f6; } .cg { background: #10b981; }
         .ln { background: #854d0e; } .nn { background: #52525b; } .cn { background: #064e3b; }
@@ -175,28 +188,30 @@
             <div class="flex-grow">
                 <input type="text" id="charName" class="text-3xl font-black uppercase tracking-tighter w-full" placeholder="CHARACTER NAME">
                 <div class="flex gap-4 mt-2 border-t border-[var(--line)] pt-2 w-max">
-                    <!-- Class Dropdown -->
                     <select id="charClass" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateClassDefaults()"></select>
-                    
-                    <!-- Level -->
                     <input type="number" id="charLevel" class="text-xs font-bold uppercase text-[var(--text-muted)] w-8 text-center" value="1">
-                    
-                    <!-- Race Dropdown -->
                     <select id="charRace" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateRaceDefaults()"></select>
                 </div>
             </div>
             
             <div class="flex gap-2">
-                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition">
+                 <button onclick="openModal('restModal')" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-orange-500 hover:border-orange-500 transition" title="Rest">
+                    <i class="fas fa-campground"></i>
+                </button>
+                <button onclick="openModal('diceModal')" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-red-500 hover:border-red-500 transition" title="Dice Roller">
+                    <i class="fas fa-dice-d20"></i>
+                </button>
+                <div class="w-px h-8 bg-[var(--line)] mx-1"></div>
+                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition" title="Theme">
                     <i class="fas fa-adjust"></i>
                 </button>
-                <button onclick="saveData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-green-500 hover:border-green-500 transition">
+                <button onclick="saveData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-green-500 hover:border-green-500 transition" title="Save">
                     <i class="fas fa-save"></i>
                 </button>
-                <button onclick="document.getElementById('fileInput').click()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-blue-500 hover:border-blue-500 transition">
+                <button onclick="document.getElementById('fileInput').click()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-blue-500 hover:border-blue-500 transition" title="Import">
                     <i class="fas fa-upload"></i>
                 </button>
-                <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-purple-500 hover:border-purple-500 transition">
+                <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-purple-500 hover:border-purple-500 transition" title="Export">
                     <i class="fas fa-download"></i>
                 </button>
                 <input type="file" id="fileInput" class="hidden" onchange="importData(this)">
@@ -219,8 +234,8 @@
 
             <!-- TAB 1: STATS -->
             <div id="main" class="tab-content active fade-in">
-                <!-- Vitals Grid -->
-                <div class="layout-grid grid-cols-2 md:grid-cols-6 mb-6 border border-[var(--line)]">
+                <!-- Vitals Grid (Expanded to 7 cols for HD) -->
+                <div class="layout-grid grid-cols-2 md:grid-cols-7 mb-6 border border-[var(--line)]">
                     
                     <!-- HP -->
                     <div class="cell col-span-2 md:col-span-2 flex flex-col justify-between">
@@ -237,6 +252,16 @@
                             <div class="swiss-stepper w-20 border-[var(--line)]">
                                 <input type="number" id="maxHp" value="0" class="text-[var(--text-muted)]">
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Hit Dice (New) -->
+                    <div class="cell col-span-1 md:col-span-1">
+                        <label class="label-mono">Hit Dice</label>
+                        <div class="swiss-stepper mt-2">
+                            <btn onclick="adj('currentHd', -1)">-</btn>
+                            <input type="number" id="currentHd" value="1">
+                            <btn onclick="adj('currentHd', 1)">+</btn>
                         </div>
                     </div>
 
@@ -270,21 +295,16 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Attributes -->
                     <div class="md:col-span-1 flex flex-col gap-px bg-[var(--line)] border border-[var(--line)]" id="abilitiesContainer"></div>
-
-                    <!-- Skills & Saves -->
                     <div class="md:col-span-3 swiss-panel">
                         <div class="flex justify-between border-b border-[var(--line)] pb-2 mb-4">
                             <span class="label-mono text-[var(--accent)]">PROFICIENCY MATRIX</span>
                             <div class="text-xs font-bold">PB: <span id="profBonusDisplay" class="text-[var(--text-main)]">+2</span></div>
                         </div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                             <div id="skillsListLeft" class="flex flex-col gap-1"></div>
                             <div id="skillsListRight" class="flex flex-col gap-1"></div>
                         </div>
-
                         <div class="mt-8 pt-4 border-t border-[var(--line)]">
                             <label class="label-mono mb-3">Saving Throws</label>
                             <div class="flex flex-wrap gap-4" id="savesContainer"></div>
@@ -303,7 +323,6 @@
                         <div class="flex items-center justify-between mb-6"><span class="text-xs font-bold text-orange-700">CP</span><div class="swiss-stepper w-24"><btn onclick="adj('cp', -1)">-</btn><input type="number" id="cp" value="0"><btn onclick="adj('cp', 1)">+</btn></div></div>
                         <div class="text-center pt-4 border-t border-[var(--line)]"><label class="label-mono">Load (lbs)</label><div id="totalWeightDisplay" class="text-2xl font-black mt-1">0</div></div>
                     </div>
-
                     <div class="lg:col-span-3">
                         <div class="swiss-panel">
                             <div class="flex justify-between items-center mb-4 border-b border-[var(--line)] pb-2">
@@ -327,7 +346,6 @@
                         <table class="w-full text-left text-sm"><tbody id="attacksList"></tbody></table>
                     </div>
                 </div>
-
                 <div class="swiss-panel">
                     <label class="label-mono mb-2">Class Features & Traits</label>
                     <textarea id="features" class="w-full h-64 bg-[var(--bg-element)] p-4 font-mono text-xs border border-[var(--line)] resize-y focus:border-[var(--accent)]"></textarea>
@@ -350,7 +368,7 @@
             <div id="bio" class="tab-content hidden fade-in">
                 <div class="swiss-panel">
                     <div class="grid grid-cols-2 gap-6 mb-6">
-                        <div><label class="label-mono">Alignment</label><input type="text" id="alignment" class="border-b border-[var(--line)] py-1 cursor-pointer" onclick="openAlignmentModal()" readonly placeholder="Select..."></div>
+                        <div><label class="label-mono">Alignment</label><input type="text" id="alignment" class="border-b border-[var(--line)] py-1 cursor-pointer" onclick="openModal('alignmentModal')" readonly placeholder="Select..."></div>
                         <div><label class="label-mono">XP</label><input type="text" id="xp" class="border-b border-[var(--line)] py-1"></div>
                     </div>
                     <label class="label-mono">Backstory</label>
@@ -386,16 +404,44 @@
         <div class="modal-card" style="max-width: 320px;">
             <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">SELECT ALIGNMENT</span><button onclick="closeModal('alignmentModal')" class="text-xl">&times;</button></div>
             <div class="align-grid">
-                <div class="align-cell lg" onclick="setAlignment('Lawful Good')">LG</div>
-                <div class="align-cell ng" onclick="setAlignment('Neutral Good')">NG</div>
-                <div class="align-cell cg" onclick="setAlignment('Chaotic Good')">CG</div>
-                <div class="align-cell ln" onclick="setAlignment('Lawful Neutral')">LN</div>
-                <div class="align-cell nn" onclick="setAlignment('True Neutral')">N</div>
-                <div class="align-cell cn" onclick="setAlignment('Chaotic Neutral')">CN</div>
-                <div class="align-cell le" onclick="setAlignment('Lawful Evil')">LE</div>
-                <div class="align-cell ne" onclick="setAlignment('Neutral Evil')">NE</div>
-                <div class="align-cell ce" onclick="setAlignment('Chaotic Evil')">CE</div>
+                <div class="align-cell lg" onclick="setAlignment('Lawful Good')">LG</div><div class="align-cell ng" onclick="setAlignment('Neutral Good')">NG</div><div class="align-cell cg" onclick="setAlignment('Chaotic Good')">CG</div>
+                <div class="align-cell ln" onclick="setAlignment('Lawful Neutral')">LN</div><div class="align-cell nn" onclick="setAlignment('True Neutral')">N</div><div class="align-cell cn" onclick="setAlignment('Chaotic Neutral')">CN</div>
+                <div class="align-cell le" onclick="setAlignment('Lawful Evil')">LE</div><div class="align-cell ne" onclick="setAlignment('Neutral Evil')">NE</div><div class="align-cell ce" onclick="setAlignment('Chaotic Evil')">CE</div>
             </div>
+        </div>
+    </div>
+
+    <!-- DICE MODAL -->
+    <div id="diceModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">DICE ROLLER</span><button onclick="closeModal('diceModal')" class="text-xl">&times;</button></div>
+            <div class="dice-log" id="diceLog"></div>
+            <div class="dice-grid">
+                <button class="dice-btn" onclick="rollDice(4)">d4</button>
+                <button class="dice-btn" onclick="rollDice(6)">d6</button>
+                <button class="dice-btn" onclick="rollDice(8)">d8</button>
+                <button class="dice-btn" onclick="rollDice(10)">d10</button>
+                <button class="dice-btn" onclick="rollDice(12)">d12</button>
+                <button class="dice-btn" onclick="rollDice(20)">d20</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REST MODAL -->
+    <div id="restModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 350px;">
+             <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">REST MENU</span><button onclick="closeModal('restModal')" class="text-xl">&times;</button></div>
+             <p class="text-xs text-[var(--text-muted)]">Take a moment to catch your breath or sleep for the night.</p>
+             <div class="flex flex-col gap-4 mt-2">
+                 <button onclick="performShortRest()" class="bg-[var(--bg-element)] border border-[var(--line)] p-4 text-left hover:border-[var(--accent)] transition group">
+                     <div class="font-bold text-sm text-[var(--text-main)] group-hover:text-[var(--accent)]">SHORT REST</div>
+                     <div class="text-[10px] text-[var(--text-muted)]">Spend 1 Hit Die to heal.</div>
+                 </button>
+                 <button onclick="performLongRest()" class="bg-[var(--bg-element)] border border-[var(--line)] p-4 text-left hover:border-[var(--accent)] transition group">
+                     <div class="font-bold text-sm text-[var(--text-main)] group-hover:text-[var(--accent)]">LONG REST</div>
+                     <div class="text-[10px] text-[var(--text-muted)]">Regain all HP, ½ HD, Spell Slots.</div>
+                 </button>
+             </div>
         </div>
     </div>
 
@@ -408,143 +454,127 @@
         const skills = [{n:'Acrobatics', s:'dex'}, {n:'Animal Handling', s:'wis'}, {n:'Arcana', s:'int'}, {n:'Athletics', s:'str'}, {n:'Deception', s:'cha'}, {n:'History', s:'int'}, {n:'Insight', s:'wis'}, {n:'Intimidation', s:'cha'}, {n:'Investigation', s:'int'}, {n:'Medicine', s:'wis'}, {n:'Nature', s:'int'}, {n:'Perception', s:'wis'}, {n:'Performance', s:'cha'}, {n:'Persuasion', s:'cha'}, {n:'Religion', s:'int'}, {n:'Sleight of Hand', s:'dex'}, {n:'Stealth', s:'dex'}, {n:'Survival', s:'wis'}];
         const emojiList = ["⚔️","🛡️","🏹","🧪","📜","🎒","🍞","🕯️","🗝️","💍","🧿","💎","💰","🔨","🪓","🧥","👞","🪖","🎵","📓","🧊","🔥","☠️","🥩","🍷","🛌","🪵","🏺","🧬","🗡️","🔮","🦠","🦴","🧲","🧱"];
         
-        // --- DB ---
         const dbClasses = {
-            "Barbarian": { hd: 12, saves: ['str','con'] },
-            "Bard": { hd: 8, saves: ['dex','cha'] },
-            "Cleric": { hd: 8, saves: ['wis','cha'] },
-            "Druid": { hd: 8, saves: ['int','wis'] },
-            "Fighter": { hd: 10, saves: ['str','con'] },
-            "Monk": { hd: 8, saves: ['str','dex'] },
-            "Paladin": { hd: 10, saves: ['wis','cha'] },
-            "Ranger": { hd: 10, saves: ['str','dex'] },
-            "Rogue": { hd: 8, saves: ['dex','int'] },
-            "Sorcerer": { hd: 6, saves: ['con','cha'] },
-            "Warlock": { hd: 8, saves: ['wis','cha'] },
-            "Wizard": { hd: 6, saves: ['int','wis'] },
+            "Barbarian": { hd: 12, saves: ['str','con'] }, "Bard": { hd: 8, saves: ['dex','cha'] }, "Cleric": { hd: 8, saves: ['wis','cha'] },
+            "Druid": { hd: 8, saves: ['int','wis'] }, "Fighter": { hd: 10, saves: ['str','con'] }, "Monk": { hd: 8, saves: ['str','dex'] },
+            "Paladin": { hd: 10, saves: ['wis','cha'] }, "Ranger": { hd: 10, saves: ['str','dex'] }, "Rogue": { hd: 8, saves: ['dex','int'] },
+            "Sorcerer": { hd: 6, saves: ['con','cha'] }, "Warlock": { hd: 8, saves: ['wis','cha'] }, "Wizard": { hd: 6, saves: ['int','wis'] },
             "Artificer": { hd: 8, saves: ['con','int'] }
         };
         const dbRaces = {
-            "Dragonborn": { spd: 30, bonus: "+2 STR, +1 CHA" },
-            "Dwarf": { spd: 25, bonus: "+2 CON" },
-            "Elf": { spd: 30, bonus: "+2 DEX" },
-            "Gnome": { spd: 25, bonus: "+2 INT" },
-            "Half-Elf": { spd: 30, bonus: "+2 CHA, +1 to two others" },
-            "Halfling": { spd: 25, bonus: "+2 DEX" },
-            "Half-Orc": { spd: 30, bonus: "+2 STR, +1 CON" },
-            "Human": { spd: 30, bonus: "+1 to All" },
-            "Tiefling": { spd: 30, bonus: "+2 CHA, +1 INT" }
+            "Dragonborn": { spd: 30, bonus: "+2 STR, +1 CHA" }, "Dwarf": { spd: 25, bonus: "+2 CON" }, "Elf": { spd: 30, bonus: "+2 DEX" },
+            "Gnome": { spd: 25, bonus: "+2 INT" }, "Half-Elf": { spd: 30, bonus: "+2 CHA, +1 to two others" }, "Halfling": { spd: 25, bonus: "+2 DEX" },
+            "Half-Orc": { spd: 30, bonus: "+2 STR, +1 CON" }, "Human": { spd: 30, bonus: "+1 to All" }, "Tiefling": { spd: 30, bonus: "+2 CHA, +1 INT" }
         };
 
         let inventoryData = new Array(MAX_SLOTS).fill(null); 
 
-        // Init
         window.onload = function() {
-            populateSelects();
-            renderUI();
-            loadData();
-            calculateAll();
-            document.querySelectorAll('input, select, textarea').forEach(el => {
-                el.addEventListener('input', () => { calculateAll(); debouncedSave(); });
-            });
+            populateSelects(); renderUI(); loadData(); calculateAll();
+            document.querySelectorAll('input, select, textarea').forEach(el => { el.addEventListener('input', () => { calculateAll(); debouncedSave(); }); });
         };
 
         function populateSelects() {
-            const cSel = document.getElementById('charClass');
-            const rSel = document.getElementById('charRace');
-            Object.keys(dbClasses).forEach(k => cSel.add(new Option(k,k)));
-            Object.keys(dbRaces).forEach(k => rSel.add(new Option(k,k)));
+            Object.keys(dbClasses).forEach(k => document.getElementById('charClass').add(new Option(k,k)));
+            Object.keys(dbRaces).forEach(k => document.getElementById('charRace').add(new Option(k,k)));
         }
 
-        // Logic
+        // --- DICE & REST ---
+        function rollDice(sides) {
+            const res = Math.floor(Math.random() * sides) + 1;
+            const log = document.getElementById('diceLog');
+            const entry = document.createElement('div');
+            entry.innerHTML = `Rolled d${sides}: <span class="font-bold text-[var(--accent)]">${res}</span>`;
+            entry.style.marginBottom = "4px";
+            log.prepend(entry);
+        }
+
+        function performShortRest() {
+            const curHd = parseInt(document.getElementById('currentHd').value) || 0;
+            const curHp = parseInt(document.getElementById('currentHp').value) || 0;
+            const maxHp = parseInt(document.getElementById('maxHp').value) || 0;
+            const cls = document.getElementById('charClass').value;
+            const conMod = getMod(parseInt(document.getElementById('con').value)||10);
+            
+            if (curHd <= 0) { alert("No Hit Dice remaining!"); return; }
+            if (curHp >= maxHp) { alert("HP is already full."); return; }
+            
+            // Logic: Roll 1 HD
+            const hdType = dbClasses[cls] ? dbClasses[cls].hd : 8;
+            const roll = Math.floor(Math.random() * hdType) + 1;
+            const totalHeal = Math.max(1, roll + conMod);
+            
+            document.getElementById('currentHd').value = curHd - 1;
+            document.getElementById('currentHp').value = Math.min(maxHp, curHp + totalHeal);
+            
+            alert(`Short Rest: Rolled d${hdType} (${roll}) + CON (${conMod}). Healed ${totalHeal} HP.`);
+            closeModal('restModal'); calculateAll(); debouncedSave();
+        }
+
+        function performLongRest() {
+            const maxHp = document.getElementById('maxHp').value;
+            const lvl = parseInt(document.getElementById('charLevel').value) || 1;
+            const curHd = parseInt(document.getElementById('currentHd').value) || 0;
+            
+            // 1. Heal Full
+            document.getElementById('currentHp').value = maxHp;
+            
+            // 2. Regain HD (half max, min 1)
+            const regain = Math.max(1, Math.floor(lvl / 2));
+            document.getElementById('currentHd').value = Math.min(lvl, curHd + regain);
+            
+            // 3. Reset Spells
+            for(let i=1; i<=9; i++) {
+                const el = document.getElementById(`sp_u_${i}`);
+                if(el) el.value = 0;
+            }
+            
+            alert("Long Rest Complete: HP restored, Spell slots cleared, Hit Dice recovered.");
+            closeModal('restModal'); calculateAll(); debouncedSave();
+        }
+
+        // --- STANDARD LOGIC ---
         function updateClassDefaults() {
             const cls = document.getElementById('charClass').value;
             const data = dbClasses[cls];
             if(data) {
-                // Auto-suggest HP (Max at lvl 1)
-                const lvl = parseInt(document.getElementById('charLevel').value)||1;
-                // Only set if HP is 0 to avoid overwriting current game state
                 if(parseInt(document.getElementById('maxHp').value) === 0) {
                      document.getElementById('maxHp').value = data.hd;
                      document.getElementById('currentHp').value = data.hd;
                 }
-                
-                // Highlight saves (toggle checks if unchecked)
-                abilities.forEach(a => {
-                    document.getElementById(`sv_${a}_p`).checked = data.saves.includes(a);
-                });
-                calculateAll();
-                debouncedSave();
+                abilities.forEach(a => document.getElementById(`sv_${a}_p`).checked = data.saves.includes(a));
+                calculateAll(); debouncedSave();
             }
         }
-
         function updateRaceDefaults() {
             const race = document.getElementById('charRace').value;
             const data = dbRaces[race];
             if(data) {
                 document.getElementById('speed').value = data.spd;
-                
-                // Append traits info to Features
                 const featArea = document.getElementById('features');
-                const timestamp = new Date().toLocaleTimeString();
-                const log = `\n[${timestamp}] Race changed to ${race}. Racial Bonuses: ${data.bonus}. (Please manually adjust stats if needed).`;
-                featArea.value += log;
+                featArea.value += `\n[${new Date().toLocaleTimeString()}] Race: ${race}. Bonus: ${data.bonus}.`;
                 debouncedSave();
             }
         }
-
-        // Alignment
-        function openAlignmentModal() { document.getElementById('alignmentModal').style.display = 'flex'; }
-        function setAlignment(val) {
-            document.getElementById('alignment').value = val;
-            closeModal('alignmentModal');
-            debouncedSave();
-        }
-
-        // --- RENDERERS ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function setAlignment(val) { document.getElementById('alignment').value = val; closeModal('alignmentModal'); debouncedSave(); }
+        
         function renderUI() {
-            // Attributes
             document.getElementById('abilitiesContainer').innerHTML = abilities.map(s => `
-                <div class="stat-block group flex-grow">
-                    <label class="label-mono group-hover:text-[var(--text-main)] transition">${s}</label>
-                    <input type="number" id="${s}" value="10" class="stat-val text-center w-full bg-transparent">
-                    <div class="stat-mod" id="${s}Mod">+0</div>
-                </div>`).join('');
+                <div class="stat-block group flex-grow"><label class="label-mono group-hover:text-[var(--text-main)] transition">${s}</label><input type="number" id="${s}" value="10" class="stat-val text-center w-full bg-transparent"><div class="stat-mod" id="${s}Mod">+0</div></div>`).join('');
 
-            // Skills
-            const makeRow = (sk, i) => `
-                <label class="swiss-check">
-                    <input type="checkbox" id="sk_${i}_p" onchange="calculateAll(); debouncedSave()">
-                    <span class="swiss-check-box"></span>
-                    <span class="swiss-check-label flex-grow">${sk.n}</span>
-                    <span id="sk_${i}_v" class="font-mono text-xs font-bold text-[var(--text-muted)]">+0</span>
-                </label>`;
+            const makeRow = (sk, i) => `<label class="swiss-check"><input type="checkbox" id="sk_${i}_p" onchange="calculateAll(); debouncedSave()"><span class="swiss-check-box"></span><span class="swiss-check-label flex-grow">${sk.n}</span><span id="sk_${i}_v" class="font-mono text-xs font-bold text-[var(--text-muted)]">+0</span></label>`;
             const mid = Math.ceil(skills.length/2);
             document.getElementById('skillsListLeft').innerHTML = skills.slice(0,mid).map((s,i) => makeRow(s,i)).join('');
             document.getElementById('skillsListRight').innerHTML = skills.slice(mid).map((s,i) => makeRow(s,i+mid)).join('');
 
-            // Saves
-            document.getElementById('savesContainer').innerHTML = abilities.map(s => `
-                <label class="swiss-check" style="padding:0">
-                    <input type="checkbox" id="sv_${s}_p" onchange="calculateAll(); debouncedSave()">
-                    <span class="swiss-check-box"></span>
-                    <span class="swiss-check-label">${s}</span>
-                    <span id="sv_${s}" class="font-mono text-xs font-bold ml-1 text-[var(--text-main)]">+0</span>
-                </label>`).join('');
+            document.getElementById('savesContainer').innerHTML = abilities.map(s => `<label class="swiss-check" style="padding:0"><input type="checkbox" id="sv_${s}_p" onchange="calculateAll(); debouncedSave()"><span class="swiss-check-box"></span><span class="swiss-check-label">${s}</span><span id="sv_${s}" class="font-mono text-xs font-bold ml-1 text-[var(--text-main)]">+0</span></label>`).join('');
 
-            // Spells
             let spellsHtml = '';
-            for(let i=1; i<=9; i++) spellsHtml += `
-                <div class="flex items-center gap-2 py-1">
-                    <span class="w-6 text-xs font-bold text-[var(--text-muted)]">L${i}</span>
-                    <div class="swiss-stepper w-20"><btn onclick="adj('sp_u_${i}', -1)">-</btn><input type="number" id="sp_u_${i}" value="0"><btn onclick="adj('sp_u_${i}', 1)">+</btn></div>
-                    <span class="text-xs text-[var(--text-muted)]">/</span>
-                    <div class="swiss-stepper w-20"><btn onclick="adj('sp_m_${i}', -1)">-</btn><input type="number" id="sp_m_${i}" value="0"><btn onclick="adj('sp_m_${i}', 1)">+</btn></div>
-                    <input type="text" class="flex-grow text-xs ml-2 font-mono text-[var(--text-muted)] border-b border-transparent focus:border-[var(--line)]" id="sp_n_${i}" placeholder="...">
-                </div>`;
+            for(let i=1; i<=9; i++) spellsHtml += `<div class="flex items-center gap-2 py-1"><span class="w-6 text-xs font-bold text-[var(--text-muted)]">L${i}</span><div class="swiss-stepper w-20"><btn onclick="adj('sp_u_${i}', -1)">-</btn><input type="number" id="sp_u_${i}" value="0"><btn onclick="adj('sp_u_${i}', 1)">+</btn></div><span class="text-xs text-[var(--text-muted)]">/</span><div class="swiss-stepper w-20"><btn onclick="adj('sp_m_${i}', -1)">-</btn><input type="number" id="sp_m_${i}" value="0"><btn onclick="adj('sp_m_${i}', 1)">+</btn></div><input type="text" class="flex-grow text-xs ml-2 font-mono text-[var(--text-muted)] border-b border-transparent focus:border-[var(--line)]" id="sp_n_${i}" placeholder="..."></div>`;
             document.getElementById('spellSlotsContainer').innerHTML = spellsHtml;
 
-            // Emojis
             const eGrid = document.querySelector('.emoji-grid');
             emojiList.forEach(e => {
                 const d = document.createElement('div');
@@ -556,36 +586,20 @@
         }
 
         function renderInventory() {
-            const grid = document.getElementById('inventoryGrid');
-            grid.innerHTML = '';
-            let totalWt = 0;
+            const grid = document.getElementById('inventoryGrid'); grid.innerHTML = ''; let totalWt = 0;
             inventoryData.forEach((item, idx) => {
-                const slot = document.createElement('div');
-                slot.className = `inv-slot ${!item ? 'empty' : ''}`;
-                slot.onclick = () => openItemModal(idx);
+                const slot = document.createElement('div'); slot.className = `inv-slot ${!item ? 'empty' : ''}`; slot.onclick = () => openItemModal(idx);
                 if (item) {
                     slot.innerHTML = `<span>${item.icon}</span>${item.qty > 1 ? `<span class="inv-qty">${item.qty}</span>` : ''}`;
                     totalWt += (parseFloat(item.weight)||0) * (parseFloat(item.qty)||1);
-                } else {
-                    slot.innerHTML = `<i class="fas fa-plus text-[var(--text-muted)] text-sm opacity-50 hover:opacity-100 transition"></i>`;
-                }
+                } else { slot.innerHTML = `<i class="fas fa-plus text-[var(--text-muted)] text-sm opacity-50 hover:opacity-100 transition"></i>`; }
                 grid.appendChild(slot);
             });
             document.getElementById('totalWeightDisplay').textContent = totalWt.toFixed(1);
         }
 
-        // --- UTILS ---
-        function addInvItem() {
-            const idx = inventoryData.findIndex(x => x === null);
-            if(idx === -1) return alert("Grid Full");
-            openItemModal(idx);
-        }
-        function adj(id, delta) {
-            const el = document.getElementById(id);
-            let v = parseInt(el.value) || 0;
-            el.value = v + delta;
-            el.dispatchEvent(new Event('input'));
-        }
+        function addInvItem() { const idx = inventoryData.findIndex(x => x === null); if(idx === -1) return alert("Grid Full"); openItemModal(idx); }
+        function adj(id, delta) { const el = document.getElementById(id); let v = parseInt(el.value) || 0; el.value = v + delta; el.dispatchEvent(new Event('input')); }
         function getMod(val) { return Math.floor((val - 10) / 2); }
         function fmt(val) { return (val >= 0 ? '+' : '') + val; }
 
@@ -593,7 +607,6 @@
             const lvl = parseInt(document.getElementById('charLevel').value) || 1;
             const pb = Math.ceil(lvl / 4) + 1;
             document.getElementById('profBonusDisplay').textContent = `+${pb}`;
-
             const mods = {};
             abilities.forEach(s => {
                 const val = parseInt(document.getElementById(s).value) || 10;
@@ -612,12 +625,7 @@
             document.getElementById('spellAtkBonus').textContent = fmt(pb + spellMod);
         }
 
-        function toggleTheme() {
-            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-            document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]);
-            debouncedSave();
-        }
-
+        function toggleTheme() { currentThemeIndex = (currentThemeIndex + 1) % themes.length; document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]); debouncedSave(); }
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(e => { e.classList.add('hidden'); e.classList.remove('active'); });
             document.getElementById(id).classList.remove('hidden');
@@ -625,156 +633,53 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`[data-tab="${id}"]`).classList.add('active');
         }
-
         function addAttack(data={}) {
-            const row = document.createElement('tr');
-            row.className = "border-b border-[var(--line)] group";
-            row.innerHTML = `
-                <td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${data.n||'Weapon'}"></td>
-                <td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${data.h||'+0'}"></td>
-                <td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${data.d||'1d6'}"></td>
-                <td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>
-            `;
+            const row = document.createElement('tr'); row.className = "border-b border-[var(--line)] group";
+            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${data.n||'Weapon'}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${data.h||'+0'}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${data.d||'1d6'}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
             document.getElementById('attacksList').appendChild(row);
         }
-
         function openItemModal(idx) {
-            const item = inventoryData[idx];
-            document.getElementById('modalSlotIndex').value = idx;
-            document.getElementById('itemIcon').value = item ? item.icon : emojiList[0];
-            document.getElementById('itemName').value = item ? item.name : "";
-            document.getElementById('itemWeight').value = item ? item.weight : "";
-            document.getElementById('itemQty').value = item ? item.qty : 1;
+            const item = inventoryData[idx]; document.getElementById('modalSlotIndex').value = idx;
+            document.getElementById('itemIcon').value = item ? item.icon : emojiList[0]; document.getElementById('itemName').value = item ? item.name : "";
+            document.getElementById('itemWeight').value = item ? item.weight : ""; document.getElementById('itemQty').value = item ? item.qty : 1;
             document.getElementById('itemDesc').value = item ? item.desc : "";
-            document.getElementById('btnDelete').classList.toggle('hidden', !item);
-            document.getElementById('itemModal').style.display = 'flex';
+            document.getElementById('btnDelete').classList.toggle('hidden', !item); document.getElementById('itemModal').style.display = 'flex';
         }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
         function saveItemAction() {
             const idx = document.getElementById('modalSlotIndex').value;
-            inventoryData[idx] = {
-                icon: document.getElementById('itemIcon').value,
-                name: document.getElementById('itemName').value || "Item",
-                weight: parseFloat(document.getElementById('itemWeight').value) || 0,
-                qty: parseInt(document.getElementById('itemQty').value) || 1,
-                desc: document.getElementById('itemDesc').value
-            };
+            inventoryData[idx] = { icon: document.getElementById('itemIcon').value, name: document.getElementById('itemName').value || "Item", weight: parseFloat(document.getElementById('itemWeight').value) || 0, qty: parseInt(document.getElementById('itemQty').value) || 1, desc: document.getElementById('itemDesc').value };
             renderInventory(); saveData(); closeModal('itemModal');
         }
-        function deleteItemAction() {
-            inventoryData[document.getElementById('modalSlotIndex').value] = null;
-            renderInventory(); saveData(); closeModal('itemModal');
-        }
+        function deleteItemAction() { inventoryData[document.getElementById('modalSlotIndex').value] = null; renderInventory(); saveData(); closeModal('itemModal'); }
 
-        let saveTimer;
-        function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
+        let saveTimer; function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
         function saveData() {
-            const data = {
-                v: 6,
-                theme: document.documentElement.getAttribute('data-theme'),
-                meta: { 
-                    name: document.getElementById('charName').value,
-                    cls: document.getElementById('charClass').value,
-                    lvl: document.getElementById('charLevel').value,
-                    race: document.getElementById('charRace').value,
-                    xp: document.getElementById('xp').value,
-                    align: document.getElementById('alignment').value
-                },
-                stats: abilities.map(s => document.getElementById(s).value),
-                saves: abilities.map(s => document.getElementById(`sv_${s}_p`).checked),
-                skills: skills.map((_,i) => document.getElementById(`sk_${i}_p`).checked),
-                vitals: {
-                    ac: document.getElementById('armorClass').value,
-                    init: document.getElementById('initiative').value,
-                    spd: document.getElementById('speed').value,
-                    hpC: document.getElementById('currentHp').value,
-                    hpM: document.getElementById('maxHp').value,
-                    hpT: document.getElementById('tempHp').value
-                },
-                money: [document.getElementById('gp').value, document.getElementById('sp').value, document.getElementById('cp').value],
-                inv: inventoryData,
-                text: {
-                    bg: document.getElementById('backstory').value,
-                    feat: document.getElementById('features').value,
-                    notes: document.getElementById('allies').value
-                },
-                attacks: []
-            };
-            document.querySelectorAll('#attacksList tr').forEach(row => {
-                const i = row.querySelectorAll('input');
-                data.attacks.push({ n: i[0].value, h: i[1].value, d: i[2].value });
-            });
-            data.spells = [];
-            for(let i=1;i<=9;i++) {
-                data.spells.push({
-                    m: document.getElementById(`sp_m_${i}`).value,
-                    u: document.getElementById(`sp_u_${i}`).value,
-                    n: document.getElementById(`sp_n_${i}`).value
-                });
-            }
-            localStorage.setItem('dndSheet_v6_Isaiah', JSON.stringify(data));
+            const data = { v: 7, theme: document.documentElement.getAttribute('data-theme'), meta: { name: document.getElementById('charName').value, cls: document.getElementById('charClass').value, lvl: document.getElementById('charLevel').value, race: document.getElementById('charRace').value, xp: document.getElementById('xp').value, align: document.getElementById('alignment').value }, stats: abilities.map(s => document.getElementById(s).value), saves: abilities.map(s => document.getElementById(`sv_${s}_p`).checked), skills: skills.map((_,i) => document.getElementById(`sk_${i}_p`).checked), vitals: { ac: document.getElementById('armorClass').value, init: document.getElementById('initiative').value, spd: document.getElementById('speed').value, hpC: document.getElementById('currentHp').value, hpM: document.getElementById('maxHp').value, hpT: document.getElementById('tempHp').value, hdC: document.getElementById('currentHd').value }, money: [document.getElementById('gp').value, document.getElementById('sp').value, document.getElementById('cp').value], inv: inventoryData, text: { bg: document.getElementById('backstory').value, feat: document.getElementById('features').value, notes: document.getElementById('allies').value }, attacks: [] };
+            document.querySelectorAll('#attacksList tr').forEach(row => { const i = row.querySelectorAll('input'); data.attacks.push({ n: i[0].value, h: i[1].value, d: i[2].value }); });
+            data.spells = []; for(let i=1;i<=9;i++) { data.spells.push({ m: document.getElementById(`sp_m_${i}`).value, u: document.getElementById(`sp_u_${i}`).value, n: document.getElementById(`sp_n_${i}`).value }); }
+            localStorage.setItem('dndSheet_v7_Isaiah', JSON.stringify(data));
         }
-
         function loadData() {
-            const raw = localStorage.getItem('dndSheet_v6_Isaiah');
-            if(!raw) return;
-            const data = JSON.parse(raw);
-            if(data.theme) document.documentElement.setAttribute('data-theme', data.theme);
-            
-            document.getElementById('charName').value = data.meta.name;
-            document.getElementById('charClass').value = data.meta.cls;
-            document.getElementById('charLevel').value = data.meta.lvl;
-            document.getElementById('charRace').value = data.meta.race;
-            document.getElementById('xp').value = data.meta.xp;
-            document.getElementById('alignment').value = data.meta.align;
-
+            const raw = localStorage.getItem('dndSheet_v7_Isaiah'); if(!raw) return;
+            const data = JSON.parse(raw); if(data.theme) document.documentElement.setAttribute('data-theme', data.theme);
+            document.getElementById('charName').value = data.meta.name; document.getElementById('charClass').value = data.meta.cls;
+            document.getElementById('charLevel').value = data.meta.lvl; document.getElementById('charRace').value = data.meta.race;
+            document.getElementById('xp').value = data.meta.xp; document.getElementById('alignment').value = data.meta.align;
             abilities.forEach((s,i) => document.getElementById(s).value = data.stats[i]);
             abilities.forEach((s,i) => document.getElementById(`sv_${s}_p`).checked = data.saves[i]);
             skills.forEach((_,i) => document.getElementById(`sk_${i}_p`).checked = data.skills[i]);
-
-            document.getElementById('armorClass').value = data.vitals.ac;
-            document.getElementById('initiative').value = data.vitals.init;
-            document.getElementById('speed').value = data.vitals.spd;
-            document.getElementById('currentHp').value = data.vitals.hpC;
-            document.getElementById('maxHp').value = data.vitals.hpM;
-            document.getElementById('tempHp').value = data.vitals.hpT;
-
-            document.getElementById('gp').value = data.money[0];
-            document.getElementById('sp').value = data.money[1];
-            document.getElementById('cp').value = data.money[2];
-
+            document.getElementById('armorClass').value = data.vitals.ac; document.getElementById('initiative').value = data.vitals.init;
+            document.getElementById('speed').value = data.vitals.spd; document.getElementById('currentHp').value = data.vitals.hpC;
+            document.getElementById('maxHp').value = data.vitals.hpM; document.getElementById('tempHp').value = data.vitals.hpT;
+            if(data.vitals.hdC !== undefined) document.getElementById('currentHd').value = data.vitals.hdC;
+            document.getElementById('gp').value = data.money[0]; document.getElementById('sp').value = data.money[1]; document.getElementById('cp').value = data.money[2];
             if(data.inv) inventoryData = data.inv;
-
-            document.getElementById('backstory').value = data.text.bg;
-            document.getElementById('features').value = data.text.feat;
-            document.getElementById('allies').value = data.text.notes;
-
-            document.getElementById('attacksList').innerHTML = '';
-            data.attacks.forEach(a => addAttack(a));
-
-            if(data.spells) {
-                data.spells.forEach((s, i) => {
-                    const idx = i+1;
-                    document.getElementById(`sp_u_${idx}`).value = s.u;
-                    document.getElementById(`sp_m_${idx}`).value = s.m;
-                    document.getElementById(`sp_n_${idx}`).value = s.n;
-                });
-            }
+            document.getElementById('backstory').value = data.text.bg; document.getElementById('features').value = data.text.feat; document.getElementById('allies').value = data.text.notes;
+            document.getElementById('attacksList').innerHTML = ''; data.attacks.forEach(a => addAttack(a));
+            if(data.spells) { data.spells.forEach((s, i) => { const idx = i+1; document.getElementById(`sp_u_${idx}`).value = s.u; document.getElementById(`sp_m_${idx}`).value = s.m; document.getElementById(`sp_n_${idx}`).value = s.n; }); }
         }
-        function exportData() {
-            saveData();
-            const blob = new Blob([localStorage.getItem('dndSheet_v6_Isaiah')], {type: "application/json"});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `agent_${document.getElementById('charName').value}.json`;
-            a.click();
-        }
-        function importData(input) {
-            const r = new FileReader();
-            r.onload = e => { localStorage.setItem('dndSheet_v6_Isaiah', e.target.result); location.reload(); };
-            r.readAsText(input.files[0]);
-        }
+        function exportData() { saveData(); const blob = new Blob([localStorage.getItem('dndSheet_v7_Isaiah')], {type: "application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `agent_${document.getElementById('charName').value}.json`; a.click(); }
+        function importData(input) { const r = new FileReader(); r.onload = e => { localStorage.setItem('dndSheet_v7_Isaiah', e.target.result); location.reload(); }; r.readAsText(input.files[0]); }
     </script>
 </body>
 </html>

@@ -1,37 +1,910 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Random D&D 5e Character Generator with extensive customization options." />
-  <meta property="og:title" content="D&D 5e Character Generator" />
-  <meta property="og:description" content="Generate unique D&D characters with various options and randomizations." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="yourwebsite.com/dnd-generator" />
-  <title>D&D 5e Character Generator</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Pirata+One&family=Cinzel+Decorative:wght@400;700&family=Alegreya:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
-  <link rel="stylesheet" href="style.css" />
+  <title>The Archives of the Forgotten</title>
+  
+  <!-- Medieval Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=MedievalSharp&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    /* --- VARIABLES & RESET --- */
+    :root {
+      --bg-wood: #1a0f0a;
+      --parchment: #e3dcd2;
+      --parchment-dark: #d3c6b0;
+      --ink: #2b1d0e;
+      --ink-light: #5c4033;
+      --red-seal: #8a2be2; 
+      --red-accent: #741b1b;
+      --gold: #c5a059;
+      --gold-dim: #8a6d3b;
+      --shadow: rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-wood);
+      background-image: 
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 40px),
+        radial-gradient(circle at 50% 50%, #2a1b12 0%, #0f0502 100%);
+      color: var(--ink);
+      font-family: 'IM Fell English', serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    /* --- LAYOUT GRID --- */
+    .desktop-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      max-width: 1600px; /* Widened for more content */
+      width: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      .desktop-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* --- SIDEBAR (SAVED CHARACTERS) --- */
+    .sidebar {
+      background: var(--bg-wood);
+      border-right: 4px double var(--gold-dim);
+      padding: 1rem;
+      color: var(--parchment);
+      height: calc(100vh - 4rem);
+      overflow-y: auto;
+      position: sticky;
+      top: 2rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 20px #000;
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold-dim) var(--bg-wood);
+    }
+
+    .sidebar h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--gold-dim);
+      padding-bottom: 0.5rem;
+    }
+
+    .saved-char-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--gold-dim);
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .saved-char-card:hover {
+      background: rgba(197, 160, 89, 0.2);
+      border-color: var(--gold);
+    }
+
+    .saved-char-card h4 {
+      font-family: 'MedievalSharp', cursive;
+      margin-bottom: 0.3rem;
+      color: #e0e0e0;
+      font-size: 1.1rem;
+    }
+
+    .saved-char-card small {
+      color: #aaa;
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      display: block;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      color: #ff6b6b;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    .delete-btn:hover { opacity: 1; }
+
+    /* --- MAIN TOME (CHARACTER SHEET) --- */
+    .tome-container {
+      position: relative;
+      background-color: var(--parchment);
+      width: 100%;
+      min-height: 800px;
+      box-shadow: 
+        0 0 0 1px #8a6d3b,
+        0 0 0 5px #463325,
+        0 10px 50px rgba(0,0,0,0.8),
+        inset 0 0 120px rgba(139, 69, 19, 0.15);
+      border-radius: 5px 15px 15px 5px;
+      padding: 3rem 4rem;
+    }
+
+    .tome-container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.6;
+      border-radius: inherit;
+    }
+
+    /* --- HEADER SECTION --- */
+    .tome-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+      position: relative;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .tome-title h1 {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--ink);
+      text-transform: uppercase;
+    }
+
+    .tome-title span {
+      font-family: 'IM Fell English SC', serif;
+      font-size: 1.1rem;
+      color: var(--red-accent);
+      letter-spacing: 2px;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    /* --- CONTROLS --- */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .seal-btn {
+      width: 70px;
+      height: 70px;
+      background: radial-gradient(circle at 30% 30%, #a03c3c, #741b1b, #4a0e0e);
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.3);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255,255,255,0.9);
+      font-family: 'IM Fell English SC', serif;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .seal-btn::after {
+      content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px dashed rgba(255,255,255,0.3); border-radius: 50%;
+    }
+    .seal-btn:hover { transform: scale(1.05); }
+    .seal-btn i { font-size: 1.2rem; margin-bottom: 2px; }
+    .btn-blue { background: radial-gradient(circle at 30% 30%, #3c6aa0, #1b3d74, #0e204a); }
+    .btn-gold { background: radial-gradient(circle at 30% 30%, #d4af37, #aa8c2c, #705b1b); color: #3e2d1b; }
+
+    /* --- CONTENT LAYOUT --- */
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .section-box { margin-bottom: 2rem; }
+
+    .section-title {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1.4rem;
+      border-bottom: 2px solid var(--gold-dim);
+      margin-bottom: 0.8rem;
+      color: var(--red-accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* --- STATS CIRCLES --- */
+    .ability-row {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .ability-score {
+      display: flex; flex-direction: column; align-items: center; width: 60px;
+    }
+    .score-circle {
+      width: 50px; height: 50px;
+      border: 3px double var(--ink);
+      border-radius: 50%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .score-val { font-size: 1.2rem; font-weight: bold; line-height: 1; }
+    .score-mod { font-size: 0.7rem; color: var(--red-accent); font-weight: bold; font-family: sans-serif; }
+    .score-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; font-family: 'Cinzel Decorative'; }
+    .score-breakdown { font-size: 0.6rem; opacity: 0.7; margin-top: 2px; text-align: center; }
+
+    /* --- LISTS --- */
+    .ink-list { list-style: none; }
+    .ink-list li {
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed rgba(43, 29, 14, 0.2);
+      display: flex;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .ink-list li i { width: 20px; color: var(--gold-dim); margin-top: 4px; }
+    .ink-list li strong { margin-right: 0.5rem; font-family: 'IM Fell English SC'; color: var(--ink-light); white-space: nowrap; }
+
+    /* --- SPELLS & TAGS --- */
+    .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.5rem; }
+    .tag {
+      background: rgba(116, 27, 27, 0.08);
+      border: 1px solid rgba(116, 27, 27, 0.2);
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+    .spell-level-block { margin-top: 1rem; }
+    .spell-level-title { font-size: 0.9rem; font-weight: bold; color: var(--ink-light); border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 4px; }
+
+    .swatch { display: inline-block; width: 12px; height: 12px; border: 1px solid #000; border-radius: 50%; margin-left: 5px; vertical-align: middle;}
+
+    /* --- ANIMATION --- */
+    @keyframes fadePaper {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fadePaper 0.5s ease-out forwards; }
+
+    /* --- CORNERS --- */
+    .corner { position: absolute; width: 40px; height: 40px; border: 3px solid var(--ink); pointer-events: none; }
+    .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+    .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+    .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+    .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="button-container">
-      <button onclick="generateCharacter()">
-        <i class="fas fa-dice-d20"></i>Forge New Hero
-      </button>
-      <button onclick="copyCharacter()">
-        <i class="fas fa-copy"></i>Copy Character
-      </button>
-    </div>
-    <div id="characterSheet" class="character-sheet"></div>
+
+  <div class="desktop-layout">
+    
+    <!-- Sidebar Roster -->
+    <aside class="sidebar" id="sidebar">
+      <h3>Hero Roster</h3>
+      <div id="savedList"></div>
+    </aside>
+
+    <!-- Main Character Sheet -->
+    <main class="tome-container" id="tome">
+      <div class="corner top-left"></div>
+      <div class="corner top-right"></div>
+      <div class="corner bottom-left"></div>
+      <div class="corner bottom-right"></div>
+
+      <div class="tome-header">
+        <div class="tome-title">
+          <span id="headerSub">Generating...</span>
+          <h1 id="headerName">Unknown Hero</h1>
+        </div>
+        
+        <div class="controls">
+          <button class="seal-btn" onclick="generateCharacter()" title="Roll New">
+            <i class="fas fa-dice-d20"></i> Roll
+          </button>
+          <button class="seal-btn btn-blue" onclick="scribeCharacter()" title="Scribe to Roster">
+            <i class="fas fa-feather-pointed"></i> Scribe
+          </button>
+          <button class="seal-btn btn-gold" onclick="copyCharacter()" title="Copy Details">
+            <i class="fas fa-scroll"></i> Copy
+          </button>
+        </div>
+      </div>
+
+      <div id="sheetContent" class="animate-in">
+        <!-- JS Injected Here -->
+      </div>
+    </main>
   </div>
-  <script src="script.js" defer></script>
+
+<script>
+/* =========================================
+   EXTENDED GAME DATA (Restored from old file)
+   ========================================= */
+
+const races = [
+  { name: "Human", subraces: ["Standard", "Variant", "Nomad", "Imperial"] },
+  { name: "Elf", subraces: ["High Elf", "Wood Elf", "Dark Elf", "Eladrin", "Sea Elf"] },
+  { name: "Dwarf", subraces: ["Hill Dwarf", "Mountain Dwarf", "Duergar"] },
+  { name: "Halfling", subraces: ["Lightfoot", "Stout", "Ghostwise"] },
+  { name: "Dragonborn", subraces: ["Chromatic (Red)", "Chromatic (Blue)", "Metallic (Gold)", "Metallic (Silver)", "Gem"] },
+  { name: "Gnome", subraces: ["Forest Gnome", "Rock Gnome", "Deep Gnome"] },
+  { name: "Half-Orc", subraces: ["Standard", "Scarred"] },
+  { name: "Tiefling", subraces: ["Infernal", "Abyssal", "Feral"] },
+  { name: "Half-Elf", subraces: ["Standard", "Drow-Descended", "High-Descended"] }
+];
+
+const classes = [
+  "Fighter", "Wizard", "Rogue", "Cleric", "Bard", "Paladin", 
+  "Ranger", "Sorcerer", "Warlock", "Monk", "Druid", "Barbarian", "Artificer"
+];
+
+const subclasses = {
+  Fighter: ["Champion", "Battle Master", "Eldritch Knight", "Samurai", "Cavalier", "Rune Knight"],
+  Wizard: ["Evocation", "Necromancy", "Illusion", "Divination", "Abjuration", "Enchantment", "Transmutation", "War Magic", "Bladesinging"],
+  Rogue: ["Thief", "Assassin", "Arcane Trickster", "Swashbuckler", "Scout", "Soulknife"],
+  Cleric: ["Life", "War", "Tempest", "Trickery", "Grave", "Nature", "Light", "Forge", "Twilight"],
+  Bard: ["Lore", "Valor", "Glamour", "Swords", "Whispers", "Creation", "Eloquence"],
+  Paladin: ["Devotion", "Vengeance", "Ancients", "Conquest", "Oathbreaker", "Redemption", "Watchers"],
+  Ranger: ["Hunter", "Beast Master", "Gloom Stalker", "Horizon Walker", "Drake Warden", "Fey Wanderer", "Swarmkeeper"],
+  Sorcerer: ["Draconic", "Wild Magic", "Storm", "Shadow", "Aberrant Mind", "Clockwork Soul", "Divine Soul"],
+  Warlock: ["Archfey", "Fiend", "Great Old One", "Celestial", "Hexblade", "Genie", "Fathomless"],
+  Monk: ["Open Hand", "Shadow", "Four Elements", "Mercy", "Drunken Master", "Astral Self", "Kensei"],
+  Druid: ["Land", "Moon", "Shepherd", "Spores", "Stars", "Wildfire", "Dreams"],
+  Barbarian: ["Berserker", "Totem Warrior", "Ancestral Guardian", "Storm Herald", "Zealot", "Wild Magic", "Beast"],
+  Artificer: ["Alchemist", "Armorer", "Artillerist", "Battle Smith"]
+};
+
+const backgrounds = [
+  "Acolyte", "Criminal", "Folk Hero", "Noble", "Sage", "Soldier", 
+  "Urchin", "Entertainer", "Merchant", "Guild Artisan", "Hermit", 
+  "Outlander", "Charlatan", "Sailor", "Gladiator", "Spy", "Knight", "Haunted One"
+];
+
+const alignments = [
+  "Lawful Good", "Neutral Good", "Chaotic Good", 
+  "Lawful Neutral", "True Neutral", "Chaotic Neutral", 
+  "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+];
+
+/* --- RESTORED DEEP DATA --- */
+const hairColors = ["Black", "Brown", "Blonde", "Red", "White", "Gray", "Auburn", "Silver", "Blue", "Green", "Pink", "Multicolor", "Purple", "Orange", "Teal"];
+const hairStyles = ["Curly", "Straight", "Wavy", "Braided", "Dreadlocks", "Shaved", "Bald", "Mohawk", "Topknot", "Undercut", "Afro", "Buzzcut", "Long", "Spiky", "Pixie Cut"];
+const eyeColors = ["Amber", "Blue", "Brown", "Green", "Gray", "Hazel", "Golden", "Heterochromatic", "Violet", "Red", "Black", "Silver"];
+const builds = ["Slender", "Muscular", "Stocky", "Lean", "Lanky", "Athletic", "Heavyset", "Chubby", "Brawny", "Wiry"];
+const voices = ["Boisterous", "Whispery", "Gravelly", "Melodic", "Monotone", "Singsong", "Raspy", "Clear", "Silky", "Deep", "High-Pitched", "Soft"];
+
+const personalityTraits = [
+  "Always tells jokes", "Collects strange trinkets", "Writes poetry", "Loves to gamble", 
+  "Obsessed with cleanliness", "Always humming", "Knows all the local gossip", "Prefers silence", 
+  "Believes in fate", "Can't resist a dare", "Dreams of faraway places", "Has a secret language",
+  "Polishes armor compulsively", "Quotes ancient texts", "Talks to animals (even if they don't reply)"
+];
+const ideals = [
+  "Might: The strong must rule", "Knowledge: Secrets are meant to be uncovered", 
+  "Justice: Everyone deserves a fair trial", "Freedom: Chains are meant to be broken", 
+  "Tradition: The old ways are best", "Adventure: Life is meant to be explored", 
+  "Kindness: Treat others with compassion", "Ambition: Seize any opportunity", 
+  "Balance: Nature must be preserved"
+];
+const bonds = [
+  "Protective of siblings", "Sworn to avenge mentor", "Loyal to a noble house", 
+  "Bound by a magical oath", "Seeking a lost artifact", "Driven to protect a sacred site", 
+  "Carries a family heirloom", "Haunted by a past mistake", "Pursues an ancient prophecy", 
+  "Lost a precious friend"
+];
+const flaws = [
+  "Greedy", "Paranoid", "Cowardly", "Reckless", "Vengeful", "Distrustful", "Arrogant", 
+  "Stubborn", "Lazy", "Forgetful", "Gullible", "Envious", "Impatient", "Rude", "Suspicious"
+];
+
+const backstoryEvents = {
+  childhood: ["Orphaned", "Noble Birth", "Apprenticed", "Raised by Wolves", "Street Urchin", "Lived in a monastery", "From a seafaring family", "Grew up in the forest", "Slave gladiator"],
+  definingEvent: ["Survived Dragon Attack", "Betrayed by Mentor", "Found a Magical Artifact", "Witnessed a great tragedy", "Made a deal with a powerful being", "Recovered an ancient tome", "Lost a loved one in a war", "Survived a shipwreck"],
+  secret: ["Wanted for Murder", "Heir to Fallen Kingdom", "Possessed by a Demon", "Member of a secret society", "Harbors forbidden knowledge", "Is a reincarnation of a legendary figure", "Spy for an enemy nation"]
+};
+
+/* Restored detailed skin tones */
+const raceSkinTones = {
+  Human: [{name:"Pale", c:"#f5e0d4"}, {name:"Fair", c:"#eecbad"}, {name:"Tan", c:"#c68642"}, {name:"Dark", c:"#8d5524"}, {name:"Ebony", c:"#3b2219"}],
+  Elf: [{name:"Moonlight", c:"#f0f8ff"}, {name:"Golden", c:"#e6ba89"}, {name:"Copper", c:"#b87333"}, {name:"Obsidian", c:"#303030"}],
+  Dwarf: [{name:"Ruddy", c:"#d99058"}, {name:"Earthen", c:"#8f6452"}, {name:"Iron-Grey", c:"#7a7a7a"}],
+  Tiefling: [{name:"Red", c:"#aa2222"}, {name:"Purple", c:"#6a0dad"}, {name:"Blue", c:"#2222aa"}, {name:"Crimson", c:"#741b1b"}],
+  "Half-Orc": [{name:"Green", c:"#6b8e23"}, {name:"Grey", c:"#778899"}, {name:"Olive", c:"#556b2f"}],
+  Dragonborn: [{name:"Red", c:"#8b0000"}, {name:"Blue", c:"#00008b"}, {name:"Brass", c:"#b5a642"}, {name:"Black", c:"#2f2f2f"}, {name:"White", c:"#f5f5f5"}, {name:"Green", c:"#228b22"}],
+  Gnome: [{name:"Fair", c:"#ffe0bd"}, {name:"Bark", c:"#5d4037"}],
+  Halfling: [{name:"Rosy", c:"#ffb6c1"}, {name:"Nut Brown", c:"#8b4513"}]
+};
+
+const mysticalItems = [
+  "Ring of Protection", "Amulet of Health", "Cloak of Invisibility", "Boots of Speed", 
+  "Belt of Giant Strength", "Bracers of Defense", "Staff of Power", "Wand of Magic Missiles",
+  "Bag of Holding", "Pearl of Power", "Goggles of Night"
+];
+
+/* Expanded Spell List (Partial Restoration) */
+const classSpells = {
+  Wizard: { 
+    cantrips: ["Fire Bolt", "Mage Hand", "Minor Illusion", "Prestidigitation", "Ray of Frost"], 
+    1: ["Magic Missile", "Shield", "Mage Armor", "Sleep", "Burning Hands", "Identify"],
+    2: ["Misty Step", "Invisibility", "Scorching Ray", "Web", "Hold Person"],
+    3: ["Fireball", "Counterspell", "Fly", "Lightning Bolt", "Haste"]
+  },
+  Cleric: {
+    cantrips: ["Sacred Flame", "Guidance", "Thaumaturgy", "Spare the Dying"],
+    1: ["Bless", "Cure Wounds", "Healing Word", "Guiding Bolt", "Shield of Faith"],
+    2: ["Spiritual Weapon", "Hold Person", "Lesser Restoration", "Silence"],
+    3: ["Revivify", "Spirit Guardians", "Mass Healing Word", "Dispel Magic"]
+  },
+  Druid: {
+    cantrips: ["Shillelagh", "Druidcraft", "Thorn Whip", "Produce Flame"],
+    1: ["Entangle", "Goodberry", "Cure Wounds", "Faerie Fire"],
+    2: ["Moonbeam", "Pass Without Trace", "Heat Metal", "Barkskin"],
+    3: ["Call Lightning", "Conjure Animals", "Water Breathing"]
+  },
+  Warlock: {
+    cantrips: ["Eldritch Blast", "Mage Hand", "Prestidigitation", "Minor Illusion"],
+    1: ["Hex", "Hellish Rebuke", "Armor of Agathys", "Charm Person"],
+    2: ["Darkness", "Invisibility", "Misty Step", "Shatter"],
+    3: ["Hunger of Hadar", "Fly", "Counterspell", "Hypnotic Pattern"]
+  },
+  Sorcerer: {
+    cantrips: ["Fire Bolt", "Shocking Grasp", "Light", "Prestidigitation"],
+    1: ["Chaos Bolt", "Shield", "Magic Missile", "Thunderwave"],
+    2: ["Mirror Image", "Scorching Ray", "Misty Step", "Hold Person"],
+    3: ["Fireball", "Lightning Bolt", "Haste", "Fly"]
+  },
+  Bard: {
+    cantrips: ["Vicious Mockery", "Mage Hand", "Message", "True Strike"],
+    1: ["Healing Word", "Faerie Fire", "Thunderwave", "Dissonant Whispers"],
+    2: ["Heat Metal", "Invisibility", "Shatter", "Suggestion"],
+    3: ["Hypnotic Pattern", "Leomund's Tiny Hut", "Dispel Magic"]
+  },
+  Paladin: {
+    1: ["Divine Favor", "Shield of Faith", "Bless", "Cure Wounds", "Thunderous Smite"],
+    2: ["Find Steed", "Aid", "Branding Smite", "Zone of Truth"],
+    3: ["Aura of Vitality", "Revivify", "Blinding Smite"]
+  },
+  Ranger: {
+    1: ["Hunter's Mark", "Cure Wounds", "Ensnaring Strike", "Zephyr Strike"],
+    2: ["Pass Without Trace", "Spike Growth", "Silence"],
+    3: ["Lightning Arrow", "Conjure Barrage"]
+  }
+};
+
+/* Name Generators */
+const nameParts = {
+  prefixes: ["Ael", "Bar", "Cael", "Dor", "Eir", "Fen", "Gor", "Hael", "Ior", "Jur", "Kar", "Loth", "Mor", "Nor", "Oth", "Pha", "Quen", "Rael", "Syl", "Thae", "Uln", "Val", "Wyr", "Xan", "Yor", "Zan", "El", "Ara", "Thor"],
+  suffixes: ["a", "ae", "us", "ix", "or", "an", "is", "in", "en", "ar", "th", "on", "as", "os", "ir", "el", "ia", "wen", "wyn", "dra", "mir", "thas"],
+  surnames: ["Moon", "Star", "Iron", "Storm", "Night", "Bright", "Fire", "Shadow", "Stone", "Silver", "Gold", "Winter", "Summer", "Spring", "Autumn", "Wind", "River", "Deep", "Hammer", "Shield", "Blade", "Weaver"]
+};
+
+const classAbilities = {
+  Fighter: { primary: "Strength", secondary: "Constitution" },
+  Wizard: { primary: "Intelligence", secondary: "Wisdom" },
+  Rogue: { primary: "Dexterity", secondary: "Intelligence" },
+  Cleric: { primary: "Wisdom", secondary: "Charisma" },
+  Bard: { primary: "Charisma", secondary: "Dexterity" },
+  Paladin: { primary: "Strength", secondary: "Charisma" },
+  Ranger: { primary: "Dexterity", secondary: "Wisdom" },
+  Sorcerer: { primary: "Charisma", secondary: "Constitution" },
+  Warlock: { primary: "Charisma", secondary: "Wisdom" },
+  Monk: { primary: "Dexterity", secondary: "Wisdom" },
+  Druid: { primary: "Wisdom", secondary: "Intelligence" },
+  Barbarian: { primary: "Strength", secondary: "Constitution" },
+  Artificer: { primary: "Intelligence", secondary: "Constitution" }
+};
+
+/* =========================================
+   LOGIC FUNCTIONS
+   ========================================= */
+
+let currentCharacter = {};
+
+function getRandom(arr) {
+  if (!arr || arr.length === 0) return "Unknown";
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateName() {
+  const p = getRandom(nameParts.prefixes);
+  const s = getRandom(nameParts.suffixes);
+  const surname = getRandom(nameParts.surnames) + getRandom(["son", "dottir", "field", "wood", "shield", "helm", "crest", "ford"]);
+  return `${p.charAt(0).toUpperCase() + p.slice(1)}${s} ${surname}`;
+}
+
+function getAbilityMod(score) {
+  const mod = Math.floor((score - 10) / 2);
+  return mod >= 0 ? `+${mod}` : mod;
+}
+
+/* Restored: Complex Stat Logic + Racial Bonus */
+function getRacialBonus(race) {
+  const map = {
+    Human: { Strength:1, Dexterity:1, Constitution:1, Intelligence:1, Wisdom:1, Charisma:1 },
+    Elf: { Dexterity: 2 },
+    Dwarf: { Constitution: 2 },
+    Halfling: { Dexterity: 2 },
+    Dragonborn: { Strength: 2, Charisma: 1 },
+    Gnome: { Intelligence: 2 },
+    "Half-Orc": { Strength: 2, Constitution: 1 },
+    Tiefling: { Charisma: 2, Intelligence: 1 },
+    "Half-Elf": { Charisma: 2, Dexterity: 1, Constitution: 1 } // Simplified
+  };
+  return map[race] || {};
+}
+
+function rollStats(race, primary, secondary) {
+  // Base: Standard Array shuffled
+  let baseValues = [15, 14, 13, 12, 10, 8];
+  
+  let stats = { Strength: 0, Dexterity: 0, Constitution: 0, Intelligence: 0, Wisdom: 0, Charisma: 0 };
+  let breakdown = {};
+  
+  // Assign best scores to primary/secondary
+  stats[primary] = 15;
+  stats[secondary] = 14;
+  
+  // Assign remaining randomly
+  let remaining = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"].filter(k => k !== primary && k !== secondary);
+  let remainingScores = [13, 12, 10, 8].sort(() => Math.random() - 0.5);
+  
+  remaining.forEach((stat, i) => stats[stat] = remainingScores[i]);
+
+  // Apply Racial Bonuses
+  const bonuses = getRacialBonus(race);
+  for (let [stat, val] of Object.entries(stats)) {
+    let bonus = bonuses[stat] || 0;
+    breakdown[stat] = { base: val, race: bonus };
+    stats[stat] += bonus;
+  }
+  
+  return { final: stats, breakdown };
+}
+
+function generateSpells(cls, level) {
+  if (!classSpells[cls]) return null;
+  let book = {};
+  
+  // Cantrips
+  if (classSpells[cls].cantrips) {
+    book.cantrips = getRandomSubarray(classSpells[cls].cantrips, 3);
+  }
+  
+  // Level 1
+  if (classSpells[cls][1]) {
+    book["1"] = getRandomSubarray(classSpells[cls][1], Math.max(2, Math.floor(level/2) + 1));
+  }
+
+  // Higher levels
+  const maxSpellLvl = Math.min(Math.ceil(level/2), 3); // Capped at 3rd level spells for this demo data
+  for (let i=2; i<=maxSpellLvl; i++) {
+    if (classSpells[cls][i]) {
+      book[i] = getRandomSubarray(classSpells[cls][i], 2);
+    }
+  }
+  
+  return book;
+}
+
+function getRandomSubarray(arr, size) {
+  let shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+  while (i-- > min) {
+    index = Math.floor((i + 1) * Math.random());
+    temp = shuffled[index];
+    shuffled[index] = shuffled[i];
+    shuffled[i] = temp;
+  }
+  return shuffled.slice(min);
+}
+
+function generateCharacter() {
+  // 1. Basic Info
+  const raceObj = getRandom(races);
+  const race = raceObj.name;
+  const subrace = raceObj.subraces.length ? getRandom(raceObj.subraces) : "";
+  const cls = getRandom(classes);
+  const subcls = getRandom(subclasses[cls]) || "Standard";
+  const bg = getRandom(backgrounds);
+  const align = getRandom(alignments);
+  const level = Math.floor(Math.random() * 12) + 1; 
+  const name = generateName();
+  
+  // 2. Stats
+  const abilities = classAbilities[cls] || { primary: "Strength", secondary: "Constitution" };
+  const statData = rollStats(race, abilities.primary, abilities.secondary);
+
+  // 3. Physical & Personal
+  const gender = Math.random() > 0.5 ? "Male" : "Female";
+  const skinOpts = raceSkinTones[race] || raceSkinTones["Human"];
+  const skin = getRandom(skinOpts);
+  const hair = `${getRandom(hairColors)} ${getRandom(hairStyles)}`;
+  const eyes = getRandom(eyeColors);
+  const voice = getRandom(voices);
+  const build = getRandom(builds);
+  const age = race === "Elf" ? Math.floor(Math.random()*400)+20 : Math.floor(Math.random()*60)+18;
+  const height = `${Math.floor(4 + Math.random() * 3)}'${Math.floor(Math.random() * 12)}"`;
+  const mark = getRandom(["Scar", "Tattoo", "Piercing", "Birthmark", "War Paint", "Brand", "None"]);
+
+  // 4. Personality
+  const personality = {
+    trait: getRandom(personalityTraits),
+    ideal: getRandom(ideals),
+    bond: getRandom(bonds),
+    flaw: getRandom(flaws)
+  };
+
+  // 5. Backstory
+  const backstory = {
+    childhood: getRandom(backstoryEvents.childhood),
+    event: getRandom(backstoryEvents.definingEvent),
+    secret: getRandom(backstoryEvents.secret)
+  };
+
+  // 6. Gear & Spells
+  const weapon = ["Longsword", "Dagger", "Greataxe", "Shortbow", "Quarterstaff", "Warhammer", "Rapier"];
+  const armor = ["Leather", "Chainmail", "Plate", "Robes", "Hide", "Studded Leather"];
+  const gear = [getRandom(weapon), getRandom(armor), "Adventurer's Pack", "50ft Rope", "Rations (5 days)"];
+  
+  // Chance for mystical item
+  if (Math.random() > 0.7) gear.push(getRandom(mysticalItems));
+
+  const spells = generateSpells(cls, level);
+
+  // Build Object
+  currentCharacter = {
+    id: Date.now(),
+    name, race, subrace, cls, subcls, level, align, bg, gender,
+    stats: statData.final,
+    statBreakdown: statData.breakdown,
+    appearance: { skin, hair, eyes, voice, build, age, height, mark },
+    personality,
+    backstory,
+    gear, 
+    spells
+  };
+
+  renderCharacter();
+}
+
+function renderCharacter() {
+  const c = currentCharacter;
+  
+  // Header
+  document.getElementById('headerName').textContent = c.name;
+  document.getElementById('headerSub').textContent = `Level ${c.level} ${c.race} ${c.cls} (${c.subcls})`;
+
+  // HTML Construction
+  let html = `
+    <!-- Stats Row -->
+    <div class="ability-row">
+      ${Object.entries(c.stats).map(([key, val]) => `
+        <div class="ability-score">
+          <div class="score-label">${key.substring(0,3)}</div>
+          <div class="score-circle">
+            <span class="score-val">${val}</span>
+            <span class="score-mod">${getAbilityMod(val)}</span>
+          </div>
+          <div class="score-breakdown">Base: ${c.statBreakdown[key].base}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="sheet-grid">
+      <!-- Col 1: Identity & Appearance -->
+      <div>
+        <div class="section-box">
+          <h3 class="section-title"><i class="fas fa-id-card"></i> Identity</h3>
+          <ul class="ink-list">
+            <li><i class="fas fa-venus-mars"></i> <strong>Gender:</strong> ${c.gender}</li>
+            <li><i class="fas fa-balance-scale"></i> <strong>Alignment:</strong> ${c.align}</li>
+            <li><i class="fas fa-landmark"></i> <strong>Background:</strong> ${c.bg}</li>
+            <li><i class="fas fa-dna"></i> <strong>Subrace:</strong> ${c.subrace || "None"}</li>
+          </ul>
+        </div>
+
+        <div class="section-box">
+          <h3 class="section-title"><i class="fas fa-user-circle"></i> Appearance</h3>
+          <ul class="ink-list">
+            <li><i class="fas fa-ruler-vertical"></i> <strong>Height:</strong> ${c.appearance.height} (${c.appearance.build})</li>
+            <li><i class="fas fa-hourglass-half"></i> <strong>Age:</strong> ${c.appearance.age} years</li>
+            <li><i class="fas fa-eye"></i> <strong>Eyes:</strong> ${c.appearance.eyes}</li>
+            <li><i class="fas fa-cut"></i> <strong>Hair:</strong> ${c.appearance.hair}</li>
+            <li><i class="fas fa-palette"></i> <strong>Skin:</strong> ${c.appearance.skin.name} <span class="swatch" style="background-color:${c.appearance.skin.c}"></span></li>
+            <li><i class="fas fa-microphone-alt"></i> <strong>Voice:</strong> ${c.appearance.voice}</li>
+            <li><i class="fas fa-signature"></i> <strong>Distinguishing Mark:</strong> ${c.appearance.mark}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Col 2: Soul & Story -->
+      <div>
+        <div class="section-box">
+          <h3 class="section-title"><i class="fas fa-brain"></i> The Soul</h3>
+          <ul class="ink-list">
+            <li><i class="fas fa-star"></i> <strong>Trait:</strong> "${c.personality.trait}"</li>
+            <li><i class="fas fa-bullseye"></i> <strong>Ideal:</strong> "${c.personality.ideal}"</li>
+            <li><i class="fas fa-link"></i> <strong>Bond:</strong> "${c.personality.bond}"</li>
+            <li><i class="fas fa-heart-broken"></i> <strong>Flaw:</strong> "${c.personality.flaw}"</li>
+          </ul>
+        </div>
+
+        <div class="section-box">
+          <h3 class="section-title"><i class="fas fa-history"></i> Legend</h3>
+          <ul class="ink-list">
+            <li><i class="fas fa-child"></i> <strong>Origin:</strong> ${c.backstory.childhood}</li>
+            <li><i class="fas fa-meteor"></i> <strong>Defining Moment:</strong> ${c.backstory.event}</li>
+            <li><i class="fas fa-mask"></i> <strong>Secret:</strong> ${c.backstory.secret}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="section-box">
+      <h3 class="section-title"><i class="fas fa-khanda"></i> Inventory</h3>
+      <div class="tag-container">
+        ${c.gear.map(g => `<span class="tag">${g}</span>`).join('')}
+      </div>
+    </div>
+  `;
+
+  // Spells Section
+  if (c.spells) {
+    html += `<div class="section-box"><h3 class="section-title"><i class="fas fa-hat-wizard"></i> Grimoire</h3>`;
+    
+    if (c.spells.cantrips) {
+      html += `
+        <div class="spell-level-block">
+          <div class="spell-level-title">Cantrips (0 Level)</div>
+          <div class="tag-container">${c.spells.cantrips.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+        </div>`;
+    }
+
+    for (const [lvl, list] of Object.entries(c.spells)) {
+      if (lvl === 'cantrips') continue;
+      html += `
+        <div class="spell-level-block">
+          <div class="spell-level-title">Level ${lvl} Spells</div>
+          <div class="tag-container">${list.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
+  const contentDiv = document.getElementById('sheetContent');
+  contentDiv.innerHTML = html;
+  
+  // Re-trigger Anim
+  contentDiv.classList.remove('animate-in');
+  void contentDiv.offsetWidth; 
+  contentDiv.classList.add('animate-in');
+}
+
+/* =========================================
+   STORAGE FUNCTIONS
+   ========================================= */
+
+function scribeCharacter() {
+  if (!currentCharacter.name) return;
+  let roster = JSON.parse(localStorage.getItem('dndRoster')) || [];
+  if (!roster.some(char => char.id === currentCharacter.id)) {
+    roster.push(currentCharacter);
+    localStorage.setItem('dndRoster', JSON.stringify(roster));
+    renderRoster();
+  }
+}
+
+function loadFromRoster(id) {
+  let roster = JSON.parse(localStorage.getItem('dndRoster')) || [];
+  const char = roster.find(c => c.id === id);
+  if (char) {
+    currentCharacter = char;
+    renderCharacter();
+    // Mobile scroll
+    if (window.innerWidth < 1100) {
+      document.getElementById('tome').scrollIntoView({behavior: 'smooth'});
+    }
+  }
+}
+
+function deleteFromRoster(e, id) {
+  e.stopPropagation();
+  let roster = JSON.parse(localStorage.getItem('dndRoster')) || [];
+  roster = roster.filter(c => c.id !== id);
+  localStorage.setItem('dndRoster', JSON.stringify(roster));
+  renderRoster();
+}
+
+function renderRoster() {
+  const list = document.getElementById('savedList');
+  let roster = JSON.parse(localStorage.getItem('dndRoster')) || [];
+  
+  if (roster.length === 0) {
+    list.innerHTML = '<p style="text-align:center; font-style:italic; opacity:0.7; margin-top:2rem;">The archives are empty.</p>';
+    return;
+  }
+
+  list.innerHTML = roster.map(c => `
+    <div class="saved-char-card" onclick="loadFromRoster(${c.id})">
+      <h4>${c.name}</h4>
+      <small>Lvl ${c.level} ${c.race} ${c.cls}</small>
+      <button class="delete-btn" onclick="deleteFromRoster(event, ${c.id})"><i class="fas fa-times"></i></button>
+    </div>
+  `).join('');
+}
+
+function copyCharacter() {
+  if (!currentCharacter.name) return;
+  const c = currentCharacter;
+  let text = `
+=== ${c.name} ===
+${c.race} ${c.cls} (${c.subcls}) - Level ${c.level}
+Background: ${c.bg} | Alignment: ${c.align}
+
+STATS
+Str: ${c.stats.Strength} | Dex: ${c.stats.Dexterity} | Con: ${c.stats.Constitution}
+Int: ${c.stats.Intelligence} | Wis: ${c.stats.Wisdom} | Cha: ${c.stats.Charisma}
+
+APPEARANCE
+${c.appearance.height}, ${c.appearance.build}, ${c.appearance.age} yrs
+Hair: ${c.appearance.hair} | Eyes: ${c.appearance.eyes}
+Mark: ${c.appearance.mark}
+
+PERSONALITY
+Trait: ${c.personality.trait}
+Ideal: ${c.personality.ideal}
+Bond: ${c.personality.bond}
+Flaw: ${c.personality.flaw}
+
+BACKSTORY
+Childhood: ${c.backstory.childhood}
+Defining Event: ${c.backstory.event}
+Secret: ${c.backstory.secret}
+
+GEAR: ${c.gear.join(', ')}
+`;
+  navigator.clipboard.writeText(text).then(() => alert("Character transcribed to clipboard."));
+}
+
+window.onload = function() {
+  generateCharacter(); 
+  renderRoster();      
+};
+
+</script>
 </body>
 </html>
