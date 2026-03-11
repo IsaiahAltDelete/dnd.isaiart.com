@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NPC Codex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;700;900&family=Spectral:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <style>
+    :root {
+      --dnd-red: #58180D;
+      --dnd-red-light: #7A200D;
+      --parchment: #EFE5D0;
+      --parchment-dark: #E0D5C0;
+      --parchment-deep: #D4C4A8;
+      --ink: #1A1A1A;
+      --ink-light: #333;
+      --gold: #C9AD6A;
+      --gold-bright: #E8D5A3;
+      --gold-dim: #A08940;
+      --rule-color: #9C2B1B;
+      --wood-dark: #2A1A0A;
+      --wood-mid: #3E2415;
+      --wood-light: #5D3A1A;
+      --sidebar-w: 280px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      background-image: url('https://i.imgur.com/B1kEKpW.png');
+      background-repeat: repeat;
+      background-size: 400px;
+      font-family: 'Spectral', serif;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scrollBackground 60s linear infinite;
+      padding: 12px;
+    }
+    @keyframes scrollBackground { from { background-position: 0 0; } to { background-position: 400px 0; } }
+    .layout { display:flex; height:calc(100vh - 24px); max-width:1080px; width:100%; position:relative; }
+    .sidebar {
+      width: var(--sidebar-w); min-width: var(--sidebar-w); height: 100%; background: var(--wood-dark);
+      border-radius: 3px 0 0 3px; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow: inset -8px 0 20px rgba(0,0,0,0.3), -2px 0 10px rgba(0,0,0,0.3);
+      transition: margin-left 0.3s ease, opacity 0.3s ease;
+      background-image: radial-gradient(ellipse at 30% 20%, rgba(80,50,20,0.3) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(60,35,10,0.2) 0%, transparent 50%);
+      background-color: var(--wood-dark);
+    }
+    .sidebar.collapsed { margin-left: calc(var(--sidebar-w) * -1); opacity:0; pointer-events:none; }
+    .sidebar-header { padding:14px 16px 10px; border-bottom:1px solid rgba(201,173,106,0.2); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .sidebar-header h2 { font-family:'Cinzel',serif; font-weight:700; font-size:.75rem; color:var(--gold); text-transform:uppercase; letter-spacing:2px; }
+    .sidebar-close { background:none; border:none; color:var(--gold-dim); cursor:pointer; font-size:.8rem; padding:4px; transition:color .2s; }
+    .sidebar-close:hover { color:var(--gold-bright); }
+    .sidebar-sections { flex:1; overflow-y:auto; padding:8px 0; scrollbar-width:thin; scrollbar-color: var(--wood-light) transparent; }
+    .sidebar-sections::-webkit-scrollbar { width:4px; }
+    .sidebar-sections::-webkit-scrollbar-thumb { background:var(--wood-light); border-radius:2px; }
+    .sb-section-label { font-family:'Cinzel',serif; font-size:.55rem; text-transform:uppercase; letter-spacing:2px; color:var(--gold-dim); padding:10px 16px 4px; display:flex; align-items:center; gap:6px; }
+    .sb-section-label::after { content:''; flex:1; height:1px; background:rgba(201,173,106,0.15); }
+    .sb-empty { padding:8px 16px; font-size:.7rem; color:rgba(201,173,106,0.3); font-style:italic; }
+    .sb-entry { display:flex; align-items:center; gap:10px; padding:7px 16px; cursor:pointer; transition:background .15s; border-left:3px solid transparent; }
+    .sb-entry:hover { background:rgba(255,255,255,0.04); border-left-color:var(--gold-dim); }
+    .sb-entry.active { background:rgba(201,173,106,0.08); border-left-color:var(--gold); }
+    .sb-entry-icon { font-size:.65rem; color:var(--gold-dim); width:14px; text-align:center; flex-shrink:0; }
+    .sb-entry-info { flex:1; min-width:0; }
+    .sb-entry-name { font-family:'Cinzel',serif; font-size:.72rem; font-weight:700; color:var(--gold-bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }
+    .sb-entry-meta { font-size:.6rem; color:var(--gold-dim); font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sb-entry-level { font-family:'Cinzel',serif; font-size:.6rem; font-weight:700; color:var(--dnd-red-light); background:rgba(201,173,106,0.15); padding:1px 5px; border-radius:2px; flex-shrink:0; min-width:30px; text-align:center; }
+    .sb-entry-actions { display:flex; gap:2px; flex-shrink:0; opacity:0; transition:opacity .15s; }
+    .sb-entry:hover .sb-entry-actions { opacity:1; }
+    .sb-action-btn { background:none; border:none; color:var(--gold-dim); cursor:pointer; font-size:.6rem; padding:2px 4px; border-radius:2px; transition:all .15s; }
+    .sb-action-btn:hover { color:var(--gold-bright); background:rgba(255,255,255,0.06); }
+    .sb-action-btn.delete:hover { color:#e74c3c; }
+    .sidebar-footer { padding:10px 16px; border-top:1px solid rgba(201,173,106,0.15); font-family:'Cinzel',serif; font-size:.55rem; color:var(--gold-dim); text-align:center; letter-spacing:1px; flex-shrink:0; }
+    .book-page {
+      flex:1; min-width:0; height:100%; display:flex; flex-direction:column; background:var(--parchment); border-radius:0 3px 3px 0; position:relative;
+      box-shadow:0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(0,0,0,0.06);
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,108,74,0.04) 28px, rgba(139,108,74,0.04) 29px), radial-gradient(ellipse at 20% 50%, rgba(139,108,74,0.06) 0%, transparent 70%), radial-gradient(ellipse at 80% 50%, rgba(139,108,74,0.04) 0%, transparent 70%);
+      background-color: var(--parchment); transition:border-radius .3s ease;
+    }
+    .sidebar.collapsed + .book-page { border-radius:3px; }
+    .book-page::before {
+      content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1;
+      background: linear-gradient(to right, rgba(120,80,40,0.12) 0%, transparent 3%), linear-gradient(to left, rgba(120,80,40,0.08) 0%, transparent 2%), linear-gradient(to bottom, rgba(120,80,40,0.08) 0%, transparent 2%), linear-gradient(to top, rgba(120,80,40,0.1) 0%, transparent 3%);
+    }
+    .page-header { flex-shrink:0; padding:12px 20px 9px; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--dnd-red); position:relative; z-index:2; }
+    .page-header::after { content:''; position:absolute; bottom:-5px; left:0; right:0; height:1px; background:var(--dnd-red); opacity:.4; }
+    .header-left { display:flex; align-items:center; gap:12px; }
+    .sidebar-toggle, .tool-btn {
+      background:none; border:1.5px solid var(--dnd-red); border-radius:3px; color:var(--dnd-red); width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.75rem; transition:all .2s; padding:0;
+    }
+    .sidebar-toggle:hover, .tool-btn:hover { background:var(--dnd-red); color:var(--parchment); }
+    .tool-btn:disabled { opacity:.45; cursor:not-allowed; }
+    .tool-btn:disabled:hover { background:none; color:var(--dnd-red); }
+    .header-title { font-family:'Cinzel Decorative',serif; font-weight:900; font-size:1.25rem; color:var(--dnd-red); letter-spacing:2px; text-transform:uppercase; line-height:1; }
+    .header-subtitle { font-family:'Spectral',serif; font-style:italic; font-size:.65rem; color:var(--dnd-red-light); letter-spacing:1px; margin-top:1px; }
+    .header-tools { display:flex; gap:5px; }
+    .filter-bar { flex-shrink:0; padding:10px 20px 12px; display:flex; gap:10px; align-items:flex-end; border-bottom:1px solid rgba(88,24,13,.25); position:relative; z-index:2; flex-wrap:wrap; }
+    .filter-group { display:flex; flex-direction:column; gap:3px; }
+    .filter-label { font-family:'Cinzel',serif; font-size:.55rem; text-transform:uppercase; letter-spacing:2px; color:var(--dnd-red-light); }
+    .filter-bar select {
+      min-width:120px; height:28px; border:1px solid rgba(88,24,13,.25); background:#f5ecd9; color:var(--ink-light); font-family:'Spectral',serif; padding:0 26px 0 10px; font-size:.9rem; appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--dnd-red-light) 50%), linear-gradient(135deg, var(--dnd-red-light) 50%, transparent 50%); background-position: calc(100% - 16px) 11px, calc(100% - 10px) 11px; background-size:6px 6px, 6px 6px; background-repeat:no-repeat;
+    }
+    .conjure-btn {
+      margin-left:auto; height:32px; padding:0 20px; border:2px solid var(--dnd-red); background:var(--dnd-red); color:var(--parchment); font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:2px; font-weight:700; border-radius:4px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:8px;
+    }
+    .conjure-btn:hover { filter:brightness(1.1); }
+    .stat-scroll { flex:1; min-height:0; overflow:auto; position:relative; z-index:2; scrollbar-width:thin; scrollbar-color: var(--dnd-red-light) transparent; }
+    .stat-scroll::-webkit-scrollbar { width:8px; }
+    .stat-scroll::-webkit-scrollbar-thumb { background:rgba(88,24,13,.5); border-radius:4px; }
+    .entry-wrap { padding:18px 26px 26px; }
+    .top-rule, .mid-rule, .bottom-rule { height:4px; background:var(--dnd-red); opacity:.9; margin:0 0 12px; }
+    .top-rule { margin-top:6px; }
+    .entry-name { font-family:'Cinzel Decorative',serif; font-weight:900; font-size:1.9rem; color:var(--dnd-red); letter-spacing:1px; text-transform:uppercase; line-height:1.1; }
+    .entry-lineage { font-style:italic; color:var(--dnd-red-light); font-size:1rem; margin-top:2px; }
+    .meta-grid { margin-top:12px; border-top:1px solid rgba(156,43,27,.35); border-bottom:1px solid rgba(156,43,27,.35); padding:10px 0; }
+    .meta-grid p { font-size:1rem; line-height:1.45; }
+    .meta-grid strong { color:var(--dnd-red); }
+    .ability-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; text-align:center; margin:12px 0 10px; border-bottom:1px solid rgba(156,43,27,.35); padding-bottom:12px; }
+    .ability-label { font-family:'Cinzel',serif; font-size:.78rem; color:var(--dnd-red); text-transform:uppercase; letter-spacing:1px; }
+    .ability-score { font-size:1.1rem; }
+    .section-header { margin-top:14px; border-bottom:2px solid var(--dnd-red); color:var(--dnd-red); font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:1px; font-size:1.1rem; padding-bottom:3px; }
+    .detail-block { margin-top:7px; line-height:1.5; font-size:1rem; }
+    .detail-block strong, .detail-line strong { color:var(--dnd-red); }
+    .detail-line { margin-top:4px; line-height:1.5; }
+    .twocol { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-top:8px; }
+    .phys-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; border-bottom:1px dotted rgba(156,43,27,.25); padding:4px 0; }
+    .pill-line { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+    .pill { font-size:.8rem; padding:2px 7px; border:1px solid rgba(156,43,27,.28); border-radius:999px; color:var(--dnd-red-light); background:rgba(255,255,255,.25); }
+    .page-footer { flex-shrink:0; border-top:1px solid rgba(156,43,27,.25); padding:9px 18px; display:flex; align-items:center; justify-content:space-between; color:rgba(88,24,13,.45); font-size:.7rem; font-style:italic; position:relative; z-index:2; }
+    .page-controls { display:flex; align-items:center; gap:8px; }
+    .nav-btn { width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(88,24,13,.2); background:rgba(255,255,255,.25); color:var(--dnd-red); cursor:pointer; }
+    .nav-btn:disabled { opacity:.35; cursor:not-allowed; }
+    .page-indicator { min-width:34px; text-align:center; color:var(--dnd-red); font-family:'Cinzel',serif; font-style:normal; }
+    .sidebar-overlay { display:none; }
+    #toast-container { position:fixed; bottom:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:99; }
+    .toast { background:rgba(42,26,10,.95); color:var(--gold-bright); border:1px solid rgba(201,173,106,.2); padding:10px 14px; border-radius:4px; font-size:.82rem; box-shadow:0 8px 24px rgba(0,0,0,.28); }
+    .empty-state { display:flex; min-height:100%; align-items:center; justify-content:center; color:rgba(88,24,13,.55); font-style:italic; text-align:center; padding:40px; }
+    @media (max-width: 920px) {
+      .layout { max-width:100%; }
+      .sidebar { position:absolute; inset:0 auto 0 0; z-index:5; }
+      .sidebar-overlay.active { display:block; position:absolute; inset:0; background:rgba(0,0,0,.22); z-index:4; }
+      .book-page { border-radius:3px; }
+      .conjure-btn { margin-left:0; }
+    }
+    @media (max-width: 760px) {
+      .ability-grid, .twocol, .phys-row { grid-template-columns:1fr 1fr; }
+      .ability-grid { gap:10px 6px; }
+      .entry-wrap { padding:16px 16px 22px; }
+    }
+    @media (max-width: 560px) {
+      .ability-grid, .twocol, .phys-row { grid-template-columns:1fr; }
+      .page-header { padding:10px 12px 8px; }
+      .filter-bar { padding:10px 12px 12px; }
+      .header-title { font-size:1rem; }
+      .filter-bar select { min-width:100px; }
+      .entry-name { font-size:1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar collapsed" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Character Index</h2>
+        <button class="sidebar-close" id="sidebarCloseBtn" title="Close index"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="sidebar-sections" id="sidebarSections">
+        <div class="sb-section-label"><i class="fas fa-bookmark"></i> Saved</div>
+        <div id="savedList"><div class="sb-empty">No saved entries yet</div></div>
+        <div class="sb-section-label"><i class="fas fa-clock-rotate-left"></i> Recent</div>
+        <div id="historyList"><div class="sb-empty">No history yet</div></div>
+      </div>
+      <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 conjured</div>
+    </aside>
+
+    <main class="book-page">
+      <div class="page-header">
+        <div class="header-left">
+          <button class="sidebar-toggle" id="sidebarToggle" title="Open Character Index"><i class="fas fa-book-open"></i></button>
+          <div>
+            <div class="header-title">CHARACTER CODEX</div>
+            <div class="header-subtitle">Arcane Census & Adventurer Registry</div>
+          </div>
+        </div>
+        <div class="header-tools">
+          <button class="tool-btn" id="saveBtn" title="Save Character" disabled><i class="fas fa-bookmark"></i></button>
+          <button class="tool-btn" id="copyBtn" title="Copy Character Sheet" disabled><i class="fas fa-scroll"></i></button>
+          <button class="tool-btn" id="copyPromptBtn" title="Copy Art Prompt" disabled><i class="fas fa-paint-brush"></i></button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <div class="filter-label">Race</div>
+          <select id="raceSelect"></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Class</div>
+          <select id="classSelect"></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Level</div>
+          <select id="levelSelect"></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Origin</div>
+          <select id="originSelect"></select>
+        </div>
+        <button class="conjure-btn" id="generateBtn"><i class="fas fa-feather-pointed"></i> Draft</button>
+      </div>
+
+      <div class="stat-scroll" id="statScroll">
+        <div id="characterDisplay">
+          <div class="empty-state">Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</div>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        <div>Chapter V: Peoples of the Realms</div>
+        <div class="page-controls">
+          <button class="nav-btn" id="navFirst" title="First page" disabled><i class="fas fa-angles-left"></i></button>
+          <button class="nav-btn" id="navPrev" title="Previous page" disabled><i class="fas fa-chevron-left"></i></button>
+          <span class="page-indicator" id="pageIndicator">--</span>
+          <button class="nav-btn" id="navNext" title="Next page" disabled><i class="fas fa-chevron-right"></i></button>
+          <button class="nav-btn" id="navLast" title="Last page" disabled><i class="fas fa-angles-right"></i></button>
+        </div>
+        <div>Gazetteer Vivens</div>
+      </div>
+    </main>
+  </div>
+
+  <input type="hidden" id="imagePromptStorage" value="">
+  <div id="toast-container"></div>
+
+<script>
+(() => {
+  const STORAGE_KEY = 'npc_codex_state_v1';
+  const state = {
+    saved: [],
+    history: [],
+    activeSource: 'history',
+    activeIndex: -1,
+    sidebarOpen: false
+  };
+
+  const $ = id => document.getElementById(id);
+  const els = {
+    sidebar: $('sidebar'), overlay: $('sidebarOverlay'), sidebarToggle: $('sidebarToggle'), sidebarCloseBtn: $('sidebarCloseBtn'),
+    raceSelect: $('raceSelect'), classSelect: $('classSelect'), levelSelect: $('levelSelect'), originSelect: $('originSelect'),
+    generateBtn: $('generateBtn'), saveBtn: $('saveBtn'), copyBtn: $('copyBtn'), copyPromptBtn: $('copyPromptBtn'),
+    display: $('characterDisplay'), promptStorage: $('imagePromptStorage'), savedList: $('savedList'), historyList: $('historyList'),
+    sidebarFooter: $('sidebarFooter'), navFirst: $('navFirst'), navPrev: $('navPrev'), navNext: $('navNext'), navLast: $('navLast'),
+    pageIndicator: $('pageIndicator'), toast: $('toast-container')
+  };
+
+  const origins = ['Any','Sword Coast','Waterdeep','Baldur\'s Gate','Neverwinter','Cormyr','Silverymoon','Icewind Dale','Calimshan','Amn','Rashemen','Thay','Tymanther','Dalelands','Moonshae Isles','Underdark','Feywild','Shadowfell','Planar Refuge','Far Traveler'];
+  const races = [
+    {name:'Human', size:'Medium', speed:30, vision:'Normal', age:[16,80], weight:[110,250], langs:['Common'], tags:['adaptable'], names:{m:['Alden','Corin','Darian','Edric','Joren','Lucan','Mathis','Ronan','Tavian','Bram'],f:['Arielle','Brina','Celia','Elise','Jessa','Kara','Liora','Mira','Seren','Tessa'],n:['Ash','Briar','Rowan','Vale','Ember','Quill','Sable','Winter']}, homelands:['Waterdeep','Baldur\'s Gate','Neverwinter','Cormyr','Amn']},
+    {name:'Elf', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[30,720], weight:[90,180], langs:['Common','Elvish'], tags:['graceful','fey'], names:{m:['Aelar','Carric','Erevan','Irandir','Myrren','Soveliss','Theren','Varis'],f:['Adrie','Althaea','Enna','Keyleth','Leshanna','Naivara','Shalana','Vaeri'],n:['Aeris','Lumen','Syl','Nyx','Caelis','Rill']}, homelands:['Silverymoon','Evereska','Moonshae Isles','Feywild']},
+    {name:'Dwarf', size:'Medium', speed:25, vision:'Darkvision 60 ft.', age:[40,360], weight:[130,290], langs:['Common','Dwarvish'], tags:['stout','mountain'], names:{m:['Baern','Darrak','Fargrim','Harbek','Orsik','Rurik','Taklinn','Traubon'],f:['Artin','Diesa','Eldeth','Finellen','Gurdis','Helja','Kathra','Riswynn'],n:['Kelda','Stone','Rune','Iron','Marn','Thrain']}, homelands:['Mithral Hall','Gauntlgrym','Mirabar','Sword Coast North']},
+    {name:'Halfling', size:'Small', speed:25, vision:'Normal', age:[20,150], weight:[35,90], langs:['Common','Halfling'], tags:['nimble','hearth'], names:{m:['Alton','Cade','Corrin','Eldon','Garret','Lyle','Milo','Perrin'],f:['Andry','Callie','Jillian','Kithri','Lavinia','Merla','Rosie','Seraphina'],n:['Pip','Sunny','Nettle','Blue','Moss','Wren']}, homelands:['Shire Lane','Luiren','Beregost','Greenest']},
+    {name:'Gnome', size:'Small', speed:25, vision:'Darkvision 60 ft.', age:[18,425], weight:[35,80], langs:['Common','Gnomish'], tags:['curious','clever'], names:{m:['Alston','Boddynock','Dimble','Frug','Gerbo','Namfoodle','Warryn'],f:['Bimpnottin','Caramip','Ellywick','Loopmottin','Nissa','Tana'],n:['Fizz','Copper','Penny','Nim','Tink','Brass']}, homelands:['Neverwinter Wood','Lantan','Baldur\'s Gate','Deep burrows']},
+    {name:'Half-Elf', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[18,180], weight:[100,220], langs:['Common','Elvish'], tags:['social','versatile'], names:{m:['Corwin','Elric','Jareth','Kael','Riven','Theron'],f:['Alyra','Cerys','Elira','Lyra','Nimue','Talia'],n:['Aster','Cinder','Rain','Soren','Vesper','Lark']}, homelands:['Waterdeep','Silverymoon','Border towns','Dalelands']},
+    {name:'Tiefling', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[18,120], weight:[100,240], langs:['Common','Infernal'], tags:['fiendish','dramatic'], names:{m:['Akmenos','Kairon','Leucis','Morthos','Therai','Zeth'],f:['Akta','Bryseis','Kallista','Orianna','Rieta','Valira'],n:['Hex','Ember','Vex','Ruin','Noctis','Brim']}, homelands:['Baldur\'s Gate','Calimport','Elturel','Shadowed enclaves']},
+    {name:'Dragonborn', size:'Medium', speed:30, vision:'Normal', age:[15,85], weight:[180,340], langs:['Common','Draconic'], tags:['draconic','proud'], names:{m:['Arjhan','Balasar','Donaar','Ghesh','Kriv','Medrash','Torinn'],f:['Akra','Daar','Harann','Kava','Mishann','Perra','Sora'],n:['Ashscale','Emberclaw','Stormcrest','Zephyrfang']}, homelands:['Tymanther','Chessenta','Border forts','Mercenary roads']},
+    {name:'Aasimar', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[18,160], weight:[110,240], langs:['Common','Celestial'], tags:['radiant','serene'], names:{m:['Cassian','Luciel','Malach','Orien','Samael','Theriel'],f:['Aurelia','Caia','Evangeline','Liora','Seraphine','Vela'],n:['Halo','Sol','Mercy','Dawn','Star']}, homelands:['Cormyr','Elturel','Pilgrim roads','Planar refuges']},
+    {name:'Orc', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[14,70], weight:[150,300], langs:['Common','Orc'], tags:['fierce','endurant'], names:{m:['Ghak','Henk','Krusk','Mhurren','Ront','Thokk'],f:['Baggi','Emen','Myev','Ovak','Ownka','Shautha'],n:['Grim','Ash','Rok','Tarn','Ugra','Vark']}, homelands:['Many-Arrows','Frontier camps','The North','Rugged marches']},
+    {name:'Goblin', size:'Small', speed:30, vision:'Darkvision 60 ft.', age:[12,60], weight:[30,70], langs:['Common','Goblin'], tags:['scrappy','quick'], names:{m:['Brek','Drik','Fink','Grub','Krix','Snig'],f:['Druza','Kella','Mog','Riz','Tika','Vixa'],n:['Skitter','Nix','Skit','Murk','Boggle']}, homelands:['Underdark fringes','Goblin warrens','Ruined keeps','Traveling bands']},
+    {name:'Goliath', size:'Medium', speed:35, vision:'Normal', age:[18,95], weight:[180,340], langs:['Common','Giant'], tags:['massive','highland'], names:{m:['Aukan','Eglath','Keothi','Mavaith','Thoon'],f:['Gae-Al','Kethra','Manneo','Nalla','Orilo'],n:['Peak','Aval','Stonewind','Rime']}, homelands:['Spine of the World','High mountain tribes','Icewind Dale']},
+    {name:'Tabaxi', size:'Medium', speed:30, vision:'Darkvision 60 ft.', age:[16,90], weight:[90,220], langs:['Common','Feline Cant'], tags:['feline','restless'], names:{m:['Cloud-on-Tile','Dust of Noon','Silver Echo','Warm Ember'],f:['Jade-in-Rain','Moonlit Reed','Saffron Step','Whisper of Silk'],n:['Bright Paws','Half-Smile','Soft Storm','Violet Claw']}, homelands:['Chult','Port Nyanzaru','Far ports','Roaming caravans']},
+    {name:'Firbolg', size:'Medium', speed:30, vision:'Normal', age:[30,500], weight:[180,300], langs:['Common','Elvish','Giant'], tags:['gentle','woodland'], names:{m:['Alon','Bramble','Eryndor','Mossden','Tavren'],f:['Asha','Briala','Dewsong','Lethra','Pale Fern'],n:['Birch','Fog','Juniper','Stoneflower']}, homelands:['Old forests','Moonshae Isles','Emerald enclaves']},
+    {name:'Kenku', size:'Medium', speed:30, vision:'Normal', age:[12,60], weight:[60,120], langs:['Common','Auran','Mimicked Phrases'], tags:['avian','clever'], names:{m:['Cracked Bell','Crow-on-Rafter','Quick Ink'],f:['Soft Caw','Twice-Spoken','Velvet Wing'],n:['Shiverclick','Glass Cry','Moth Voice']}, homelands:['Crowded cities','Old rooftops','Marsh villages']},
+    {name:'Genasi', size:'Medium', speed:30, vision:'Normal', age:[16,130], weight:[100,260], langs:['Common','Primordial'], tags:['elemental','vivid'], names:{m:['Ariq','Damar','Jalan','Rami','Suhail'],f:['Ashra','Imani','Nisra','Suri','Yara'],n:['Zeph','Coal','Mist','Emberglass','Tide']}, homelands:['Calimshan','Elemental crossroads','Coastal cities','Planar refuge']}
+  ];
+
+  const classes = [
+    {name:'Fighter', hitDie:10, prime:['STR','CON'], save:['STR','CON'], weapons:'martial', armor:'heavy', arcane:false, gear:['longsword','greatsword','warhammer','spear','halberd','battleaxe','shield','crossbow'], clothes:['brigandine','gambeson','surcoat','tabard','travel cloak'], familiar:false},
+    {name:'Wizard', hitDie:6, prime:['INT','CON'], save:['INT','WIS'], weapons:'simple', armor:'robes', arcane:true, gear:['quarterstaff','wand','spellbook','orb','crystal focus','dagger'], clothes:['layered robes','embroidered mantle','star-stitched sash','high-collared coat','ink-stained sleeves'], familiar:true},
+    {name:'Cleric', hitDie:8, prime:['WIS','CON'], save:['WIS','CHA'], weapons:'simple', armor:'medium', arcane:false, gear:['mace','warhammer','holy symbol','shield','prayer beads','flail'], clothes:['vestments','travel cassock','tabard','ritual stole','hooded mantle'], familiar:false},
+    {name:'Rogue', hitDie:8, prime:['DEX','CHA'], save:['DEX','INT'], weapons:'finesse', armor:'light', arcane:false, gear:['dagger','rapier','shortbow','hand crossbow','lock picks','throwing knives'], clothes:['hooded leathers','city cloak','split tunic','belted jerkin','silent boots'], familiar:false},
+    {name:'Ranger', hitDie:10, prime:['DEX','WIS'], save:['STR','DEX'], weapons:'martial', armor:'medium', arcane:false, gear:['longbow','shortsword','scimitar','handaxe','hunting knife','quiver'], clothes:['weather cloak','forest leathers','fur-lined capelet','wrapped bracers','field satchel'], familiar:'animal'},
+    {name:'Paladin', hitDie:10, prime:['STR','CHA'], save:['WIS','CHA'], weapons:'martial', armor:'heavy', arcane:false, gear:['longsword','warhammer','shield','lance','holy symbol','banner pennant'], clothes:['polished tabard','ceremonial cloak','plate mantle','sunburst sash'], familiar:false},
+    {name:'Druid', hitDie:8, prime:['WIS','CON'], save:['INT','WIS'], weapons:'nature', armor:'medium', arcane:false, gear:['oak staff','sickle','totem necklace','mistletoe focus','bone flute'], clothes:['moss-woven mantle','layered wraps','leaf-stitched robes','talisman belt'], familiar:'nature'},
+    {name:'Bard', hitDie:8, prime:['CHA','DEX'], save:['DEX','CHA'], weapons:'finesse', armor:'light', arcane:true, gear:['rapier','lute','flute','viol','wand','hand drum'], clothes:['brocade doublet','silk scarf','traveling finery','ornate gloves','capelet'], familiar:false},
+    {name:'Sorcerer', hitDie:6, prime:['CHA','CON'], save:['CON','CHA'], weapons:'simple', armor:'robes', arcane:true, gear:['wand','orb','dagger','focus gem','charms'], clothes:['flowing robes','sleeveless mantle','arcane shawl','embroidered gloves'], familiar:false},
+    {name:'Warlock', hitDie:8, prime:['CHA','CON'], save:['WIS','CHA'], weapons:'simple', armor:'light', arcane:true, gear:['rod','grimoire','dagger','amulet focus','ritual knife'], clothes:['velvet coat','void-lined cloak','occult rings','high boots','dark sash'], familiar:true},
+    {name:'Monk', hitDie:8, prime:['DEX','WIS'], save:['STR','DEX'], weapons:'simple', armor:'none', arcane:false, gear:['staff','shortsword','prayer wraps','beads','hand wraps'], clothes:['wrapped gi','sash belt','sandals','simple mantle','training trousers'], familiar:false},
+    {name:'Barbarian', hitDie:12, prime:['STR','CON'], save:['STR','CON'], weapons:'martial', armor:'medium', arcane:false, gear:['greataxe','javelins','maul','handaxe','hide shield'], clothes:['fur mantle','braided cords','bone charms','travel furs','hide kilt'], familiar:false},
+    {name:'Artificer', hitDie:8, prime:['INT','CON'], save:['CON','INT'], weapons:'simple', armor:'medium', arcane:true, gear:['pistol-like wand','tool satchel','infused crossbow','goggles','steel focus'], clothes:['apron coat','utility harness','clockwork cuffs','tool belt','split coat'], familiar:'construct'}
+  ];
+
+  const styles = ['regal','battle-worn','scholarly','mystic','streetwise','pastoral','gothic','sunlit','storm-touched','desert-traveled','naval','courtly','nomadic','ritual','practical','ornate'];
+  const personalities = ['warm but guarded','blunt and funny','devout and composed','restless and curious','calculating yet charming','soft-spoken and brave','vain but generous','grimly practical','eager to impress','sardonic and observant','patient and mentor-like','reckless in a lovable way','haunted but kind','ceremonial and intense','bookish and absent-minded'];
+  const ideals = ['freedom','order','mercy','ambition','knowledge','duty','beauty','survival','justice','family','discovery','fame','redemption','balance'];
+  const flaws = ['cannot resist a dare','trusts the wrong people','holds grudges for years','lies too easily','overprotective','greedy under stress','vanity gets in the way','thinks they can fix everyone','too proud to retreat','keeps dangerous secrets','easily distracted by relics','takes insults personally'];
+  const bonds = ['owes a life debt to an old companion','guards a family heirloom','serves a hidden patron','searches for a missing sibling','protects a hometown shrine','wants to restore their house name','is raising an unusual pet','is sworn to an old battlefield promise','collects forbidden maps','keeps letters from a lost love'];
+  const hometownTypes = ['seaside ward','mountain hold','canal city','forest enclave','desert caravanserai','temple town','border fort','shadow market','scholars\' quarter','fishing village','mining camp','floating district'];
+  const skinPatterns = ['clear skin','freckled skin','scarred skin','sun-browned skin','tattooed skin','striped markings','speckled markings','mottled skin','runic scars','glossy scales','velvet fur patches','feathered accents','bioluminescent freckles'];
+  const bodyBuilds = ['lean','athletic','broad-shouldered','slender','soft-built','compact','rangy','towering','stocky','willowy'];
+  const hairStyles = ['braided hair','cropped hair','long loose hair','shaved sides','ringlets','dreadlocks','topknot','curled bob','silver-streaked hair','beaded braids','windswept hair','hood-hidden hair'];
+  const eyeDetails = ['amber eyes','gray eyes','violet eyes','storm-blue eyes','gold-flecked eyes','mismatched eyes','catlike pupils','gentle brown eyes','pale green eyes','glowing eyes'];
+  const voiceStyles = ['silky voice','raspy voice','measured voice','ringing stage voice','whisper-soft voice','stern formal cadence','laughing tone','courtly diction'];
+  const alignments = ['lawful good','neutral good','chaotic good','lawful neutral','true neutral','chaotic neutral','lawful evil','neutral evil','chaotic evil'];
+  const reputations = ['common','uncommon','noted','rare','legendary'];
+  const extraLanguages = ['Draconic','Undercommon','Sylvan','Deep Speech','Primordial','Abyssal','Celestial','Infernal','Aquan','Auran','Ignan','Terran','Thieves\' Cant','Druidic','Giant','Goblin','Orc','Ancient Netherese','Seldruin','Starspeech','Old Jotun','Luminous Cant','Ember Tongue','Whispercant'];
+  const tools = ['herbalism kit','calligrapher\'s supplies','smith\'s tools','thieves\' tools','navigator\'s tools','cartographer\'s tools','alchemist\'s supplies','brewer\'s supplies','mason\'s tools','woodcarver\'s tools','disguise kit','poisoner\'s kit','weaver\'s tools'];
+  const animals = ['fox','owl','raven','wolf','serpent','hare','stag','panther','moth','cat','goat','lizard','crow','falcon','otter','bat'];
+  const deities = ['Mystra','Selûne','Tyr','Tempus','Lathander','Oghma','Kelemvor','Sune','Corellon','Mielikki','Moradin','Bahamut'];
+  const patrons = ['an archfey court','a whispering star','a sealed fiend','an elder shadow','a forgotten saint','the spirit of a drowned city','a sentient grimoire'];
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function chance(n){ return Math.random() < n; }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+  function mod(score){ return Math.floor((score - 10) / 2); }
+  function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+  function rollStat(){ const rolls = [1,1,1,1].map(() => 1 + Math.floor(Math.random()*6)).sort((a,b)=>b-a); return rolls[0]+rolls[1]+rolls[2]; }
+  function titleCase(str){ return str.replace(/\b\w/g, s => s.toUpperCase()); }
+  function xpForLevel(level){ return [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000][level-1] || 355000; }
+  function proficiency(level){ return 2 + Math.floor((level-1)/4); }
+  function health(level, cls, conMod){ return Math.max(cls.hitDie + conMod, Math.floor(cls.hitDie + ((cls.hitDie/2)+1+conMod) * Math.max(1, level-1))); }
+  function armorClass(level, cls, dexMod, wisMod){
+    if (cls.name === 'Monk') return 10 + dexMod + wisMod + Math.floor(level/5);
+    if (cls.armor === 'robes' || cls.armor === 'none') return 10 + dexMod + Math.floor(level/6);
+    if (cls.armor === 'light') return 12 + dexMod + Math.floor(level/7);
+    if (cls.armor === 'medium') return 14 + Math.min(2,dexMod) + Math.floor(level/7);
+    return 16 + Math.floor(level/6);
+  }
+  function initiative(dexMod, level, cls){ return dexMod + (cls.name === 'Rogue' ? Math.ceil(level/5) : 0); }
+  function saveList(scores, cls, pb){ return cls.save.map(a => `${a} ${formatSigned(mod(scores[a]) + pb)}`).join(', '); }
+  function skillList(scores, cls, background){
+    const map = {
+      Fighter:['Athletics','Intimidation','Perception'], Wizard:['Arcana','History','Investigation'], Cleric:['Insight','Religion','Medicine'],
+      Rogue:['Stealth','Sleight of Hand','Deception'], Ranger:['Survival','Nature','Perception'], Paladin:['Persuasion','Religion','Athletics'],
+      Druid:['Nature','Animal Handling','Survival'], Bard:['Performance','Persuasion','Insight'], Sorcerer:['Arcana','Deception','Intimidation'],
+      Warlock:['Arcana','Deception','Intimidation'], Monk:['Acrobatics','Insight','Perception'], Barbarian:['Athletics','Survival','Intimidation'], Artificer:['Arcana','Investigation','Sleight of Hand']
+    };
+    return (map[cls.name] || ['Perception','Insight']).concat(background.extraSkill ? [background.extraSkill] : []).slice(0,4).join(', ');
+  }
+  function formatSigned(n){ return `${n >= 0 ? '+' : ''}${n}`; }
+  function weightedAge(race, level){ const [min,max] = race.age; const youthful = min + Math.floor((max - min) * (0.08 + Math.random()*0.18)); const seasoned = min + Math.floor((max - min) * (0.22 + Math.random()*0.30)); const elder = min + Math.floor((max - min) * (0.55 + Math.random()*0.25)); if (level <= 4) return Math.max(min, youthful); if (level <= 10) return seasoned; return elder; }
+  function randomWeight(race, build){ const [min,max] = race.weight; const mult = ({lean:.92, athletic:1, 'broad-shouldered':1.08, slender:.9, 'soft-built':1.02, compact:.96, rangy:.98, towering:1.15, stocky:1.1, willowy:.88})[build] || 1; return Math.round((min + Math.random()*(max-min)) * mult); }
+  function chooseName(race, gender){ const pool = gender === 'male' ? race.names.m : gender === 'female' ? race.names.f : race.names.n; const first = rand(pool); const surnameBits = ['Ash','Bright','Moon','Stone','River','Thorn','Vale','Storm','Black','Silver','Dawn','Night','Green','Fire','Winter','Gold']; const endBits = ['brook','ward','song','blade','mantle','stride','root','whisper','crest','mark','glen','spire','hand','bloom']; return `${first} ${rand(surnameBits)}${rand(endBits)}`; }
+  function chooseGender(){ const g = rand(['male','female','nonbinary']); return {label:g, pronouns: g === 'male' ? 'he/him' : g === 'female' ? 'she/her' : 'they/them'}; }
+  function chooseSubclass(cls){
+    const data = {
+      Fighter:['Champion','Battle Master','Eldritch Knight','Cavalier','Samurai'], Wizard:['Evocation','Illusion','Abjuration','Divination','Necromancy','Bladesinging'], Cleric:['Life','Light','War','Knowledge','Twilight','Tempest'], Rogue:['Thief','Assassin','Arcane Trickster','Swashbuckler','Soulknife'], Ranger:['Hunter','Beast Master','Gloom Stalker','Fey Wanderer','Drakewarden'], Paladin:['Devotion','Vengeance','Ancients','Glory','Watchers'], Druid:['Moon','Land','Stars','Wildfire','Spores'], Bard:['Lore','Valor','Swords','Glamour','Whispers'], Sorcerer:['Draconic','Wild Magic','Shadow','Clockwork Soul','Divine Soul'], Warlock:['Fiend','Archfey','Great Old One','Celestial','Hexblade'], Monk:['Open Hand','Shadow','Elements','Mercy','Astral Self'], Barbarian:['Berserker','Totem Warrior','Zealot','Wild Magic','Ancestral Guardian'], Artificer:['Alchemist','Artillerist','Battle Smith','Armorer']
+    };
+    return rand(data[cls.name] || ['Wanderer']);
+  }
+  function chooseOriginHome(origin, race){
+    if (origin !== 'Any') return `${origin}, ${rand(hometownTypes)}`;
+    return `${rand(race.homelands || origins.slice(1))}, ${rand(hometownTypes)}`;
+  }
+  function rarityForLevel(level, cls){
+    let score = level + (cls.arcane ? 1 : 0) + (['Paladin','Ranger','Artificer'].includes(cls.name) ? 1 : 0);
+    if (score <= 3) return 'common';
+    if (score <= 7) return 'uncommon';
+    if (score <= 11) return 'noted';
+    if (score <= 16) return 'rare';
+    return 'legendary';
+  }
+  function chooseBackground(cls, origin){
+    const list = [
+      {name:'Acolyte', extraSkill:'Religion', hook:'keeps a travel shrine wrapped in linen'},
+      {name:'Sage', extraSkill:'History', hook:'annotates everything in the margins'},
+      {name:'Soldier', extraSkill:'Athletics', hook:'still polishes an old insignia'},
+      {name:'Urchin', extraSkill:'Stealth', hook:'knows six ways out of any alley'},
+      {name:'Noble', extraSkill:'Persuasion', hook:'wears a signet they no longer have a right to'},
+      {name:'Guild Artisan', extraSkill:'Investigation', hook:'prices every object in the room by instinct'},
+      {name:'Outlander', extraSkill:'Survival', hook:'reads weather from scent and cloud edges'},
+      {name:'Criminal', extraSkill:'Deception', hook:'maintains three aliases'},
+      {name:'Entertainer', extraSkill:'Performance', hook:'cannot resist an audience'},
+      {name:'Hermit', extraSkill:'Medicine', hook:'speaks like every word was considered for a week'}
+    ];
+    let bg = rand(list);
+    if (cls.name === 'Cleric' || cls.name === 'Paladin') bg = list[0];
+    if (cls.name === 'Wizard' || cls.name === 'Artificer') bg = list[1];
+    if (cls.name === 'Barbarian' || cls.name === 'Ranger' || origin === 'Far Traveler') bg = list[6];
+    if (cls.name === 'Rogue') bg = chance(.5) ? list[3] : list[7];
+    if (cls.name === 'Bard') bg = list[8];
+    return bg;
+  }
+  function chooseAppearance(race, cls){
+    const build = rand(bodyBuilds);
+    return {
+      build,
+      pattern: rand(skinPatterns),
+      hair: rand(hairStyles),
+      eyes: race.tags.includes('draconic') ? 'reptilian eyes' : rand(eyeDetails),
+      voice: rand(voiceStyles),
+      style: rand(styles),
+      silhouette: `${build}, ${rand(['upright','relaxed','coiled','measured','restless','courtly'])} posture`
+    };
+  }
+  function allocateStats(cls, race, level){
+    const rolls = [rollStat(),rollStat(),rollStat(),rollStat(),rollStat(),rollStat()].sort((a,b)=>b-a);
+    const scores = {STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10};
+    const priority = [...cls.prime, ...['DEX','WIS','INT','CHA','STR','CON'].filter(a => !cls.prime.includes(a))].slice(0,6);
+    priority.forEach((attr,i)=>{ scores[attr] = rolls[i]; });
+    const racial = {
+      Elf:{DEX:1,WIS:1}, Dwarf:{CON:2}, Halfling:{DEX:2}, Gnome:{INT:2}, 'Half-Elf':{CHA:2,DEX:1}, Tiefling:{CHA:2,INT:1}, Dragonborn:{STR:2,CHA:1}, Aasimar:{CHA:2,WIS:1}, Orc:{STR:2,CON:1}, Goblin:{DEX:2,CON:1}, Goliath:{STR:2,CON:1}, Tabaxi:{DEX:2,CHA:1}, Firbolg:{WIS:2,STR:1}, Kenku:{DEX:2,WIS:1}, Genasi:{CON:2}
+    }[race.name] || {CHA:1,CON:1};
+    Object.entries(racial).forEach(([k,v]) => scores[k] += v);
+    const bumps = Math.floor((level-1)/4);
+    for (let i=0;i<bumps;i++) scores[cls.prime[i % cls.prime.length]] += 2;
+    Object.keys(scores).forEach(k => scores[k] = clamp(scores[k], 6, 20));
+    return scores;
+  }
+  function chooseGear(cls, subclass, appearance){
+    const primary = rand(cls.gear.filter(g => !g.includes('focus') && !g.includes('symbol') && !g.includes('satchel')));
+    const secondary = rand(cls.gear.filter(g => g !== primary));
+    const styleTags = [];
+    if (appearance.style === 'regal' || appearance.style === 'courtly') styleTags.push('gold-threaded trim');
+    if (appearance.style === 'battle-worn') styleTags.push('visible repair stitching');
+    if (appearance.style === 'mystic' || appearance.style === 'ritual') styleTags.push('inked sigils on the hems');
+    if (appearance.style === 'streetwise') styleTags.push('hidden pockets');
+    if (appearance.style === 'gothic') styleTags.push('dark lacquered fasteners');
+    if (appearance.style === 'pastoral') styleTags.push('woven field charms');
+    const clothing = [rand(cls.clothes), rand(['belt pouches','travel satchel','lace-up boots','gloves','neck scarf','arm wraps','brooch','rings','weather cloak'])].join(', ');
+    return { primary, secondary, clothing, accents: styleTags.length ? styleTags.join(', ') : rand(['clean practical tailoring','worn edges','careful embroidery','layered textures','utility straps']) };
+  }
+  function chooseFamiliar(cls, subclass){
+    if (!cls.familiar) return 'None';
+    if (cls.familiar === 'animal') return `${rand(['hawk','wolf pup','fox','owl','falcon','hound'])} companion`;
+    if (cls.familiar === 'nature') return `${rand(['moss owl','vine snake','amber toad','ashen raven','moon moth'])}`;
+    if (cls.familiar === 'construct') return `${rand(['clockwork sparrow','brass spider','copper hound','hovering lens sprite'])}`;
+    return `${rand(['owl','cat','raven','weasel','pseudodragon','imp','sprite'])}`;
+  }
+  function chooseMagic(cls, subclass, level){
+    const cantrips = {
+      Wizard:['fire bolt','mage hand','ray of frost','minor illusion','prestidigitation'], Cleric:['sacred flame','thaumaturgy','guidance','spare the dying'],
+      Bard:['vicious mockery','mage hand','friends','minor illusion'], Sorcerer:['fire bolt','shocking grasp','mind sliver','mage hand'], Warlock:['eldritch blast','mage hand','minor illusion','toll the dead'], Druid:['guidance','produce flame','thorn whip','shillelagh'], Artificer:['mending','mage hand','fire bolt','guidance'], Ranger:['druidcraft','produce flame','shillelagh'], Paladin:['thaumaturgy','light'], Monk:['guidance'], Fighter:['blade ward']
+    };
+    const spellLists = {
+      Wizard:['shield','magic missile','detect magic','misty step','counterspell','fireball','fly','banishment','wall of force'],
+      Cleric:['bless','healing word','guiding bolt','spiritual weapon','lesser restoration','revivify','spirit guardians','flame strike'],
+      Bard:['healing word','dissonant whispers','faerie fire','suggestion','hypnotic pattern','dimension door','greater invisibility'],
+      Sorcerer:['shield','chaos bolt','scorching ray','misty step','fireball','lightning bolt','polymorph','telekinesis'],
+      Warlock:['hex','armor of agathys','hellish rebuke','misty step','hunger of hadar','summon shadowspawn','dimension door'],
+      Druid:['entangle','cure wounds','moonbeam','pass without trace','call lightning','plant growth','wall of fire'],
+      Ranger:['hunter\'s mark','ensnaring strike','pass without trace','conjure barrage','lightning arrow'],
+      Paladin:['bless','shield of faith','wrathful smite','lesser restoration','find steed','revivify','banishing smite'],
+      Artificer:['cure wounds','faerie fire','web','mirror image','dispel magic','arcane weapon'],
+      Fighter:['second wind','action surge'], Rogue:['cunning action'], Barbarian:['rage','reckless attack'], Monk:['flurry of blows']
+    };
+    const availableCantrips = (cantrips[cls.name] || []).slice(0, cls.arcane ? 3 : 1);
+    const maxCount = level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2;
+    const picked = (spellLists[cls.name] || []).slice(0, maxCount);
+    return {cantrips: availableCantrips, spells:picked};
+  }
+  function chooseQuirks(cls, race){
+    const quirks = [
+      `keeps a tiny ${rand(animals)} motif worked into their clothing`,
+      'always smells faintly of incense and paper',
+      'speaks to strangers like they are already in the middle of a conversation',
+      'collects buttons, seals, and small tokens',
+      'never sits with their back to a door',
+      'hums old marching songs under stress',
+      'writes names down immediately so they are never forgotten',
+      'taps out rhythms while thinking',
+      `wears a keepsake carved from ${rand(['bone','oak','river stone','glass','amber'])}`
+    ];
+    if (race.name === 'Kenku') quirks.push('punctuates thoughts with borrowed phrases in familiar voices');
+    if (cls.name === 'Wizard') quirks.push('murmurs spell theory while examining mundane objects');
+    if (cls.name === 'Bard') quirks.push('cannot resist harmonizing with distant music');
+    return rand(quirks);
+  }
+  function chooseFeature(cls, subclass, level){
+    const features = {
+      Fighter:['Second Wind','Action Surge','Indomitable','Combat Superiority'], Wizard:['Arcane Recovery','Sculpt Spells','Portent','Bladesong'], Cleric:['Channel Divinity','Turn Undead','Blessed Strikes','Divine Intervention'], Rogue:['Sneak Attack','Cunning Action','Uncanny Dodge','Evasion'], Ranger:['Favored Terrain','Hunter\'s Mark','Dread Ambusher','Companion Bond'], Paladin:['Lay on Hands','Divine Smite','Aura of Protection','Find Steed'], Druid:['Wild Shape','Starry Form','Symbiotic Entity','Summon Wildfire Spirit'], Bard:['Bardic Inspiration','Jack of All Trades','Font of Inspiration','Magical Secrets'], Sorcerer:['Font of Magic','Metamagic','Sorcerous Restoration','Shadow Walk'], Warlock:['Eldritch Invocations','Pact Boon','Mystic Arcanum','Patron\'s Blessing'], Monk:['Martial Arts','Ki','Stunning Strike','Deflect Missiles'], Barbarian:['Rage','Danger Sense','Feral Instinct','Relentless Rage'], Artificer:['Magical Tinkering','Infuse Item','Arcane Jolt','Eldritch Cannon']
+    };
+    const base = features[cls.name] || ['Skilled'];
+    const count = level >= 13 ? 4 : level >= 8 ? 3 : 2;
+    return base.slice(0, count);
+  }
+  function buildPrompt(npc){
+    return `${npc.name}, ${npc.race} ${npc.className} (${npc.subclass}), level ${npc.level}, ${npc.gender} ${npc.age} years old, ${npc.appearance.build} build, ${npc.appearance.hair}, ${npc.appearance.eyes}, ${npc.appearance.pattern}, wearing ${npc.gear.clothing} with ${npc.gear.accents}, ${npc.appearance.style} fantasy clothing style, carrying ${npc.gear.primary} and ${npc.gear.secondary}, hometown ${npc.hometown}, ${npc.personality}, detailed fantasy character concept art, full body, parchment-neutral backdrop`;
+  }
+  function generateNPC(){
+    const race = els.raceSelect.value === 'Any' ? rand(races) : races.find(r => r.name === els.raceSelect.value);
+    const cls = els.classSelect.value === 'Any' ? rand(classes) : classes.find(c => c.name === els.classSelect.value);
+    const level = els.levelSelect.value === 'Any' ? 1 + Math.floor(Math.random()*20) : parseInt(els.levelSelect.value, 10);
+    const origin = els.originSelect.value;
+    const genderInfo = chooseGender();
+    const subclass = chooseSubclass(cls);
+    const stats = allocateStats(cls, race, level);
+    const age = weightedAge(race, level);
+    const appearance = chooseAppearance(race, cls);
+    const background = chooseBackground(cls, origin);
+    const hometown = chooseOriginHome(origin, race);
+    const gear = chooseGear(cls, subclass, appearance);
+    const familiar = chooseFamiliar(cls, subclass);
+    const magic = chooseMagic(cls, subclass, level);
+    const pb = proficiency(level);
+    const hp = health(level, cls, mod(stats.CON));
+    const ac = armorClass(level, cls, mod(stats.DEX), mod(stats.WIS));
+    const init = initiative(mod(stats.DEX), level, cls);
+    const rarity = rarityForLevel(level, cls);
+    const speed = race.speed + (cls.name === 'Monk' ? 10 + Math.floor(level/6)*5 : 0);
+    const weight = randomWeight(race, appearance.build);
+    const languages = Array.from(new Set([...race.langs, ...(chance(.55) ? [rand(extraLanguages)] : []), ...(level >= 8 && chance(.55) ? [rand(extraLanguages)] : []), ...(cls.name === 'Rogue' && chance(.7) ? ["Thieves' Cant"] : []), ...(cls.name === 'Druid' ? ['Druidic'] : [])])).slice(0,5);
+    const features = chooseFeature(cls, subclass, level);
+    const alignment = rand(alignments);
+    const name = chooseName(race, genderInfo.label);
+    const role = rand(['wanderer','local notable','hireling','rival','mentor','merchant','guard captain','scholar','scout','priest','spellcaster','duelist','noble retainer']);
+    const deity = cls.name === 'Cleric' || cls.name === 'Paladin' ? rand(deities) : '';
+    const patron = cls.name === 'Warlock' ? rand(patrons) : '';
+    const npc = {
+      id: uid(), name, race: race.name, className: cls.name, subclass, level, rarity, age, gender: genderInfo.label, pronouns: genderInfo.pronouns,
+      hometown, background: background.name, role, alignment, vision: race.vision, speed, weight, size: race.size, voice: appearance.voice,
+      stats, hp, ac, pb, xp: xpForLevel(level), init, saves: saveList(stats, cls, pb), skills: skillList(stats, cls, background),
+      languages, familiar, gear, magic, appearance, personality: rand(personalities), ideal: rand(ideals), bond: rand(bonds), flaw: rand(flaws), quirk: chooseQuirks(cls, race), features,
+      deity, patron, tools: [rand(tools), chance(.45) ? rand(tools) : null].filter(Boolean), notes: background.hook,
+      prompt: ''
+    };
+    npc.prompt = buildPrompt(npc);
+    return npc;
+  }
+  function renderNPC(npc){
+    els.promptStorage.value = npc.prompt;
+    els.display.innerHTML = `
+      <div class="entry-wrap">
+        <div class="top-rule"></div>
+        <div class="entry-name">${escapeHtml(npc.name)}</div>
+        <div class="entry-lineage">${escapeHtml(npc.race)} ${escapeHtml(npc.className.toLowerCase())} (${escapeHtml(npc.subclass)}), ${npc.alignment}, ${npc.rarity}</div>
+
+        <div class="meta-grid">
+          <p><strong>Armor Class</strong> ${npc.ac}</p>
+          <p><strong>Hit Points</strong> ${npc.hp}</p>
+          <p><strong>Speed</strong> ${npc.speed} ft.</p>
+          <p><strong>Initiative</strong> ${formatSigned(npc.init)}</p>
+          <p><strong>Level</strong> ${npc.level} (${npc.xp.toLocaleString()} XP benchmark)</p>
+          <p><strong>Proficiency Bonus</strong> ${formatSigned(npc.pb)}</p>
+        </div>
+
+        <div class="ability-grid">
+          ${['STR','DEX','CON','INT','WIS','CHA'].map(key => `<div><div class="ability-label">${key}</div><div class="ability-score">${npc.stats[key]} (${formatSigned(mod(npc.stats[key]))})</div></div>`).join('')}
+        </div>
+
+        <div class="detail-line"><strong>Saving Throws</strong> ${escapeHtml(npc.saves)}</div>
+        <div class="detail-line"><strong>Skills</strong> ${escapeHtml(npc.skills)}</div>
+        <div class="detail-line"><strong>Senses</strong> ${escapeHtml(npc.vision)}, passive Perception ${10 + mod(npc.stats.WIS) + (npc.className === 'Ranger' ? npc.pb : 0)}</div>
+        <div class="detail-line"><strong>Languages</strong> ${escapeHtml(npc.languages.join(', '))}</div>
+
+        <div class="section-header">Identity & Bearing</div>
+        <div class="twocol">
+          <div>
+            <div class="detail-block"><strong>Gender</strong> ${escapeHtml(titleCase(npc.gender))} (${escapeHtml(npc.pronouns)})</div>
+            <div class="detail-block"><strong>Age</strong> ${npc.age}</div>
+            <div class="detail-block"><strong>Hometown</strong> ${escapeHtml(npc.hometown)}</div>
+            <div class="detail-block"><strong>Background</strong> ${escapeHtml(npc.background)}</div>
+            <div class="detail-block"><strong>Role</strong> ${escapeHtml(npc.role)}</div>
+          </div>
+          <div>
+            <div class="detail-block"><strong>Build</strong> ${escapeHtml(npc.appearance.silhouette)}</div>
+            <div class="detail-block"><strong>Voice</strong> ${escapeHtml(npc.voice)}</div>
+            <div class="detail-block"><strong>Weight</strong> ${npc.weight} lb.</div>
+            <div class="detail-block"><strong>Size</strong> ${escapeHtml(npc.size)}</div>
+            <div class="detail-block"><strong>Style</strong> ${escapeHtml(npc.appearance.style)}</div>
+          </div>
+        </div>
+
+        <div class="section-header">Appearance & Kit</div>
+        <div class="detail-line"><strong>Features</strong> ${escapeHtml([npc.appearance.hair, npc.appearance.eyes, npc.appearance.pattern].join(', '))}</div>
+        <div class="detail-line"><strong>Clothing</strong> ${escapeHtml(npc.gear.clothing)}</div>
+        <div class="detail-line"><strong>Accents</strong> ${escapeHtml(npc.gear.accents)}</div>
+        <div class="detail-line"><strong>Primary Gear</strong> ${escapeHtml(npc.gear.primary)}</div>
+        <div class="detail-line"><strong>Secondary Gear</strong> ${escapeHtml(npc.gear.secondary)}</div>
+        <div class="detail-line"><strong>Tools</strong> ${escapeHtml(npc.tools.join(', '))}</div>
+        <div class="detail-line"><strong>Familiar / Companion</strong> ${escapeHtml(npc.familiar)}</div>
+
+        <div class="section-header">Talents & Magic</div>
+        <div class="detail-line"><strong>Signature Features</strong> ${escapeHtml(npc.features.join(', '))}</div>
+        <div class="detail-line"><strong>Cantrips / Tricks</strong> ${escapeHtml(npc.magic.cantrips.length ? npc.magic.cantrips.join(', ') : 'None')}</div>
+        <div class="detail-line"><strong>Known Spells / Techniques</strong> ${escapeHtml(npc.magic.spells.length ? npc.magic.spells.join(', ') : 'None')}</div>
+        ${npc.deity ? `<div class="detail-line"><strong>Deity</strong> ${escapeHtml(npc.deity)}</div>` : ''}
+        ${npc.patron ? `<div class="detail-line"><strong>Patron</strong> ${escapeHtml(npc.patron)}</div>` : ''}
+
+        <div class="section-header">Temperament & Hooks</div>
+        <div class="detail-line"><strong>Personality</strong> ${escapeHtml(npc.personality)}</div>
+        <div class="detail-line"><strong>Ideal</strong> ${escapeHtml(npc.ideal)}</div>
+        <div class="detail-line"><strong>Bond</strong> ${escapeHtml(npc.bond)}</div>
+        <div class="detail-line"><strong>Flaw</strong> ${escapeHtml(npc.flaw)}</div>
+        <div class="detail-line"><strong>Quirk</strong> ${escapeHtml(npc.quirk)}</div>
+        <div class="detail-line"><strong>Detail</strong> ${escapeHtml(npc.notes)}</div>
+
+        <div class="section-header">Field Tags</div>
+        <div class="pill-line">
+          <span class="pill">${escapeHtml(npc.race)}</span>
+          <span class="pill">${escapeHtml(npc.className)}</span>
+          <span class="pill">${escapeHtml(npc.subclass)}</span>
+          <span class="pill">Level ${npc.level}</span>
+          <span class="pill">${escapeHtml(npc.rarity)}</span>
+          <span class="pill">${escapeHtml(npc.background)}</span>
+          <span class="pill">${escapeHtml(npc.role)}</span>
+        </div>
+      </div>
+    `;
+    els.saveBtn.disabled = false;
+    els.copyBtn.disabled = false;
+    els.copyPromptBtn.disabled = false;
+  }
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function currentList(){ return state.activeSource === 'saved' ? state.saved : state.history; }
+  function currentEntry(){ const list = currentList(); return list[state.activeIndex] || null; }
+  function setActive(source, index){ state.activeSource = source; state.activeIndex = index; const entry = currentEntry(); if (entry) renderNPC(entry); else resetDisplay(); renderSidebar(); updatePager(); persist(); }
+  function resetDisplay(){ els.display.innerHTML = `<div class="empty-state">Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</div>`; els.saveBtn.disabled = true; els.copyBtn.disabled = true; els.copyPromptBtn.disabled = true; els.promptStorage.value = ''; }
+  function toast(msg){ const div = document.createElement('div'); div.className = 'toast'; div.textContent = msg; els.toast.appendChild(div); setTimeout(() => div.remove(), 2200); }
+  function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({saved:state.saved, history:state.history, activeSource:state.activeSource, activeIndex:state.activeIndex})); }
+  function load(){ try { const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); state.saved = Array.isArray(raw.saved) ? raw.saved : []; state.history = Array.isArray(raw.history) ? raw.history : []; state.activeSource = raw.activeSource || 'history'; state.activeIndex = Number.isInteger(raw.activeIndex) ? raw.activeIndex : -1; } catch(e){} }
+  function addHistory(entry){ state.history.unshift(entry); state.history = state.history.slice(0, 60); state.activeSource = 'history'; state.activeIndex = 0; persist(); renderSidebar(); updatePager(); renderNPC(entry); }
+  function saveCurrent(){ const entry = currentEntry(); if (!entry) return; if (state.saved.some(s => s.id === entry.id)) { toast('Already saved to the codex'); return; } state.saved.unshift(entry); state.activeSource = 'saved'; state.activeIndex = 0; persist(); renderSidebar(); updatePager(); toast('Saved to the codex'); }
+  function removeSaved(id){ const idx = state.saved.findIndex(s => s.id === id); if (idx === -1) return; state.saved.splice(idx,1); if (state.activeSource === 'saved') state.activeIndex = clamp(state.activeIndex, 0, state.saved.length - 1); persist(); renderSidebar(); updatePager(); if (state.activeSource === 'saved' && state.saved.length) renderNPC(currentEntry()); else if (state.activeSource === 'saved') resetDisplay(); toast('Removed from saved'); }
+  function renderSidebarList(container, items, source){
+    if (!items.length) { container.innerHTML = `<div class="sb-empty">No ${source === 'saved' ? 'saved entries yet' : 'history yet'}</div>`; return; }
+    container.innerHTML = '';
+    items.forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'sb-entry' + (state.activeSource === source && state.activeIndex === index ? ' active' : '');
+      row.innerHTML = `
+        <div class="sb-entry-icon"><i class="fas ${source === 'saved' ? 'fa-bookmark' : 'fa-feather-pointed'}"></i></div>
+        <div class="sb-entry-info">
+          <div class="sb-entry-name">${escapeHtml(item.name)}</div>
+          <div class="sb-entry-meta">${escapeHtml(item.race)} ${escapeHtml(item.className)} · ${escapeHtml(item.hometown)}</div>
+        </div>
+        <div class="sb-entry-level">Lv ${item.level}</div>
+        <div class="sb-entry-actions">${source === 'saved' ? '<button class="sb-action-btn delete" title="Remove"><i class="fas fa-trash"></i></button>' : ''}</div>`;
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.delete')) return;
+        setActive(source, index);
+      });
+      const del = row.querySelector('.delete');
+      if (del) del.addEventListener('click', (e) => { e.stopPropagation(); removeSaved(item.id); });
+      container.appendChild(row);
+    });
+  }
+  function renderSidebar(){
+    renderSidebarList(els.savedList, state.saved, 'saved');
+    renderSidebarList(els.historyList, state.history, 'history');
+    els.sidebarFooter.innerHTML = `${state.saved.length} saved &middot; ${state.history.length} conjured`;
+  }
+  function updatePager(){
+    const list = currentList();
+    const has = list.length > 0 && state.activeIndex > -1;
+    els.pageIndicator.textContent = has ? `${state.activeIndex + 1} / ${list.length}` : '--';
+    els.navFirst.disabled = els.navPrev.disabled = !has || state.activeIndex <= 0;
+    els.navNext.disabled = els.navLast.disabled = !has || state.activeIndex >= list.length - 1;
+  }
+  async function copyText(text, success){ try { await navigator.clipboard.writeText(text); toast(success); } catch(e){ toast('Clipboard blocked by browser'); } }
+  function populateSelects(){
+    fillSelect(els.raceSelect, ['Any', ...races.map(r => r.name)]);
+    fillSelect(els.classSelect, ['Any', ...classes.map(c => c.name)]);
+    fillSelect(els.levelSelect, ['Any', ...Array.from({length:20}, (_,i) => String(i+1))]);
+    fillSelect(els.originSelect, origins);
+  }
+  function fillSelect(el, options){ el.innerHTML = options.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join(''); }
+  function openSidebar(open){ state.sidebarOpen = open; els.sidebar.classList.toggle('collapsed', !open); els.overlay.classList.toggle('active', open); }
+
+  els.sidebarToggle.addEventListener('click', () => openSidebar(!state.sidebarOpen));
+  els.sidebarCloseBtn.addEventListener('click', () => openSidebar(false));
+  els.overlay.addEventListener('click', () => openSidebar(false));
+  els.generateBtn.addEventListener('click', () => addHistory(generateNPC()));
+  els.saveBtn.addEventListener('click', saveCurrent);
+  els.copyBtn.addEventListener('click', () => { const entry = currentEntry(); if (entry) copyText(sheetText(entry), 'Character sheet copied'); });
+  els.copyPromptBtn.addEventListener('click', () => { if (els.promptStorage.value) copyText(els.promptStorage.value, 'Art prompt copied'); });
+  els.navFirst.addEventListener('click', () => setActive(state.activeSource, 0));
+  els.navPrev.addEventListener('click', () => setActive(state.activeSource, state.activeIndex - 1));
+  els.navNext.addEventListener('click', () => setActive(state.activeSource, state.activeIndex + 1));
+  els.navLast.addEventListener('click', () => setActive(state.activeSource, currentList().length - 1));
+
+  function sheetText(npc){
+    return `${npc.name}\n${npc.race} ${npc.className} (${npc.subclass}), level ${npc.level}, ${npc.alignment}, ${npc.rarity}\n\nAC ${npc.ac} | HP ${npc.hp} | Speed ${npc.speed} ft. | Initiative ${formatSigned(npc.init)} | PB ${formatSigned(npc.pb)}\nSTR ${npc.stats.STR} (${formatSigned(mod(npc.stats.STR))})  DEX ${npc.stats.DEX} (${formatSigned(mod(npc.stats.DEX))})  CON ${npc.stats.CON} (${formatSigned(mod(npc.stats.CON))})  INT ${npc.stats.INT} (${formatSigned(mod(npc.stats.INT))})  WIS ${npc.stats.WIS} (${formatSigned(mod(npc.stats.WIS))})  CHA ${npc.stats.CHA} (${formatSigned(mod(npc.stats.CHA))})\n\nGender: ${titleCase(npc.gender)} (${npc.pronouns})\nAge: ${npc.age}\nHometown: ${npc.hometown}\nBackground: ${npc.background}\nRole: ${npc.role}\nVision: ${npc.vision}\nLanguages: ${npc.languages.join(', ')}\nPersonality: ${npc.personality}\nIdeal: ${npc.ideal}\nBond: ${npc.bond}\nFlaw: ${npc.flaw}\nQuirk: ${npc.quirk}\n\nAppearance: ${npc.appearance.hair}, ${npc.appearance.eyes}, ${npc.appearance.pattern}, ${npc.appearance.silhouette}\nClothing: ${npc.gear.clothing}\nAccents: ${npc.gear.accents}\nPrimary Gear: ${npc.gear.primary}\nSecondary Gear: ${npc.gear.secondary}\nTools: ${npc.tools.join(', ')}\nFamiliar/Companion: ${npc.familiar}\n\nFeatures: ${npc.features.join(', ')}\nCantrips/Tricks: ${npc.magic.cantrips.join(', ') || 'None'}\nKnown Spells/Techniques: ${npc.magic.spells.join(', ') || 'None'}${npc.deity ? `\nDeity: ${npc.deity}` : ''}${npc.patron ? `\nPatron: ${npc.patron}` : ''}`;
+  }
+
+  load();
+  populateSelects();
+  renderSidebar();
+  if (currentEntry()) renderNPC(currentEntry()); else resetDisplay();
+  updatePager();
+})();
+</script>
+</body>
+</html>

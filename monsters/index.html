@@ -13,22 +13,21 @@
       --dnd-red-light: #7A200D;
       --parchment: #EFE5D0;
       --parchment-dark: #E0D5C0;
+      --parchment-deep: #D4C4A8;
       --ink: #1A1A1A;
       --ink-light: #333;
       --gold: #C9AD6A;
       --gold-bright: #E8D5A3;
+      --gold-dim: #A08940;
       --rule-color: #9C2B1B;
       --wood-dark: #2A1A0A;
       --wood-mid: #3E2415;
       --wood-light: #5D3A1A;
+      --sidebar-w: 280px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
       background-image: url('https://i.imgur.com/B1kEKpW.png');
@@ -37,7 +36,6 @@
       font-family: 'Spectral', serif;
       color: var(--ink);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       animation: scrollBackground 60s linear infinite;
@@ -49,547 +47,393 @@
       to { background-position: 400px 0; }
     }
 
-    /* ══════════════════════════════════════════
-       MAIN BOOK PAGE CONTAINER
-       ══════════════════════════════════════════ */
-    .book-page {
-      width: 100%;
-      max-width: 780px;
+    .layout {
+      display: flex;
       height: calc(100vh - 24px);
+      max-width: 1080px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100%;
+      background: var(--wood-dark);
+      border-radius: 3px 0 0 3px;
       display: flex;
       flex-direction: column;
-      background: var(--parchment);
-      border-radius: 3px;
-      position: relative;
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.1),
-        0 0 0 4px var(--parchment-dark),
-        0 0 0 5px rgba(0,0,0,0.15),
-        0 2px 8px rgba(0,0,0,0.2),
-        0 8px 30px rgba(0,0,0,0.35),
-        inset 0 0 60px rgba(0,0,0,0.06);
-      /* Subtle paper texture */
+      overflow: hidden;
+      box-shadow: inset -8px 0 20px rgba(0,0,0,0.3), -2px 0 10px rgba(0,0,0,0.3);
+      transition: margin-left 0.3s ease, opacity 0.3s ease;
       background-image:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 28px,
-          rgba(139, 108, 74, 0.04) 28px,
-          rgba(139, 108, 74, 0.04) 29px
-        ),
-        radial-gradient(ellipse at 20% 50%, rgba(139, 108, 74, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse at 80% 50%, rgba(139, 108, 74, 0.04) 0%, transparent 70%);
-      background-color: var(--parchment);
+        radial-gradient(ellipse at 30% 20%, rgba(80,50,20,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(60,35,10,0.2) 0%, transparent 50%);
+      background-color: var(--wood-dark);
     }
 
-    /* Page edge staining effect */
-    .book-page::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 3px;
+    .sidebar.collapsed {
+      margin-left: calc(var(--sidebar-w) * -1);
+      opacity: 0;
       pointer-events: none;
-      z-index: 1;
-      background:
-        linear-gradient(to right, rgba(120, 80, 40, 0.12) 0%, transparent 3%),
-        linear-gradient(to left, rgba(120, 80, 40, 0.08) 0%, transparent 2%),
-        linear-gradient(to bottom, rgba(120, 80, 40, 0.08) 0%, transparent 2%),
-        linear-gradient(to top, rgba(120, 80, 40, 0.1) 0%, transparent 3%);
     }
 
-    /* ══════════════════════════════════════════
-       HEADER BAR
-       ══════════════════════════════════════════ */
-    .page-header {
-      flex-shrink: 0;
-      padding: 14px 24px 10px 24px;
+    .sidebar-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(201,173,106,0.2);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 3px solid var(--dnd-red);
-      position: relative;
-      z-index: 2;
+      flex-shrink: 0;
     }
 
-    .page-header::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0; right: 0;
-      height: 1px;
-      background: var(--dnd-red);
-      opacity: 0.4;
+    .sidebar-header h2 {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
+
+    .sidebar-close {
+      background: none; border: none; color: var(--gold-dim);
+      cursor: pointer; font-size: 0.8rem; padding: 4px; transition: color 0.2s;
+    }
+    .sidebar-close:hover { color: var(--gold-bright); }
+
+    .sidebar-sections {
+      flex: 1; overflow-y: auto; padding: 8px 0;
+      scrollbar-width: thin; scrollbar-color: var(--wood-light) transparent;
+    }
+    .sidebar-sections::-webkit-scrollbar { width: 4px; }
+    .sidebar-sections::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-sections::-webkit-scrollbar-thumb { background: var(--wood-light); border-radius: 2px; }
+
+    .sb-section-label {
+      font-family: 'Cinzel', serif; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 2px; color: var(--gold-dim);
+      padding: 10px 16px 4px; display: flex; align-items: center; gap: 6px;
+    }
+    .sb-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,173,106,0.15); }
+
+    .sb-empty { padding: 8px 16px; font-size: 0.7rem; color: rgba(201,173,106,0.3); font-style: italic; }
+
+    .sb-entry {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 16px; cursor: pointer; transition: background 0.15s;
+      border-left: 3px solid transparent; position: relative;
+    }
+    .sb-entry:hover { background: rgba(255,255,255,0.04); border-left-color: var(--gold-dim); }
+    .sb-entry.active { background: rgba(201,173,106,0.08); border-left-color: var(--gold); }
+
+    .sb-entry-icon { font-size: 0.65rem; color: var(--gold-dim); width: 14px; text-align: center; flex-shrink: 0; }
+    .sb-entry-info { flex: 1; min-width: 0; }
+    .sb-entry-name {
+      font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
+      color: var(--gold-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+    }
+    .sb-entry-meta {
+      font-size: 0.6rem; color: var(--gold-dim); font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sb-entry-cr {
+      font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700;
+      color: var(--dnd-red-light); background: rgba(201,173,106,0.15);
+      padding: 1px 5px; border-radius: 2px; flex-shrink: 0; min-width: 20px; text-align: center;
+    }
+    .sb-entry-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
+    .sb-entry:hover .sb-entry-actions { opacity: 1; }
+
+    .sb-action-btn {
+      background: none; border: none; color: var(--gold-dim); cursor: pointer;
+      font-size: 0.6rem; padding: 2px 4px; border-radius: 2px; transition: all 0.15s;
+    }
+    .sb-action-btn:hover { color: var(--gold-bright); background: rgba(255,255,255,0.06); }
+    .sb-action-btn.delete:hover { color: #e74c3c; }
+
+    .sidebar-footer {
+      padding: 10px 16px; border-top: 1px solid rgba(201,173,106,0.15);
+      font-family: 'Cinzel', serif; font-size: 0.55rem; color: var(--gold-dim);
+      text-align: center; letter-spacing: 1px; flex-shrink: 0;
+    }
+
+    /* BOOK PAGE */
+    .book-page {
+      flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column;
+      background: var(--parchment); border-radius: 0 3px 3px 0; position: relative;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(0,0,0,0.06);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,108,74,0.04) 28px, rgba(139,108,74,0.04) 29px),
+        radial-gradient(ellipse at 20% 50%, rgba(139,108,74,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse at 80% 50%, rgba(139,108,74,0.04) 0%, transparent 70%);
+      background-color: var(--parchment);
+      transition: border-radius 0.3s ease;
+    }
+    .sidebar.collapsed + .book-page { border-radius: 3px; }
+
+    .book-page::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      pointer-events: none; z-index: 1;
+      background:
+        linear-gradient(to right, rgba(120,80,40,0.12) 0%, transparent 3%),
+        linear-gradient(to left, rgba(120,80,40,0.08) 0%, transparent 2%),
+        linear-gradient(to bottom, rgba(120,80,40,0.08) 0%, transparent 2%),
+        linear-gradient(to top, rgba(120,80,40,0.1) 0%, transparent 3%);
+    }
+
+    /* HEADER */
+    .page-header {
+      flex-shrink: 0; padding: 12px 20px 9px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 3px solid var(--dnd-red); position: relative; z-index: 2;
+    }
+    .page-header::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
+      height: 1px; background: var(--dnd-red); opacity: 0.4;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 12px; }
+
+    .sidebar-toggle {
+      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
+      color: var(--dnd-red); width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; padding: 0;
+    }
+    .sidebar-toggle:hover { background: var(--dnd-red); color: var(--parchment); }
 
     .header-title {
-      font-family: 'Cinzel Decorative', serif;
-      font-weight: 900;
-      font-size: 1.4rem;
-      color: var(--dnd-red);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      line-height: 1;
+      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.25rem;
+      color: var(--dnd-red); letter-spacing: 2px; text-transform: uppercase; line-height: 1;
     }
-
     .header-subtitle {
-      font-family: 'Spectral', serif;
-      font-style: italic;
-      font-size: 0.7rem;
-      color: var(--dnd-red-light);
-      letter-spacing: 1px;
-      margin-top: 2px;
+      font-family: 'Spectral', serif; font-style: italic; font-size: 0.65rem;
+      color: var(--dnd-red-light); letter-spacing: 1px; margin-top: 1px;
     }
 
-    .header-tools {
-      display: flex;
-      gap: 6px;
-    }
+    .header-tools { display: flex; gap: 5px; }
 
     .tool-btn {
-      background: none;
-      border: 1.5px solid var(--dnd-red);
-      border-radius: 3px;
-      color: var(--dnd-red);
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      font-family: inherit;
-      padding: 0;
+      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
+      color: var(--dnd-red); width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+      font-family: inherit; padding: 0; position: relative;
     }
+    .tool-btn:hover { background: var(--dnd-red); color: var(--parchment); transform: none; box-shadow: none; filter: none; }
+    .tool-btn.saved { background: var(--dnd-red); color: var(--gold-bright); border-color: var(--dnd-red); }
+    .tool-btn[disabled] { opacity: 0.3; pointer-events: none; }
 
-    .tool-btn:hover {
-      background: var(--dnd-red);
-      color: var(--parchment);
-      transform: none;
-      box-shadow: none;
-      filter: none;
-    }
-
-    /* ══════════════════════════════════════════
-       CONTROLS BAR
-       ══════════════════════════════════════════ */
+    /* CONTROLS */
     .controls-bar {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 24px;
-      border-bottom: 1px solid rgba(88, 24, 13, 0.15);
-      background: rgba(0, 0, 0, 0.02);
-      position: relative;
-      z-index: 2;
-      flex-wrap: wrap;
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
+      background: rgba(0,0,0,0.02); position: relative; z-index: 2; flex-wrap: wrap;
     }
-
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
+    .control-group { display: flex; align-items: center; gap: 4px; }
     .control-group label {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--dnd-red);
-      white-space: nowrap;
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
     }
-
     .control-group select {
-      padding: 4px 22px 4px 8px;
-      border: 1.5px solid rgba(88, 24, 13, 0.3);
-      border-radius: 2px;
-      font-family: 'Spectral', serif;
-      font-size: 0.8rem;
-      background: var(--parchment);
-      color: var(--ink);
-      cursor: pointer;
-      appearance: none;
+      padding: 3px 20px 3px 7px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
+      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
+      cursor: pointer; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2358180D'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 6px center;
-      min-width: 90px;
+      background-repeat: no-repeat; background-position: right 5px center; min-width: 82px;
     }
-
-    .control-group select:focus {
-      outline: none;
-      border-color: var(--dnd-red);
-    }
+    .control-group select:focus { outline: none; border-color: var(--dnd-red); }
 
     .conjure-btn {
-      margin-left: auto;
-      background: var(--dnd-red);
-      color: var(--gold-bright);
-      border: none;
-      border-radius: 2px;
-      padding: 7px 18px;
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 0.75rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      white-space: nowrap;
+      margin-left: auto; background: var(--dnd-red); color: var(--gold-bright);
+      border: none; border-radius: 2px; padding: 6px 16px;
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.15s; display: flex; align-items: center; gap: 7px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2); white-space: nowrap;
     }
+    .conjure-btn:hover { background: var(--dnd-red-light); box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+    .conjure-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .conjure-btn .fa-dice-d20 { font-size: 0.85rem; }
 
-    .conjure-btn:hover {
-      background: var(--dnd-red-light);
-      transform: none;
-      filter: none;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    }
-
-    .conjure-btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .conjure-btn .fa-dice-d20 {
-      font-size: 0.9rem;
-    }
-
-    /* ══════════════════════════════════════════
-       STAT BLOCK SCROLL AREA
-       ══════════════════════════════════════════ */
+    /* STAT SCROLL */
     .stat-scroll {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 20px 30px 30px 30px;
-      position: relative;
-      z-index: 2;
-      /* Custom scrollbar */
-      scrollbar-width: thin;
-      scrollbar-color: var(--dnd-red) transparent;
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 18px 26px 26px; position: relative; z-index: 2;
+      scrollbar-width: thin; scrollbar-color: var(--dnd-red) transparent;
     }
-
     .stat-scroll::-webkit-scrollbar { width: 6px; }
     .stat-scroll::-webkit-scrollbar-track { background: transparent; }
-    .stat-scroll::-webkit-scrollbar-thumb {
-      background: var(--dnd-red);
-      border-radius: 3px;
-    }
+    .stat-scroll::-webkit-scrollbar-thumb { background: var(--dnd-red); border-radius: 3px; }
 
-    /* ══════════════════════════════════════════
-       EMPTY STATE
-       ══════════════════════════════════════════ */
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-      opacity: 0.6;
-    }
-
-    .empty-state .pentagram {
-      font-size: 3rem;
-      color: var(--dnd-red);
-      margin-bottom: 16px;
-      opacity: 0.4;
-    }
-
-    .empty-state h3 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.2rem;
-      color: var(--dnd-red);
-      margin-bottom: 6px;
-    }
-
-    .empty-state p {
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--ink-light);
-    }
-
-    /* ══════════════════════════════════════════
-       STAT BLOCK - Official 5e Style
-       ══════════════════════════════════════════ */
-    .stat-block {
-      max-width: 100%;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Gradient top/bottom bars */
-    .gradient-bar {
-      height: 5px;
-      background: linear-gradient(to right, var(--dnd-red), var(--gold), var(--dnd-red));
-      border-radius: 0;
-      margin: 0 0 12px 0;
-    }
-
-    .gradient-bar.bottom {
-      margin: 16px 0 0 0;
-    }
-
-    /* Monster Name */
-    .monster-name {
-      font-family: 'Cinzel Decorative', serif;
-      font-weight: 900;
-      font-size: 2rem;
-      color: var(--dnd-red);
-      line-height: 1.05;
-      margin: 0 0 0 0;
-      letter-spacing: 1px;
-    }
-
-    /* Meta line */
-    .monster-meta {
-      font-family: 'Spectral', serif;
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--ink-light);
-      margin-bottom: 8px;
-    }
-
-    /* Tapered rule divider */
-    .tapered-rule {
-      height: 2px;
-      border: none;
-      background: linear-gradient(to right, transparent, var(--rule-color), transparent);
-      margin: 8px 0;
-    }
-
-    /* Property lines */
-    .prop-line {
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin: 2px 0;
-    }
-
-    .prop-label {
-      font-weight: 700;
-      color: var(--dnd-red);
-    }
-
-    .prop-value {
-      color: var(--ink);
-    }
-
-    /* Ability Scores */
-    .ability-scores {
-      display: flex;
-      justify-content: space-between;
-      margin: 10px 0;
-      padding: 8px 0;
-      text-align: center;
-    }
-
-    .ability-score {
-      flex: 1;
-    }
-
-    .ability-score .label {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 0.7rem;
-      color: var(--dnd-red);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .ability-score .value {
-      font-family: 'Spectral', serif;
-      font-size: 0.9rem;
-      color: var(--ink);
-    }
-
-    /* Section headers */
-    .section-header {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--dnd-red);
-      border-bottom: 2px solid var(--dnd-red);
-      padding-bottom: 3px;
-      margin: 16px 0 8px 0;
-      letter-spacing: 0.5px;
-    }
-
-    /* Action entries */
-    .action-entry {
-      margin-bottom: 8px;
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-
-    .action-name {
-      font-weight: 700;
-      font-style: italic;
-    }
-
-    .action-type {
-      font-style: italic;
-      color: var(--ink-light);
-    }
-
-    /* Physiology grid */
-    .physiology-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3px 24px;
-      margin-top: 6px;
-    }
-
-    .phys-item {
-      font-size: 0.82rem;
-      line-height: 1.5;
-      padding: 1px 0;
-      border-bottom: 1px dotted rgba(88, 24, 13, 0.15);
-    }
-
-    .phys-item .phys-label {
-      font-weight: 700;
-      color: var(--dnd-red);
-    }
-
-    /* Color swatch */
-    .color-swatch {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border: 1px solid rgba(0,0,0,0.3);
-      border-radius: 1px;
-      margin: 0 3px;
-      vertical-align: middle;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    }
-
-    /* Quirk / Behavior / Loot */
-    .flavor-line {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-top: 4px;
-    }
-
-    .flavor-line .fl-label {
-      font-weight: 700;
-      color: var(--dnd-red);
-    }
-
-    /* ══════════════════════════════════════════
-       PAGE FOOTER
-       ══════════════════════════════════════════ */
+    /* FOOTER */
     .page-footer {
-      flex-shrink: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 24px;
-      border-top: 1px solid rgba(88, 24, 13, 0.15);
-      font-family: 'Spectral', serif;
-      font-style: italic;
-      font-size: 0.65rem;
-      color: rgba(88, 24, 13, 0.4);
-      letter-spacing: 0.5px;
-      position: relative;
-      z-index: 2;
+      flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 20px; border-top: 1px solid rgba(88,24,13,0.15);
+      position: relative; z-index: 2;
+    }
+    .footer-nav { display: flex; align-items: center; gap: 4px; }
+    .nav-btn {
+      background: none; border: 1px solid rgba(88,24,13,0.25); border-radius: 2px;
+      color: var(--dnd-red); width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.65rem; transition: all 0.15s; padding: 0;
+    }
+    .nav-btn:hover:not([disabled]) { background: var(--dnd-red); color: var(--parchment); }
+    .nav-btn[disabled] { opacity: 0.2; pointer-events: none; }
+
+    .page-indicator {
+      font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700;
+      color: var(--dnd-red); padding: 0 6px; min-width: 50px; text-align: center;
+    }
+    .footer-flavor, .footer-chapter {
+      font-family: 'Spectral', serif; font-style: italic; font-size: 0.6rem;
+      color: rgba(88,24,13,0.35); letter-spacing: 0.5px;
     }
 
-    .page-num {
-      font-family: 'Cinzel', serif;
-      font-style: normal;
-      font-weight: 700;
-      font-size: 0.7rem;
-      color: var(--dnd-red);
-      margin: 0 10px;
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; text-align: center; opacity: 0.6;
+    }
+    .empty-state .pentagram { font-size: 3rem; color: var(--dnd-red); margin-bottom: 16px; opacity: 0.4; }
+    .empty-state h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--dnd-red); margin-bottom: 6px; }
+    .empty-state p { font-style: italic; font-size: 0.8rem; color: var(--ink-light); }
+    .empty-state .shortcuts {
+      margin-top: 20px; font-size: 0.7rem; color: rgba(88,24,13,0.4);
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .empty-state .shortcuts kbd {
+      display: inline-block; background: rgba(88,24,13,0.08); border: 1px solid rgba(88,24,13,0.15);
+      border-radius: 3px; padding: 1px 6px; font-family: 'Cinzel', serif; font-size: 0.6rem;
+      color: var(--dnd-red); margin: 0 2px;
     }
 
-    /* ══════════════════════════════════════════
-       TOAST
-       ══════════════════════════════════════════ */
-    #toast-container {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
+    /* STAT BLOCK */
+    .stat-block { max-width: 100%; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .gradient-bar { height: 5px; background: linear-gradient(to right, var(--dnd-red), var(--gold), var(--dnd-red)); margin: 0 0 12px; }
+    .gradient-bar.bottom { margin: 16px 0 0; }
+
+    .monster-name {
+      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.9rem;
+      color: var(--dnd-red); line-height: 1.05; letter-spacing: 1px;
+    }
+    .monster-meta { font-family: 'Spectral', serif; font-style: italic; font-size: 0.82rem; color: var(--ink-light); margin-bottom: 8px; }
+
+    .tapered-rule { height: 2px; border: none; background: linear-gradient(to right, transparent, var(--rule-color), transparent); margin: 8px 0; }
+
+    .prop-line { font-size: 0.85rem; line-height: 1.5; margin: 2px 0; }
+    .prop-label { font-weight: 700; color: var(--dnd-red); }
+    .prop-value { color: var(--ink); }
+
+    .ability-scores { display: flex; justify-content: space-between; margin: 8px 0; padding: 6px 0; text-align: center; }
+    .ability-score { flex: 1; }
+    .ability-score .label { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.65rem; color: var(--dnd-red); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 1px; }
+    .ability-score .value { font-family: 'Spectral', serif; font-size: 0.85rem; color: var(--ink); }
+
+    .section-header {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.05rem;
+      color: var(--dnd-red); border-bottom: 2px solid var(--dnd-red);
+      padding-bottom: 2px; margin: 14px 0 6px; letter-spacing: 0.5px;
     }
 
+    .action-entry { margin-bottom: 6px; font-size: 0.85rem; line-height: 1.45; }
+    .action-name { font-weight: 700; font-style: italic; }
+
+    .physiology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; margin-top: 4px; }
+    .phys-item { font-size: 0.8rem; line-height: 1.45; padding: 1px 0; border-bottom: 1px dotted rgba(88,24,13,0.15); }
+    .phys-item .phys-label { font-weight: 700; color: var(--dnd-red); }
+
+    .color-swatch {
+      display: inline-block; width: 10px; height: 10px; border: 1px solid rgba(0,0,0,0.3);
+      border-radius: 1px; margin: 0 3px; vertical-align: middle; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .flavor-line { font-size: 0.82rem; line-height: 1.45; margin-top: 3px; }
+    .flavor-line .fl-label { font-weight: 700; color: var(--dnd-red); }
+
+    /* TOAST */
+    #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
     .toast {
-      background: var(--wood-dark);
-      color: var(--gold-bright);
-      padding: 10px 20px;
-      border-radius: 3px;
-      border: 1px solid var(--gold);
-      font-family: 'Cinzel', serif;
-      font-size: 0.75rem;
-      letter-spacing: 1px;
+      background: var(--wood-dark); color: var(--gold-bright);
+      padding: 10px 20px; border-radius: 3px; border: 1px solid var(--gold);
+      font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 1px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(8px);
-      white-space: nowrap;
+      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(8px); white-space: nowrap;
     }
+    .toast.show { opacity: 1; transform: translateY(0); }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Hidden element */
     #imagePromptStorage { display: none; }
 
-    /* ══════════════════════════════════════════
-       RESPONSIVE
-       ══════════════════════════════════════════ */
-    @media (max-width: 700px) {
-      body { padding: 6px; }
-      .book-page { height: calc(100vh - 12px); }
-      .page-header { padding: 10px 16px 8px; }
-      .header-title { font-size: 1rem; letter-spacing: 2px; }
-      .controls-bar { padding: 8px 16px; gap: 6px; }
-      .control-group select { min-width: 70px; font-size: 0.75rem; padding: 3px 18px 3px 6px; }
-      .control-group label { font-size: 0.55rem; }
-      .stat-scroll { padding: 14px 16px 20px; }
-      .monster-name { font-size: 1.4rem; }
-      .physiology-grid { grid-template-columns: 1fr; }
-      .conjure-btn { padding: 6px 12px; font-size: 0.65rem; }
-      .conjure-btn span { display: none; }
+    /* RESPONSIVE */
+    @media (max-width: 800px) {
+      .sidebar { position: fixed; left: 0; top: 0; height: 100vh; z-index: 100; border-radius: 0; }
+      .sidebar.collapsed { margin-left: 0; transform: translateX(-100%); }
+      .sidebar:not(.collapsed) { transform: translateX(0); }
+      .book-page { border-radius: 3px !important; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
+      .sidebar-overlay.active { display: block; }
     }
 
-    @media (max-width: 400px) {
-      .controls-bar { flex-wrap: wrap; }
-      .conjure-btn { margin-left: 0; width: 100%; justify-content: center; }
+    @media (max-width: 600px) {
+      body { padding: 6px; }
+      .layout { height: calc(100vh - 12px); }
+      .page-header { padding: 8px 14px 7px; }
+      .header-title { font-size: 1rem; letter-spacing: 1px; }
+      .header-subtitle { display: none; }
+      .controls-bar { padding: 6px 14px; gap: 5px; }
+      .control-group select { min-width: 65px; font-size: 0.72rem; padding: 2px 16px 2px 5px; }
+      .control-group label { font-size: 0.5rem; }
+      .stat-scroll { padding: 12px 14px 18px; }
+      .monster-name { font-size: 1.3rem; }
+      .conjure-btn { padding: 5px 10px; font-size: 0.6rem; }
+      .conjure-btn span { display: none; }
+      .physiology-grid { grid-template-columns: 1fr; }
+      .footer-flavor { display: none; }
+      .footer-chapter { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <div class="book-page">
-    <!-- HEADER -->
+<div class="layout">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-book-open" style="margin-right:6px;font-size:0.65rem"></i> Bestiary Index</h2>
+      <button class="sidebar-close" id="sidebarCloseBtn" title="Close index"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sidebar-sections" id="sidebarSections">
+      <div class="sb-section-label"><i class="fas fa-bookmark" style="font-size:0.5rem"></i> Saved</div>
+      <div id="savedList"><div class="sb-empty">No saved entries yet</div></div>
+      <div class="sb-section-label"><i class="fas fa-clock-rotate-left" style="font-size:0.5rem"></i> History</div>
+      <div id="historyList"><div class="sb-empty">No history yet</div></div>
+    </div>
+    <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 conjured</div>
+  </aside>
+
+  <main class="book-page">
     <div class="page-header">
-      <div>
-        <div class="header-title">Monster Manual</div>
-        <div class="header-subtitle">Arcane Bestiary & Field Guide</div>
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Open Bestiary Index"><i class="fas fa-book-open"></i></button>
+        <div>
+          <div class="header-title">Monster Manual</div>
+          <div class="header-subtitle">Arcane Bestiary &amp; Field Guide</div>
+        </div>
       </div>
       <div class="header-tools">
-        <button class="tool-btn" id="copyBtn" title="Copy Stat Block to Clipboard"><i class="fas fa-scroll"></i></button>
-        <button class="tool-btn" id="copyPromptBtn" title="Copy Image Prompt"><i class="fas fa-paint-brush"></i></button>
+        <button class="tool-btn" id="saveBtn" title="Save to Bestiary" disabled><i class="fas fa-bookmark"></i></button>
+        <button class="tool-btn" id="copyBtn" title="Copy Stat Block" disabled><i class="fas fa-scroll"></i></button>
+        <button class="tool-btn" id="copyPromptBtn" title="Copy Image Prompt" disabled><i class="fas fa-paint-brush"></i></button>
       </div>
     </div>
 
-    <!-- CONTROLS -->
     <div class="controls-bar">
       <div class="control-group">
         <label for="monsterTypeSelect">Type</label>
@@ -608,457 +452,948 @@
         <select id="habitatSelect"><option value="Any">Any</option></select>
       </div>
       <button class="conjure-btn" id="generateBtn">
-        <i class="fas fa-dice-d20"></i>
-        <span>Conjure</span>
+        <i class="fas fa-dice-d20"></i><span>Conjure</span>
       </button>
     </div>
 
-    <!-- STAT BLOCK AREA -->
     <div class="stat-scroll" id="statScroll">
       <div id="monsterDisplay">
         <div class="empty-state">
           <div class="pentagram"><i class="fas fa-hat-wizard"></i></div>
           <h3>Awaiting Conjuration</h3>
           <p>Select your parameters and roll the dice.</p>
+          <div class="shortcuts">
+            <div><kbd>Space</kbd> Conjure</div>
+            <div><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate</div>
+            <div><kbd>S</kbd> Save &nbsp; <kbd>B</kbd> Bestiary</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER -->
     <div class="page-footer">
-      Chapter IX: Creatures of the Realms
-      <span class="page-num" id="pageNum">pg. 1</span>
-      Compendium Monstrum
+      <span class="footer-flavor">Chapter IX: Creatures of the Realms</span>
+      <div class="footer-nav">
+        <button class="nav-btn" id="navFirst" title="First page" disabled><i class="fas fa-angles-left"></i></button>
+        <button class="nav-btn" id="navPrev" title="Previous page" disabled><i class="fas fa-chevron-left"></i></button>
+        <span class="page-indicator" id="pageIndicator">--</span>
+        <button class="nav-btn" id="navNext" title="Next page" disabled><i class="fas fa-chevron-right"></i></button>
+        <button class="nav-btn" id="navLast" title="Last page" disabled><i class="fas fa-angles-right"></i></button>
+      </div>
+      <span class="footer-chapter">Compendium Monstrum</span>
     </div>
-  </div>
+  </main>
+</div>
 
-  <input type="hidden" id="imagePromptStorage" value="">
-  <div id="toast-container"></div>
+<input type="hidden" id="imagePromptStorage" value="">
+<div id="toast-container"></div>
 
-  <script>
-    /* ═══════════════════════════════════════════
-       DATA
-       ═══════════════════════════════════════════ */
-    const monsterTypes = [
-        "Aberration","Beast","Celestial","Construct","Dragon","Elemental","Fey","Fiend",
-        "Giant","Humanoid","Monstrosity","Ooze","Plant","Undead","Swarm","Titan",
-        "Snake","Bat","Big Cat","Bear","Wolf","Spider","Rat","Crocodile","Ape","Boar",
-        "Eagle","Owl","Shark","Squid","Scorpion","Beetle","Centipede","Lizard","Frog","Toad",
-        "Mermaid","Centaur","Harpy","Griffin","Sphinx","Gorgon","Minotaur","Satyr","Dryad","Nymph",
-        "Banshee","Ghoul","Lich","Mummy","Specter","Wraith","Golem","Homunculus","Animated Armor",
-        "Treant","Shambling Mound","Myconid","Blink Dog","Displacer Beast","Rust Monster","Mimic",
-        "Beholder","Mind Flayer","Aboleth","Slaad","Yuan-ti","Githyanki","Githzerai","Modron",
-        "Couatl","Deva","Planetar","Solar","Erinyes","Imp","Succubus","Pit Fiend","Balor",
-        "Efreeti","Djinn","Marid","Dao","Salamander","Gargoyle","Medusa","Lamia","Naga",
-        "Tarrasque","Kraken","Leviathan","Phoenix","Unicorn","Pegasus","Basilisk","Cockatrice"
-    ];
-    const monsterStyles = [
-        "Skeletal","Armored","Fleshy","Gaseous","Crystalline","Shadowy","Ethereal","Mechanical",
-        "Plant-like","Insectoid","Aquatic","Avian","Reptilian","Fungal","Demonic","Angelic",
-        "Chaotic","Orderly","Primal","Ancient","Futuristic","Magical","Psionic","Mutated",
-        "Corrupted","Radiant","Abyssal","Celestial","Infernal","Feywild","Shadowfell","Astral",
-        "Elemental","Clockwork","Golemic","Spectral","Venomous","Bioluminescent",
-        "Chitinous","Scaly","Feathered","Furred","Spiked","Tendriled","Segmented","Amorphous"
-    ];
-    const monsterColors = [
-        {name:"Crimson",hex:"#DC143C"},{name:"Emerald",hex:"#50C878"},{name:"Sapphire",hex:"#0F52BA"},
-        {name:"Amethyst",hex:"#9966CC"},{name:"Obsidian",hex:"#2A2A2A"},{name:"Golden",hex:"#FFD700"},
-        {name:"Silver",hex:"#C0C0C0"},{name:"Bronze",hex:"#CD7F32"},{name:"Ruby",hex:"#E0115F"},
-        {name:"Topaz",hex:"#FFC87C"},{name:"Turquoise",hex:"#40E0D0"},{name:"Magenta",hex:"#FF00FF"},
-        {name:"Bone White",hex:"#F0E68C"},{name:"Forest Green",hex:"#228B22"},{name:"Sky Blue",hex:"#87CEEB"},
-        {name:"Rust Brown",hex:"#A0522D"},{name:"Midnight Black",hex:"#191970"},{name:"Coral Pink",hex:"#FF7F50"},
-        {name:"Lavender",hex:"#E6E6FA"},{name:"Charcoal Gray",hex:"#36454F"},{name:"Lime Green",hex:"#32CD32"},
-        {name:"Violet",hex:"#EE82EE"}
-    ];
-    const monsterAbilities = [
-        {name:"Claws",type:"Melee Weapon Attack",damage:"1d6 slashing"},
-        {name:"Bite",type:"Melee Weapon Attack",damage:"1d6 piercing"},
-        {name:"Stomp",type:"Melee Weapon Attack",damage:"1d8 bludgeoning"},
-        {name:"Tail Whip",type:"Melee Weapon Attack",damage:"1d6 bludgeoning"},
-        {name:"Acid Spit",type:"Ranged Attack",damage:"2d6 acid"},
-        {name:"Fire Breath",type:"Ranged Attack",damage:"3d6 fire",recharge:"5-6"},
-        {name:"Ice Blast",type:"Ranged Attack",damage:"3d6 cold",recharge:"5-6"},
-        {name:"Lightning Bolt",type:"Ranged Attack",damage:"3d6 lightning",recharge:"5-6"},
-        {name:"Teleportation",type:"Movement",description:"The creature magically teleports up to 30 feet to an unoccupied space it can see."},
-        {name:"Invisibility",type:"Defense",description:"The creature magically turns invisible for 1 minute or until it attacks or casts a spell."},
-        {name:"Mind Control",type:"Spell",description:"The creature attempts to magically dominate the mind of one creature it can see within 60 feet.",save:"Wisdom"},
-        {name:"Regeneration",type:"Trait",description:"The creature regains 5 hit points at the start of each of its turns."},
-        {name:"Flight",type:"Movement",description:"The creature has a flying speed of 60 feet."},
-        {name:"Burrowing",type:"Movement",description:"The creature has a burrowing speed of 30 feet."},
-        {name:"Camouflage",type:"Trait",description:"The creature has advantage on Dexterity (Stealth) checks made in its natural environment."},
-        {name:"Webbing",type:"Ranged Attack",description:"The creature shoots sticky webs at a target within 30 feet, restraining it on a failed save.",save:"Strength"},
-        {name:"Poison Sting",type:"Melee Weapon Attack",damage:"1d4 piercing plus 2d4 poison",save:"Constitution"},
-        {name:"Sonic Scream",type:"Ranged Attack",damage:"2d6 thunder",description:"Each creature in a 15-foot cone must succeed on a save or be knocked prone.",save:"Constitution"},
-        {name:"Petrification Gaze",type:"Ranged Attack",description:"The creature targets one creature it can see within 30 feet. The target must succeed on a save or begin turning to stone.",save:"Constitution"},
-        {name:"Shadow Step",type:"Movement",description:"The creature teleports from one area of dim light or darkness to another within 60 feet."},
-        {name:"Ethereal Jaunt",type:"Movement",description:"The creature shifts into the Border Ethereal until the start of its next turn."},
-        {name:"Aura of Fear",type:"Trait",description:"Any creature hostile to the creature that starts its turn within 20 feet must succeed on a save or become frightened for 1 minute.",save:"Wisdom"},
-        {name:"Life Drain",type:"Melee Weapon Attack",damage:"1d6 necrotic",description:"The creature regains hit points equal to half the necrotic damage dealt."},
-        {name:"Trampling Charge",type:"Melee Weapon Attack",damage:"2d8 bludgeoning",description:"If the creature moves at least 20 feet straight toward a target and hits, the target must succeed on a save or be knocked prone.",save:"Strength"},
-        {name:"Constrict",type:"Melee Weapon Attack",damage:"1d8 bludgeoning",description:"The target is grappled (escape DC equals the save DC). Until this grapple ends, the target is restrained.",save:"Strength"},
-        {name:"Hypnotic Gaze",type:"Ranged Attack",description:"The creature targets one creature it can see within 30 feet. The target must succeed on a save or be charmed for 1 minute.",save:"Wisdom"},
-        {name:"Divine Smite",type:"Melee Weapon Attack",damage:"2d8 radiant",description:"Radiant energy wreathes the creature's strike."},
-        {name:"Unholy Aura",type:"Trait",description:"Creatures of the creature's choice within 10 feet have disadvantage on saving throws.",save:"Wisdom"},
-        {name:"Gravity Manipulation",type:"Spell",description:"The creature alters gravity in a 30-foot radius, causing creatures to fall upward or hover."},
-        {name:"Reality Warping",type:"Spell",description:"The creature distorts the fabric of reality in a 20-foot radius, creating difficult terrain and imposing disadvantage on attack rolls."}
-    ];
-    const monsterOrigins = [
-        "Material Plane","Plane of Fire","Plane of Water","Plane of Earth","Plane of Air",
-        "Feywild","Shadowfell","Nine Hells","Abyss","Astral Plane","Ethereal Plane",
-        "Mount Celestia","Bytopia","Elysium","The Beastlands","Arborea","Ysgard","Limbo",
-        "Pandemonium","The Gray Waste","Carceri","Hades","Gehenna","Baator","Acheron",
-        "Arctic Tundra","Tropical Rainforest","Volcanic Mountains","Deep Ocean Trenches","Desolate Desert",
-        "Ancient Ruins","Forgotten Caves","Haunted Forests","Floating Islands","Underground Cities",
-        "The Elemental Chaos","The Far Realm","The Positive Energy Plane","The Negative Energy Plane"
-    ];
-    const monsterSizes = ["Tiny","Small","Medium","Large","Huge","Gargantuan"];
-    const monsterAlignments = [
-        "lawful good","neutral good","chaotic good","lawful neutral","true neutral",
-        "chaotic neutral","lawful evil","neutral evil","chaotic evil","unaligned"
-    ];
-    const monsterSenses = [
-        "darkvision 60 ft.","blindsight 30 ft.","truesight 120 ft.","tremorsense 60 ft."
-    ];
-    const monsterLanguages = {
-        "Material Plane":["Common"],"Plane of Fire":["Primordial","Infernal"],"Plane of Water":["Primordial","Aquan"],
-        "Plane of Earth":["Primordial","Terran"],"Plane of Air":["Primordial","Auran"],
-        "Feywild":["Sylvan","Elvish"],"Shadowfell":["Undercommon","Abyssal"],
-        "Nine Hells":["Infernal","Common"],"Abyss":["Abyssal","Common"],
-        "Astral Plane":["telepathy 120 ft.","Celestial"],"Ethereal Plane":["telepathy 120 ft."],
-        "Mount Celestia":["Celestial","Common"],"Bytopia":["Celestial","Common"],
-        "Elysium":["Celestial","Elvish"],"The Beastlands":["Sylvan","Common"],
-        "Arborea":["Elvish","Sylvan"],"Ysgard":["Giant","Common"],
-        "Limbo":["Primordial","telepathy 120 ft."],"Pandemonium":["Abyssal","Infernal"],
-        "The Gray Waste":["Infernal","Abyssal"],"Carceri":["Infernal","Abyssal"],
-        "Hades":["Infernal","Abyssal"],"Gehenna":["Infernal","Abyssal"],
-        "Baator":["Infernal","Abyssal"],"Acheron":["Infernal","Abyssal"],
-        "Arctic Tundra":["Giant","Common"],"Tropical Rainforest":["Sylvan","Common"],
-        "Volcanic Mountains":["Primordial","Infernal"],"Deep Ocean Trenches":["Aquan","Common"],
-        "Desolate Desert":["Common","Primordial"],"Ancient Ruins":["Undercommon","Common"],
-        "Forgotten Caves":["Undercommon","Common"],"Haunted Forests":["Sylvan","Common"],
-        "Floating Islands":["Auran","Common"],"Underground Cities":["Undercommon","Common"],
-        "The Elemental Chaos":["Primordial","telepathy 120 ft."],"The Far Realm":["telepathy 120 ft.","Deep Speech"],
-        "The Positive Energy Plane":["Celestial","telepathy 120 ft."],"The Negative Energy Plane":["Abyssal","telepathy 120 ft."]
-    };
-    const monsterCharacteristics = {
-        wings:["Has Wings","No Wings"],scales:["Has Scales","No Scales"],hair:["Has Hair","Hairless"],
-        horns:["Has Horns","No Horns"],tail:["Has Tail","No Tail"],
-        extraLimbs:["Has Extra Limbs","No Extra Limbs"],eyes:["Multiple Eyes","Two Eyes","No Eyes"]
-    };
-    const monsterShapes = ["Aberration","Beast","Celestial","Construct","Dragon","Elemental","Fey","Fiend","Giant","Humanoid","Monstrosity","Ooze","Plant","Undead","Swarm","Titan"];
-    const namePrefixes = ["Gnar","Vor","Xyl","Zar","Kry","Mor","Thal","Vex","Jor","Fey","Gloom","Shad","Ebon","Crim","Aeth","Lum","Sol","Ter","Aqua","Pyro","Cryo","Geo","Aero"];
-    const nameMiddles = ["ath","oth","yth","eth","ith","ar","or","yr","er","ir","ax","ox","yx","ex","ix","un","en","in","on","an"];
-    const nameSuffixes = ["os","us","is","as","es","on","an","en","in","ar","or","yr","er","ir","ax","ox","yx","ex","ix"];
-    const monsterQuirks = [
-        "Collects shiny objects obsessively","Hums a haunting melody when idle","Speaks only in cryptic riddles",
-        "Possesses a vestigial third eye","Perpetually ravenous","Emits a faint bioluminescent glow",
-        "Leaves a trail of viscous slime","Hoards teeth from fallen prey","Fastidiously cleans itself after combat",
-        "Has no sense of direction whatsoever","Communicates exclusively in rhyme","Tells terrible jokes mid-combat",
-        "Suffers from acute agoraphobia","Can predict weather changes","Always caked in dried mud",
-        "Maintains a collection of bones","Afraid of its own reflection","Sees only in monochrome",
-        "Compulsively hoards food","Desperately tries to befriend adventurers","Terrified of creatures smaller than itself",
-        "Speaks only in whispers","Covered in molting feathers","Collects smooth river stones",
-        "Startles violently at loud sounds","Sees only in shades of green","Collects ornate buttons",
-        "Always spoiling for a fight","Pathologically afraid of water","Communicates through eerie song",
-        "Covered in dead leaves and bark","Hoards old keys","Afraid of total darkness",
-        "Collects scraps of old string","Obsessed with geometric patterns","Claustrophobic in tight spaces",
-        "Covered in patches of moss","Collects raw gemstones","Terrified of arcane magic"
-    ];
-    const monsterHabitats = ["Forest","Desert","Cave","Swamp","Urban Ruins","Mountains","Underwater","Volcano","Grassland","Tundra","Ruins"];
-    const conditionImmunities = ["charmed","exhaustion","frightened","paralyzed","poisoned","stunned"];
-    const vulnerabilities = ["fire","cold","lightning","acid","necrotic","radiant","psychic"];
-    const monsterLoot = ["Coins","Magical Artifact","Potion of Healing","Ancient Scroll","Gemstone","Weapon","Armor","Ring","Cursed Item","Spellbook"];
-    const monsterBehavior = ["Aggressive","Territorial","Solitary","Pack Hunter","Mischievous","Cunning","Lazy","Curious","Reclusive","Bloodthirsty"];
+<script>
 
-    /* ═══════════════════════════════════════════
-       UTILITIES
-       ═══════════════════════════════════════════ */
-    const R = arr => arr[Math.floor(Math.random() * arr.length)];
-    const RN = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const mod = s => Math.floor((s - 10) / 2);
-    const fmtMod = m => m >= 0 ? `+${m}` : `${m}`;
-    const profBonus = cr => {
-      const n = parseFloat(cr) || 0;
-      if (n < 5) return 2; if (n < 9) return 3; if (n < 13) return 4;
-      if (n < 17) return 5; if (n < 21) return 6; if (n < 25) return 7;
-      if (n < 29) return 8; return 9;
-    };
-    const xpByCR = {
-      "0":0,"1/8":25,"1/4":50,"1/2":100,"1":200,"2":450,"3":700,"4":1100,"5":1800,
-      "6":2300,"7":2900,"8":3900,"9":5000,"10":5900,"11":7200,"12":8400,"13":10000,
-      "14":11500,"15":13000,"16":15000,"17":18000,"18":20000,"19":22000,"20":25000,
-      "21":33000,"22":41000,"23":50000,"24":62000,"25":75000,"26":90000,"27":105000,
-      "28":120000,"29":135000,"30":155000
-    };
+/* DATA */
+const crOrder=["0","1/8","1/4","1/2","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"];
+const xpByCR={"0":10,"1/8":25,"1/4":50,"1/2":100,"1":200,"2":450,"3":700,"4":1100,"5":1800,"6":2300,"7":2900,"8":3900,"9":5000,"10":5900,"11":7200,"12":8400,"13":10000,"14":11500,"15":13000,"16":15000,"17":18000,"18":20000,"19":22000,"20":25000,"21":33000,"22":41000,"23":50000,"24":62000,"25":75000,"26":90000,"27":105000,"28":120000,"29":135000,"30":155000};
+const crNumeric={"0":0,"1/8":0.125,"1/4":0.25,"1/2":0.5,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"10":10,"11":11,"12":12,"13":13,"14":14,"15":15,"16":16,"17":17,"18":18,"19":19,"20":20,"21":21,"22":22,"23":23,"24":24,"25":25,"26":26,"27":27,"28":28,"29":29,"30":30};
 
-    function generateHP(cr, con) {
-      let base=0, dice=8, num=0, cMod=mod(con);
-      const table = {"0":[1,1,4],"1/8":[5,1,6],"1/4":[10,2,6],"1/2":[20,3,8],
-        "1":[30,4,8],"2":[50,5,8],"3":[70,6,8],"4":[90,7,8],"5":[110,8,10],
-        "6":[130,9,10],"7":[150,10,10],"8":[170,11,10],"9":[190,12,10],"10":[210,13,10],
-        "11":[230,14,10],"12":[250,15,10],"13":[270,16,10],"14":[290,17,10],"15":[310,18,10],
-        "16":[330,19,10],"17":[350,20,10],"18":[370,21,10],"19":[390,22,10],"20":[410,23,10]};
-      if (table[cr]) { [base,num,dice] = table[cr]; }
-      else { base = 410 + (parseInt(cr)*10); num=25; dice=10; }
-      let hp = base + (num * cMod);
-      if (hp < 1) hp = 1;
-      const conBonus = num * cMod;
-      return { hp, formula: `${num}d${dice}${conBonus >= 0 ? ' + ' : ' - '}${Math.abs(conBonus)}` };
+const monsterStyles=[
+  "Skeletal","Armored","Fleshy","Gaseous","Crystalline","Shadowy","Ethereal","Mechanical","Plant-like","Insectoid","Aquatic","Avian","Reptilian","Fungal","Demonic","Angelic","Chaotic","Orderly","Primal","Ancient","Magical","Psionic","Mutated","Corrupted","Radiant","Abyssal","Celestial","Infernal","Feywild","Shadowfell","Astral","Elemental","Clockwork","Golemic","Spectral","Venomous","Bioluminescent","Chitinous","Scaly","Feathered","Furred","Spiked","Tendriled","Segmented","Amorphous","Runed","Storm-touched","Glacial","Sun-baked","Moonlit","Bloodstained","Void-touched","Molten","Coral-grown","Mire-soaked","Cinder-veined","Starborn","Bone-plated","Moss-draped"
+];
+
+const monsterColors=[
+  {name:"Crimson",hex:"#DC143C"},{name:"Emerald",hex:"#50C878"},{name:"Sapphire",hex:"#0F52BA"},{name:"Amethyst",hex:"#9966CC"},
+  {name:"Obsidian",hex:"#2A2A2A"},{name:"Golden",hex:"#FFD700"},{name:"Silver",hex:"#C0C0C0"},{name:"Bronze",hex:"#CD7F32"},
+  {name:"Ruby",hex:"#E0115F"},{name:"Topaz",hex:"#FFC87C"},{name:"Turquoise",hex:"#40E0D0"},{name:"Magenta",hex:"#FF00FF"},
+  {name:"Bone White",hex:"#F0E68C"},{name:"Forest Green",hex:"#228B22"},{name:"Sky Blue",hex:"#87CEEB"},{name:"Rust Brown",hex:"#A0522D"},
+  {name:"Midnight Black",hex:"#191970"},{name:"Coral Pink",hex:"#FF7F50"},{name:"Lavender",hex:"#E6E6FA"},{name:"Charcoal Gray",hex:"#36454F"},
+  {name:"Lime Green",hex:"#32CD32"},{name:"Violet",hex:"#EE82EE"},{name:"Ash Gray",hex:"#B2BEB5"},{name:"Pearl",hex:"#FDEEF4"},
+  {name:"Verdigris",hex:"#43B3AE"},{name:"Copper",hex:"#B87333"},{name:"Ivory",hex:"#FFFFF0"},{name:"Dusk Blue",hex:"#4E5D94"}
+];
+
+const fantasyLanguages=[
+  "Common","Elvish","Dwarvish","Giant","Gnomish","Goblin","Halfling","Orc","Draconic","Infernal","Abyssal","Celestial","Primordial",
+  "Auran","Aquan","Ignan","Terran","Sylvan","Undercommon","Deep Speech","Telepathy 60 ft.","Telepathy 120 ft.","Thri-kreen","Slaad",
+  "Modron","Yikarian","Yeti","Blink Dog","Winter Wolf","Aarakocra","Grung","Gnoll","Yuan-ti","Myconid Spores","Worg","Vegepygmy",
+  "Kraul Cant","Umbral Cant","Star Tongue","Void Cant","Moonspeech","Old Imperial","First Speech","Lumen Script","Ashen Cant","Dream Cant","Tidecant"
+];
+
+const monsterOrigins=[
+  "Material Plane","Plane of Fire","Plane of Water","Plane of Earth","Plane of Air","Feywild","Shadowfell","Nine Hells","Abyss",
+  "Astral Sea","Ethereal Plane","Mount Celestia","Arborea","Ysgard","Limbo","Pandemonium","Gehenna","Acheron","The Beastlands",
+  "The Far Realm","Elemental Chaos","Ancient Ruins","Forgotten Caves","Haunted Forests","Floating Isles","Underdark","Deep Ocean Trenches",
+  "Volcanic Mountains","Desolate Desert","Primeval Jungle","Starfall Crater","Moonlit Marsh","Glass Wastes","Dreaming Hollow"
+];
+
+const monsterHabitats=["Forest","Desert","Cave","Swamp","Urban Ruins","Mountains","Underwater","Volcano","Grassland","Tundra","Ruins","Jungle","Arctic","Underdark","Coast","Sky","Astral","Far Realm","Feywild","Shadowfell","Badlands"];
+const monsterSizes=["Tiny","Small","Medium","Large","Huge","Gargantuan"];
+const monsterAlignments=["lawful good","neutral good","chaotic good","lawful neutral","true neutral","chaotic neutral","lawful evil","neutral evil","chaotic evil","unaligned"];
+const conditionImmunities=["charmed","exhaustion","frightened","paralyzed","poisoned","stunned","petrified","prone"];
+const vulnerabilitiesList=["fire","cold","lightning","acid","necrotic","radiant","psychic","thunder"];
+const damageResistances=["acid","cold","fire","lightning","necrotic","poison","psychic","radiant","thunder","bludgeoning, piercing, and slashing from nonmagical attacks"];
+const monsterLoot=["Coins","Magical Artifact","Potion of Healing","Ancient Scroll","Gemstone","Weapon","Armor","Ring","Cursed Item","Spellbook","Relic Fragment","Runestone","Rare Venom","Astral Chart","Sacred Idol"];
+const monsterBehavior=["Aggressive","Territorial","Solitary","Pack Hunter","Mischievous","Cunning","Lazy","Curious","Reclusive","Bloodthirsty","Guardian","Scheming","Predatory","Brooding","Nomadic","Parasitic","Hive-minded"];
+const monsterPatterns=["Striped hide","Spotted hide","Rosette pattern","Marbled skin","Iridescent scales","Mottled camouflage","Barbed plates","Velvet fur","Rough hide","Warty skin","Slick amphibian skin","Pebbled scales","Feather barring","Swirled runes","Cracked obsidian skin","Mossy growths","Luminous veins","Coral encrustation","Ash-caked skin","Glassy shell"];
+const bodyForms=["Serpentine","Quadrupedal","Bipedal","Hexapodal","Arachnid","Cephalopod","Avian","Feline","Canine","Ursine","Simian","Hooved","Amorphous","Humanoid","Insectile","Piscine","Crustacean","Toadlike","Lupine","Raptor-like","Staglike","Manta-like"];
+const visionModes=[
+  {label:"normal vision",detail:"normal vision"},
+  {label:"darkvision 60 ft.",detail:"darkvision 60 ft."},
+  {label:"darkvision 120 ft.",detail:"darkvision 120 ft."},
+  {label:"blindsight 30 ft.",detail:"blindsight 30 ft."},
+  {label:"blindsight 60 ft.",detail:"blindsight 60 ft."},
+  {label:"tremorsense 60 ft.",detail:"tremorsense 60 ft."},
+  {label:"truesight 60 ft.",detail:"truesight 60 ft."},
+  {label:"truesight 120 ft.",detail:"truesight 120 ft."}
+];
+const rarityBands=[
+  {name:"Common",min:0,max:2,weight:8,desc:"frequently encountered in settled or wild regions"},
+  {name:"Uncommon",min:1,max:6,weight:6,desc:"seen with some regularity, but not daily"},
+  {name:"Rare",min:3,max:12,weight:4,desc:"a notable sighting that locals talk about"},
+  {name:"Very Rare",min:7,max:20,weight:2,desc:"encountered only in dangerous places or unusual times"},
+  {name:"Legendary",min:13,max:30,weight:1,desc:"known from songs, omens, or catastrophic sightings"}
+];
+
+const familyCatalog=[
+  {name:"Aberration",type:"Aberration",roles:["controller","caster"],sizes:["Small","Medium","Large","Huge"],habitats:["Far Realm","Cave","Underdark","Astral"],forms:["Amorphous","Cephalopod","Humanoid","Arachnid"],tags:["psychic","tentacle","teleport"],moves:["walk","float"],origins:["The Far Realm","Astral Sea","Underdark"],mind:"high",animal:["squid","anglerfish","star-nosed mole"]},
+  {name:"Aboleth",type:"Aberration",roles:["controller","caster"],sizes:["Large","Huge"],habitats:["Underwater","Cave"],forms:["Piscine","Cephalopod"],tags:["psychic","tentacle","slime","swim"],moves:["swim"],origins:["Deep Ocean Trenches","The Far Realm"],mind:"high",animal:["eel","catfish","octopus"]},
+  {name:"Beholder",type:"Aberration",roles:["controller","caster"],sizes:["Large"],habitats:["Cave","Underdark","Ruins"],forms:["Amorphous"],tags:["eye","levitate","psychic","beam"],moves:["float"],origins:["The Far Realm","Underdark"],mind:"high",animal:["pufferfish","spider"]},
+  {name:"Mind Flayer",type:"Aberration",roles:["controller","caster"],sizes:["Medium"],habitats:["Underdark","Urban Ruins"],forms:["Humanoid","Cephalopod"],tags:["psychic","tentacle","teleport"],moves:["walk"],origins:["Underdark","Astral Sea"],mind:"high",animal:["squid","crow"]},
+  {name:"Slaad",type:"Aberration",roles:["skirmisher","controller"],sizes:["Medium","Large"],habitats:["Limbo","Swamp"],forms:["Toadlike","Humanoid"],tags:["chaos","claw","jump"],moves:["walk","swim"],origins:["Limbo"],mind:"mid",animal:["frog","toad"]},
+  {name:"Dragon",type:"Dragon",roles:["brute","controller"],sizes:["Large","Huge","Gargantuan"],habitats:["Mountains","Volcano","Ruins","Cave","Desert","Arctic"],forms:["Quadrupedal","Serpentine"],tags:["breath","wing","claw","tail"],moves:["walk","fly"],origins:["Material Plane","Elemental Chaos"],mind:"high",animal:["lizard","eagle","big cat"]},
+  {name:"Drake",type:"Dragon",roles:["skirmisher","brute"],sizes:["Medium","Large"],habitats:["Mountains","Forest","Volcano"],forms:["Quadrupedal"],tags:["bite","tail","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"low",animal:["monitor lizard","hawk"]},
+  {name:"Wyvern",type:"Dragon",roles:["brute"],sizes:["Large","Huge"],habitats:["Mountains","Badlands","Coast"],forms:["Quadrupedal"],tags:["bite","sting","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"low",animal:["bat","scorpion","vulture"]},
+  {name:"Celestial",type:"Celestial",roles:["guardian","caster"],sizes:["Medium","Large","Huge"],habitats:["Sky","Grassland","Mountains","Astral"],forms:["Humanoid","Avian","Quadrupedal"],tags:["radiant","flight","healing"],moves:["walk","fly"],origins:["Mount Celestia","Arborea","Astral Sea"],mind:"high",animal:["stag","eagle","lion"]},
+  {name:"Couatl",type:"Celestial",roles:["controller","caster"],sizes:["Large"],habitats:["Jungle","Ruins","Sky"],forms:["Serpentine"],tags:["radiant","wing","bite","constrict"],moves:["fly","walk"],origins:["Mount Celestia","Primeval Jungle"],mind:"high",animal:["serpent","quetzal"]},
+  {name:"Fiend",type:"Fiend",roles:["brute","controller"],sizes:["Medium","Large","Huge"],habitats:["Volcano","Ruins","Shadowfell","Badlands"],forms:["Humanoid","Quadrupedal","Insectile"],tags:["fire","fear","claw"],moves:["walk","fly"],origins:["Nine Hells","Abyss","Gehenna"],mind:"high",animal:["goat","bat","hyena"]},
+  {name:"Balor",type:"Fiend",roles:["brute","controller"],sizes:["Huge"],habitats:["Volcano","Ruins"],forms:["Humanoid"],tags:["fire","whip","wing","sword"],moves:["walk","fly"],origins:["Abyss"],mind:"high",animal:["bat","bull"]},
+  {name:"Devil",type:"Fiend",roles:["controller","guardian"],sizes:["Medium","Large","Huge"],habitats:["Urban Ruins","Volcano","Badlands"],forms:["Humanoid","Winged"],tags:["fire","polearm","fear","teleport"],moves:["walk","fly"],origins:["Nine Hells"],mind:"high",animal:["vulture","goat"]},
+  {name:"Demon",type:"Fiend",roles:["brute","skirmisher"],sizes:["Small","Medium","Large","Huge"],habitats:["Abyss","Ruins","Badlands"],forms:["Humanoid","Quadrupedal","Arachnid"],tags:["claw","bite","chaos","poison"],moves:["walk","fly"],origins:["Abyss"],mind:"mid",animal:["hyena","ape","spider"]},
+  {name:"Yugoloth",type:"Fiend",roles:["controller","caster"],sizes:["Medium","Large"],habitats:["Badlands","Ruins"],forms:["Humanoid"],tags:["teleport","darkness","weapon"],moves:["walk","fly"],origins:["Gehenna","Acheron"],mind:"high",animal:["jackal","raven"]},
+  {name:"Construct",type:"Construct",roles:["guardian","brute"],sizes:["Small","Medium","Large","Huge"],habitats:["Urban Ruins","Ruins","Cave"],forms:["Humanoid","Quadrupedal","Insectile","Amorphous"],tags:["slam","force","armor"],moves:["walk","float"],origins:["Material Plane","Ancient Ruins"],mind:"low",animal:["beetle","statue","hound"]},
+  {name:"Golem",type:"Construct",roles:["guardian","brute"],sizes:["Large","Huge"],habitats:["Ruins","Urban Ruins"],forms:["Humanoid"],tags:["slam","magic resistance","siege"],moves:["walk"],origins:["Ancient Ruins","Material Plane"],mind:"low",animal:["bull","bear"]},
+  {name:"Animated Armor",type:"Construct",roles:["guardian"],sizes:["Medium"],habitats:["Ruins","Urban Ruins"],forms:["Humanoid"],tags:["slam","armor"],moves:["walk"],origins:["Ancient Ruins"],mind:"low",animal:["none"]},
+  {name:"Elemental",type:"Elemental",roles:["brute","controller"],sizes:["Medium","Large","Huge"],habitats:["Volcano","Underwater","Sky","Desert"],forms:["Amorphous","Humanoid","Serpentine"],tags:["element","slam","engulf"],moves:["walk","fly","swim","burrow"],origins:["Plane of Fire","Plane of Water","Plane of Earth","Plane of Air","Elemental Chaos"],mind:"mid",animal:["storm","wave","lava flow"]},
+  {name:"Djinni",type:"Elemental",roles:["caster","controller"],sizes:["Large"],habitats:["Sky","Desert","Astral"],forms:["Humanoid"],tags:["storm","flight","spell"],moves:["fly","walk"],origins:["Plane of Air"],mind:"high",animal:["hawk","whirlwind"]},
+  {name:"Efreeti",type:"Elemental",roles:["brute","caster"],sizes:["Large"],habitats:["Volcano","Desert"],forms:["Humanoid"],tags:["fire","spell","weapon"],moves:["walk","fly"],origins:["Plane of Fire"],mind:"high",animal:["lion","flame"]},
+  {name:"Marid",type:"Elemental",roles:["controller","caster"],sizes:["Large"],habitats:["Underwater","Coast"],forms:["Humanoid"],tags:["water","spell","swim"],moves:["walk","swim"],origins:["Plane of Water"],mind:"high",animal:["whale","sea lion"]},
+  {name:"Dao",type:"Elemental",roles:["guardian","controller"],sizes:["Large"],habitats:["Cave","Mountains","Desert"],forms:["Humanoid"],tags:["earth","burrow","spell"],moves:["walk","burrow"],origins:["Plane of Earth"],mind:"high",animal:["badger","rhino"]},
+  {name:"Fey",type:"Fey",roles:["skirmisher","controller"],sizes:["Tiny","Small","Medium","Large"],habitats:["Forest","Feywild","Jungle","Grassland"],forms:["Humanoid","Avian","Quadrupedal","Staglike"],tags:["charm","teleport","illusion"],moves:["walk","fly"],origins:["Feywild","Forest","Dreaming Hollow"],mind:"high",animal:["fox","deer","moth"]},
+  {name:"Dryad",type:"Fey",roles:["controller","caster"],sizes:["Medium"],habitats:["Forest","Feywild"],forms:["Humanoid"],tags:["charm","plants","spell"],moves:["walk"],origins:["Feywild","Forest"],mind:"high",animal:["doe","songbird"]},
+  {name:"Satyr",type:"Fey",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Grassland","Feywild"],forms:["Humanoid"],tags:["music","horns","charge"],moves:["walk"],origins:["Feywild"],mind:"mid",animal:["goat","stag"]},
+  {name:"Beast",type:"Beast",roles:["skirmisher","brute"],sizes:["Tiny","Small","Medium","Large","Huge"],habitats:["Forest","Grassland","Desert","Jungle","Arctic","Coast","Underwater"],forms:["Quadrupedal","Avian","Serpentine","Piscine","Simian"],tags:["bite","claw","charge","pack"],moves:["walk","fly","swim","burrow"],origins:["Material Plane"],mind:"low",animal:["wolf","bear","big cat","crocodile","eagle","owl","boar","ape","shark"]},
+  {name:"Big Cat",type:"Beast",roles:["skirmisher"],sizes:["Medium","Large"],habitats:["Grassland","Jungle","Forest","Desert"],forms:["Feline"],tags:["bite","claw","pounce"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["lion","tiger","leopard"]},
+  {name:"Bear",type:"Beast",roles:["brute"],sizes:["Large","Huge"],habitats:["Forest","Arctic","Mountains"],forms:["Ursine"],tags:["claw","bite"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["brown bear","polar bear"]},
+  {name:"Wolf",type:"Beast",roles:["skirmisher"],sizes:["Medium","Large"],habitats:["Forest","Grassland","Arctic"],forms:["Canine"],tags:["bite","pack","pounce"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["wolf","dire wolf"]},
+  {name:"Giant Eagle",type:"Beast",roles:["skirmisher"],sizes:["Large"],habitats:["Mountains","Sky"],forms:["Avian"],tags:["beak","talon","wing"],moves:["fly","walk"],origins:["Material Plane"],mind:"mid",animal:["eagle"]},
+  {name:"Shark",type:"Beast",roles:["brute"],sizes:["Medium","Large","Huge"],habitats:["Underwater","Coast"],forms:["Piscine"],tags:["bite","swim","blood frenzy"],moves:["swim"],origins:["Material Plane"],mind:"low",animal:["reef shark","hammerhead"]},
+  {name:"Giant Octopus",type:"Beast",roles:["controller"],sizes:["Large","Huge"],habitats:["Underwater","Coast"],forms:["Cephalopod"],tags:["tentacle","constrict","ink","swim"],moves:["swim"],origins:["Material Plane"],mind:"low",animal:["octopus","squid"]},
+  {name:"Giant Frog",type:"Beast",roles:["controller"],sizes:["Small","Medium","Large"],habitats:["Swamp","Jungle"],forms:["Toadlike"],tags:["tongue","swim","jump"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["frog","toad"]},
+  {name:"Monstrosity",type:"Monstrosity",roles:["brute","skirmisher"],sizes:["Small","Medium","Large","Huge"],habitats:["Forest","Ruins","Mountains","Swamp","Cave"],forms:["Quadrupedal","Serpentine","Arachnid","Humanoid"],tags:["poison","claw","gaze","ambush"],moves:["walk","fly","swim","burrow"],origins:["Material Plane","Shadowfell","Ancient Ruins"],mind:"mid",animal:["mantis","scorpion","panther","viper"]},
+  {name:"Basilisk",type:"Monstrosity",roles:["controller"],sizes:["Medium"],habitats:["Cave","Desert","Ruins"],forms:["Quadrupedal"],tags:["bite","gaze"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["lizard","toad"]},
+  {name:"Cockatrice",type:"Monstrosity",roles:["skirmisher"],sizes:["Small"],habitats:["Grassland","Ruins"],forms:["Avian"],tags:["beak","wing","gaze"],moves:["walk","fly"],origins:["Material Plane"],mind:"low",animal:["rooster","lizard"]},
+  {name:"Chimera",type:"Monstrosity",roles:["brute"],sizes:["Large"],habitats:["Mountains","Badlands"],forms:["Quadrupedal"],tags:["bite","claw","breath","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"low",animal:["lion","goat","dragon"]},
+  {name:"Manticore",type:"Monstrosity",roles:["skirmisher"],sizes:["Large"],habitats:["Mountains","Badlands","Ruins"],forms:["Quadrupedal"],tags:["spike","bite","claw","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"mid",animal:["lion","bat","scorpion"]},
+  {name:"Displacer Beast",type:"Monstrosity",roles:["skirmisher"],sizes:["Large"],habitats:["Forest","Feywild","Ruins"],forms:["Feline"],tags:["tentacle","illusion","pounce"],moves:["walk"],origins:["Feywild"],mind:"mid",animal:["panther","squid"]},
+  {name:"Rust Monster",type:"Monstrosity",roles:["skirmisher"],sizes:["Medium"],habitats:["Cave","Ruins","Underdark"],forms:["Insectile"],tags:["antenna","bite","corrode"],moves:["walk"],origins:["Underdark"],mind:"low",animal:["ant","mole"]},
+  {name:"Owlbear",type:"Monstrosity",roles:["brute"],sizes:["Large"],habitats:["Forest","Mountains"],forms:["Ursine"],tags:["claw","beak"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["owl","bear"]},
+  {name:"Gorgon",type:"Monstrosity",roles:["guardian"],sizes:["Large"],habitats:["Grassland","Ruins"],forms:["Hooved"],tags:["charge","breath","metal"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["bull"]},
+  {name:"Sphinx",type:"Monstrosity",roles:["guardian","caster"],sizes:["Large","Huge"],habitats:["Desert","Ruins"],forms:["Feline"],tags:["riddle","claw","wing","spell"],moves:["walk","fly"],origins:["Arborea","Desolate Desert"],mind:"high",animal:["lion","hawk"]},
+  {name:"Humanoid",type:"Humanoid",roles:["skirmisher","caster","guardian"],sizes:["Small","Medium"],habitats:["Urban Ruins","Forest","Grassland","Desert","Ruins"],forms:["Humanoid"],tags:["weapon","tool","spell"],moves:["walk"],origins:["Material Plane"],mind:"high",animal:["human"]},
+  {name:"Goblinoid",type:"Humanoid",roles:["skirmisher"],sizes:["Small","Medium"],habitats:["Cave","Forest","Ruins"],forms:["Humanoid"],tags:["weapon","pack","ambush"],moves:["walk"],origins:["Material Plane"],mind:"mid",animal:["hyena","rat"]},
+  {name:"Orc",type:"Humanoid",roles:["brute"],sizes:["Medium"],habitats:["Badlands","Mountains","Grassland"],forms:["Humanoid"],tags:["weapon","charge"],moves:["walk"],origins:["Material Plane"],mind:"mid",animal:["boar","wolf"]},
+  {name:"Gith",type:"Humanoid",roles:["skirmisher","caster"],sizes:["Medium"],habitats:["Astral","Urban Ruins"],forms:["Humanoid"],tags:["psionic","weapon","teleport"],moves:["walk"],origins:["Astral Sea"],mind:"high",animal:["hawk"]},
+  {name:"Yuan-ti",type:"Humanoid",roles:["controller","caster"],sizes:["Medium","Large"],habitats:["Jungle","Ruins","Swamp"],forms:["Humanoid","Serpentine"],tags:["poison","spell","constrict"],moves:["walk","swim"],origins:["Primeval Jungle","Ancient Ruins"],mind:"high",animal:["viper","cobra"]},
+  {name:"Giant",type:"Giant",roles:["brute","guardian"],sizes:["Large","Huge"],habitats:["Mountains","Tundra","Volcano","Sky","Coast"],forms:["Humanoid"],tags:["throw","club","stomp"],moves:["walk"],origins:["Ysgard","Material Plane"],mind:"mid",animal:["elephant","bear"]},
+  {name:"Troll",type:"Giant",roles:["brute"],sizes:["Large"],habitats:["Swamp","Cave","Forest"],forms:["Humanoid"],tags:["claw","bite","regeneration"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["hyena","ape"]},
+  {name:"Undead",type:"Undead",roles:["guardian","controller"],sizes:["Tiny","Small","Medium","Large","Huge"],habitats:["Ruins","Cave","Shadowfell","Swamp","Urban Ruins"],forms:["Humanoid","Amorphous","Quadrupedal"],tags:["necrotic","drain","fear"],moves:["walk","fly"],origins:["Shadowfell","Negative Energy Plane","Ruins"],mind:"mid",animal:["crow","vulture","corpse beetle"]},
+  {name:"Zombie",type:"Undead",roles:["brute"],sizes:["Medium","Large"],habitats:["Ruins","Urban Ruins","Swamp"],forms:["Humanoid"],tags:["slam","undead fortitude"],moves:["walk"],origins:["Shadowfell","Ruins"],mind:"low",animal:["human"]},
+  {name:"Skeleton",type:"Undead",roles:["skirmisher"],sizes:["Small","Medium"],habitats:["Ruins","Cave","Urban Ruins"],forms:["Humanoid"],tags:["weapon","undead"],moves:["walk"],origins:["Ruins","Shadowfell"],mind:"low",animal:["human"]},
+  {name:"Ghost",type:"Undead",roles:["controller"],sizes:["Medium"],habitats:["Ruins","Urban Ruins","Shadowfell"],forms:["Humanoid"],tags:["incorporeal","fear","possess"],moves:["float","fly"],origins:["Shadowfell"],mind:"high",animal:["owl"]},
+  {name:"Wraith",type:"Undead",roles:["controller"],sizes:["Medium","Large"],habitats:["Shadowfell","Ruins"],forms:["Humanoid"],tags:["incorporeal","drain","fear"],moves:["float","fly"],origins:["Shadowfell"],mind:"high",animal:["vulture"]},
+  {name:"Lich",type:"Undead",roles:["caster"],sizes:["Medium"],habitats:["Ruins","Urban Ruins","Cave"],forms:["Humanoid"],tags:["spell","necrotic","paralyze"],moves:["walk","float"],origins:["Shadowfell","Ancient Ruins"],mind:"high",animal:["spider","owl"]},
+  {name:"Mummy",type:"Undead",roles:["guardian","controller"],sizes:["Medium","Large"],habitats:["Desert","Ruins"],forms:["Humanoid"],tags:["curse","slam","fear"],moves:["walk"],origins:["Desolate Desert","Ruins"],mind:"mid",animal:["scarab"]},
+  {name:"Ooze",type:"Ooze",roles:["brute","controller"],sizes:["Small","Medium","Large","Huge"],habitats:["Cave","Swamp","Underdark","Ruins"],forms:["Amorphous"],tags:["acid","engulf","split"],moves:["walk","climb"],origins:["Underdark","The Far Realm"],mind:"low",animal:["slug","jellyfish"]},
+  {name:"Plant",type:"Plant",roles:["guardian","controller"],sizes:["Small","Medium","Large","Huge"],habitats:["Forest","Swamp","Jungle","Feywild"],forms:["Amorphous","Quadrupedal","Humanoid"],tags:["vine","spores","poison","constrict"],moves:["walk"],origins:["Forest","Feywild","Primeval Jungle"],mind:"low",animal:["venus flytrap","orchid","mangrove"]},
+  {name:"Treant",type:"Plant",roles:["guardian","brute"],sizes:["Huge"],habitats:["Forest","Feywild"],forms:["Humanoid"],tags:["slam","rock","plant"],moves:["walk"],origins:["Forest","Feywild"],mind:"mid",animal:["oak","stag"]},
+  {name:"Myconid",type:"Plant",roles:["controller"],sizes:["Small","Medium","Large"],habitats:["Cave","Underdark","Swamp"],forms:["Humanoid"],tags:["spores","pacify"],moves:["walk"],origins:["Underdark"],mind:"mid",animal:["mushroom","toad"]},
+  {name:"Shambling Mound",type:"Plant",roles:["brute"],sizes:["Large"],habitats:["Swamp","Jungle"],forms:["Amorphous"],tags:["slam","engulf","lightning"],moves:["walk","swim"],origins:["Swamp"],mind:"low",animal:["moss","compost"]},
+  {name:"Swarm",type:"Swarm",roles:["skirmisher"],sizes:["Medium","Large"],habitats:["Forest","Swamp","Urban Ruins","Cave","Jungle"],forms:["Insectile","Avian","Piscine"],tags:["swarm","bite","sting"],moves:["walk","fly","swim"],origins:["Material Plane"],mind:"low",animal:["rats","bats","wasps","quippers","ravens"]},
+  {name:"Kraken",type:"Titan",roles:["brute","controller"],sizes:["Gargantuan"],habitats:["Underwater","Coast"],forms:["Cephalopod"],tags:["tentacle","lightning","storm"],moves:["swim"],origins:["Deep Ocean Trenches","Elemental Chaos"],mind:"high",animal:["giant squid","orca"]},
+  {name:"Phoenix",type:"Elemental",roles:["brute","controller"],sizes:["Huge","Gargantuan"],habitats:["Volcano","Desert","Sky"],forms:["Avian"],tags:["fire","flight","rebirth"],moves:["fly","walk"],origins:["Plane of Fire","Elemental Chaos"],mind:"mid",animal:["hawk","sunbird"]},
+  {name:"Tarrasque",type:"Titan",roles:["brute"],sizes:["Gargantuan"],habitats:["Badlands","Mountains"],forms:["Quadrupedal"],tags:["bite","claw","tail","siege"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["rhino","ankylosaur"]},
+  {name:"Leviathan",type:"Titan",roles:["brute","controller"],sizes:["Gargantuan"],habitats:["Underwater","Coast"],forms:["Serpentine","Piscine"],tags:["tidal","constrict","swim"],moves:["swim"],origins:["Plane of Water","Deep Ocean Trenches"],mind:"mid",animal:["sea serpent","whale"]},
+  {name:"Griffon",type:"Monstrosity",roles:["skirmisher"],sizes:["Large"],habitats:["Mountains","Grassland","Sky"],forms:["Avian"],tags:["beak","claw","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"low",animal:["eagle","lion"]},
+  {name:"Harpy",type:"Monstrosity",roles:["controller"],sizes:["Medium"],habitats:["Coast","Ruins","Mountains"],forms:["Humanoid","Avian"],tags:["song","claw","wing"],moves:["walk","fly"],origins:["Material Plane"],mind:"mid",animal:["vulture","siren"]},
+  {name:"Pegasus",type:"Celestial",roles:["skirmisher"],sizes:["Large"],habitats:["Sky","Grassland"],forms:["Hooved"],tags:["flight","hoof"],moves:["walk","fly"],origins:["Mount Celestia","Arborea"],mind:"mid",animal:["horse","swan"]},
+  {name:"Unicorn",type:"Celestial",roles:["guardian","caster"],sizes:["Large"],habitats:["Forest","Feywild"],forms:["Hooved"],tags:["charge","healing","teleport"],moves:["walk"],origins:["Feywild","Arborea"],mind:"high",animal:["horse","deer"]},
+  {name:"Naga",type:"Monstrosity",roles:["caster","controller"],sizes:["Large"],habitats:["Jungle","Ruins","Swamp"],forms:["Serpentine"],tags:["spell","constrict","poison"],moves:["walk","swim"],origins:["Primeval Jungle","Ancient Ruins"],mind:"high",animal:["cobra"]},
+  {name:"Merfolk",type:"Humanoid",roles:["skirmisher","caster"],sizes:["Medium"],habitats:["Underwater","Coast"],forms:["Piscine","Humanoid"],tags:["trident","swim","song"],moves:["swim","walk"],origins:["Material Plane"],mind:"mid",animal:["dolphin","reef fish"]},
+  {name:"Kuo-toa",type:"Humanoid",roles:["controller"],sizes:["Small","Medium"],habitats:["Underwater","Underdark"],forms:["Piscine","Humanoid"],tags:["net","spear","slippery"],moves:["swim","walk"],origins:["Underdark"],mind:"mid",animal:["catfish","toad"]},
+  {name:"Lamia",type:"Monstrosity",roles:["controller","caster"],sizes:["Large"],habitats:["Desert","Ruins"],forms:["Serpentine","Quadrupedal"],tags:["illusion","claw","charm"],moves:["walk"],origins:["Desolate Desert","Ancient Ruins"],mind:"high",animal:["lioness","viper"]},
+  {name:"Medusa",type:"Monstrosity",roles:["controller"],sizes:["Medium"],habitats:["Ruins","Cave","Urban Ruins"],forms:["Humanoid"],tags:["gaze","poison","bow"],moves:["walk"],origins:["Ancient Ruins","Shadowfell"],mind:"high",animal:["viper"]},
+  {name:"Mimic",type:"Monstrosity",roles:["lurker"],sizes:["Medium","Large"],habitats:["Urban Ruins","Ruins","Cave"],forms:["Amorphous"],tags:["adhesive","bite","pseudopod"],moves:["walk"],origins:["Material Plane","The Far Realm"],mind:"mid",animal:["gecko","octopus"]},
+  {name:"Homunculus",type:"Construct",roles:["skirmisher"],sizes:["Tiny","Small"],habitats:["Urban Ruins","Ruins"],forms:["Humanoid","Avian"],tags:["bite","flight","messenger"],moves:["walk","fly"],origins:["Material Plane"],mind:"mid",animal:["bat","gargoyle"]},
+  {name:"Gargoyle",type:"Elemental",roles:["guardian"],sizes:["Medium","Large"],habitats:["Urban Ruins","Mountains","Ruins"],forms:["Humanoid"],tags:["claw","stone","flight"],moves:["walk","fly"],origins:["Plane of Earth","Ancient Ruins"],mind:"mid",animal:["bat","lion"]},
+  {name:"Blink Dog",type:"Fey",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Feywild","Grassland"],forms:["Canine"],tags:["teleport","bite","pack"],moves:["walk"],origins:["Feywild"],mind:"mid",animal:["dog","fox"]}
+];
+
+const monsterTypes = ["Any", ...familyCatalog.map(f=>f.name)];
+const monsterShapes=[...new Set(bodyForms)];
+const namePrefixes=["Gnar","Vor","Xyl","Zar","Kry","Mor","Thal","Vex","Jor","Fey","Gloom","Shad","Ebon","Crim","Aeth","Lum","Sol","Ter","Aqua","Pyro","Cryo","Geo","Aero","Nyx","Ruin","Storm","Ash","Umber","Cinder","Ivory","Vanta","Zeph","Thorn"];
+const nameMiddles=["ath","oth","yth","eth","ith","ar","or","yr","er","ir","ax","ox","yx","ex","ix","un","en","in","on","an","aal","eph","ael","uul"];
+const nameSuffixes=["os","us","is","as","es","on","an","en","in","ar","or","yr","er","ir","ax","ox","yx","ex","ix","oth","eus"];
+const monsterQuirks=[
+  "Collects shiny objects obsessively","Hums a haunting melody when idle","Speaks only in cryptic riddles","Possesses a vestigial third eye",
+  "Perpetually ravenous","Emits a faint bioluminescent glow","Leaves a trail of viscous slime","Hoards teeth from fallen prey",
+  "Fastidiously cleans itself after combat","Has no sense of direction whatsoever","Communicates exclusively in rhyme","Tells terrible jokes mid-combat",
+  "Suffers from acute agoraphobia","Can predict weather changes","Always caked in dried mud","Maintains a collection of bones",
+  "Afraid of its own reflection","Sees only in monochrome","Compulsively hoards food","Desperately tries to befriend adventurers",
+  "Terrified of creatures smaller than itself","Speaks only in whispers","Covered in molting feathers","Collects smooth river stones",
+  "Startles violently at loud sounds","Collects ornate buttons","Always spoiling for a fight","Communicates through eerie song",
+  "Covered in dead leaves and bark","Obsessed with geometric patterns","Covered in patches of moss","Collects raw gemstones",
+  "Terrified of arcane magic","Sleeps hanging upside down","Leaves scorched footprints","Treats old ruins like a holy site"
+];
+
+const actionLibrary=[
+  {name:"Claw",kind:"melee",tags:["claw"],verb:"slashes",damageType:"slashing",stat:"str"},
+  {name:"Bite",kind:"melee",tags:["bite"],verb:"bites",damageType:"piercing",stat:"str"},
+  {name:"Slam",kind:"melee",tags:["slam"],verb:"slams",damageType:"bludgeoning",stat:"str"},
+  {name:"Tail Lash",kind:"melee",tags:["tail"],verb:"lashes",damageType:"bludgeoning",stat:"str"},
+  {name:"Gore",kind:"melee",tags:["horns","charge"],verb:"gores",damageType:"piercing",stat:"str"},
+  {name:"Tentacle",kind:"melee",tags:["tentacle"],verb:"lashes",damageType:"bludgeoning",stat:"str",rider:"The target is grappled (escape DC {saveDC})."},
+  {name:"Constrict",kind:"melee",tags:["constrict"],verb:"constricts",damageType:"bludgeoning",stat:"str",rider:"The target is grappled and restrained until the grapple ends (escape DC {saveDC})."},
+  {name:"Pseudopod",kind:"melee",tags:["adhesive","amorphous"],verb:"smothers",damageType:"bludgeoning",stat:"str",rider:"The target is grappled (escape DC {saveDC})."},
+  {name:"Stinger",kind:"melee",tags:["sting"],verb:"stings",damageType:"piercing",stat:"dex",extraType:"poison"},
+  {name:"Beak",kind:"melee",tags:["beak"],verb:"jabs",damageType:"piercing",stat:"dex"},
+  {name:"Talons",kind:"melee",tags:["talon"],verb:"rakes",damageType:"slashing",stat:"dex"},
+  {name:"Spear",kind:"melee",tags:["weapon"],verb:"thrusts",damageType:"piercing",stat:"str"},
+  {name:"Greatsword",kind:"melee",tags:["weapon","sword"],verb:"slashes",damageType:"slashing",stat:"str"},
+  {name:"Infernal Whip",kind:"melee",tags:["weapon","whip"],verb:"lashes",damageType:"slashing",stat:"dex",extraType:"fire"},
+  {name:"Rock",kind:"ranged",tags:["throw"],verb:"hurls a rock at",damageType:"bludgeoning",stat:"str",range:"60/240 ft."},
+  {name:"Spine Volley",kind:"ranged",tags:["spike"],verb:"fires spines at",damageType:"piercing",stat:"dex",range:"80/320 ft."},
+  {name:"Acid Spit",kind:"ranged",tags:["acid"],verb:"spits acid at",damageType:"acid",stat:"con",range:"60 ft."},
+  {name:"Necrotic Ray",kind:"ranged",tags:["necrotic","beam"],verb:"unleashes a necrotic ray at",damageType:"necrotic",stat:"int",range:"120 ft."},
+  {name:"Radiant Bolt",kind:"ranged",tags:["radiant"],verb:"fires a radiant bolt at",damageType:"radiant",stat:"cha",range:"120 ft."},
+  {name:"Mind Lance",kind:"ranged",tags:["psychic"],verb:"drives a psychic lance into",damageType:"psychic",stat:"int",range:"120 ft."},
+  {name:"Web Shot",kind:"ranged",tags:["web"],verb:"hurls a mass of webbing at",damageType:"none",stat:"dex",range:"30/60 ft.",rider:"On a failed DC {saveDC} Strength save, the target is restrained until it uses an action to break free."},
+  {name:"Petrifying Gaze",kind:"save",tags:["gaze"],verb:"fixes its gaze on",damageType:"none",stat:"con",saveStat:"con",rider:"The target must succeed on a DC {saveDC} Constitution save or begin turning to stone. On a second failure, it is petrified until cured."},
+  {name:"Frightful Presence",kind:"save",tags:["fear"],verb:"unleashes a wave of terror toward",damageType:"none",stat:"cha",saveStat:"wis",rider:"Each creature of the monster's choice within 30 feet must succeed on a DC {saveDC} Wisdom save or be frightened for 1 minute."},
+  {name:"Life Drain",kind:"melee",tags:["drain","necrotic"],verb:"drains life from",damageType:"necrotic",stat:"cha",rider:"The monster regains hit points equal to half the necrotic damage dealt."},
+  {name:"Poison Breath",kind:"save",tags:["breath","poison"],verb:"exhales poison over",damageType:"poison",stat:"con",saveStat:"con",shape:"15-foot cone"},
+  {name:"Fire Breath",kind:"save",tags:["breath","fire"],verb:"breathes fire over",damageType:"fire",stat:"con",saveStat:"dex",shape:"30-foot cone"},
+  {name:"Cold Breath",kind:"save",tags:["breath","cold"],verb:"breathes freezing air over",damageType:"cold",stat:"con",saveStat:"con",shape:"30-foot cone"},
+  {name:"Lightning Breath",kind:"save",tags:["breath","lightning","storm"],verb:"hurls lightning through",damageType:"lightning",stat:"con",saveStat:"dex",shape:"60-foot line that is 5 feet wide"},
+  {name:"Thunderous Roar",kind:"save",tags:["thunder"],verb:"releases a thunderous roar into",damageType:"thunder",stat:"con",saveStat:"con",shape:"20-foot radius"},
+  {name:"Corrosive Cloud",kind:"save",tags:["acid","slime"],verb:"erupts in a corrosive cloud around",damageType:"acid",stat:"con",saveStat:"dex",shape:"15-foot radius"},
+  {name:"Psychic Pulse",kind:"save",tags:["psychic","teleport"],verb:"detonates psychic static around",damageType:"psychic",stat:"int",saveStat:"int",shape:"20-foot radius"},
+  {name:"Radiant Nova",kind:"save",tags:["radiant","flight"],verb:"bursts with holy light around",damageType:"radiant",stat:"cha",saveStat:"con",shape:"20-foot radius"},
+  {name:"Spellcasting",kind:"spell",tags:["spell"],verb:"casts spells",damageType:"varies",stat:"int"},
+  {name:"Teleport",kind:"special",tags:["teleport"],verb:"teleports",damageType:"none",stat:"int"},
+  {name:"Regeneration",kind:"trait",tags:["regeneration"],verb:"regenerates",damageType:"none",stat:"con"},
+  {name:"Engulf",kind:"save",tags:["engulf","amorphous"],verb:"flows over",damageType:"acid",stat:"str",saveStat:"dex",shape:"the creature's space"},
+  {name:"Spores",kind:"save",tags:["spores"],verb:"releases spores around",damageType:"poison",stat:"con",saveStat:"con",shape:"10-foot radius"},
+  {name:"Charm Song",kind:"save",tags:["song","charm"],verb:"sings to",damageType:"none",stat:"cha",saveStat:"wis",shape:"60-foot radius"},
+  {name:"Void Step",kind:"special",tags:["teleport","psychic"],verb:"steps through a fold in space",damageType:"none",stat:"int"},
+  {name:"Healing Touch",kind:"special",tags:["healing","radiant"],verb:"restores vitality to",damageType:"none",stat:"cha"},
+  {name:"Trampling Charge",kind:"melee",tags:["charge"],verb:"tramples",damageType:"bludgeoning",stat:"str",rider:"If the monster moved at least 20 feet straight toward the target immediately before the hit, the target must succeed on a DC {saveDC} Strength save or be knocked prone."}
+];
+
+/* UTILS */
+const R=a=>a[Math.floor(Math.random()*a.length)];
+const chance=p=>Math.random()<p;
+const RN=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const mod=s=>Math.floor((s-10)/2);
+const fmtMod=m=>m>=0?`+${m}`:`${m}`;
+const crToNum=cr=>crNumeric[cr] ?? 0;
+const crTier=cr=>crOrder.indexOf(cr);
+const profBonus=cr=>{const n=crToNum(cr);if(n<5)return 2;if(n<9)return 3;if(n<13)return 4;if(n<17)return 5;if(n<21)return 6;if(n<25)return 7;if(n<29)return 8;return 9;};
+const passivePerception=wis=>Math.max(8,10+mod(wis));
+
+function pickDistinct(arr,count){
+  const pool=[...arr];
+  const out=[];
+  while(pool.length && out.length<count){
+    const idx=Math.floor(Math.random()*pool.length);
+    out.push(pool.splice(idx,1)[0]);
+  }
+  return out;
+}
+function weightedPick(items,weightKey="weight"){
+  const total=items.reduce((s,i)=>s+(i[weightKey]||1),0);
+  let roll=Math.random()*total;
+  for(const item of items){
+    roll-=(item[weightKey]||1);
+    if(roll<=0)return item;
+  }
+  return items[items.length-1];
+}
+function averageDie(die){return (die+1)/2;}
+function damageDiceForAverage(avg, die=8){
+  const count=Math.max(1,Math.round(avg/averageDie(die)));
+  return `${count}d${die}`;
+}
+function scoreFromBase(base, swing=2){ return clamp(Math.round(base + RN(-swing,swing)), 1, 30); }
+function chooseVision(profile, cr, habitat){
+  const n=crToNum(cr);
+  if(profile.type==="Undead" || profile.type==="Fiend" || habitat==="Underdark") return n>=13 ? "truesight 60 ft." : "darkvision 120 ft.";
+  if(profile.type==="Aberration") return n>=10 ? "truesight 120 ft." : "darkvision 120 ft.";
+  if(profile.type==="Plant" && chance(0.4)) return "blindsight 30 ft.";
+  if(profile.type==="Ooze") return chance(0.5) ? "blindsight 60 ft." : "blindsight 30 ft.";
+  if(profile.tags.includes("burrow")) return "tremorsense 60 ft.";
+  if(profile.tags.includes("eye")) return chance(0.5) ? "truesight 120 ft." : "darkvision 120 ft.";
+  if(profile.tags.includes("swim")) return chance(0.4) ? "darkvision 60 ft." : "normal vision";
+  return weightedPick([
+    {label:"normal vision",weight:1},
+    {label:"darkvision 60 ft.",weight:6},
+    {label:"darkvision 120 ft.",weight:3},
+    {label:"blindsight 30 ft.",weight:n>=8?2:1}
+  ]).label;
+}
+function randomName(style, family, mainColor){
+  if(chance(0.45)) return `${mainColor.name} ${style} ${family.type}`;
+  if(chance(0.35)) return `${style} ${family.name}`;
+  return `${R(namePrefixes)}${R(nameMiddles)}${R(nameSuffixes)}`;
+}
+function chooseCR(selCR){
+  if(selCR!=="Any") return selCR;
+  const weighted = [
+    {cr:"0",weight:4},{cr:"1/8",weight:5},{cr:"1/4",weight:5},{cr:"1/2",weight:5},
+    {cr:"1",weight:7},{cr:"2",weight:7},{cr:"3",weight:6},{cr:"4",weight:6},
+    {cr:"5",weight:5},{cr:"6",weight:5},{cr:"7",weight:4},{cr:"8",weight:4},
+    {cr:"9",weight:3},{cr:"10",weight:3},{cr:"11",weight:3},{cr:"12",weight:3},
+    {cr:"13",weight:2},{cr:"14",weight:2},{cr:"15",weight:2},{cr:"16",weight:2},
+    {cr:"17",weight:1.5},{cr:"18",weight:1.5},{cr:"19",weight:1.2},{cr:"20",weight:1.2},
+    {cr:"21",weight:1},{cr:"22",weight:0.8},{cr:"23",weight:0.7},{cr:"24",weight:0.6},
+    {cr:"25",weight:0.4},{cr:"26",weight:0.35},{cr:"27",weight:0.3},{cr:"28",weight:0.25},{cr:"29",weight:0.2},{cr:"30",weight:0.15}
+  ];
+  return weightedPick(weighted).cr;
+}
+function chooseFamily(selType){
+  if(selType!=="Any") return familyCatalog.find(f=>f.name===selType) || R(familyCatalog);
+  return R(familyCatalog);
+}
+function chooseHabitat(selHab, profile){
+  if(selHab!=="Any") return selHab;
+  return R(profile.habitats || monsterHabitats);
+}
+function chooseOrigin(profile, habitat){
+  const pool = [...(profile.origins || monsterOrigins)];
+  if(habitat==="Volcano") pool.push("Plane of Fire","Elemental Chaos");
+  if(habitat==="Underwater") pool.push("Plane of Water","Deep Ocean Trenches");
+  if(habitat==="Feywild") pool.push("Feywild");
+  if(habitat==="Shadowfell") pool.push("Shadowfell");
+  return R(pool);
+}
+function chooseSize(profile, cr){
+  const n=crToNum(cr);
+  const sizes=[...(profile.sizes || monsterSizes)];
+  if(n>=21 && sizes.includes("Gargantuan")) return weightedPick([{v:"Huge",weight:2},{v:"Gargantuan",weight:5}],"weight").v;
+  if(n>=15 && sizes.includes("Huge")) return weightedPick([{v:"Large",weight:2},{v:"Huge",weight:5},{v:"Gargantuan",weight:sizes.includes("Gargantuan")?1:0}],"weight").v;
+  if(n>=8 && sizes.includes("Large")) return weightedPick([{v:"Medium",weight:2},{v:"Large",weight:4},{v:"Huge",weight:sizes.includes("Huge")?1:0}],"weight").v;
+  if(n>=3) return weightedPick([{v:"Small",weight:sizes.includes("Small")?1:0},{v:"Medium",weight:sizes.includes("Medium")?5:0},{v:"Large",weight:sizes.includes("Large")?2:0}],"weight").v || R(sizes);
+  return weightedPick([{v:"Tiny",weight:sizes.includes("Tiny")?2:0},{v:"Small",weight:sizes.includes("Small")?4:0},{v:"Medium",weight:sizes.includes("Medium")?2:0}],"weight").v || R(sizes);
+}
+function chooseAlignment(profile){
+  if(profile.type==="Celestial") return weightedPick([{v:"lawful good",weight:5},{v:"neutral good",weight:3},{v:"chaotic good",weight:2}],"weight").v;
+  if(profile.type==="Fiend") return weightedPick([{v:"lawful evil",weight:3},{v:"neutral evil",weight:3},{v:"chaotic evil",weight:4}],"weight").v;
+  if(profile.type==="Undead") return weightedPick([{v:"lawful evil",weight:2},{v:"neutral evil",weight:4},{v:"chaotic evil",weight:4},{v:"unaligned",weight:2}],"weight").v;
+  if(profile.type==="Construct") return weightedPick([{v:"lawful neutral",weight:5},{v:"unaligned",weight:4},{v:"true neutral",weight:2}],"weight").v;
+  if(profile.type==="Beast" || profile.type==="Plant" || profile.type==="Swarm") return chance(0.6) ? "unaligned" : "true neutral";
+  return R(monsterAlignments);
+}
+function chooseRarity(cr, profile){
+  const n=crToNum(cr);
+  const candidates=rarityBands.filter(r=>n>=r.min && n<=r.max);
+  let selected = candidates.length ? weightedPick(candidates) : rarityBands[rarityBands.length-1];
+  if(profile.type==="Titan" || ["Dragon","Balor","Lich","Kraken","Tarrasque","Phoenix"].includes(profile.name)) selected=rarityBands[4];
+  return selected;
+}
+function chooseLanguages(profile, origin, intScore, rarity){
+  if(intScore <= 4 && !["Fey","Celestial"].includes(profile.type)) return "—";
+  const pool = [];
+  if(profile.type==="Dragon") pool.push("Draconic","Common");
+  if(profile.type==="Fiend") pool.push("Infernal","Abyssal","Common");
+  if(profile.type==="Celestial") pool.push("Celestial","Common","Telepathy 120 ft.");
+  if(profile.type==="Aberration") pool.push("Deep Speech","Telepathy 120 ft.","Void Cant");
+  if(profile.type==="Construct") pool.push("Modron","Old Imperial","Common");
+  if(profile.type==="Elemental") pool.push("Primordial","Auran","Aquan","Ignan","Terran");
+  if(profile.type==="Fey") pool.push("Sylvan","Elvish","Moonspeech","Dream Cant");
+  if(profile.type==="Undead") pool.push("Common","Infernal","Whispers of the Grave");
+  if(profile.type==="Humanoid") pool.push("Common","Goblin","Orc","Elvish","Dwarvish","Undercommon");
+  if(profile.type==="Giant") pool.push("Giant","Common");
+  if(profile.type==="Plant") pool.push("Sylvan","Myconid Spores","Common");
+  if(profile.type==="Beast" && intScore < 8) return chance(0.2) ? R(["Blink Dog","Winter Wolf","Worg","Aarakocra"]) : "—";
+  if(origin.includes("Far Realm")) pool.push("Deep Speech","Void Cant","Telepathy 120 ft.");
+  if(origin.includes("Astral")) pool.push("Telepathy 120 ft.","Star Tongue");
+  if(origin.includes("Shadow")) pool.push("Undercommon","Umbral Cant");
+  if(origin.includes("Fire")) pool.push("Ignan");
+  if(origin.includes("Water")) pool.push("Aquan");
+  if(origin.includes("Air")) pool.push("Auran");
+  if(origin.includes("Earth")) pool.push("Terran");
+  pool.push("Common");
+  const unique=[...new Set(pool.filter(Boolean))];
+  const count = intScore >= 18 ? 3 : intScore >= 10 ? 2 : 1;
+  const picked = pickDistinct(unique, count);
+  if(rarity.name==="Legendary" && !picked.some(p=>p.includes("Telepathy"))) picked.push("Telepathy 120 ft.");
+  return picked.join(", ");
+}
+function sizeWeightRange(size, form, type){
+  const map={
+    Tiny:[1,20], Small:[15,120], Medium:[80,450], Large:[500,3000], Huge:[4000,20000], Gargantuan:[22000,180000]
+  };
+  let [a,b]=map[size] || [50,200];
+  if(["Amorphous","Cephalopod","Piscine"].includes(form)) { a=Math.round(a*0.8); b=Math.round(b*0.9); }
+  if(type==="Construct" || type==="Elemental") { a=Math.round(a*1.3); b=Math.round(b*1.5); }
+  if(type==="Undead" && form==="Humanoid") { a=Math.round(a*0.75); b=Math.round(b*0.85); }
+  return `${a.toLocaleString()}-${b.toLocaleString()} lb.`;
+}
+function lifespanByType(type, rarity, cr){
+  const n=crToNum(cr);
+  if(type==="Construct") return chance(0.5) ? "indefinite unless destroyed" : `${RN(80,600)} years`;
+  if(type==="Undead") return "ageless in undeath";
+  if(type==="Elemental") return chance(0.5) ? "as long as its elemental spark endures" : `${RN(20,400)} years`;
+  if(type==="Celestial" || type==="Fiend") return n>=15 ? "effectively ageless" : `${RN(200,1200)} years`;
+  if(type==="Dragon") return n>=15 ? `${RN(900,2400)} years` : `${RN(120,900)} years`;
+  if(type==="Fey") return `${RN(80,900)} years`;
+  if(type==="Beast") return `${RN(3,40)} years`;
+  if(type==="Swarm") return `${RN(1,8)} years as a colony`;
+  if(type==="Plant") return `${RN(10,600)} years`;
+  return rarity.name==="Legendary" ? `${RN(300,1600)} years` : `${RN(8,140)} years`;
+}
+
+function generateAbilityScores(cr, profile, size){
+  const n=crToNum(cr);
+  const role = R(profile.roles || ["skirmisher"]);
+  const sizeBonus = {Tiny:-2,Small:-1,Medium:0,Large:2,Huge:4,Gargantuan:6}[size] || 0;
+  const animalLow = profile.mind==="low";
+  const animalMid = profile.mind==="mid";
+  const main = 10 + n*0.45;
+  const bruteBase = 11 + n*0.55 + sizeBonus;
+  const toughBase = 11 + n*0.5 + sizeBonus/2;
+  const agileBase = 10 + n*0.45 + (profile.tags.includes("wing") || profile.tags.includes("ambush") ? 2 : 0);
+  const mindBase = 9 + n*0.4 + (profile.mind==="high" ? 3 : profile.mind==="mid" ? 0 : -4);
+
+  let str=scoreFromBase(main), dex=scoreFromBase(main), con=scoreFromBase(main), int_=scoreFromBase(main), wis=scoreFromBase(main), cha=scoreFromBase(main);
+
+  if(role==="brute"){
+    str=scoreFromBase(bruteBase+3); con=scoreFromBase(toughBase+3); dex=scoreFromBase(agileBase-1); int_=scoreFromBase(mindBase-2); wis=scoreFromBase(mindBase-1); cha=scoreFromBase(mindBase);
+  } else if(role==="guardian"){
+    str=scoreFromBase(bruteBase+2); con=scoreFromBase(toughBase+4); dex=scoreFromBase(agileBase-1); int_=scoreFromBase(mindBase); wis=scoreFromBase(mindBase+1); cha=scoreFromBase(mindBase);
+  } else if(role==="caster"){
+    str=scoreFromBase(bruteBase-3); dex=scoreFromBase(agileBase); con=scoreFromBase(toughBase); int_=scoreFromBase(mindBase+5); wis=scoreFromBase(mindBase+3); cha=scoreFromBase(mindBase+4);
+  } else if(role==="controller"){
+    str=scoreFromBase(bruteBase-1); dex=scoreFromBase(agileBase+1); con=scoreFromBase(toughBase+1); int_=scoreFromBase(mindBase+3); wis=scoreFromBase(mindBase+3); cha=scoreFromBase(mindBase+2);
+  } else if(role==="lurker"){
+    str=scoreFromBase(bruteBase); dex=scoreFromBase(agileBase+4); con=scoreFromBase(toughBase); int_=scoreFromBase(mindBase+1); wis=scoreFromBase(mindBase+1); cha=scoreFromBase(mindBase);
+  } else {
+    str=scoreFromBase(bruteBase+1); dex=scoreFromBase(agileBase+2); con=scoreFromBase(toughBase+1); int_=scoreFromBase(mindBase+1); wis=scoreFromBase(mindBase+1); cha=scoreFromBase(mindBase+1);
+  }
+
+  if(profile.type==="Beast" || profile.type==="Swarm"){
+    int_=clamp(int_,1,animalLow?5:8);
+    cha=clamp(cha,3,12);
+  }
+  if(profile.type==="Ooze"){
+    int_=clamp(int_,1,6); cha=clamp(cha,1,8); wis=clamp(wis,1,10);
+  }
+  if(profile.type==="Construct"){
+    cha=clamp(cha,1,18);
+    if(animalLow) int_=clamp(int_,1,6);
+  }
+  if(profile.type==="Dragon"){ cha=clamp(cha+2,6,30); int_=clamp(int_+1,4,30); }
+  if(profile.type==="Celestial" || profile.type==="Fiend"){ cha=clamp(cha+2,6,30); wis=clamp(wis+1,4,30); }
+  if(profile.tags.includes("wing")) dex=clamp(dex+1,1,30);
+  if(profile.tags.includes("swim")) con=clamp(con+1,1,30);
+
+  return {str,dex,con,int:int_,wis,cha,role};
+}
+
+function expectedHP(cr){
+  const n=crToNum(cr);
+  if(n===0) return 6;
+  if(n<=0.125) return 12;
+  if(n<=0.25) return 20;
+  if(n<=0.5) return 35;
+  if(n<=1) return 50;
+  if(n<=2) return 78;
+  if(n<=4) return 110 + (n-3)*30;
+  if(n<=8) return 145 + (n-5)*25;
+  if(n<=12) return 245 + (n-9)*28;
+  if(n<=16) return 340 + (n-13)*32;
+  if(n<=20) return 450 + (n-17)*36;
+  if(n<=24) return 600 + (n-21)*45;
+  return 780 + (n-25)*55;
+}
+function generateHP(cr, con, size, role){
+  const sizeDie={Tiny:4,Small:6,Medium:8,Large:10,Huge:12,Gargantuan:20}[size] || 8;
+  let hp=Math.round(expectedHP(cr));
+  if(role==="guardian") hp=Math.round(hp*1.18);
+  if(role==="lurker" || role==="caster") hp=Math.round(hp*0.88);
+  if(size==="Tiny") hp=Math.round(hp*0.6);
+  if(size==="Small") hp=Math.round(hp*0.8);
+  const conMod=mod(con);
+  let numDice=Math.max(1,Math.round(hp / averageDie(sizeDie)));
+  hp=Math.max(1, Math.round(numDice*averageDie(sizeDie) + numDice*conMod));
+  if(hp<1){ hp=1; numDice=Math.max(1,Math.round(expectedHP(cr)/averageDie(sizeDie))); }
+  const conBonus=numDice*conMod;
+  return {hp,formula:`${numDice}d${sizeDie}${conBonus===0?"":conBonus>0?` + ${conBonus}`:` - ${Math.abs(conBonus)}`}`};
+}
+function generateAC(cr, dex, role, type, style){
+  const n=crToNum(cr);
+  let ac = 12 + Math.floor(n/3) + Math.min(3,Math.max(-1,mod(dex)));
+  if(role==="guardian") ac += 2;
+  if(role==="lurker") ac += 1;
+  if(type==="Construct" || type==="Dragon") ac += 1;
+  if(["Armored","Mechanical","Crystalline","Bone-plated"].includes(style)) ac += 1;
+  return clamp(ac,10,24);
+}
+function expectedDPR(cr){
+  const n=crToNum(cr);
+  if(n===0) return 2;
+  if(n<=0.125) return 4;
+  if(n<=0.25) return 6;
+  if(n<=0.5) return 9;
+  if(n<=1) return 14;
+  if(n<=2) return 20;
+  if(n<=4) return 30 + (n-3)*8;
+  if(n<=8) return 50 + (n-5)*12;
+  if(n<=12) return 100 + (n-9)*12;
+  if(n<=16) return 150 + (n-13)*15;
+  if(n<=20) return 210 + (n-17)*18;
+  if(n<=24) return 290 + (n-21)*22;
+  return 390 + (n-25)*28;
+}
+function generateSpeeds(profile, size, habitat){
+  const speedMod={Tiny:-10,Small:-5,Medium:0,Large:10,Huge:15,Gargantuan:20}[size] || 0;
+  let land = clamp(30+speedMod+(profile.roles.includes("skirmisher")?10:0), 15, 60);
+  let fly = null, swim = null, burrow = null, climb = null;
+  if(profile.moves.includes("fly")) fly = clamp(40+speedMod+(profile.roles.includes("skirmisher")?10:0), 30, 100);
+  if(profile.moves.includes("swim") || habitat==="Underwater" || habitat==="Coast") swim = clamp(30+speedMod, 20, 80);
+  if(profile.moves.includes("burrow")) burrow = clamp(20+speedMod, 10, 50);
+  if(profile.type==="Ooze" || profile.tags.includes("ambush") || profile.forms?.includes("Arachnid")) climb = clamp(20+speedMod, 10, 40);
+  if(habitat==="Underwater" && !swim) swim = clamp(30+speedMod, 20, 70);
+  if(profile.moves.length===1 && profile.moves[0]==="swim"){ land = clamp(10+Math.floor(speedMod/2), 5, 25); }
+  return {land,fly,swim,burrow,climb};
+}
+function speedString(s){
+  const parts=[`${s.land} ft.`];
+  if(s.fly) parts.push(`fly ${s.fly} ft.`);
+  if(s.swim) parts.push(`swim ${s.swim} ft.`);
+  if(s.burrow) parts.push(`burrow ${s.burrow} ft.`);
+  if(s.climb) parts.push(`climb ${s.climb} ft.`);
+  return parts.join(", ");
+}
+function choosePhysicalTraits(profile, form){
+  const wings = profile.moves.includes("fly") ? weightedPick([{v:"Has Wings",weight:5},{v:"No Wings",weight:profile.forms?.includes("Avian")?1:2}],"weight").v : "No Wings";
+  const scales = ["Dragon","Monstrosity","Humanoid"].includes(profile.type) || ["Serpentine","Piscine","Quadrupedal"].includes(form) ? weightedPick([{v:"Has Scales",weight:4},{v:"No Scales",weight:2}],"weight").v : "No Scales";
+  const hair = ["Feline","Canine","Ursine","Humanoid","Hooved","Staglike","Simian"].includes(form) ? weightedPick([{v:"Has Hair",weight:4},{v:"Hairless",weight:2}],"weight").v : "Hairless";
+  const horns = profile.tags.includes("horns") || ["Fiend","Monstrosity","Celestial"].includes(profile.type) ? weightedPick([{v:"Has Horns",weight:4},{v:"No Horns",weight:2}],"weight").v : "No Horns";
+  const tail = ["Serpentine","Quadrupedal","Feline","Canine","Piscine","Avian","Ursine","Staglike"].includes(form) ? "Has Tail" : weightedPick([{v:"Has Tail",weight:2},{v:"No Tail",weight:4}],"weight").v;
+  const extraLimbs = ["Arachnid","Insectile","Cephalopod","Crustacean","Hexapodal"].includes(form) ? "Has Extra Limbs" : weightedPick([{v:"Has Extra Limbs",weight:1},{v:"No Extra Limbs",weight:5}],"weight").v;
+  const eyes = profile.tags.includes("eye") ? "Multiple Eyes" : weightedPick([{v:"Multiple Eyes",weight:1},{v:"Two Eyes",weight:5},{v:"No Eyes",weight:1}],"weight").v;
+  return {wings,scales,hair,horns,tail,extraLimbs,eyes};
+}
+function damagePackages(total, count, primaryType){
+  const weights = count === 1 ? [1] : count === 2 ? [0.58,0.42] : count === 3 ? [0.42,0.33,0.25] : [0.34,0.26,0.22,0.18];
+  return weights.map(w=>Math.max(1, Math.round(total*w)));
+}
+function chooseActions(profile, cr, stats, speeds){
+  const n=crToNum(cr);
+  const role=stats.role;
+  let actionCount = n<1 ? 1 : n<5 ? 2 : n<11 ? 3 : n<17 ? 4 : 5;
+  if(role==="caster" && n>=7) actionCount += 1;
+  if(actionCount>5) actionCount=5;
+
+  const neededTags=[...profile.tags];
+  if(speeds.fly) neededTags.push("wing");
+  if(speeds.swim) neededTags.push("swim");
+  if(role==="caster") neededTags.push("spell");
+  if(role==="controller") neededTags.push("fear","teleport","psychic","spores","gaze","web");
+
+  let candidates = actionLibrary.filter(a=>a.tags.some(t=>neededTags.includes(t)));
+  if(!candidates.length) candidates = actionLibrary.filter(a=>["melee","ranged","save","spell"].includes(a.kind));
+  const distinct = [];
+  while(candidates.length && distinct.length<actionCount){
+    const pick = R(candidates);
+    distinct.push(pick);
+    candidates = candidates.filter(a=>a.name!==pick.name);
+  }
+
+  const dpr=expectedDPR(cr);
+  const packets=damagePackages(dpr, distinct.filter(a=>["melee","ranged","save"].includes(a.kind)).length || 1, "physical");
+  let damageIx=0;
+  const saveDC = 8 + profBonus(cr) + Math.max(mod(stats.con),mod(stats.wis),mod(stats.cha),mod(stats.int));
+  const attackMod = statKey => fmtMod((mod(stats[statKey] || 10) + profBonus(cr)));
+
+  const rendered = distinct.map(action=>{
+    if(action.kind==="spell"){
+      const spellCount = n>=17 ? 4 : n>=11 ? 3 : 2;
+      const spellPool = [];
+      if(profile.type==="Fiend") spellPool.push("fireball","wall of fire","fear","teleport","dispel magic");
+      if(profile.type==="Celestial") spellPool.push("flame strike","daylight","banishment","lesser restoration","healing word");
+      if(profile.type==="Aberration") spellPool.push("mind spike","synaptic static","dimension door","telekinesis","confusion");
+      if(profile.type==="Dragon") spellPool.push("fear","fly","lightning bolt","cone of cold","wall of fire");
+      if(profile.type==="Humanoid" || profile.type==="Undead") spellPool.push("counterspell","misty step","hold person","blight","shield");
+      if(profile.type==="Plant") spellPool.push("entangle","spike growth","plant growth","insect plague");
+      if(profile.type==="Elemental") spellPool.push("gust of wind","wall of stone","tidal wave","fireball");
+      if(!spellPool.length) spellPool.push("magic missile","hold person","misty step","fear","shatter");
+      const chosen=pickDistinct([...new Set(spellPool)], spellCount).join(", ");
+      const ability = role==="caster" ? Math.max(mod(stats.int),mod(stats.wis),mod(stats.cha)) : mod(stats.cha);
+      const dc = 8 + profBonus(cr) + ability;
+      return `<div class="action-entry"><span class="action-name">Spellcasting.</span> The monster casts one of the following spells, using a spell save DC of ${dc}: ${chosen}.</div>`;
     }
-
-    /* ═══════════════════════════════════════════
-       POPULATE SELECTS
-       ═══════════════════════════════════════════ */
-    function populateSelect(el, items) {
-      items.forEach(item => {
-        const o = document.createElement('option');
-        o.value = item; o.textContent = item;
-        el.appendChild(o);
-      });
-    }
-    populateSelect(document.getElementById('monsterTypeSelect'), monsterTypes);
-    populateSelect(document.getElementById('styleSelect'), monsterStyles);
-    const crVals = ["Any","0","1/8","1/4","1/2","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"];
-    populateSelect(document.getElementById('crSelect'), crVals);
-    populateSelect(document.getElementById('habitatSelect'), monsterHabitats);
-
-    let pageCounter = 0;
-
-    /* ═══════════════════════════════════════════
-       GENERATE
-       ═══════════════════════════════════════════ */
-    function generateMonster() {
-      pageCounter++;
-      document.getElementById('pageNum').textContent = `pg. ${pageCounter}`;
-
-      const selType = document.getElementById('monsterTypeSelect').value;
-      const selStyle = document.getElementById('styleSelect').value;
-      const selCR = document.getElementById('crSelect').value;
-      const selHab = document.getElementById('habitatSelect').value;
-
-      const type = selType === 'Any' ? R(monsterTypes) : selType;
-      const style = selStyle === 'Any' ? R(monsterStyles) : selStyle;
-      const mainColor = R(monsterColors);
-      let accentColor = null;
-      if (Math.random() < 0.4) {
-        accentColor = R(monsterColors);
-        while (accentColor.name === mainColor.name) accentColor = R(monsterColors);
+    if(action.kind==="special"){
+      if(action.name==="Teleport" || action.name==="Void Step"){
+        return `<div class="action-entry"><span class="action-name">${action.name}.</span> The monster magically teleports up to ${n>=11?60:30} feet to an unoccupied space it can see.</div>`;
       }
-      const origin = R(monsterOrigins);
-      const size = R(monsterSizes);
-      const alignment = R(monsterAlignments);
-      const senses = R(monsterSenses);
-      const cr = selCR === 'Any' ? R(crVals.slice(1)) : selCR;
-      const habitat = selHab === 'Any' ? R(monsterHabitats) : selHab;
-
-      let lang1 = 'Common', lang2 = null;
-      if (monsterLanguages[origin]) {
-        const langs = monsterLanguages[origin];
-        lang1 = R(langs);
-        if (langs.length > 1) lang2 = R(langs.filter(l => l !== lang1));
+      if(action.name==="Healing Touch"){
+        const heal=Math.max(6, Math.round(expectedDPR(cr)*0.35));
+        return `<div class="action-entry"><span class="action-name">Healing Touch.</span> The monster or one creature it touches regains ${heal} hit points.</div>`;
       }
-
-      const str=RN(3,18),dex=RN(3,18),con=RN(3,18),int_=RN(3,18),wis=RN(3,18),cha=RN(3,18);
-
-      const hasWings = R(monsterCharacteristics.wings);
-      const hasScales = R(monsterCharacteristics.scales);
-      const hasHair = R(monsterCharacteristics.hair);
-      const hasHorns = R(monsterCharacteristics.horns);
-      const hasTail = R(monsterCharacteristics.tail);
-      const hasExtraLimbs = R(monsterCharacteristics.extraLimbs);
-      const hasEyes = R(monsterCharacteristics.eyes);
-      const shape = R(monsterShapes);
-      const behavior = R(monsterBehavior);
-      const quirk = Math.random() < 0.5 ? R(monsterQuirks) : null;
-      const loot = Math.random() < 0.3 ? R(monsterLoot) : null;
-
-      let condImm = []; if (Math.random()<0.2) condImm.push(R(conditionImmunities));
-      let vuln = []; if (Math.random()<0.2) vuln.push(R(vulnerabilities));
-
-      // Name
-      let name;
-      if (Math.random() < 0.7) {
-        name = R(namePrefixes) + R(nameMiddles) + R(nameSuffixes);
-      } else {
-        name = `${mainColor.name} ${style} ${type}`;
-      }
-
-      // Combat stats
-      const ac = RN(10, 20);
-      const {hp, formula} = generateHP(cr, con);
-      const landSpeed = RN(20, 60);
-      const flySpeed = hasWings.includes('Wings') ? RN(30, 80) : null;
-      const swimSpeed = habitat === 'Underwater' ? RN(20, 60) : null;
-      const pb = profBonus(cr);
-      const xp = xpByCR[cr] || '---';
-
-      // Abilities
-      const ab1 = R(monsterAbilities);
-      let ab2 = R(monsterAbilities);
-      while (ab2.name === ab1.name) ab2 = R(monsterAbilities);
-
-      const dc = n => 8 + pb + mod(n);
-
-      function renderAction(ab) {
-        let text = '';
-        if (ab.damage) {
-          const atkMod = fmtMod(mod(str) + pb);
-          text += `<em>${ab.type}:</em> ${atkMod} to hit. <em>Hit:</em> ${ab.damage}.`;
-          if (ab.description) text += ` ${ab.description}`;
-          if (ab.save) text += ` (DC ${dc(str)} ${ab.save} save)`;
-        } else {
-          if (ab.description) text += ab.description;
-          if (ab.save) text += ` (DC ${dc(str)} ${ab.save} save)`;
-        }
-        const rechargeTag = ab.recharge ? ` (Recharge ${ab.recharge})` : '';
-        return `<div class="action-entry"><span class="action-name">${ab.name}${rechargeTag}.</span> ${text}</div>`;
-      }
-
-      // Speed string
-      let speedStr = `${landSpeed} ft.`;
-      if (flySpeed) speedStr += `, fly ${flySpeed} ft.`;
-      if (swimSpeed) speedStr += `, swim ${swimSpeed} ft.`;
-
-      // Language string
-      let langStr = lang1;
-      if (lang2) langStr += `, ${lang2}`;
-
-      // Image prompt
-      let positiveTraits = [];
-      if (hasWings !== "No Wings") positiveTraits.push("wings");
-      if (hasScales !== "No Scales") positiveTraits.push("scales");
-      if (hasHorns !== "No Horns") positiveTraits.push("horns");
-      if (hasTail !== "No Tail") positiveTraits.push("tail");
-      if (hasExtraLimbs !== "No Extra Limbs") positiveTraits.push("extra limbs");
-      if (hasEyes !== "Two Eyes") positiveTraits.push(hasEyes.toLowerCase());
-      let prompt = `${style} ${type}, ${size}, ${mainColor.name} skin`;
-      if (accentColor) prompt += `, ${accentColor.name} details`;
-      if (positiveTraits.length) prompt += `, ${positiveTraits.join(", ")}`;
-      prompt += `, ${habitat} environment, cinematic lighting, detailed texture`;
-      document.getElementById('imagePromptStorage').value = prompt;
-
-      // Color swatches
-      const mainSwatch = `<span class="color-swatch" style="background:${mainColor.hex}"></span>${mainColor.name}`;
-      const accentSwatch = accentColor ? `, <span class="color-swatch" style="background:${accentColor.hex}"></span>${accentColor.name}` : '';
-
-      // Build HTML
-      const html = `
-        <div class="stat-block">
-          <div class="gradient-bar"></div>
-
-          <div class="monster-name">${name}</div>
-          <div class="monster-meta">${size} ${type.toLowerCase()}, ${alignment}</div>
-
-          <hr class="tapered-rule">
-
-          <div class="prop-line"><span class="prop-label">Armor Class</span> <span class="prop-value">${ac}</span></div>
-          <div class="prop-line"><span class="prop-label">Hit Points</span> <span class="prop-value">${hp} (${formula})</span></div>
-          <div class="prop-line"><span class="prop-label">Speed</span> <span class="prop-value">${speedStr}</span></div>
-
-          <hr class="tapered-rule">
-
-          <div class="ability-scores">
-            <div class="ability-score"><span class="label">STR</span><span class="value">${str} (${fmtMod(mod(str))})</span></div>
-            <div class="ability-score"><span class="label">DEX</span><span class="value">${dex} (${fmtMod(mod(dex))})</span></div>
-            <div class="ability-score"><span class="label">CON</span><span class="value">${con} (${fmtMod(mod(con))})</span></div>
-            <div class="ability-score"><span class="label">INT</span><span class="value">${int_} (${fmtMod(mod(int_))})</span></div>
-            <div class="ability-score"><span class="label">WIS</span><span class="value">${wis} (${fmtMod(mod(wis))})</span></div>
-            <div class="ability-score"><span class="label">CHA</span><span class="value">${cha} (${fmtMod(mod(cha))})</span></div>
-          </div>
-
-          <hr class="tapered-rule">
-
-          ${vuln.length ? `<div class="prop-line"><span class="prop-label">Damage Vulnerabilities</span> <span class="prop-value">${vuln.join(', ')}</span></div>` : ''}
-          ${condImm.length ? `<div class="prop-line"><span class="prop-label">Condition Immunities</span> <span class="prop-value">${condImm.join(', ')}</span></div>` : ''}
-          <div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">${senses}, passive Perception ${10 + mod(wis)}</span></div>
-          <div class="prop-line"><span class="prop-label">Languages</span> <span class="prop-value">${langStr}</span></div>
-          <div class="prop-line"><span class="prop-label">Challenge</span> <span class="prop-value">${cr} (${typeof xp === 'number' ? xp.toLocaleString() : xp} XP)</span></div>
-          <div class="prop-line"><span class="prop-label">Proficiency Bonus</span> <span class="prop-value">${fmtMod(pb)}</span></div>
-
-          <hr class="tapered-rule">
-
-          <div class="section-header">Actions</div>
-          ${renderAction(ab1)}
-          ${renderAction(ab2)}
-
-          <div class="section-header">Physiology &amp; Ecology</div>
-          <div class="physiology-grid">
-            <div class="phys-item"><span class="phys-label">Color:</span> ${mainSwatch}${accentSwatch}</div>
-            <div class="phys-item"><span class="phys-label">Form:</span> ${shape}</div>
-            <div class="phys-item"><span class="phys-label">Wings:</span> ${hasWings}</div>
-            <div class="phys-item"><span class="phys-label">Scales:</span> ${hasScales}</div>
-            <div class="phys-item"><span class="phys-label">Hair:</span> ${hasHair}</div>
-            <div class="phys-item"><span class="phys-label">Horns:</span> ${hasHorns}</div>
-            <div class="phys-item"><span class="phys-label">Tail:</span> ${hasTail}</div>
-            <div class="phys-item"><span class="phys-label">Limbs:</span> ${hasExtraLimbs}</div>
-            <div class="phys-item"><span class="phys-label">Eyes:</span> ${hasEyes}</div>
-            <div class="phys-item"><span class="phys-label">Habitat:</span> ${habitat}</div>
-          </div>
-
-          <hr class="tapered-rule" style="margin-top:12px">
-
-          <div class="flavor-line"><span class="fl-label">Origin:</span> ${origin}</div>
-          <div class="flavor-line"><span class="fl-label">Behavior:</span> ${behavior}</div>
-          ${loot ? `<div class="flavor-line"><span class="fl-label">Treasure:</span> ${loot}</div>` : ''}
-          ${quirk ? `<div class="flavor-line" style="margin-top:6px; font-style:italic; color:var(--ink-light);"><span class="fl-label" style="font-style:normal;">Quirk:</span> ${quirk}</div>` : ''}
-
-          <div class="gradient-bar bottom"></div>
-        </div>
-      `;
-
-      const display = document.getElementById('monsterDisplay');
-      display.innerHTML = html;
-      document.getElementById('statScroll').scrollTop = 0;
+    }
+    if(action.kind==="trait"){
+      const regen = Math.max(5, Math.round(expectedDPR(cr)*0.18));
+      return `<div class="action-entry"><span class="action-name">Regeneration.</span> The monster regains ${regen} hit points at the start of its turn if it has at least 1 hit point.</div>`;
     }
 
-    /* ═══════════════════════════════════════════
-       TOAST + COPY
-       ═══════════════════════════════════════════ */
-    function showToast(msg) {
-      const c = document.getElementById('toast-container');
-      const t = document.createElement('div');
-      t.classList.add('toast');
-      t.textContent = msg;
-      c.appendChild(t);
-      requestAnimationFrame(() => t.classList.add('show'));
-      setTimeout(() => {
-        t.classList.remove('show');
-        setTimeout(() => c.removeChild(t), 300);
-      }, 2500);
-    }
-
-    function copyText(text, msg) {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(() => fallbackCopy(text, msg));
-      } else { fallbackCopy(text, msg); }
-    }
-
-    function fallbackCopy(text, msg) {
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px';
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta); showToast(msg);
-    }
-
-    document.getElementById('generateBtn').addEventListener('click', generateMonster);
-    document.getElementById('copyBtn').addEventListener('click', () => {
-      const text = document.getElementById('monsterDisplay').innerText;
-      if (!text || text.includes('Awaiting')) return showToast('Conjure a monster first!');
-      copyText(text, 'Stat block copied!');
-    });
-    document.getElementById('copyPromptBtn').addEventListener('click', () => {
-      const p = document.getElementById('imagePromptStorage').value;
-      if (!p) return showToast('Conjure a monster first!');
-      copyText(p, 'Image prompt copied!');
-    });
-
-    // Keyboard shortcut
-    document.addEventListener('keydown', e => {
-      if (e.code === 'Space' && !['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
-        e.preventDefault();
-        generateMonster();
+    const avg = packets[Math.min(damageIx, packets.length-1)];
+    damageIx++;
+    if(action.kind==="melee" || action.kind==="ranged"){
+      const die = avg < 10 ? 6 : avg < 18 ? 8 : avg < 26 ? 10 : 12;
+      const statMod=mod(stats[action.stat] || 10);
+      const baseAvg=Math.max(1, avg - statMod);
+      const dice=damageDiceForAverage(baseAvg, die);
+      let hitText = `${action.kind==="melee" ? "Melee" : "Ranged"} Weapon Attack: ${attackMod(action.stat)} to hit`;
+      if(action.range) hitText += `, range ${action.range}`;
+      hitText += `, one target.`;
+      let dmg = action.damageType==="none" ? "" : `<em>Hit:</em> ${dice}${statMod>=0?` + ${statMod}`:` - ${Math.abs(statMod)}`} ${action.damageType} damage.`;
+      if(action.extraType){
+        const extra = Math.max(2, Math.round(avg*0.35));
+        dmg = `<em>Hit:</em> ${dice}${statMod>=0?` + ${statMod}`:` - ${Math.abs(statMod)}`} ${action.damageType} damage plus ${damageDiceForAverage(extra,6)} ${action.extraType} damage.`;
       }
-    });
-  </script>
+      let rider = action.rider ? ` ${action.rider.replaceAll("{saveDC}", saveDC)}` : "";
+      return `<div class="action-entry"><span class="action-name">${action.name}.</span> <em>${hitText}</em> ${dmg}${rider}</div>`;
+    }
+    if(action.kind==="save"){
+      const avgSave = Math.max(4, avg);
+      const die = avgSave < 10 ? 6 : avgSave < 20 ? 8 : 10;
+      const dice = damageDiceForAverage(avgSave, die);
+      const saveStat = (action.saveStat || "dex").toUpperCase().slice(0,1) + (action.saveStat || "dex").slice(1);
+      const shape = action.shape || "15-foot radius";
+      const hit = action.damageType==="none" ? "" : ` taking ${dice} ${action.damageType} damage on a failed save, or half as much damage on a successful one.`;
+      const rider = action.rider ? ` ${action.rider.replaceAll("{saveDC}", saveDC)}` : "";
+      return `<div class="action-entry"><span class="action-name">${action.name}${action.name.includes("Breath") ? " (Recharge 5-6)" : ""}.</span> The monster affects creatures in a ${shape}. Each affected creature must make a DC ${saveDC} ${saveStat} saving throw,${hit}${rider}</div>`;
+    }
+    return "";
+  });
+
+  return rendered.filter(Boolean);
+}
+function chooseBonusAction(profile, cr){
+  if(crToNum(cr)<5) return null;
+  const choices=[];
+  if(profile.tags.includes("teleport")) choices.push("The monster teleports up to 20 feet to an unoccupied space it can see.");
+  if(profile.roles.includes("skirmisher")) choices.push("The monster moves up to half its speed without provoking opportunity attacks.");
+  if(profile.tags.includes("fear")) choices.push("One creature frightened by the monster takes 7 (2d6) psychic damage.");
+  if(profile.tags.includes("healing")) choices.push("The monster sheds soothing light. It or one ally within 20 feet regains 10 hit points.");
+  if(profile.type==="Dragon") choices.push("The monster beats its wings. Each creature within 10 feet must succeed on a Strength save or be pushed 10 feet.");
+  if(!choices.length) choices.push("The monster steels itself, gaining advantage on the next attack roll it makes before the end of its turn.");
+  return `<div class="action-entry"><span class="action-name">Bonus Action.</span> ${R(choices)}</div>`;
+}
+function chooseReaction(profile, cr){
+  if(crToNum(cr)<8) return null;
+  const choices=[];
+  if(profile.tags.includes("tail")) choices.push("When a creature misses the monster with a melee attack, the monster makes one Tail Lash attack against that creature.");
+  if(profile.type==="Construct" || profile.type==="Dragon") choices.push("When the monster is hit by an attack, it gains +3 AC against that attack, potentially causing it to miss.");
+  if(profile.tags.includes("teleport")) choices.push("When a creature ends its turn within 10 feet of the monster, the monster teleports up to 15 feet.");
+  if(profile.type==="Undead") choices.push("When a creature the monster can see starts casting a spell, the caster must succeed on a Wisdom save or the spell fizzles and the slot is not expended.");
+  if(!choices.length) choices.push("When a creature enters the monster's reach, the monster makes one weapon attack against that creature.");
+  return `<div class="action-entry"><span class="action-name">Reaction.</span> ${R(choices)}</div>`;
+}
+function chooseLegendary(profile, cr){
+  const n=crToNum(cr);
+  if(n<15) return null;
+  const entries=[
+    "The monster makes one attack.",
+    "The monster moves up to half its speed.",
+    profile.tags.includes("teleport") ? "The monster magically teleports up to 30 feet." : "The monster forces one creature it can see within 30 feet to make a saving throw against one of its effects.",
+    profile.roles.includes("caster") ? "The monster casts a cantrip or uses a minor magical effect." : "The monster makes a skillful feint, imposing disadvantage on the next attack against it before the start of its next turn."
+  ];
+  return `<div class="action-entry"><span class="action-name">Legendary Actions.</span> The monster can take 3 legendary actions, choosing from the options below, taking only one option at a time and only at the end of another creature's turn: ${pickDistinct(entries,3).join(" ")}</div>`;
+}
+function chooseDefenses(profile, cr){
+  const n=crToNum(cr);
+  const vuln=[], res=[], condImm=[];
+  if(profile.type==="Undead") condImm.push("poisoned","exhaustion");
+  if(profile.type==="Construct") condImm.push("poisoned","exhaustion","paralyzed");
+  if(profile.type==="Ooze") condImm.push("prone");
+  if(profile.type==="Celestial") res.push("radiant");
+  if(profile.type==="Fiend") res.push("fire");
+  if(profile.type==="Undead") res.push("necrotic");
+  if(profile.type==="Elemental") res.push(R(["fire","cold","lightning","thunder"]));
+  if(profile.type==="Dragon" && n>=7) res.push(R(["fire","cold","lightning","acid","poison"]));
+  if(n>=10 && chance(0.4)) res.push("bludgeoning, piercing, and slashing from nonmagical attacks");
+  if(chance(0.15) && !["Fiend","Celestial","Elemental"].includes(profile.type)) vuln.push(R(vulnerabilitiesList));
+  return {
+    vulnerabilities:[...new Set(vuln)],
+    resistances:[...new Set(res)],
+    conditionImmunities:[...new Set(condImm)]
+  };
+}
+
+/* POPULATE SELECTS */
+function populateSelect(el,items){
+  const existing = new Set([...el.options].map(o=>o.value));
+  items.forEach(i=>{
+    if(existing.has(i)) return;
+    const o=document.createElement('option');
+    o.value=i;o.textContent=i;el.appendChild(o);
+  });
+}
+populateSelect(document.getElementById('monsterTypeSelect'), monsterTypes.filter(v=>v!=="Any"));
+populateSelect(document.getElementById('styleSelect'), monsterStyles);
+populateSelect(document.getElementById('crSelect'), ["Any",...crOrder]);
+populateSelect(document.getElementById('habitatSelect'), monsterHabitats);
+
+/* STATE */
+let history=[], currentIndex=-1, savedSet=new Set();
+let storageAvailable = typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+
+function persistSaved() {
+  if (!storageAvailable) return;
+  try {
+    const savedMonsters = [...savedSet].map(idx => history[idx]).filter(Boolean);
+    window.localStorage.setItem('bestiary-saved', JSON.stringify(savedMonsters));
+  } catch(e) { console.warn('Storage write failed:', e); }
+}
+
+function loadSaved() {
+  if (!storageAvailable) return;
+  try {
+    const raw = window.localStorage.getItem('bestiary-saved');
+    if (raw) {
+      const savedMonsters = JSON.parse(raw);
+      if (Array.isArray(savedMonsters) && savedMonsters.length > 0) {
+        savedMonsters.forEach(monster => {
+          history.push(monster);
+          savedSet.add(history.length - 1);
+        });
+        showPage(0);
+        showToast(`Loaded ${savedMonsters.length} saved creature${savedMonsters.length > 1 ? 's' : ''}`);
+        return;
+      }
+    }
+  } catch(e) { console.warn('Storage read failed:', e); }
+}
+
+/* BUILD MONSTER */
+function buildMonsterData(){
+  const selType=document.getElementById('monsterTypeSelect').value;
+  const selStyle=document.getElementById('styleSelect').value;
+  const selCR=document.getElementById('crSelect').value;
+  const selHab=document.getElementById('habitatSelect').value;
+
+  const family=chooseFamily(selType);
+  const style=selStyle==='Any'?R(monsterStyles):selStyle;
+  const cr=chooseCR(selCR);
+  const habitat=chooseHabitat(selHab, family);
+  const origin=chooseOrigin(family, habitat);
+  const size=chooseSize(family, cr);
+  const alignment=chooseAlignment(family);
+  const rarity=chooseRarity(cr, family);
+  const mainColor=R(monsterColors);
+  let accentColor=chance(0.55)?R(monsterColors):null;
+  if(accentColor && accentColor.name===mainColor.name) accentColor=null;
+
+  const form = family.forms ? R(family.forms) : R(bodyForms);
+  const pattern = R(monsterPatterns);
+  const animalInfluence = family.animal ? R(family.animal) : R(["wolf","eagle","frog","viper","mantis"]);
+  const stats = generateAbilityScores(cr, family, size);
+  const pb = profBonus(cr);
+  const vision = chooseVision(family, cr, habitat);
+  const hpPack = generateHP(cr, stats.con, size, stats.role);
+  const ac = generateAC(cr, stats.dex, stats.role, family.type, style);
+  const speeds = generateSpeeds(family, size, habitat);
+  const defenses = chooseDefenses(family, cr);
+  const actions = chooseActions(family, cr, stats, speeds);
+  const bonusAction = chooseBonusAction(family, cr);
+  const reaction = chooseReaction(family, cr);
+  const legendary = chooseLegendary(family, cr);
+  const languages = chooseLanguages(family, origin, stats.int, rarity);
+  const lifespan = lifespanByType(family.type, rarity, cr);
+  const weight = sizeWeightRange(size, form, family.type);
+  const behavior=R(monsterBehavior);
+  const quirk=chance(0.65)?R(monsterQuirks):null;
+  const loot=chance(0.45)?R(monsterLoot):null;
+  const traits = choosePhysicalTraits(family, form);
+  const name=randomName(style, family, mainColor);
+  const xp=xpByCR[cr] || '---';
+
+  const passive=passivePerception(stats.wis);
+  const langStr=languages;
+  const speedStr=speedString(speeds);
+  const saveDC = 8 + pb + Math.max(mod(stats.str),mod(stats.dex),mod(stats.con),mod(stats.int),mod(stats.wis),mod(stats.cha));
+
+  let prompt=`${style} ${family.name}, ${family.type.toLowerCase()}, ${size}, ${form.toLowerCase()} body, ${mainColor.name.toLowerCase()} coloration`;
+  if(accentColor) prompt+=`, ${accentColor.name.toLowerCase()} accents`;
+  prompt+=`, ${pattern.toLowerCase()}, inspired by ${animalInfluence}, ${habitat.toLowerCase()} habitat, fantasy creature concept art, highly detailed`;
+
+  const mainSwatch=`<span class="color-swatch" style="background:${mainColor.hex}"></span>${mainColor.name}`;
+  const accentSwatch=accentColor?`, <span class="color-swatch" style="background:${accentColor.hex}"></span>${accentColor.name}`:'';
+  const actionHTML = actions.join("");
+  const html=`<div class="stat-block">
+    <div class="gradient-bar"></div>
+    <div class="monster-name">${name}</div>
+    <div class="monster-meta">${size} ${family.type.toLowerCase()}, ${alignment}</div>
+    <hr class="tapered-rule">
+    <div class="prop-line"><span class="prop-label">Armor Class</span> <span class="prop-value">${ac}</span></div>
+    <div class="prop-line"><span class="prop-label">Hit Points</span> <span class="prop-value">${hpPack.hp} (${hpPack.formula})</span></div>
+    <div class="prop-line"><span class="prop-label">Speed</span> <span class="prop-value">${speedStr}</span></div>
+    <hr class="tapered-rule">
+    <div class="ability-scores">
+      <div class="ability-score"><span class="label">STR</span><span class="value">${stats.str} (${fmtMod(mod(stats.str))})</span></div>
+      <div class="ability-score"><span class="label">DEX</span><span class="value">${stats.dex} (${fmtMod(mod(stats.dex))})</span></div>
+      <div class="ability-score"><span class="label">CON</span><span class="value">${stats.con} (${fmtMod(mod(stats.con))})</span></div>
+      <div class="ability-score"><span class="label">INT</span><span class="value">${stats.int} (${fmtMod(mod(stats.int))})</span></div>
+      <div class="ability-score"><span class="label">WIS</span><span class="value">${stats.wis} (${fmtMod(mod(stats.wis))})</span></div>
+      <div class="ability-score"><span class="label">CHA</span><span class="value">${stats.cha} (${fmtMod(mod(stats.cha))})</span></div>
+    </div>
+    <hr class="tapered-rule">
+    ${defenses.vulnerabilities.length?`<div class="prop-line"><span class="prop-label">Damage Vulnerabilities</span> <span class="prop-value">${defenses.vulnerabilities.join(', ')}</span></div>`:''}
+    ${defenses.resistances.length?`<div class="prop-line"><span class="prop-label">Damage Resistances</span> <span class="prop-value">${defenses.resistances.join(', ')}</span></div>`:''}
+    ${defenses.conditionImmunities.length?`<div class="prop-line"><span class="prop-label">Condition Immunities</span> <span class="prop-value">${defenses.conditionImmunities.join(', ')}</span></div>`:''}
+    <div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">${vision}, passive Perception ${passive}</span></div>
+    <div class="prop-line"><span class="prop-label">Languages</span> <span class="prop-value">${langStr}</span></div>
+    <div class="prop-line"><span class="prop-label">Challenge</span> <span class="prop-value">${cr} (${typeof xp==='number'?xp.toLocaleString():xp} XP)</span></div>
+    <div class="prop-line"><span class="prop-label">Rarity</span> <span class="prop-value">${rarity.name} (${rarity.desc})</span></div>
+    <div class="prop-line"><span class="prop-label">Proficiency Bonus</span> <span class="prop-value">${fmtMod(pb)}</span></div>
+    <hr class="tapered-rule">
+    <div class="section-header">Actions</div>
+    ${actionHTML}
+    ${bonusAction?`<div class="section-header">Bonus Actions</div>${bonusAction}`:''}
+    ${reaction?`<div class="section-header">Reactions</div>${reaction}`:''}
+    ${legendary?`<div class="section-header">Legendary</div>${legendary}`:''}
+    <div class="section-header">Physiology &amp; Ecology</div>
+    <div class="physiology-grid">
+      <div class="phys-item"><span class="phys-label">Color:</span> ${mainSwatch}${accentSwatch}</div>
+      <div class="phys-item"><span class="phys-label">Form:</span> ${form}</div>
+      <div class="phys-item"><span class="phys-label">Pattern / Skin:</span> ${pattern}</div>
+      <div class="phys-item"><span class="phys-label">Animal Influence:</span> ${animalInfluence}</div>
+      <div class="phys-item"><span class="phys-label">Wings:</span> ${traits.wings}</div>
+      <div class="phys-item"><span class="phys-label">Scales:</span> ${traits.scales}</div>
+      <div class="phys-item"><span class="phys-label">Hair:</span> ${traits.hair}</div>
+      <div class="phys-item"><span class="phys-label">Horns:</span> ${traits.horns}</div>
+      <div class="phys-item"><span class="phys-label">Tail:</span> ${traits.tail}</div>
+      <div class="phys-item"><span class="phys-label">Limbs:</span> ${traits.extraLimbs}</div>
+      <div class="phys-item"><span class="phys-label">Eyes:</span> ${traits.eyes}</div>
+      <div class="phys-item"><span class="phys-label">Vision Type:</span> ${vision}</div>
+      <div class="phys-item"><span class="phys-label">Weight:</span> ${weight}</div>
+      <div class="phys-item"><span class="phys-label">Lifespan:</span> ${lifespan}</div>
+      <div class="phys-item"><span class="phys-label">Habitat:</span> ${habitat}</div>
+      <div class="phys-item"><span class="phys-label">Role:</span> ${stats.role.charAt(0).toUpperCase()+stats.role.slice(1)}</div>
+    </div>
+    <hr class="tapered-rule" style="margin-top:10px">
+    <div class="flavor-line"><span class="fl-label">Origin:</span> ${origin}</div>
+    <div class="flavor-line"><span class="fl-label">Behavior:</span> ${behavior}</div>
+    <div class="flavor-line"><span class="fl-label">Save DC Baseline:</span> ${saveDC}</div>
+    ${loot?`<div class="flavor-line"><span class="fl-label">Treasure:</span> ${loot}</div>`:''}
+    ${quirk?`<div class="flavor-line" style="margin-top:4px;font-style:italic;color:var(--ink-light)"><span class="fl-label" style="font-style:normal">Quirk:</span> ${quirk}</div>`:''}
+    <div class="gradient-bar bottom"></div>
+  </div>`;
+  return{name,meta:`${size} ${family.type}`,cr,html,prompt,alignment,rarity:rarity.name};
+}
+
+/* NAVIGATION */
+function showPage(index){
+  if(index<0||index>=history.length)return;
+  currentIndex=index;
+  const entry=history[index];
+  document.getElementById('monsterDisplay').innerHTML=entry.html;
+  document.getElementById('imagePromptStorage').value=entry.prompt;
+  document.getElementById('statScroll').scrollTop=0;
+  updateUI();
+}
+
+function updateUI(){
+  const total=history.length;
+  const has=currentIndex>=0&&currentIndex<total;
+  document.getElementById('pageIndicator').textContent=has?`${currentIndex+1} / ${total}`:'--';
+  document.getElementById('navFirst').disabled=!has||currentIndex===0;
+  document.getElementById('navPrev').disabled=!has||currentIndex===0;
+  document.getElementById('navNext').disabled=!has||currentIndex>=total-1;
+  document.getElementById('navLast').disabled=!has||currentIndex>=total-1;
+  document.getElementById('saveBtn').disabled=!has;
+  document.getElementById('copyBtn').disabled=!has;
+  document.getElementById('copyPromptBtn').disabled=!has;
+  if(has&&savedSet.has(currentIndex)){document.getElementById('saveBtn').classList.add('saved');}
+  else{document.getElementById('saveBtn').classList.remove('saved');}
+  renderSidebar();
+}
+
+/* SIDEBAR */
+function renderSidebar(){
+  const savedList=document.getElementById('savedList');
+  const savedEntries=[...savedSet].sort((a,b)=>b-a);
+  if(!savedEntries.length){savedList.innerHTML='<div class="sb-empty">No saved entries yet</div>';}
+  else{savedList.innerHTML=savedEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
+    <div class="sb-entry-icon"><i class="fas fa-bookmark"></i></div>
+    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.meta}, ${e.alignment}${e.rarity?` · ${e.rarity}`:""}</div></div>
+    <div class="sb-entry-cr">${e.cr}</div>
+    <div class="sb-entry-actions"><button class="sb-action-btn delete" data-remove="${idx}" title="Remove"><i class="fas fa-times"></i></button></div>
+  </div>`;}).join('');}
+
+  const historyList=document.getElementById('historyList');
+  const historyEntries=history.map((_,i)=>i).filter(i=>!savedSet.has(i)).reverse();
+  if(!historyEntries.length){historyList.innerHTML=history.length?'<div class="sb-empty">All entries are saved</div>':'<div class="sb-empty">No history yet</div>';}
+  else{historyList.innerHTML=historyEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
+    <div class="sb-entry-icon"><i class="fas fa-scroll" style="opacity:0.5"></i></div>
+    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.meta}${e.rarity?` · ${e.rarity}`:""}</div></div>
+    <div class="sb-entry-cr">${e.cr}</div>
+  </div>`;}).join('');}
+
+  document.getElementById('sidebarFooter').textContent=`${savedSet.size} saved \u00B7 ${history.length} conjured`;
+
+  document.querySelectorAll('.sb-entry[data-index]').forEach(el=>{
+    el.addEventListener('click',e=>{if(e.target.closest('.sb-action-btn'))return;showPage(parseInt(el.dataset.index));});
+  });
+  document.querySelectorAll('.sb-action-btn[data-remove]').forEach(el=>{
+    el.addEventListener('click',e=>{e.stopPropagation();savedSet.delete(parseInt(el.dataset.remove));updateUI();persistSaved();showToast('Removed from bestiary');});
+  });
+}
+
+function generateMonster(){const data=buildMonsterData();history.push(data);showPage(history.length-1);}
+function toggleSave(){if(currentIndex<0)return;if(savedSet.has(currentIndex)){savedSet.delete(currentIndex);showToast('Removed from bestiary');}else{savedSet.add(currentIndex);showToast('Saved to bestiary!');}updateUI();persistSaved();}
+function toggleSidebar(){const sb=document.getElementById('sidebar');const ov=document.getElementById('sidebarOverlay');sb.classList.toggle('collapsed');ov.classList.toggle('active',!sb.classList.contains('collapsed'));}
+
+/* TOAST & COPY */
+function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.classList.add('toast');t.textContent=msg;c.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{if(t.parentNode)c.removeChild(t);},300);},2500);}
+function copyText(text,msg){if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast(msg)).catch(()=>fbCopy(text,msg));}else{fbCopy(text,msg);}}
+function fbCopy(text,msg){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast(msg);}
+
+/* EVENTS */
+document.getElementById('generateBtn').addEventListener('click',generateMonster);
+document.getElementById('saveBtn').addEventListener('click',toggleSave);
+document.getElementById('sidebarToggle').addEventListener('click',toggleSidebar);
+document.getElementById('sidebarCloseBtn').addEventListener('click',toggleSidebar);
+document.getElementById('sidebarOverlay').addEventListener('click',toggleSidebar);
+document.getElementById('navFirst').addEventListener('click',()=>showPage(0));
+document.getElementById('navPrev').addEventListener('click',()=>showPage(currentIndex-1));
+document.getElementById('navNext').addEventListener('click',()=>showPage(currentIndex+1));
+document.getElementById('navLast').addEventListener('click',()=>showPage(history.length-1));
+document.getElementById('copyBtn').addEventListener('click',()=>{const t=document.getElementById('monsterDisplay').innerText;if(!t||currentIndex<0)return showToast('Conjure a monster first!');copyText(t,'Stat block copied!');});
+document.getElementById('copyPromptBtn').addEventListener('click',()=>{const p=document.getElementById('imagePromptStorage').value;if(!p)return showToast('Conjure a monster first!');copyText(p,'Image prompt copied!');});
+
+document.addEventListener('keydown',e=>{
+  if(['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
+  if(e.code==='Space'){e.preventDefault();generateMonster();}
+  if(e.code==='ArrowLeft'){e.preventDefault();if(currentIndex>0)showPage(currentIndex-1);}
+  if(e.code==='ArrowRight'){e.preventDefault();if(currentIndex<history.length-1)showPage(currentIndex+1);}
+  if(e.code==='KeyS'&&!e.ctrlKey&&!e.metaKey){toggleSave();}
+  if(e.code==='KeyB'){toggleSidebar();}
+});
+
+/* INIT */
+loadSaved();
+
+</script>
 </body>
 </html>
