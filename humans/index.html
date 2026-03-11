@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humans of Faer&#251;n &#8212; A Complete Lorebook</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--parchment:#f4e4c1;--parchment-dark:#e8d5a3;--parchment-edge:#d4c08a;--ink:#1a0e00;--ink-light:#3d2b1f;--ink-mid:#5c3d2e;--accent-red:#8b1a1a;--accent-gold:#8b6914;--accent-gold-light:#c49b32;--stat-bg:#fdf1d6;--stat-border:#c9ad6a;--divider:#58180d;--drop-cap:#58180d;--sidebar-bg:#e8dcc8;--note-bg:#f9eed8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#2c1810;color:var(--ink);font-family:'Spectral','Crimson Text',Georgia,serif;font-size:17px;line-height:1.65}
+.cover-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 20%,rgba(139,105,20,.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(139,26,26,.1) 0%,transparent 50%),linear-gradient(180deg,#1a0e08 0%,#2c1810 30%,#3d2218 60%,#2c1810 100%);text-align:center;padding:4rem 2rem;position:relative}
+.cover-border{position:absolute;inset:20px;border:2px solid var(--accent-gold);pointer-events:none}
+.cover-border::before{content:'';position:absolute;inset:6px;border:1px solid rgba(196,155,50,.4)}
+.cover-border::after{content:'';position:absolute;inset:12px;border:1px solid rgba(196,155,50,.15)}
+.cover-ornament{color:var(--accent-gold);font-size:3rem;letter-spacing:1rem;opacity:.7;font-family:'Cinzel Decorative',serif}
+.cover-title{font-family:'Cinzel Decorative',serif;font-size:clamp(2.5rem,6vw,4.5rem);color:var(--accent-gold-light);text-shadow:0 0 40px rgba(196,155,50,.3),0 2px 4px rgba(0,0,0,.8);margin:1.5rem 0 .5rem;letter-spacing:.08em;line-height:1.2}
+.cover-subtitle{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.6rem);color:#c4a46a;letter-spacing:.25em;text-transform:uppercase;margin-bottom:2rem}
+.cover-rule{width:60%;max-width:500px;height:2px;background:linear-gradient(90deg,transparent,var(--accent-gold),transparent);margin:1rem auto}
+.cover-desc{font-family:'Spectral',serif;font-style:italic;color:#b8a080;font-size:1.1rem;max-width:600px;line-height:1.7;margin:1.5rem auto}
+.cover-edition{font-family:'Cinzel',serif;color:var(--accent-gold);font-size:.85rem;letter-spacing:.3em;text-transform:uppercase;margin-top:2rem;opacity:.7}
+.cover-sigil{width:120px;height:120px;margin:2rem auto}.cover-sigil svg{width:100%;height:100%}
+.book-body{max-width:920px;margin:0 auto;background:linear-gradient(90deg,rgba(0,0,0,.08) 0%,transparent 3%,transparent 97%,rgba(0,0,0,.08) 100%),linear-gradient(180deg,var(--parchment-dark) 0%,var(--parchment) 2%,var(--parchment) 98%,var(--parchment-dark) 100%);box-shadow:0 0 80px rgba(0,0,0,.6),inset 0 0 60px rgba(0,0,0,.05);position:relative}
+.book-body::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1}
+.page{padding:3rem 3.5rem;position:relative;z-index:2}.page+.page{border-top:1px solid var(--parchment-edge)}
+h1,h2,h3,h4{font-family:'Cinzel',serif;color:var(--accent-red)}
+h1{font-size:2.4rem;font-weight:900;text-align:center;margin:0 0 .5rem;color:var(--divider)}
+h1::after{content:'';display:block;width:40%;height:3px;background:linear-gradient(90deg,transparent,var(--divider),transparent);margin:.6rem auto 1.5rem}
+h2{font-size:1.7rem;font-weight:700;margin:2.2rem 0 .8rem;padding-bottom:.3rem;border-bottom:2px solid var(--accent-red);color:var(--divider)}
+h3{font-size:1.25rem;font-weight:700;margin:1.8rem 0 .6rem;color:var(--ink-mid)}
+p{margin-bottom:.8rem;text-align:justify;hyphens:auto}
+.drop-cap::first-letter{float:left;font-family:'Cinzel Decorative',serif;font-size:4.2rem;line-height:.8;padding:.08em .08em 0 0;color:var(--drop-cap);font-weight:700}
+.pointed-divider{text-align:center;margin:2rem 0;color:var(--accent-red);font-size:1.4rem;letter-spacing:.5rem;opacity:.6}
+.section-divider{width:100%;height:12px;margin:2.5rem 0;background:linear-gradient(90deg,transparent,var(--divider) 20%,var(--divider) 80%,transparent);clip-path:polygon(0 45%,40% 45%,45% 0,50% 45%,55% 0,60% 45%,100% 45%,100% 55%,60% 55%,55% 100%,50% 55%,45% 100%,40% 55%,0 55%)}
+.rule-light{width:80%;margin:1.5rem auto;height:1px;background:linear-gradient(90deg,transparent,var(--accent-gold),transparent)}
+.stat-block{background:linear-gradient(135deg,var(--stat-bg) 0%,#fbe8c4 100%);border:2px solid var(--stat-border);padding:1.2rem 1.5rem;margin:1.5rem 0;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.stat-block-title{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;color:var(--accent-red);margin-bottom:.1rem}
+.stat-block-subtitle{font-family:'Spectral',serif;font-style:italic;font-size:.95rem;color:var(--ink-mid);margin-bottom:.8rem}
+.stat-rule{height:2px;background:linear-gradient(90deg,var(--accent-red),var(--stat-border),var(--accent-red));margin:.6rem 0}
+.ability-scores{display:flex;justify-content:space-around;text-align:center;margin:.6rem 0;flex-wrap:wrap;gap:.3rem}
+.ability-score{min-width:60px}.ability-score .label{font-family:'Cinzel',serif;font-weight:700;font-size:.85rem;color:var(--accent-red);text-transform:uppercase}
+.ability-score .value{font-family:'Spectral',serif;font-size:1.05rem;font-weight:600}
+.stat-property{margin:.25rem 0;font-size:.95rem}.stat-property .prop-label{font-weight:700}.trait-name{font-style:italic;font-weight:700}
+.dnd-table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}
+.dnd-table thead th{font-family:'Cinzel',serif;font-weight:700;color:var(--parchment);background:var(--divider);padding:.5rem .8rem;text-align:left;font-size:.85rem;text-transform:uppercase}
+.dnd-table tbody td{padding:.45rem .8rem;border-bottom:1px solid var(--parchment-edge)}.dnd-table tbody tr:nth-child(even){background:rgba(0,0,0,.03)}
+.sidebar{background:linear-gradient(135deg,#e6dbc6 0%,var(--sidebar-bg) 100%);border-left:4px solid var(--accent-red);padding:1.2rem 1.5rem;margin:1.5rem 0;font-size:.95rem;box-shadow:2px 2px 8px rgba(0,0,0,.08)}
+.sidebar-title{font-family:'Cinzel',serif;font-weight:700;color:var(--accent-red);font-size:1.05rem;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+.lore-quote{border-left:3px solid var(--accent-gold);padding:1rem 1.5rem;margin:1.5rem 0;font-style:italic;color:var(--ink-mid);background:rgba(196,155,50,.06)}
+.lore-quote .attribution{display:block;text-align:right;margin-top:.5rem;font-style:normal;font-family:'Cinzel',serif;font-size:.85rem;color:var(--accent-gold)}
+.profile-card{border:1px solid var(--parchment-edge);margin:1.5rem 0;overflow:hidden}
+.profile-header{background:var(--divider);color:var(--parchment);padding:.6rem 1.2rem;font-family:'Cinzel',serif;font-weight:700;font-size:1.1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.3rem}
+.profile-header .profile-epithet{font-family:'Spectral',serif;font-style:italic;font-weight:400;font-size:.85rem;opacity:.8}
+.profile-body{padding:1rem 1.2rem;font-size:.95rem}.profile-body .profile-detail{margin-bottom:.3rem}
+.profile-body .detail-label{font-weight:700;font-family:'Cinzel',serif;font-size:.8rem;text-transform:uppercase;color:var(--accent-red)}
+.feature-box{background:var(--note-bg);border:1px solid var(--stat-border);padding:1rem 1.3rem;margin:1rem 0}
+.feature-box .feature-title{font-family:'Cinzel',serif;font-weight:700;color:var(--accent-red);font-size:1rem;margin-bottom:.3rem}
+.feature-box p{font-size:.95rem;margin-bottom:.4rem}
+.dnd-list{margin:.8rem 0 .8rem 1.5rem;font-size:.97rem}.dnd-list li{margin-bottom:.35rem}.dnd-list li::marker{color:var(--accent-red)}
+.ethnicity-block{margin:1.8rem 0;padding:1.5rem;border:1px solid var(--parchment-edge);border-top:3px solid var(--accent-red)}
+.ethnicity-block h3{margin-top:0;color:var(--divider)}.ethnicity-block .eth-detail{font-size:.93rem;margin-bottom:.3rem}.eth-detail .ed-label{font-weight:700;color:var(--ink-mid)}
+.boon-card{background:linear-gradient(135deg,#fdf5e6,#fbe8c4);border:1px solid var(--stat-border);border-top:3px solid var(--accent-gold);padding:1rem 1.3rem;margin:1rem 0}
+.boon-card .boon-title{font-family:'Cinzel',serif;font-weight:700;color:var(--accent-gold);font-size:1.05rem;margin-bottom:.2rem}
+.boon-card .boon-prereq{font-style:italic;font-size:.85rem;color:var(--ink-mid);margin-bottom:.4rem}
+.boon-card p{font-size:.93rem;margin-bottom:.3rem}
+.class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1rem 0}
+.class-card{background:var(--note-bg);border:1px solid var(--parchment-edge);padding:.8rem 1rem;border-left:3px solid var(--accent-red)}
+.class-card .class-name{font-family:'Cinzel',serif;font-weight:700;color:var(--divider);font-size:1rem;margin-bottom:.25rem}
+.class-card p{font-size:.88rem;text-align:left}
+.timeline{position:relative;padding-left:2.5rem;margin:1.5rem 0}.timeline::before{content:'';position:absolute;left:.8rem;top:0;bottom:0;width:2px;background:var(--accent-red);opacity:.5}
+.timeline-entry{position:relative;margin-bottom:1.5rem}.timeline-entry::before{content:'';position:absolute;left:-1.95rem;top:.35rem;width:10px;height:10px;background:var(--accent-red);border-radius:50%;border:2px solid var(--parchment);box-shadow:0 0 0 2px var(--accent-red)}
+.timeline-date{font-family:'Cinzel',serif;font-weight:700;color:var(--accent-red);font-size:.95rem;margin-bottom:.15rem}
+.timeline-text{font-size:.93rem;color:var(--ink-light)}
+.toc{padding:0;list-style:none;font-family:'Cinzel',serif}.toc li{padding:.3rem 0;border-bottom:1px dotted var(--parchment-edge);font-size:.95rem}
+.toc li a{color:var(--ink);text-decoration:none}.toc li a:hover{color:var(--accent-red)}
+.toc .toc-chapter{font-weight:700;font-size:1.05rem;margin-top:.5rem;border-bottom:1px solid var(--ink-mid)}
+.toc .toc-sub{padding-left:1.5rem;font-size:.9rem;font-family:'Spectral',serif}
+.back-top{text-align:center;margin:2rem 0}.back-top a{font-family:'Cinzel',serif;font-size:.85rem;color:var(--accent-red);text-decoration:none;letter-spacing:.1em;text-transform:uppercase}
+@media(max-width:700px){.page{padding:2rem 1.5rem}.class-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="cover-page" id="top">
+<div class="cover-border"></div>
+<div class="cover-ornament">&#9830; &#9830; &#9830;</div>
+<div class="cover-sigil"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="55" stroke="#c49b32" stroke-width="1.5" opacity="0.5"/><polygon points="60,12 68,45 102,45 74,65 82,98 60,78 38,98 46,65 18,45 52,45" stroke="#c49b32" stroke-width="1.5" fill="none" opacity="0.6"/><circle cx="60" cy="60" r="20" stroke="#c49b32" stroke-width="1" opacity="0.4"/></svg></div>
+<h1 class="cover-title">Humans<br>of Faer&#251;n</h1>
+<div class="cover-rule"></div>
+<p class="cover-subtitle">A Complete Lorebook</p>
+<p class="cover-desc">From the sunbaked streets of Calimshan to the frozen reaches of the Spine of the World, from the marble halls of Cormyr to the shadowed alleys of Waterdeep&#8212;this is the definitive chronicle of the most resilient, adaptable, and ambitious race to walk the Realms. Within these pages lie the histories of empires risen and fallen, the tales of heroes whose mortal lives burned brighter than any dragon&#8217;s fire, and the secrets of a race that has claimed dominion over a world that was never meant to be theirs.</p>
+<div class="cover-rule"></div>
+<p class="cover-edition">Forgotten Realms &#8226; Player&#8217;s Companion &#8226; Expanded Lorebook Edition</p>
+<div class="cover-ornament" style="margin-top:2rem">&#9830; &#9830; &#9830;</div>
+</div>
+<div class="book-body">
+<div class="page">
+<h1>Table of Contents</h1>
+<ul class="toc">
+<li class="toc-chapter"><a href="#ch1">I. The Nature of Humankind</a></li>
+<li class="toc-sub"><a href="#ch1">Racial Traits &#8226; Variant Human &#8226; Custom Lineage</a></li>
+<li class="toc-chapter"><a href="#ch2">II. The Peoples of Faer&#251;n</a></li>
+<li class="toc-sub"><a href="#ch2">Eight Ethnicities &#8226; Other Peoples</a></li>
+<li class="toc-chapter"><a href="#ch3">III. A History Written in Blood and Gold</a></li>
+<li class="toc-sub"><a href="#ch3">Timeline &#8226; Netheril &#8226; Time of Troubles &#8226; Spellplague</a></li>
+<li class="toc-chapter"><a href="#ch4">IV. Nations of Humanity</a></li>
+<li class="toc-chapter"><a href="#ch5">V. Common Callings</a></li>
+<li class="toc-chapter"><a href="#ch6">VI. Boons &amp; Blessings</a></li>
+<li class="toc-chapter"><a href="#ch7">VII. Notable Humans of the Realms</a></li>
+<li class="toc-chapter"><a href="#ch8">VIII. Factions &amp; Organizations</a></li>
+<li class="toc-chapter"><a href="#ch9">IX. Roleplaying Humans</a></li>
+<li class="toc-chapter"><a href="#ch10">X. Human Stat Blocks</a></li>
+<li class="toc-chapter"><a href="#appendix">Appendix: Random Tables</a></li>
+</ul>
+</div>
+
+<div class="page" id="ch1">
+<h1>Chapter I<br>The Nature of Humankind</h1>
+<div class="lore-quote">The elves watch the stars. The dwarves listen to the stone. But humans? Humans look at the world and say, &#8216;I can change that.&#8217; And by the gods, they do&#8212;for better or for worse, in ways no prophecy could foresee. I have watched them for over a thousand years, and they never cease to terrify and inspire me in equal measure.<span class="attribution">&#8212; Elminster Aumar, Sage of Shadowdale</span></div>
+
+<p class="drop-cap">In the grand tapestry of Faer&#251;n&#8217;s many peoples, none have woven so many threads as humanity. They are not the oldest race; the elves claim that distinction by tens of thousands of years. They are not the sturdiest; the dwarves have endured beneath the mountains since the world was young. They cannot match the gnomes in cunning artifice, nor the halflings in quiet contentment. And yet, across the breadth of Toril, it is humanity that has raised the most kingdoms, waged the most wars, penned the most laws, and produced the most varied array of heroes and villains the world has ever known.</p>
+
+<p>What humans lack in the specialized gifts of other races, they compensate for with sheer ambition, adaptability, and a relentless drive toward achievement. A human life is brief by the reckoning of elves and dwarves&#8212;rarely more than a century, often far less. This brevity breeds urgency. Where an elf might spend fifty years perfecting a single sonnet, a human will compose an entire library in half that time, fueled by the knowledge that every sunrise might be among the last. This is not recklessness; it is efficiency born of desperation, and it is the engine that drives human civilization forward at a pace that leaves the elder races breathless and bewildered.</p>
+
+<p>This urgency manifests in every aspect of human civilization. Human kingdoms rise and fall in spans that an elf would consider a single season of life. Human mages push the boundaries of the Art with reckless abandon, achieving breakthroughs that elven wizards, who have millennia to work at a careful pace, would never dare attempt. Human generals conquer empires and then watch their grandchildren lose them. The pattern repeats endlessly: ambition, achievement, hubris, collapse, rebuilding. It is a cycle that the elder races find exhausting, baffling, and&#8212;though few would admit it&#8212;deeply admirable.</p>
+
+<p>Physically, humans are remarkably unremarkable. They lack the elves&#8217; grace, the dwarves&#8217; resilience, the half-orcs&#8217; raw strength, and the tieflings&#8217; infernal charisma. A human stands between five and six feet tall, weighs between 125 and 250 pounds, and possesses no natural armor, no darkvision, no innate magical ability, and no resistance to any element. By every objective measure, they are the baseline against which the other races are measured&#8212;and they are found wanting.</p>
+
+<p>And yet they dominate. They have colonized every climate, from the burning deserts of Anauroch to the frozen wastes of the Great Glacier. They have founded more nations than any other race. They fill the ranks of every adventuring class, every religious order, every criminal guild, and every mercantile house. The question is not whether humans are exceptional&#8212;they are demonstrably not, in any single measurable quality. The question is how a race so fundamentally ordinary has achieved such extraordinary things. The answer, the sages say, is simple: they refuse to accept that they are ordinary.</p>
+
+<div class="sidebar"><div class="sidebar-title">The Mortal Perspective</div><p>The elven sage Erevan Illesere once wrote that the fundamental difference between humans and elves is not lifespan, but <em>awareness</em> of lifespan. An elf lives for centuries but rarely thinks about death. A human lives for decades and thinks about death constantly. This awareness of mortality, Erevan argued, is not a weakness but a forge. It burns away complacency, indecision, and the comfortable lethargy that afflicts the long-lived races. Every human action carries the weight of finality: this may be the only chance, the only moment, the only life. That weight makes humans dangerous. That weight makes them extraordinary.</p></div>
+
+<p>This chapter presents the mechanical underpinning of human characters in the Forgotten Realms, suitable for use in the Fifth Edition of the world&#8217;s greatest roleplaying game. Three options are presented: the standard human, who gains a modest bonus to every ability score; the variant human, who sacrifices breadth for the power of an early feat; and the custom lineage, which offers the greatest flexibility for characters whose heritage defies easy categorization.</p>
+
+<div class="section-divider"></div>
+
+<h2>Standard Racial Traits</h2>
+<div class="stat-block">
+<div class="stat-block-title">Human</div>
+<div class="stat-block-subtitle">Medium Humanoid, Any Alignment</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Ability Score Increase.</span> Your ability scores each increase by 1. This reflects the fundamental versatility of human nature: no predisposition toward any one attribute, but a baseline competence in all of them.</div>
+<div class="stat-property"><span class="prop-label">Age.</span> Humans reach adulthood in their late teens and rarely live longer than a century. The average human lifespan in Faer&#251;n is approximately 70 to 80 years, though those who live in dangerous regions or pursue adventuring careers often meet their end considerably sooner. Magical means can extend this: powerful wizards and clerics have been known to live for centuries, and the Chosen of the gods are effectively immortal so long as their patron wills it.</div>
+<div class="stat-property"><span class="prop-label">Alignment.</span> Humans tend toward no particular alignment. The best and the worst are found among them. Unlike most other races, which have strong cultural tendencies toward particular alignments, human societies span the entire moral and ethical spectrum. Cormyr&#8217;s knights aspire to lawful good; Thay&#8217;s Red Wizards embody neutral evil; the pirates of Luskan revel in chaotic neutral; and the monks of Ilmater seek true neutrality through the acceptance of suffering. No alignment is alien to humanity.</div>
+<div class="stat-property"><span class="prop-label">Size.</span> Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium. Calishites tend to be shorter and slighter; Illuskans and Turami tend toward greater height and heavier builds.</div>
+<div class="stat-property"><span class="prop-label">Speed.</span> Your base walking speed is 30 feet.</div>
+<div class="stat-property"><span class="prop-label">Languages.</span> You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on. Common itself is a human invention, a trade language that has become the lingua franca of Faer&#251;n precisely because humans insisted on talking to everyone, everywhere, about everything.</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">+1</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">+1</div></div><div class="ability-score"><div class="label">CON</div><div class="value">+1</div></div><div class="ability-score"><div class="label">INT</div><div class="value">+1</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">+1</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">+1</div></div></div>
+</div>
+
+<div class="sidebar"><div class="sidebar-title">Designer&#8217;s Note: Why +1 to Everything?</div><p>The standard human&#8217;s +1 bonus to all ability scores reflects the remarkable versatility of the species. While an elf is predisposed toward grace and an orc toward brute strength, a human can become anything. The flat bonus enables every class and every build, making humans the ultimate blank canvas for a player&#8217;s imagination. In practice, this means the standard human is the only race that has no &#8220;bad&#8221; class pairings. Every ability score benefits from the increase, even if the benefit is marginal. The tradeoff is that no single score receives a significant boost, making the standard human less optimal for highly focused builds than the variant human or most other races.</p></div>
+
+<h2>Variant Human Traits</h2>
+<p>If your campaign uses the optional feat rules from the <em>Player&#8217;s Handbook</em>, your Dungeon Master might allow the following variant traits, which replace the standard human&#8217;s Ability Score Increase. The variant human is among the most mechanically powerful racial options in the game, and its popularity at tables across the Realms is well-earned.</p>
+
+<div class="stat-block">
+<div class="stat-block-title">Variant Human</div>
+<div class="stat-block-subtitle">Medium Humanoid, Any Alignment</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Ability Score Increase.</span> Two different ability scores of your choice each increase by 1.</div>
+<div class="stat-property"><span class="prop-label">Skills.</span> You gain proficiency in one skill of your choice. This represents the human tendency to dabble, explore, and pick up practical knowledge through lived experience rather than formal training.</div>
+<div class="stat-property"><span class="prop-label">Feat.</span> You gain one feat of your choice. This feat must be one for which you qualify. This is the signature feature of the variant human and the reason it is so highly valued. Access to a feat at 1st level can fundamentally shape a character&#8217;s identity and mechanical power from the very first session.</div>
+<div class="stat-property"><span class="prop-label">Age, Size, Speed, Languages.</span> As standard human.</div>
+<div class="stat-rule"></div>
+</div>
+
+<p>The variant human is widely considered one of the most powerful racial options in the game, and for good reason. Access to a feat at first level can define an entire character build. A variant human fighter with Polearm Master becomes a battlefield controller from session one. A variant human warlock with War Caster maintains concentration on <em>hex</em> while slinging eldritch blasts with impunity. A variant human rogue with Alert can virtually guarantee acting first in every combat, establishing tactical dominance before the enemy draws breath. The possibilities are as endless as human ambition itself.</p>
+
+<table class="dnd-table"><thead><tr><th>Feat</th><th>Best With</th><th>Why It Matters</th></tr></thead><tbody>
+<tr><td><strong>Polearm Master</strong></td><td>Fighter, Paladin</td><td>Bonus action attack + opportunity attack on approach</td></tr>
+<tr><td><strong>Great Weapon Master</strong></td><td>Fighter, Barbarian</td><td>Massive damage at the cost of accuracy; scales with advantage</td></tr>
+<tr><td><strong>Sharpshooter</strong></td><td>Fighter, Ranger</td><td>Ignore cover, long range, trade accuracy for damage</td></tr>
+<tr><td><strong>War Caster</strong></td><td>Cleric, Warlock, Paladin</td><td>Advantage on concentration saves; spells as opportunity attacks</td></tr>
+<tr><td><strong>Sentinel</strong></td><td>Fighter, Paladin</td><td>Lock enemies in melee; punish movement</td></tr>
+<tr><td><strong>Lucky</strong></td><td>Any class</td><td>Three rerolls per day; universally powerful</td></tr>
+<tr><td><strong>Resilient (Con)</strong></td><td>Any spellcaster</td><td>Constitution save proficiency; protects concentration</td></tr>
+<tr><td><strong>Alert</strong></td><td>Rogue, Wizard</td><td>+5 initiative; never surprised; unseen foes gain no advantage</td></tr>
+<tr><td><strong>Crossbow Expert</strong></td><td>Fighter, Ranger, Rogue</td><td>Bonus action hand crossbow; no close-range disadvantage</td></tr>
+<tr><td><strong>Ritual Caster</strong></td><td>Fighter, Rogue, Barbarian</td><td>Access to utility spells on a non-caster; incredible versatility</td></tr>
+</tbody></table>
+
+<h2>Custom Lineage Options</h2>
+<p>Introduced in <em>Tasha&#8217;s Cauldron of Everything</em>, the custom lineage option offers another way to represent human diversity. This option is ideal for characters who have been touched by unusual circumstances: exposure to wild magic, a bloodline with trace amounts of non-human ancestry, or simply an individual whose gifts defy easy categorization.</p>
+
+<div class="stat-block">
+<div class="stat-block-title">Custom Lineage</div>
+<div class="stat-block-subtitle">Medium or Small Humanoid, Any Alignment</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Ability Score Increase.</span> +2 to one ability score of your choice.</div>
+<div class="stat-property"><span class="prop-label">Feat.</span> You gain one feat of your choice for which you qualify.</div>
+<div class="stat-property"><span class="prop-label">Variable Trait.</span> You gain either darkvision with a range of 60 feet or proficiency in one skill of your choice.</div>
+<div class="stat-property"><span class="prop-label">Languages.</span> Common plus one other language of your choice.</div>
+<div class="stat-property"><span class="prop-label">Size.</span> Small or Medium (your choice).</div>
+<div class="stat-rule"></div>
+</div>
+
+<p>The custom lineage is mechanically similar to the variant human but trades the extra +1 and skill proficiency for a concentrated +2 to a single ability score and the option of darkvision. This makes it slightly better for single-ability-dependent builds (such as a wizard who wants to maximize Intelligence) and slightly worse for multiclass builds that need multiple strong scores. The darkvision option is narratively interesting for a human character who might have trace fey, shadow, or aberrant ancestry.</p>
+
+<table class="dnd-table"><thead><tr><th>Feature</th><th>Standard</th><th>Variant</th><th>Custom Lineage</th></tr></thead><tbody>
+<tr><td><strong>ASI Total</strong></td><td>+6 (spread)</td><td>+2 (chosen)</td><td>+2 (one score)</td></tr>
+<tr><td><strong>Feat</strong></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><strong>Skill</strong></td><td>No</td><td>Yes (1)</td><td>Optional (1)</td></tr>
+<tr><td><strong>Darkvision</strong></td><td>No</td><td>No</td><td>Optional</td></tr>
+<tr><td><strong>Best For</strong></td><td>MAD builds, generalists</td><td>Focused builds with a key feat</td><td>SAD casters, darkvision-wanting humans</td></tr>
+<tr><td><strong>Power Level</strong></td><td>Low-Mid</td><td>High</td><td>High</td></tr>
+</tbody></table>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch2">
+<h1>Chapter II<br>The Peoples of Faer&#251;n</h1>
+<div class="lore-quote">One does not simply speak of &#8220;humans&#8221; any more than one speaks of &#8220;weather.&#8221; The Calishite merchant, the Illuskan raider, the Mulan priest, and the Rashemi berserker share a species, but little else. Their stories are as different as sand and snow, as fire and ice, as the palace and the pit.<span class="attribution">&#8212; Volo&#8217;s Incomplete and Largely Inaccurate Guide to Everything</span></div>
+
+<p class="drop-cap">Faer&#251;n is home to a staggering diversity of human ethnicities, each with its own cultural traditions, physical characteristics, religious practices, and historical legacies. While these ethnic groups share the same racial traits mechanically, understanding the distinctions between them is vital for bringing a human character to life in the Realms. A Calishite sorcerer and an Illuskan barbarian are both human, but they may as well be from different worlds. Their gods are different, their foods are different, their values are different, and even their understanding of what it means to be &#8220;civilized&#8221; may be fundamentally at odds.</p>
+
+<p>The following section catalogs the eight most widespread human ethnicities of Faer&#251;n. Note that these are broad cultural categories; many individuals are of mixed heritage, and the boundaries between these groups are far more fluid than the rigid categories presented here might suggest.</p>
+
+<div class="section-divider"></div>
+
+<div class="ethnicity-block">
+<h3>The Calishite</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Calimshan, the Lake of Steam, the Shining South, Tethyr (southern reaches)</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Dusky brown skin, brown or black hair (often oiled and perfumed), dark brown eyes. Typically shorter and slighter of build than other Faer&#251;nian ethnicities.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Alzhedo</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Azuth, Shar, Savras, Sharess, Waukeen, Ilmater, Sune</div>
+<div class="rule-light"></div>
+<p>The Calishites are the most numerous human ethnicity in all of Faer&#251;n, though many in the Heartlands do not realize it. Their civilization stretches back millennia, to the age when genies ruled the arid south and human slaves toiled beneath masters of elemental fire. When the genies were overthrown in the great rebellion, the Calishites inherited a vast and ancient empire, and they have never forgotten the grandeur of that inheritance. Their cities are adorned with minarets and onion domes, their palaces decorated with mosaics of breathtaking complexity, and their bazaars overflow with spices, silks, and magical curiosities from across the known world.</p>
+<p>Calishite culture prizes wealth, learning, and social hierarchy above almost all else. A Calishite noble can recite their lineage for twenty generations; a Calishite merchant can appraise a gemstone at fifty paces. They are renowned as astrologers, alchemists, and enchanters, and their arcane traditions are among the oldest practiced by humans. The pasha system of governance, in which powerful merchant-princes rule individual city-states under the nominal authority of a caliph, produces a society that is simultaneously sophisticated and ruthlessly competitive.</p>
+<p>The genie heritage of Calimshan runs deeper than mere history. The blood of djinn, efreet, dao, and marid still flows in many Calishite families, occasionally manifesting as sorcerous abilities, unusual eye colors, or an innate resistance to elemental forces. Genasi of Calishite descent are more common here than anywhere else on Faer&#251;n, and the line between &#8220;human with genie ancestry&#8221; and &#8220;genasi&#8221; is often blurry. Calishite adventurers often pursue their calling out of ambition, scholarly curiosity, or political exile&#8212;the losers of Calimshan&#8217;s brutal intrigues often have no choice but to flee.</p>
+<p><strong>Common Classes:</strong> Wizard, Sorcerer (Genie bloodlines), Rogue, Warlock, Bard</p>
+<div class="feature-box"><div class="feature-title">Calishite Names</div>
+<p><strong>Male:</strong> Aseir, Bardeid, Haseid, Khemed, Mehmen, Sudeiman, Zasheir, Ahnir, Farid, Hakim, Javed, Kadir, Mazin, Nadir, Omair, Rashid, Samir, Tamir, Yasin, Zafir, Bahram, Dariush, Ghassan, Iskander, Latif, Murad, Nabil, Tariq, Wasim, Abdel, Basim, Faisal, Ibrahim, Jabbar, Khalil, Mahdi, Nasir, Qasim, Yusuf, Amir, Hamza, Ismail, Jamal</p>
+<p><strong>Female:</strong> Atala, Ceidil, Hama, Jasmal, Meilil, Seipora, Yasheira, Zasheida, Aminah, Badra, Dalila, Farah, Ghazala, Halima, Inaya, Jamila, Karima, Layla, Mariam, Nabila, Qamar, Rasha, Samira, Tahira, Yasmina, Zahra, Aisha, Dalia, Fatima, Iman, Kalila, Sabah, Latifa, Nasira, Uzma, Wafaa</p>
+<p><strong>Surnames:</strong> Basha, Dumein, Jassan, Khalid, Mostana, Pashar, Rein, al-Rashid, el-Kazim, yn-Calim, al-Astar, el-Memnon, al-Bahir, el-Sadim, al-Khoury, al-Harazi</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Chondathan</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> The Dalelands, Cormyr, Sembia, the Western Heartlands, Baldur&#8217;s Gate region</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Tawny skin, brown hair ranging from nearly blond to almost black, green or brown eyes. Medium build, athletic.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common (which is essentially formalized Chondathan), Chondathan</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Tymora, Chauntea, Lathander, Helm, Tempus, Tyr, Waukeen, Sel&#251;ne</div>
+<div class="rule-light"></div>
+<p>The Chondathans are the dominant human ethnicity of the Heartlands, and their language has become the Common tongue of Faer&#251;n&#8212;a fact that tells you everything you need to know about their cultural influence. They are a merchant people, a farming people, and a conquering people in equal measure. The great kingdoms of Cormyr and Sembia are Chondathan nations, as are the fiercely independent Dalelands and much of the Sword Coast.</p>
+<p>Chondathan culture is characterized by a remarkable tension between tradition and innovation. In Cormyr, the Obarskyrs have ruled for fourteen centuries, maintaining a feudal order of knights, nobles, and war wizards that would be recognizable to the kingdom&#8217;s founders. In the Dalelands, by contrast, each Dale governs itself through elected councils and community assemblies, practicing a form of democracy that is rare in Faer&#251;n. In Sembia, pure mercantile capitalism rules: titles of nobility can be purchased, and social status is determined entirely by wealth.</p>
+<p>This diversity reflects the fundamental Chondathan character: adaptable, pragmatic, and endlessly inventive. A Chondathan will build a bridge while a Calishite debates the bridge&#8217;s aesthetic merits and a Mulan consults the gods about where it should stand. This is not to say that Chondathans lack depth or sophistication; their literary traditions are rich, their musical heritage is extensive, and their legal codes are among the most developed in Faer&#251;n. But they tend toward the practical first and the philosophical second. Chondathan adventurers are everywhere: former Purple Dragon Knights, Dalesman scouts, Sembian entrepreneurs, or simply restless souls who looked at the horizon and decided to see what lay beyond it.</p>
+<p><strong>Common Classes:</strong> Fighter, Paladin, Ranger, Rogue, Wizard, Cleric</p>
+<div class="feature-box"><div class="feature-title">Chondathan Names</div>
+<p><strong>Male:</strong> Darvin, Dorn, Evendur, Gorstag, Grim, Helm, Malark, Morn, Randal, Stedd, Aldric, Beron, Corwin, Derwin, Erland, Faldorn, Gareth, Halvar, Jareth, Keltor, Landric, Mordain, Nevin, Osric, Perin, Relden, Thorn, Ulric, Vandal, Warden</p>
+<p><strong>Female:</strong> Arveene, Esvele, Jhessail, Kerri, Lureene, Miri, Rowan, Shandri, Tessele, Alara, Brenna, Corise, Dawneth, Elise, Gwyneth, Ilse, Kestra, Lyssa, Mariel, Nessa, Raina, Saria, Tamsin, Vesper, Wynn</p>
+<p><strong>Surnames:</strong> Amblecrown, Buckman, Dundragon, Evenwood, Greycastle, Tallstag, Ashford, Blackstone, Crowfield, Dragonbane, Eagleshield, Goldmane, Hawkwinter, Ironhand, Lionsreach, Oakenshield, Ravenscar, Stormhold, Thornwall</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Damaran</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Damara, Impiltur, Vaasa, the Moonsea, the Galena Mountains</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Fair to tawny skin, usually with brown hair, eye color from brown to pale blue. Stocky and solidly built, weathered features.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Damaran</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Ilmater (paramount), Silvanus, Torm, Tempus, Sel&#251;ne, Chauntea</div>
+<div class="rule-light"></div>
+<p>Hardy and stoic, the Damarans are a people shaped by suffering. Their homelands border the Great Glacier and the desolate wasteland of Vaasa, and for centuries they endured the tyranny of the Witch-King Zhengyi, a lich of terrible power who commanded legions of undead from his Castle Perilous in the frozen north. This history of hardship has bred a culture that values endurance, faith, and quiet courage above all else. A Damaran does not boast of their strength; they prove it by surviving what would break a lesser person.</p>
+<p>The church of Ilmater, the Crying God, holds a place in Damaran society that goes beyond mere worship. For many Damarans, Ilmater is not merely a deity to be revered but an exemplar to be emulated. They believe that suffering, when endured with grace, purifies the soul and brings one closer to the divine. This does not make them passive. Damaran warriors are ferocious defenders of their homes, and they fight with the grim determination of people who have learned that retreat is simply not an option. When your back is to the glacier and the undead hordes are marching south, you stand and fight or you die. There is no third choice.</p>
+<p>Damaran monastic traditions deserve special mention. The monasteries of the Galena Mountains produce monks of legendary discipline, their bodies hardened by the brutal climate and their spirits forged in the furnace of faith. The Order of the Yellow Rose, also known as the Disciples of Saint Sollars the Twice-Martyred, is perhaps the most famous, but dozens of smaller monasteries dot the highlands, each preserving its own unique martial traditions. A Damaran monk is a study in controlled violence: calm, centered, and utterly devastating when provoked.</p>
+<p><strong>Common Classes:</strong> Cleric (Ilmater, Torm), Monk, Paladin, Ranger, Fighter</p>
+<div class="feature-box"><div class="feature-title">Damaran Names</div>
+<p><strong>Male:</strong> Bor, Fodel, Glar, Grigor, Igan, Ivor, Kosef, Mival, Orel, Pavel, Sergor, Alexi, Borislav, Daniil, Fyodor, Gavriil, Ilya, Jaroslav, Kiril, Leonid, Mihai, Nikolai, Oleg, Petar, Radovan, Slavomir, Vasil, Yosef, Zvonimir, Andrei, Bogdan, Drago, Emil, Konstantin</p>
+<p><strong>Female:</strong> Alethra, Kara, Katernin, Mara, Natali, Olma, Tana, Zora, Anya, Branka, Darya, Ekaterina, Galina, Irina, Jelena, Katja, Ludmila, Milena, Nadia, Petra, Svetlana, Tatyana, Zorya, Danica, Vesna</p>
+<p><strong>Surnames:</strong> Bersk, Chernin, Dotsk, Kulenov, Marsk, Nemetsk, Shemov, Starag, Borovsky, Drakov, Glazkov, Ironov, Krezkov, Petrov, Volkov, Zhenko</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Illuskan</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Luskan, the Sword Coast North, Icewind Dale, Ruathym, the Moonshae Isles (northern), Mirabar, Neverwinter</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Fair skin (often ruddy or wind-burned), light hair ranging from pale blond to fiery red, blue or steel-grey eyes. Tall, broad-shouldered, powerfully built.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Illuskan</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Tempus, Auril, Umberlee, Valkur, Talos, Tyr, Lathander (in Neverwinter)</div>
+<div class="rule-light"></div>
+<p>The Illuskans are the sea-wolves of the North, descended from the ancient Northmen who sailed the Trackless Sea in ironbound longships and raided the coasts of Faer&#251;n with a ferocity that struck terror into the hearts of merchants and kings alike. Though the great age of raiding has largely passed&#8212;largely being the operative word, as the High Captains of Luskan never entirely abandoned the practice&#8212;the Illuskan spirit remains: fierce, proud, and forever bound to the sea and the frozen wild.</p>
+<p>Illuskan culture revolves around three pillars: glory, kinship, and the tale. A warrior&#8217;s deeds are not truly accomplished until they have been recounted in a saga, and the greatest aspiration of an Illuskan hero is to perform deeds so remarkable that the skalds will sing of them for generations. This is not mere vanity; in Illuskan cosmology, the dead live on in the memory of the living, and a hero whose name is forgotten is truly dead in every sense. The skalds, therefore, are not mere entertainers but keepers of the collective soul, and to earn a place in their songs is to earn a form of immortality.</p>
+<p>The longhouse is the center of Illuskan communal life, particularly in the rural North and in Icewind Dale. It is simultaneously a home, a mead hall, a council chamber, and a temple. Decisions are made communally over the drinking horn, disputes are settled by combat or by the judgment of the elder, and strangers are either welcomed with open arms or challenged at swordpoint, depending on the circumstances. There is little middle ground in Illuskan culture; they are a people of extremes.</p>
+<p>Illuskan attitudes toward magic are complex. Arcane magic is viewed with deep suspicion by traditional Illuskans, who associate it with the tyranny of the Arcane Brotherhood of Luskan and the ancient terrors of Netheril. Divine magic, by contrast, is respected, particularly the blessings of Tempus and Auril. The Uthgardt barbarian tribes, who are of Illuskan descent, practice a form of totem-based spirituality that predates organized religion entirely.</p>
+<p><strong>Common Classes:</strong> Barbarian (Totem Warrior, Berserker), Fighter (Champion), Bard (Valor, Swords), Ranger (Hunter), Druid</p>
+<div class="feature-box"><div class="feature-title">Illuskan Names</div>
+<p><strong>Male:</strong> Ander, Blath, Bran, Frath, Geth, Lander, Luth, Malcer, Stor, Taman, Urth, Bjorn, Einar, Fenric, Gunnar, Haakon, Ivar, Jorund, Keldar, Leif, Magnus, Njal, Olaf, Ragnar, Sigurd, Thorin, Ulf, Vidar, Wulfgar, Asmund, Canute, Dreng, Egil, Grimald, Halfdan, Roald, Skallagrim, Thorfinn</p>
+<p><strong>Female:</strong> Amafrey, Betha, Cefrey, Kethra, Mara, Olga, Silifrey, Westra, Astrid, Brynhild, Dagmar, Eira, Freya, Gisla, Hilde, Ingrid, Katla, Liv, Ragnhild, Sigrid, Thordis, Yrsa, Lagertha, Brynja, Gudrun, Sif, Embla, Runa, Alvilda, Thyra</p>
+<p><strong>Surnames:</strong> Brightwood, Helder, Hornraven, Stormwind, Bearmantle, Coldforge, Drakeslayer, Frostborn, Greywolf, Hammerfell, Iceshield, Longshanks, Northmane, Ravencrest, Shieldbreaker, Thunderstone, Wolfbane</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Mulan</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Thay, Mulhorand, Unther, Chessenta, the Wizards&#8217; Reach</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Sallow to amber skin, dark eyes, dark hair (frequently shaved entirely in Thay and Mulhorand). Tall and thin, with sharp, angular features.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Mulhorandi or Thayan</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> The Mulhorandi pantheon (Horus-Re, Isis, Thoth, Anhur, Nephthys, Osiris), Kossuth (in Thay), Red Knight (in Chessenta)</div>
+<div class="rule-light"></div>
+<p>The Mulan are the inheritors of Faer&#251;n&#8217;s most ancient human civilizations. The empires of Mulhorand and Unther were not merely founded by humans who worshipped gods&#8212;they were founded by the physical manifestations of gods who walked among their people, ruled their cities, and sired children with mortal consorts. This divine origin story is not myth; it is documented historical fact. The Mulan were brought to Toril from another world by the Imaskari, a powerful wizard-empire that enslaved them, and their gods followed them across the planes to liberate them. No other human culture can claim such a direct and intimate connection to the divine.</p>
+<p>This heritage has produced a people of extraordinary contradictions. The Mulan are simultaneously the most conservative and the most radical human ethnicity in Faer&#251;n. In Mulhorand, tradition is sacred: the old gods still rule (or their descendants do), the caste system is absolute, and change is measured in centuries. In Thay, by contrast, the Mulan have embraced the most extreme form of magical innovation on the continent, building a magocracy ruled by the lich Szass Tam and his council of zulkirs, each a supreme master of one school of arcane magic.</p>
+<p>The Red Wizards of Thay deserve extensive discussion, as they represent the single most powerful organized magical force in Faer&#251;n. Every Red Wizard is tattooed with arcane sigils that denote their school of specialization, their rank within the hierarchy, and their personal achievements. These tattoos are not merely decorative; they function as arcane foci, memory aids, and identifiers. In Chessenta, the Mulan have taken yet another path entirely, rejecting both theocratic conservatism and magocratic tyranny in favor of a culture that reveres physical excellence above all. Chessentan arenas draw crowds from across the East, and their champions are celebrated with the same fervor that Thayan zulkirs receive for their magical breakthroughs.</p>
+<p><strong>Common Classes:</strong> Wizard (all schools, especially Necromancy, Evocation, Transmutation), Cleric, Sorcerer, Fighter (Chessenta)</p>
+<div class="feature-box"><div class="feature-title">Mulan Names</div>
+<p><strong>Male:</strong> Aoth, Bareris, Ehput-Ki, Kethoth, Mumed, Ramas, So-Kehur, Thazar-De, Urhur, Ankhu, Chathos, Ghorus, Hept-Set, Imhotep, Kahotep, Menkhare, Neferu, Pharien, Ramenhotep, Sethir, Tutankhar, Vizaran, Zukar</p>
+<p><strong>Female:</strong> Arizima, Chathi, Nephis, Nulara, Murithi, Sefris, Thola, Umara, Zolis, Ankhesenamun, Djanet, Eshe, Hatshira, Isisnefret, Meresankh, Nefertari, Phareta, Sanura, Ubasti, Zephira</p>
+<p><strong>Surnames:</strong> Ankhalab, Anskuld, Fezim, Hahpet, Nathandem, Sepret, Uuthrakt, Daramos, Eltab, Ghazir, Kethendi, Marekh, Nymar, Phezult, Tezir, Zulkiran</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Rashemi</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Rashemen, the eastern shore of Lake Ashane, portions of Thay (as an oppressed minority)</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Dusky skin, dark eyes, thick black hair (men often wear elaborate braids and beards). Short, stout, and heavily muscled.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Rashemi</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Chauntea, Mielikki, the Three (Bhalla, Khelliara, the Hidden One), Mystra, various nature spirits</div>
+<div class="rule-light"></div>
+<p>The Rashemi are a fiercely independent and deeply spiritual people from the harsh land of Rashemen, a nation of dark forests, frozen lakes, and ancient spirits that lies east of Thay across the Lake of Mists. Their society is unique among Faer&#251;nian cultures in its governance structure: while men serve as warriors, hunters, and berserkers, the true power resides with the <em>Wychlaran</em>, the Witches of Rashemen. These mysterious masked spellcasters govern the nation, commune with the land spirits called <em>telthors</em>, and guard ancient secrets that predate human settlement by thousands of years.</p>
+<p>The Wychlaran are not merely political leaders; they are the spiritual backbone of Rashemi civilization. Their masks&#8212;carved from wood and bone, painted with symbols of power&#8212;are both symbols of office and conduits for magical energy. A Witch of Rashemen never removes her mask in public, and to see a Wychlaran&#8217;s face is considered both a profound honor and a potentially dangerous experience. The Witches draw their power from the land itself, from the spirits of the forests and the waters, and from ancient pacts with entities that defy easy categorization.</p>
+<p>Rashemi warriors are renowned across Faer&#251;n for their berserker rages. Through a combination of herbal alchemy, spiritual communion, and sheer force of will, Rashemi berserkers enter a battle trance called the <em>rashemaar</em>, in which they become seemingly immune to pain, fear, and fatigue. They fight with an abandon that terrifies even seasoned soldiers. The berserker lodges&#8212;brotherhoods of warriors who train together, fight together, and often die together&#8212;are the primary social unit for Rashemi men. The relationship between Rashemen and Thay is one of eternal enmity. Every Red Wizard invasion has failed, broken against the combined might of the berserker lodges and the Witches&#8217; magic.</p>
+<p><strong>Common Classes:</strong> Barbarian (Berserker, Totem Warrior), Druid, Ranger, Warlock (Archfey), Sorcerer (Wild Magic)</p>
+<div class="feature-box"><div class="feature-title">Rashemi Names</div>
+<p><strong>Male:</strong> Borivik, Faurgar, Jandar, Kanithar, Madislak, Ralmevik, Shaumar, Vladislak, Aleksei, Boradin, Drazhan, Fyodrin, Grozdan, Igorek, Kazimir, Milosh, Nikolaj, Radoslav, Stanislav, Vorodin, Yaroslav</p>
+<p><strong>Female:</strong> Fyevarra, Hulmarra, Immith, Imzel, Navarra, Shevarra, Tammith, Yuldra, Anyara, Druzina, Goryana, Ilyana, Kazimira, Ludmara, Miloslava, Nadezdha, Svyetlana, Vesilka, Zoryana</p>
+<p><strong>Surnames:</strong> Chergoba, Dyernina, Iltazyara, Murnyethara, Stayanoga, Ulmokina, Bereskova, Fyodrina, Groznaya, Rashemova, Vladimara</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Tethyrian</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Tethyr, Amn, the Sword Coast (Waterdeep, Baldur&#8217;s Gate), the Western Heartlands</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Medium to olive skin, dark hair (curly to wavy common), any eye color. Medium build, highly variable appearance due to mixed heritage.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Tethyrian (a Chondathan dialect with Calishite loanwords)</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Helm, Tyr, Sune, Chauntea, Lliira, Ilmater, Lathander, Waukeen</div>
+<div class="rule-light"></div>
+<p>The Tethyrians are the great cultural melting pot of the Sword Coast. Descended from a blend of Calishite, Illuskan, and Chondathan stock, Tethyrians are perhaps the most diverse human ethnicity in Faer&#251;n, and their culture reflects this hybridized heritage. Walk through any Tethyrian city and you will hear Calishite spices sizzling alongside Illuskan salt cod, see Chondathan legal traditions applied to Calishite commercial practices, and watch children with their mother&#8217;s dark Calishite hair and their father&#8217;s blue Illuskan eyes playing in streets built on foundations older than most kingdoms.</p>
+<p>Tethyr itself has endured civil wars, dynastic collapses, monstrous invasions, and periods of outright anarchy, and its people have emerged from each catastrophe more resilient and more cosmopolitan than before. The Tethyrian Interregnum, a period of lawless chaos that lasted from 1347 to 1369 DR, was perhaps the most traumatic. For over two decades, Tethyr had no central government, and the nation was torn apart by rival claimants, monster hordes, and simple banditry. When order was finally restored under Queen Zaranda Star, the Tethyrians had learned a lesson that would define their culture ever after: the rule of law is not a luxury. It is the only thing standing between civilization and the abyss.</p>
+<p>The great city of Waterdeep, arguably the most important city in Faer&#251;n, is primarily Tethyrian in character, though it welcomes people of every ethnicity and race. Waterdhavian culture&#8212;cosmopolitan, commercially minded, legally sophisticated, and endlessly diverse&#8212;is essentially Tethyrian culture writ large, amplified by the city&#8217;s enormous wealth and strategic importance.</p>
+<p><strong>Common Classes:</strong> Paladin, Bard, Fighter, Cleric, Rogue, Wizard</p>
+<div class="feature-box"><div class="feature-title">Tethyrian Names</div>
+<p><strong>Male:</strong> Darvin, Anton, Diero, Marcon, Pieron, Rimardo, Romero, Salazar, Umbero, Adriano, Benicio, Cesare, Domingo, Esteban, Fernando, Gonzalo, Hector, Joaquin, Lorenzo, Marcos, Orlando, Rafael, Santiago, Vicente</p>
+<p><strong>Female:</strong> Balama, Dona, Faila, Jalana, Luisa, Marta, Quara, Selise, Vonda, Adelina, Beatriz, Carmela, Daniela, Elena, Floriana, Gracia, Ines, Katalina, Luciana, Marisol, Natalia, Paloma, Rosalinda, Sofia, Valentina</p>
+<p><strong>Surnames:</strong> Agosto, Astorio, Calabra, Domine, Falone, Marivaldi, Pisacar, Ramondo, Alvarado, Coronel, Escobar, Falconhand, Hawkwinter, Ilvastarr, Neverember, Rosznar, Wands, Zulpair</p></div></div>
+
+<div class="ethnicity-block">
+<h3>The Turami</h3>
+<div class="eth-detail"><span class="ed-label">Homeland:</span> Turmish, the Vilhon Reach, the Shaar, portions of the Dragon Coast</div>
+<div class="eth-detail"><span class="ed-label">Physical Traits:</span> Dark mahogany skin, curly black hair, dark eyes. Tall and strongly built, with broad features and powerful frames.</div>
+<div class="eth-detail"><span class="ed-label">Languages:</span> Common, Turmic</div>
+<div class="eth-detail"><span class="ed-label">Favored Deities:</span> Savras, Nobanion, Waukeen, Eldath, Silvanus, Chauntea, Lathander</div>
+<div class="rule-light"></div>
+<p>The Turami inhabit the warm lands along the southern shore of the Sea of Fallen Stars, a region of rich farmland, dense forests, and thriving trade cities. They are a proud and self-reliant people with a deep reverence for the natural world that borders on the spiritual. Where other cultures see the wilderness as something to be conquered or exploited, the Turami see it as a partner to be respected and cultivated. Their cities are famous for their gardens, their tree-lined boulevards, and their integration of natural elements into urban architecture.</p>
+<p>Turmish, their primary homeland, operates as a democratic republic&#8212;a rarity in Faer&#251;n&#8212;and Turami society places great value on civic participation and public debate. The Assembly of Stars, Turmish&#8217;s governing body, is elected by the citizenry, and every Turami adult is expected to vote, to hold opinions on matters of public policy, and to be able to defend those opinions in open forum. Political discourse in Turmish is conducted with the same passion and technical skill that other cultures reserve for warfare, and a particularly devastating rhetorical argument is celebrated with the same fervor that Illuskans reserve for a particularly impressive sword-stroke.</p>
+<p>Turami artistic traditions are renowned across the Realms. Their sculptors work in stone, bronze, and living wood, producing pieces that grace the halls of kings and temples from Waterdeep to Mulhorand. Their musicians are in demand at every court in Faer&#251;n, and their painted murals&#8212;often depicting scenes from nature, mythology, or civic life&#8212;adorn public buildings throughout the Vilhon Reach. Art is not a luxury in Turami culture; it is a civic duty, a form of public service as important as military defense or legal adjudication.</p>
+<p><strong>Common Classes:</strong> Druid (Land, Spores), Bard (Lore, Eloquence), Monk, Ranger (Swarmkeeper, Horizon Walker), Cleric (Nature, Life)</p>
+<div class="feature-box"><div class="feature-title">Turami Names</div>
+<p><strong>Male:</strong> Anton, Bareris, Diero, Marcon, Mumed, Pieron, Stedd, Urhur, Adewale, Bomani, Chibueze, Dakarai, Emeka, Folami, Hasani, Jabari, Kofi, Lekan, Nnamdi, Obinna, Sekou, Tafari, Uzoma, Yomi, Zuberi</p>
+<p><strong>Female:</strong> Balama, Dona, Faila, Jalana, Luisa, Marta, Quara, Umara, Abena, Chiamaka, Dalili, Ebele, Folake, Ife, Jumoke, Kehinde, Makena, Nneka, Oluchi, Safiya, Titilayo, Wanjiku, Yetunde, Zainab, Amara</p>
+<p><strong>Surnames:</strong> Agosto, Astorio, Calabra, Domine, Falone, Adeyemi, Bankole, Chukwuma, Diallo, Ekwueme, Fasina, Kalu, Mbeki, Nwosu, Olumide, Soyinka</p></div></div>
+
+<h2>Other Ethnicities of Note</h2>
+<p>Beyond the eight primary ethnic groups, several other human populations inhabit Faer&#251;n. While less numerous or less politically prominent, they contribute to the remarkable diversity of human civilization:</p>
+<table class="dnd-table"><thead><tr><th>Ethnicity</th><th>Region</th><th>Character</th></tr></thead><tbody>
+<tr><td><strong>Arkaiun</strong></td><td>Dambrath</td><td>Once conquered by the drow, now a fiercely independent warrior culture blending surface and Underdark traditions</td></tr>
+<tr><td><strong>Bedine</strong></td><td>Anauroch</td><td>Desert nomads who survived the expansion of the Great Desert; proud horsemen and falconers with ancient traditions</td></tr>
+<tr><td><strong>Ffolk</strong></td><td>Moonshae Isles</td><td>Druidic island culture with deep ties to the Earthmother, a primal nature deity; Celtic-inspired traditions</td></tr>
+<tr><td><strong>Gur</strong></td><td>Western Heartlands (nomadic)</td><td>Traveling people renowned as horse traders, fortune-tellers, and entertainers; often distrusted by settled folk</td></tr>
+<tr><td><strong>Halruaan</strong></td><td>Halruaa</td><td>Descendants of Netherese refugees; an entire nation of spellcasters where magic permeates daily life</td></tr>
+<tr><td><strong>Nar</strong></td><td>Narfell (ruins)</td><td>Descendants of the demon-binding Nar empire; haunted by their ancestors&#8217; dark pacts</td></tr>
+<tr><td><strong>Shou</strong></td><td>Kara-Tur (far east)</td><td>From the great empire of Shou Lung; increasing presence in Faer&#251;n through trade and migration</td></tr>
+<tr><td><strong>Tuigan</strong></td><td>The Endless Wastes</td><td>Horse nomads of the eastern steppes; united once under the great Khahan Yamun and nearly conquered Faer&#251;n</td></tr>
+<tr><td><strong>Uthgardt</strong></td><td>The North</td><td>Illuskan-descended barbarian tribes who follow beast totem spirits; each tribe claims descent from a different animal ancestor</td></tr>
+</tbody></table>
+
+<div class="sidebar"><div class="sidebar-title">Mixed Heritage</div><p>Many humans in Faer&#251;n are of mixed ethnic background, particularly in cosmopolitan cities like Waterdeep, Baldur&#8217;s Gate, and Athkatla. A character of mixed heritage might combine physical features, cultural practices, and languages from two or more ethnic groups. Players are encouraged to create characters whose backgrounds reflect the rich diversity of Faer&#251;n&#8217;s human populations.</p></div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch3">
+<h1>Chapter III<br>A History Written in Blood and Gold</h1>
+<div class="lore-quote">We came late to this world. The elves will remind you of it. The dwarves will grumble about it. But look around you. Whose flags fly from the tallest towers? Whose ships fill the harbors? Whose coins jingle in every purse from here to Kara-Tur? The future belongs to us. It always has. We simply had to convince the world of it.<span class="attribution">&#8212; Piergeiron the Paladinson, Open Lord of Waterdeep</span></div>
+
+<p class="drop-cap">The history of humanity in Faer&#251;n is one of relentless expansion, catastrophic collapse, and dogged renewal. Compared to the elder races, humans are newcomers to the continent, yet in the relatively brief span of their recorded history they have built and destroyed more civilizations than the elves managed in thirty millennia of careful stewardship. This is not a boast; it is a statistical observation, and it tells us something profound about the nature of the species.</p>
+
+<h2>The Ages of Humanity</h2>
+<div class="timeline">
+<div class="timeline-entry"><div class="timeline-date">c. &#8722;35,000 DR: The Dawn of Humankind</div><div class="timeline-text">The first humans appear on Toril, likely originating in the southern continent of Katashaka or the central landmass of Faer&#251;n itself. At this time, the world is dominated by the Creator Races&#8212;the sarrukh (serpent-folk), the batrachi (amphibians), and the aearee (avians)&#8212;and humans are little more than prey animals, scattered nomadic bands struggling to survive in a world not yet designed for them. They huddle in caves, chip tools from flint, and die young. But they learn. They always learn.</div></div>
+<div class="timeline-entry"><div class="timeline-date">c. &#8722;31,000 DR: The Time of Dragons</div><div class="timeline-text">The dragons rise to dominance after the fall of the Creator Races. Humans live in the shadow of wyrm-rule. Some human tribes forge relationships with metallic dragons, gaining protection and knowledge. Others are enslaved or devoured by chromatic dragons. The patterns that will define human civilization&#8212;alliance, servitude, resistance&#8212;begin to emerge.</div></div>
+<div class="timeline-entry"><div class="timeline-date">c. &#8722;24,000 DR: The First Flowering</div><div class="timeline-text">The elven civilizations reach their zenith. Humans exist on the periphery of elven society, sometimes trading, sometimes warring, but always learning. The first human agricultural settlements appear, marking the transition from nomadic societies to permanent communities&#8212;a seemingly simple change that proves more consequential than any spell or sword.</div></div>
+<div class="timeline-entry"><div class="timeline-date">c. &#8722;8,350 DR: The Imaskari Empire</div><div class="timeline-text">The first great human wizard-empire, Imaskar, rises in the region that will later become the Raurin desert. The Imaskari are the first humans to systematically master the Art, building cities of crystal and steel and creating portals to other worlds. They also commit the act that will shape eastern Faer&#251;n forever: they open portals to another world and bring back tens of thousands of humans to serve as slaves. These slaves will become the Mulan.</div></div>
+<div class="timeline-entry"><div class="timeline-date">c. &#8722;6,500 DR: The God-Kings Rise</div><div class="timeline-text">The Mulhorandi and Untheric pantheons&#8212;actual gods, not merely divine servants&#8212;cross the planar boundaries to free their enslaved worshippers. They destroy the Imaskari Empire in a cataclysmic war and establish the god-ruled kingdoms of Mulhorand and Unther. For the first time, humans are ruled not by mortal kings but by living deities who walk among them.</div></div>
+<div class="timeline-entry"><div class="timeline-date">&#8722;3,859 DR: The Founding of Netheril</div><div class="timeline-text"><strong>The greatest moment in human magical history.</strong> The arcanist Nether the Elder discovers the <em>Nether Scrolls</em>, artifacts of unimaginable power created by the ancient sarrukh. Using their knowledge, he establishes the magical civilization of Netheril. Over the following millennia, the Netherese will achieve feats never equaled: they raise cities into the sky, create <em>mythallars</em> that provide limitless magical energy, and develop spells of 10th, 11th, and even 12th level.</div></div>
+<div class="timeline-entry"><div class="timeline-date">&#8722;339 DR: Karsus&#8217;s Folly</div><div class="timeline-text"><strong>The darkest day in human history.</strong> The arcanist Karsus casts <em>Karsus&#8217;s Avatar</em>, the only 12th-level spell ever attempted by a mortal. For a single, terrible instant, he succeeds: he becomes the god of magic. In that same instant, the Weave unravels. Every magical effect on Toril fails simultaneously. The mythallars go dark. The flying cities of Netheril&#8212;dozens of them, home to millions of souls&#8212;plummet from the sky. Mystryl, goddess of magic, sacrifices herself to save the Weave, dying and being reborn as Mystra. Her first act is to seal away magic above the 9th level, forever preventing mortals from reaching the heights of power that destroyed Netheril.</div></div>
+<div class="timeline-entry"><div class="timeline-date">1 DR: The Standing Stone</div><div class="timeline-text">The Standing Stone is raised in the Dalelands, marking the compact between the Dalesfolk and the elves of Cormanthyr. This event marks the start of the Dalereckoning calendar. It is a symbol of unprecedented cooperation between humans and elves, and it signals the beginning of the modern era of human civilization.</div></div>
+<div class="timeline-entry"><div class="timeline-date">26 DR: The Founding of Cormyr</div><div class="timeline-text">Faerlthann Obarskyr establishes the Forest Kingdom by uniting the scattered settlements along the Starwater River. The Obarskyr dynasty will endure for over fourteen centuries, making Cormyr one of the most stable human kingdoms in Faer&#251;n&#8217;s history.</div></div>
+<div class="timeline-entry"><div class="timeline-date">329 DR: The Founding of Halruaa</div><div class="timeline-text">Refugees from the fall of Netheril, led by the arcanist Raumark, settle in the remote peninsula of Halruaa. They establish a magocracy that preserves many Netherese traditions, creating a nation where magic suffuses every aspect of daily life.</div></div>
+<div class="timeline-entry"><div class="timeline-date">1032 DR: The Founding of Waterdeep</div><div class="timeline-text">Waterdeep begins as a trading post at the foot of Mount Waterdeep, growing rapidly into the City of Splendors, the greatest metropolis of the Sword Coast. Its harbor, trade routes, and the legendary dungeon of Undermountain beneath it combine to make Waterdeep the most important city in northern Faer&#251;n.</div></div>
+<div class="timeline-entry"><div class="timeline-date">1358 DR: The Time of Troubles</div><div class="timeline-text">The Overgod Ao casts all the gods of the Faer&#251;nian pantheon out of the heavens, forcing them to walk the Realms as mortals until their stolen Tablets of Fate are recovered. Gods die. Cities burn. Mortals ascend to divine power. The human Cyric becomes a god of murder, death, and strife. The wizard Midnight takes on the mantle of the new Mystra. The relationship between humanity and the divine is forever altered.</div></div>
+<div class="timeline-entry"><div class="timeline-date">1385 DR: The Spellplague</div><div class="timeline-text">The mad god Cyric murders Mystra. Without the goddess to maintain it, the Weave of magic collapses entirely. Blue fire sweeps across Toril, reshaping continents, destroying civilizations, and merging portions of the parallel world of Abeir with Toril. The Spellplague lasts a century. Humanity endures, as it always has, but the scars are deep and lasting.</div></div>
+<div class="timeline-entry"><div class="timeline-date">1487&#8211;1489 DR: The Sundering</div><div class="timeline-text">The worlds of Abeir and Toril are separated once more. Mystra is restored, and the Weave reconstitutes itself. The gods withdraw somewhat from direct intervention. A new era dawns, full of both promise and peril. The Cult of the Dragon attempts to summon Tiamat. The demon lords invade the Underdark. And through it all, humanity stands at the center of events, fighting, scheming, praying, and surviving.</div></div>
+</div>
+
+<div class="section-divider"></div>
+
+<h2>The Rise and Fall of Netheril</h2>
+<p class="drop-cap">No account of human history in Faer&#251;n can ignore the shadow cast by Netheril, the greatest magical civilization ever built by mortal hands. For three and a half millennia, Netheril stood as proof that humans could rival the gods themselves in power and ambition. Its fall proved, with equal finality, the cost of pushing too far, too fast, with too little wisdom.</p>
+
+<p>At its zenith, the Netherese commanded magic beyond anything known today. Their Arcanists wielded spells of 10th, 11th, and even 12th level&#8212;magnitudes of power that have been forever sealed away since the fall of the old Weave. The discovery of the <em>Nether Scrolls</em> was the catalyst for everything that followed. These artifacts, created by the sarrukh Creator Race, contained the fundamental principles of magical theory, laid out with a clarity and completeness that no mortal mind had ever before encountered. The scrolls did not simply teach spells; they taught the underlying grammar of reality, the syntax of creation, the operating system of the multiverse.</p>
+
+<p>Armed with this knowledge, the Netherese accomplished the seemingly impossible. They raised entire mountains from the earth, inverted them, and placed cities on their undersides, suspending them in the sky through the power of the <em>mythallar</em>, quasi-magical devices that drew upon the raw substance of the Weave to provide limitless energy. At its height, Netheril boasted dozens of flying cities, each home to tens of thousands of citizens who lived in a civilization so steeped in magic that even the lowliest peasant had access to magical conveniences that would astound a modern archmage. Magical lights illuminated every street. Magical pumps provided clean water. Magical wards protected against disease, fire, and natural disaster. It was, by every measure, a utopia&#8212;built on a foundation of stolen knowledge and sustained by a power source no one fully understood.</p>
+
+<p>The decline began with the phaerimm, aberrant creatures from the Underdark that developed a parasitic relationship with the Weave, draining the magical energy that sustained everything. As the phaerimm spread, the land around Netheril began to wither, transforming from fertile farmland into the great desert that would eventually be known as Anauroch. In this context of desperation, Karsus made his fateful choice. He developed <em>Karsus&#8217;s Avatar</em>, a 12th-level spell designed to temporarily steal the divine portfolio of Mystryl, goddess of magic. For one terrible moment, he succeeded. A mortal mind cannot contain divine knowledge. The Weave unraveled. The mythallars went dark. The cities fell. Millions died. Netheril was gone.</p>
+
+<div class="sidebar"><div class="sidebar-title">The Petrified Weeping of Karsus</div><p>Karsus himself was turned to stone by the backlash of his own spell, his body preserved in the instant of his greatest horror: the moment he realized what he had done. His petrified form still stands in the ruins of northern Faer&#251;n, a colossal statue hundreds of feet tall, arms outstretched, face contorted in anguish, weeping tears of stone that have carved channels in the granite over three and a half millennia. He is conscious, the sages say. He has been conscious for every moment of those three thousand years, watching the world he destroyed slowly heal without him, unable to move, unable to speak, unable to die. It is the most terrible punishment ever inflicted on a mortal, and there are those who say it is not punishment enough.</p></div>
+
+<h2>The Time of Troubles</h2>
+<p class="drop-cap">If Karsus&#8217;s Folly demonstrated the danger of mortals reaching for divine power, the Time of Troubles demonstrated the chaos that ensues when gods are forced to walk as mortals. In 1358 DR, the Overgod Ao discovered that the Tablets of Fate&#8212;artifacts that defined the divine portfolios of every god&#8212;had been stolen. In punishment, Ao cast every deity in the Faer&#251;nian pantheon out of the Upper and Lower Planes, forcing them to inhabit mortal avatars and walk the world until the Tablets were recovered.</p>
+
+<p>The results were catastrophic. Gods walked the streets of mortal cities, their divine power reduced but still immense. Bane, god of tyranny, occupied Zhentil Keep. Myrkul unleashed plagues of undead. Bhaal sent his assassins across the land. Mystra was destroyed by Helm when she attempted to return to the Upper Planes without the Tablets. The resolution came through the actions of mortal heroes&#8212;specifically through Cyric, Midnight, and Kelemvor, who recovered the Tablets. Cyric ascended to godhood, claiming murder, death, and strife. Midnight became the new Mystra. Kelemvor would later become the god of the dead. The Time of Troubles proved that humans could become gods&#8212;and that gods were neither invincible nor indispensable.</p>
+
+<h2>The Spellplague and the Sundering</h2>
+<p>The Spellplague of 1385 DR was the third great magical catastrophe. When Cyric murdered Mystra, the Weave collapsed entirely. Blue fire swept across Toril&#8212;not ordinary fire, but raw magical energy, unbound and chaotic, reshaping everything it touched. Land masses shifted. The Sea of Fallen Stars partially drained. Halruaa was destroyed. Portions of Abeir merged with Faer&#251;n. The Spellplague lasted a century. Humanity contracted, but the essential human quality&#8212;the stubborn, irrational refusal to accept defeat&#8212;remained. New kingdoms rose. New magical traditions emerged. And when the Sundering came in 1487 DR, separating the worlds and restoring the Weave, humanity was ready to rebuild once again.</p>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch4">
+<h1>Chapter IV<br>Nations of Humanity</h1>
+<p class="drop-cap">Across the length and breadth of Faer&#251;n, humans have built nations of astonishing variety. From feudal monarchies where the divine right of kings is literal to merchant republics where gold is the only law, from theocracies ruled by living gods to magocracies governed by liches, the political systems of humanity are as diverse as humanity itself. The following is an overview of the most prominent human-dominated nations of the Realms.</p>
+
+<table class="dnd-table"><thead><tr><th>Nation</th><th>Government</th><th>Ethnicity</th><th>Character</th></tr></thead><tbody>
+<tr><td><strong>Cormyr</strong></td><td>Feudal Monarchy</td><td>Chondathan</td><td>Chivalric kingdom of knights, nobility, and war wizards. Stable, honorable, traditional.</td></tr>
+<tr><td><strong>Waterdeep</strong></td><td>Masked Lords Oligarchy</td><td>Tethyrian / Mixed</td><td>City of Splendors. Trade capital of the North. Cosmopolitan, wealthy, politically complex.</td></tr>
+<tr><td><strong>Baldur&#8217;s Gate</strong></td><td>Council of Dukes</td><td>Mixed</td><td>Rough port city. Gateway to the south. Vibrant, dangerous, democratic in spirit.</td></tr>
+<tr><td><strong>Sembia</strong></td><td>Merchant Plutocracy</td><td>Chondathan</td><td>Commerce above all. Titles can be bought. Rival and sometime enemy of Cormyr.</td></tr>
+<tr><td><strong>Thay</strong></td><td>Magocracy (Lich-ruled)</td><td>Mulan</td><td>Red Wizards, undead legions, slave trade. The darkest vision of what human magic can become.</td></tr>
+<tr><td><strong>Calimshan</strong></td><td>Satrapy / City-States</td><td>Calishite</td><td>Ancient, decadent, genie-haunted. Vast deserts, opulent palaces, ruthless politics.</td></tr>
+<tr><td><strong>The Dalelands</strong></td><td>Loose Confederation</td><td>Chondathan</td><td>Independent farming communities. Elminster&#8217;s home. The soul of the common folk.</td></tr>
+<tr><td><strong>Amn</strong></td><td>Council of Five</td><td>Tethyrian</td><td>Mercantile powerhouse. Gold above all. Ruthless but efficient. The Shadow Thieves&#8217; home.</td></tr>
+<tr><td><strong>Rashemen</strong></td><td>Witch-Ruled Theocracy</td><td>Rashemi</td><td>Spirit-haunted wildlands. Berserker warriors ruled by masked witches. Ancient, untameable.</td></tr>
+<tr><td><strong>Mulhorand</strong></td><td>Divine Theocracy</td><td>Mulan</td><td>Land of the living gods. Egyptian-inspired grandeur. Caste-bound, ancient, magnificent.</td></tr>
+<tr><td><strong>Luskan</strong></td><td>High Captains</td><td>Illuskan</td><td>City of Sails. Pirate haven. Ruled by rival sea-lords. Lawless, dangerous, thrilling.</td></tr>
+<tr><td><strong>Turmish</strong></td><td>Democratic Republic</td><td>Turami</td><td>Nature-revering democracy. Artisans, druids, and rhetoricians. A beacon of civic virtue.</td></tr>
+<tr><td><strong>Tethyr</strong></td><td>Feudal Monarchy</td><td>Tethyrian</td><td>Restored kingdom. Still healing from decades of civil war. Determined and resilient.</td></tr>
+<tr><td><strong>Impiltur</strong></td><td>Paladin-Council</td><td>Damaran</td><td>Demon-haunted borderland. Militant faith. The line between civilization and the Abyss.</td></tr>
+<tr><td><strong>Neverwinter</strong></td><td>Lord Protector</td><td>Illuskan/Mixed</td><td>Jewel of the North, rebuilding after volcanic destruction. Frontier energy meets ancient heritage.</td></tr>
+<tr><td><strong>Chessenta</strong></td><td>City-States</td><td>Mulan</td><td>Warrior culture obsessed with physical perfection and glory. Gladiatorial combat, athletics.</td></tr>
+<tr><td><strong>Damara</strong></td><td>Monarchy</td><td>Damaran</td><td>Northern bastion against the horrors of Vaasa. Devout, hardy, perpetually besieged.</td></tr>
+<tr><td><strong>Halruaa</strong></td><td>Magocracy</td><td>Halruaan</td><td>Netherese descendant state. Magic permeates daily life. Insular, paranoid, brilliant.</td></tr>
+</tbody></table>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch5">
+<h1>Chapter V<br>Common Callings</h1>
+<div class="lore-quote">Every class, every creed, every calling under the sun&#8212;you will find a human who has mastered it, botched it, reinvented it, or done all three in the same afternoon. That is the gift and curse of the species. They have no natural inclination, so they can master everything. They have no natural limit, so they push until something breaks&#8212;usually the world around them.<span class="attribution">&#8212; Mordenkainen, Archmage of Greyhawk (visiting Faer&#251;n)</span></div>
+
+<p class="drop-cap">Humans can excel in any class, and this universality is their defining mechanical trait. No door is closed to them. However, certain classes have deep cultural associations with particular human ethnicities and traditions in Faer&#251;n, and understanding these connections can help a player ground their character in the setting with a richness that transcends mere numbers on a character sheet.</p>
+
+<h2>Favored Classes by Tradition</h2>
+<div class="class-grid">
+<div class="class-card"><div class="class-name">Fighter</div><p>The backbone of every human army and the most common class among human adventurers. Cormyrean Purple Dragon Knights drill in formation combat and mounted warfare. Chessentan gladiators fight for glory in packed arenas. Illuskan huscarls defend their longhouses with axe and shield. Damaran border guards hold the line against undead hordes with grim determination. The fighter is the most human of classes: no magic, no divine mandate, just skill, courage, and steel.</p></div>
+<div class="class-card"><div class="class-name">Wizard</div><p>Humanity&#8217;s greatest contribution to the Art. The legacy of Netheril ensures that human wizards are both feared and respected across the Realms. The Red Wizards of Thay have industrialized magical research. The War Wizards of Cormyr blend arcane and martial traditions. The mage-scholars of Halruaa preserve Netherese lore. And independent human wizards, from Elminster to the humblest hedge-mage, continue to push the boundaries of what mortal magic can achieve.</p></div>
+<div class="class-card"><div class="class-name">Cleric</div><p>Humans worship more gods than any other race, and their clergy are equally diverse. From the militant Helmites in their shining plate to the gentle Ilmatari who minister to the suffering, from the fiery Kossuthans to the mysterious Sharrans, human clerics serve on every front of the cosmic war between good and evil&#8212;and sometimes on both sides simultaneously.</p></div>
+<div class="class-card"><div class="class-name">Rogue</div><p>Where there is civilization, there is crime, and where there is crime, there are rogues. The Shadow Thieves of Amn form the largest criminal organization on the Sword Coast. The gangs of Luskan control the city&#8217;s underworld with an iron fist. The information brokers of Waterdeep trade in secrets worth more than gold. And the Harpers&#8212;not technically criminals, but certainly not above bending the law&#8212;count many human rogues among their most effective agents.</p></div>
+<div class="class-card"><div class="class-name">Paladin</div><p>The knightly orders of Faer&#251;n are overwhelmingly human, and for good reason: the paladin ethos&#8212;the willingness to bind oneself to an absolute code of conduct in exchange for divine power&#8212;resonates deeply with the human desire for meaning and purpose. The Order of the Gauntlet, the Knights of Holy Judgment, the paladins of Torm and Tyr and Helm: all represent the highest ideals of human valor and faith.</p></div>
+<div class="class-card"><div class="class-name">Barbarian</div><p>The Uthgardt tribes of the North follow beast totems and live by the old ways. The berserkers of Rashemen enter battle trances fueled by herbs and spirit communion. The Tuigan horse-warriors of the eastern steppes fight with a ferocity that nearly conquered Faer&#251;n. Human barbarian traditions are diverse, ancient, and terrifying to face on the battlefield.</p></div>
+<div class="class-card"><div class="class-name">Warlock</div><p>Human ambition makes them uniquely susceptible&#8212;and uniquely suited&#8212;to pacts with otherworldly entities. The long shadow of Netheril, where arcanists trafficked with entities from the Far Realm and the Shadowfell, means that humans understand the temptation of power at any price better than any other race. A human warlock is rarely surprised by the cost of their bargain; they simply decided the price was worth paying.</p></div>
+<div class="class-card"><div class="class-name">Sorcerer</div><p>Wild magic, draconic bloodlines, the lingering effects of the Spellplague, genie ancestry in Calishite families, divine spark from the Time of Troubles, shadow magic from Netherese exposure: humans have more paths to innate magical ability than any other race. Their sorcerers are as varied as the sources of their power.</p></div>
+<div class="class-card"><div class="class-name">Bard</div><p>From the skalds of the Illuskan longhouses who preserve the sagas of heroes to the lore-masters of Candlekeep who catalog the knowledge of ages, from the Turami musicians whose performances move audiences to tears to the Harper agents who use song and story as weapons against tyranny, human bards are the keepers of collective memory and the shapers of public opinion.</p></div>
+<div class="class-card"><div class="class-name">Ranger</div><p>The Harpers count many human rangers among their number. From the scouts of the Dalelands to the beast-trackers of Chult, from the Uthgardt pathfinders to the monster-hunters of Impiltur, humans patrol the wild borders between civilization and the unknown, serving as the first line of defense against threats that cities cannot see coming.</p></div>
+<div class="class-card"><div class="class-name">Druid</div><p>The druid circles of the Vilhon Reach preserve traditions older than any kingdom. The Wychlaran of Rashemen blend druidic magic with political authority. The druids of the Moonshae Isles serve the Earthmother with devotion that borders on the fanatical. Human druids occupy a unique cultural position: they are bridges between the civilized world and the wilderness, advocates for a balance that most of humanity is too busy to maintain.</p></div>
+<div class="class-card"><div class="class-name">Monk</div><p>The monasteries of Damara produce the finest monks in Faer&#251;n: the Disciples of Saint Sollars, the Order of the Yellow Rose, the Sun Soul monks of Amn. Human monks push the body beyond its mortal limits through discipline, meditation, and martial training that can span a lifetime. Their ki techniques represent a uniquely human approach to magic: earned through effort, not granted by blood or pact.</p></div>
+</div>
+
+<h2>Subclass Affinities by Culture</h2>
+<table class="dnd-table"><thead><tr><th>Culture</th><th>Subclass</th><th>Lore Reason</th></tr></thead><tbody>
+<tr><td>Cormyrean</td><td>Eldritch Knight, Banneret</td><td>War Wizard/knight tradition of the Purple Dragons</td></tr>
+<tr><td>Thayan</td><td>School of Necromancy</td><td>Szass Tam&#8217;s influence; undead armies as state policy</td></tr>
+<tr><td>Illuskan</td><td>Totem Warrior (Barbarian)</td><td>Uthgardt beast-totem spiritual tradition</td></tr>
+<tr><td>Rashemi</td><td>Berserker, Circle of the Land</td><td>Battle-trance warriors and Wychlaran nature witches</td></tr>
+<tr><td>Calishite</td><td>Genie Warlock, School of Enchantment</td><td>Genie-pact heritage; ancient enchantment traditions</td></tr>
+<tr><td>Damaran</td><td>Way of the Open Hand, Life Domain</td><td>Monastic orders; Ilmatari healing traditions</td></tr>
+<tr><td>Tethyrian</td><td>Oath of the Crown, College of Eloquence</td><td>Legal traditions; Waterdhavian political culture</td></tr>
+<tr><td>Turami</td><td>Circle of Spores, College of Lore</td><td>Nature reverence; artistic and scholarly traditions</td></tr>
+<tr><td>Chessentan</td><td>Champion Fighter, Battlemaster</td><td>Gladiatorial culture; tactical combat excellence</td></tr>
+<tr><td>Halruaan</td><td>War Magic, Chronurgy</td><td>Netherese legacy; experimental magical research</td></tr>
+<tr><td>Amnian</td><td>Assassin, Mastermind</td><td>Shadow Thieves; mercantile espionage culture</td></tr>
+<tr><td>Moonshae Ffolk</td><td>Circle of the Moon</td><td>Earthmother worship; shapeshifting druidic traditions</td></tr>
+</tbody></table>
+
+<h2>Iconic Multiclass Archetypes</h2>
+<table class="dnd-table"><thead><tr><th>Archetype</th><th>Classes</th><th>Lore Basis</th><th>Playstyle</th></tr></thead><tbody>
+<tr><td><strong>War Wizard of Cormyr</strong></td><td>Fighter / Wizard</td><td>Elite battlemage corps of the Purple Dragon army</td><td>Frontline combatant with battlefield control spells</td></tr>
+<tr><td><strong>Harper Agent</strong></td><td>Bard / Ranger or Rogue</td><td>Covert operatives of the Harpers</td><td>Intelligence gathering, infiltration, subtle magic</td></tr>
+<tr><td><strong>Red Wizard Adept</strong></td><td>Wizard / Cleric (Arcana)</td><td>Thayan specialist combining arcane and divine</td><td>Raw magical power, school specialization</td></tr>
+<tr><td><strong>Berserker Lodge-Brother</strong></td><td>Barbarian / Druid</td><td>Rashemi warrior attuned to land spirits</td><td>Shapeshifting rager; nature-fueled fury</td></tr>
+<tr><td><strong>Shadow Thief Operative</strong></td><td>Rogue / Warlock</td><td>Amnian guild operative with a dark pact</td><td>Stealth, deception, darkness manipulation</td></tr>
+<tr><td><strong>Holy Avenger of Torm</strong></td><td>Paladin / Warlock (Celestial)</td><td>Zealous divine agent empowered by celestial pact</td><td>Smite machine; healing and radiant damage</td></tr>
+<tr><td><strong>Uthgardt Totem Champion</strong></td><td>Barbarian (Totem) / Ranger</td><td>Northern tribal champion; beast-bonded tracker</td><td>Survivalist; tracking, resistance, primal fury</td></tr>
+<tr><td><strong>Sword Coast Swashbuckler</strong></td><td>Fighter / Rogue</td><td>Dashing swordsman of Waterdeep or Baldur&#8217;s Gate</td><td>High mobility, dual-wielding, social infiltration</td></tr>
+<tr><td><strong>Ilmatari Flagellant</strong></td><td>Monk / Cleric (Life)</td><td>Damaran monk-priest of the Crying God</td><td>Endurance, healing, unarmed martial arts</td></tr>
+<tr><td><strong>Calishite Genie-Binder</strong></td><td>Sorcerer / Warlock (Genie)</td><td>Calishite with awakened genie heritage</td><td>Elemental blaster; genie-pact utility</td></tr>
+</tbody></table>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch6">
+<h1>Chapter VI<br>Boons &amp; Blessings</h1>
+<div class="lore-quote">An elf waits for destiny. A human seizes it by the throat and demands to know its name, its purpose, and whether it can be sold for a profit. And if destiny refuses to cooperate, the human forges a new one from sheer stubbornness and spite. It is, I confess, both infuriating and magnificent.<span class="attribution">&#8212; Khelben &#8220;Blackstaff&#8221; Arunsun</span></div>
+
+<p class="drop-cap">Humanity&#8217;s greatest strength is its refusal to accept limitation. Where other races have inherent magical gifts&#8212;the elf&#8217;s trance, the dwarf&#8217;s darkvision, the tiefling&#8217;s infernal legacy&#8212;humans possess something arguably more powerful: the capacity to acquire virtually any ability through sheer effort, training, and force of will. The following boons, feats, and epic boons are designed for human characters in the Forgotten Realms, reflecting the unique cultural traditions and historical legacies of humanity in Faer&#251;n. These are intended as optional rules for your table.</p>
+
+<h2>Racial Boons</h2>
+<p>These boons may be granted by a DM as rewards for significant achievements, divine favor, or as inherent traits tied to a human character&#8217;s heritage.</p>
+
+<div class="boon-card"><div class="boon-title">Boon of the Undying Spirit</div><div class="boon-prereq">Prerequisite: Human, 8th level or higher</div><p>The fire of human perseverance burns within you with a heat that death itself cannot easily extinguish. When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. Once you use this feature, you cannot use it again until you finish a long rest.</p><p>Additionally, you have advantage on death saving throws. When you roll a natural 20 on a death saving throw, you regain hit points equal to your Constitution modifier + your proficiency bonus (minimum 1).</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of the Versatile Mind</div><div class="boon-prereq">Prerequisite: Human</div><p>Your adaptable nature allows you to learn with extraordinary speed, picking up skills and techniques that others spend years mastering. You gain proficiency in one skill and one tool of your choice. Additionally, whenever you finish a long rest, you can replace one of your skill proficiencies with a different skill proficiency. The new proficiency must be from your class&#8217;s skill list or the skill list available to your background.</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of Netherese Legacy</div><div class="boon-prereq">Prerequisite: Human spellcaster, 12th level or higher</div><p>You have uncovered fragments of the lost magical traditions of Netheril, studying crumbling scrolls, deciphering ancient sigils, or perhaps absorbing ambient magical energy from a Netherese ruin. Once per long rest, when you cast a spell of 5th level or lower, you can cast it as though you had used a spell slot one level higher than the slot you actually expended. The spell takes effect at the higher level in all respects.</p><p>Additionally, you learn the <em>detect magic</em> spell if you don&#8217;t already know it, and you can cast it at will without expending a spell slot. When you cast <em>detect magic</em> in this way, you can also identify the school of magic of any aura you detect.</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of the Silver Tongue</div><div class="boon-prereq">Prerequisite: Human, Charisma 13 or higher</div><p>The gift of persuasion runs deep in your blood, honed by generations of human merchants, diplomats, and confidence artists. You gain proficiency in Persuasion and Deception. If you are already proficient in either, you gain expertise in that skill instead (doubling your proficiency bonus). Once per long rest, you can reroll a failed Charisma check. You must use the new roll.</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of Mortal Defiance</div><div class="boon-prereq">Prerequisite: Human, 5th level or higher</div><p>Your fierce mortal will resists domination, drawing on the innate human stubbornness that has defied gods and empires alike. You have advantage on saving throws against being charmed or frightened. Additionally, if you succeed on a saving throw against an enchantment spell, the caster does not know that you succeeded. You can pretend to be affected as you choose, potentially turning the caster&#8217;s own magic into a weapon against them.</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of the Chosen Bloodline</div><div class="boon-prereq">Prerequisite: Human, granted by divine or arcane intervention</div><p>You bear the mark of a greater destiny, whether through divine selection, exposure to raw magical forces, or the activation of a dormant bloodline that traces back to the heroes of antiquity. Choose one ability score; it increases by 2, to a maximum of 22. Once per long rest, when you fail a saving throw, you can choose to succeed instead. When you use this feature, you gain one level of exhaustion as the strain of defying fate takes its toll on your mortal frame.</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of the Weave-Touched</div><div class="boon-prereq">Prerequisite: Human, exposure to raw Weave energy or Spellplague residue</div><p>The Weave has left its mark on you, granting you a subtle but persistent connection to the fabric of magic. You can sense the presence of magic within 30 feet of you as a faint tingling sensation, functioning as a passive version of <em>detect magic</em> that does not require concentration. Once per long rest, you can touch a nonmagical object and imbue it with a temporary magical property for 1 hour: the object sheds bright light in a 20-foot radius, becomes unbreakable, or deals an extra 1d4 force damage on hit (if a weapon).</p></div>
+
+<div class="boon-card"><div class="boon-title">Boon of the Frontier</div><div class="boon-prereq">Prerequisite: Human raised in a borderland or frontier settlement</div><p>You were raised on the edge of civilization, where survival required constant vigilance and practical resourcefulness. You gain proficiency in Survival and one martial weapon of your choice. You can forage while traveling at a normal pace, and when you forage, you find twice as much food and water as normal. You can spend 1 minute studying an area to identify natural shelters, water sources, and potential dangers within 1 mile.</p></div>
+
+<div class="section-divider"></div>
+
+<h2>Human Feats</h2>
+
+<div class="feature-box"><div class="feature-title">Prodigy</div><p><em>Prerequisite: Human, half-elf, or half-orc</em></p><p>You have a knack for learning new things. You gain one skill proficiency of your choice, one tool proficiency of your choice, and fluency in one language of your choice. Choose one skill in which you have proficiency. You gain expertise with that skill, which means your proficiency bonus is doubled for any ability check you make with it.</p></div>
+
+<div class="feature-box"><div class="feature-title">Born Survivor</div><p><em>Prerequisite: Human</em></p><ul class="dnd-list"><li>Increase your Constitution score by 1, to a maximum of 20.</li><li>When you use Hit Dice to recover hit points during a short rest, you can reroll any Hit Die that shows a 1 or 2. You must use the new roll.</li><li>When you stabilize by succeeding on three death saving throws, you regain 1 hit point.</li><li>You have advantage on saving throws against exhaustion caused by forced marching, starvation, or environmental exposure.</li></ul></div>
+
+<div class="feature-box"><div class="feature-title">Legacy of Ages</div><p><em>Prerequisite: Human, Intelligence 13+</em></p><ul class="dnd-list"><li>Increase your Intelligence score by 1, to a maximum of 20.</li><li>You gain proficiency in History if you don&#8217;t already have it. If already proficient, you gain expertise.</li><li>When you make an ability check using a skill in which you are not proficient, you can add half your proficiency bonus to the roll (rounded down). You can use this feature a number of times equal to your Intelligence modifier, regaining all uses on a long rest.</li></ul></div>
+
+<div class="feature-box"><div class="feature-title">Scion of Netheril</div><p><em>Prerequisite: Human, ability to cast at least one spell</em></p><ul class="dnd-list"><li>Increase your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20.</li><li>You learn the <em>prestidigitation</em> and <em>mage hand</em> cantrips if you don&#8217;t already know them.</li><li>Once per long rest, when you cast a spell that requires concentration, you can maintain concentration on it without needing to make concentration saving throws for the first minute (10 rounds) of its duration.</li></ul></div>
+
+<div class="feature-box"><div class="feature-title">Calishite Genie-Blood</div><p><em>Prerequisite: Human (Calishite), Charisma 13+</em></p><ul class="dnd-list"><li>Increase your Charisma score by 1, to a maximum of 20.</li><li>You learn the <em>produce flame</em> cantrip (efreeti lineage) or the <em>shape water</em> cantrip (marid lineage).</li><li>You gain resistance to one damage type: fire (efreeti), cold (marid), lightning (djinni), or acid (dao).</li><li>Once per long rest, you can cast <em>misty step</em> without expending a spell slot.</li></ul></div>
+
+<div class="feature-box"><div class="feature-title">Rashemi Berserker Training</div><p><em>Prerequisite: Human (Rashemi), Strength or Constitution 13+</em></p><ul class="dnd-list"><li>Increase your Strength or Constitution score by 1, to a maximum of 20.</li><li>When you are raging or under the effect of a battle trance, you gain temporary hit points equal to your proficiency bonus at the start of each of your turns.</li><li>You have advantage on saving throws against poison, and you have resistance to poison damage.</li></ul></div>
+
+<div class="feature-box"><div class="feature-title">Diplomatic Prodigy</div><p><em>Prerequisite: Human, Charisma 13+</em></p><ul class="dnd-list"><li>Increase your Charisma score by 1, to a maximum of 20.</li><li>You gain proficiency in Insight if you don&#8217;t already have it.</li><li>When you make a Persuasion check during negotiations or diplomatic encounters, you can treat a d20 roll of 7 or lower as an 8.</li><li>You learn the <em>friends</em> cantrip. Charisma is your spellcasting ability for it, and targets are not aware the spell was cast on them when it ends.</li></ul></div>
+
+<h2>Epic Boons for Humans</h2>
+<p>The following epic boons are available to human characters who have reached 20th level and accomplished truly legendary deeds:</p>
+
+<div class="boon-card"><div class="boon-title">Epic Boon: Karsus&#8217;s Echo</div><div class="boon-prereq">Prerequisite: Human, 20th level, wizard or sorcerer</div><p>You have touched the faintest echo of the power Karsus once wielded. Once per week, you can cast a spell you know at one level higher than the maximum slot you have available, effectively casting a 10th-level spell. The DM determines the additional effects. After using this feature, you must succeed on a DC 20 Constitution saving throw or gain 3 levels of exhaustion as the Weave strains to contain the power you have channeled.</p></div>
+
+<div class="boon-card"><div class="boon-title">Epic Boon: Mortal Apotheosis</div><div class="boon-prereq">Prerequisite: Human, 20th level</div><p>You have transcended the limits of ordinary mortality. Your lifespan is extended by 500 years, and you no longer age visibly. You become immune to disease and poison. Your hit point maximum increases by 40. Once per long rest, when you would die, you can instead drop to 1 hit point and gain the benefits of a short rest immediately.</p></div>
+
+<div class="boon-card"><div class="boon-title">Epic Boon: The Unbroken Will</div><div class="boon-prereq">Prerequisite: Human, 20th level</div><p>Your willpower has become an almost physical force. You are immune to the charmed and frightened conditions. You cannot be possessed or have your mind read against your will. If you fail a Wisdom or Charisma saving throw, you can choose to succeed instead. You can use this feature three times, regaining all uses when you finish a long rest.</p></div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch7">
+<h1>Chapter VII<br>Notable Humans of the Realms</h1>
+<p class="drop-cap">The annals of Faer&#251;n are crowded with human figures of legend. Kings and conquerors, archmages and saints, scoundrels and saviors&#8212;humanity has produced an unparalleled gallery of individuals whose deeds have shaped the world. What follows is by no means an exhaustive catalog; such a document would fill libraries. These are merely the most prominent, the most influential, and the most instructive examples of what humanity can achieve&#8212;for good or for ill.</p>
+
+<div class="section-divider"></div>
+
+<div class="profile-card"><div class="profile-header"><span>Elminster Aumar</span><span class="profile-epithet">The Sage of Shadowdale</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard (Archmage), Chosen of Mystra</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Chaotic Good</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 212 DR, Heldon</div>
+<div class="profile-detail"><span class="detail-label">Age:</span> Over 1,200 years (sustained by Mystra&#8217;s silver fire)</div>
+<p style="margin-top:.6rem">The most famous human wizard in all of Faer&#251;n, Elminster has served as Mystra&#8217;s Chosen for over a millennium, acting as her mortal agent, the guardian of the Weave&#8217;s integrity, and the self-appointed protector of the Realms against threats both cosmic and mundane. His biography reads like a compressed history of Faer&#251;n itself: he was born a prince, orphaned by a magelord&#8217;s tyranny, raised as a thief, trained as a fighter, ordained as a priest of Mystra, and finally achieved his destiny as the greatest wizard of the age.</p>
+<p>Elminster&#8217;s power is difficult to overstate. He wields the silver fire of Mystra, a divine energy that can heal, destroy, or reshape matter at will. He has access to spells that most wizards can only dream of, and his knowledge of the Realms&#8212;its history, its peoples, its secrets, and its dangers&#8212;is unmatched by any living mortal. Yet for all his power, Elminster presents himself as a cantankerous, pipe-smoking old man with a fondness for terrible puns and unsolicited advice. This is not an act, exactly, but it is a deliberate choice. He has learned, over twelve centuries, that the most effective way to help the world is not to rule it but to guide it from the shadows. He is a gardener, not a king: he plants seeds, pulls weeds, and trusts the garden to grow.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Khelben &#8220;Blackstaff&#8221; Arunsun</span><span class="profile-epithet">Lord Mage of Waterdeep</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Tethyrian)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard (Archmage), Former Chosen of Mystra</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Lawful Neutral</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 212 DR</div>
+<p style="margin-top:.6rem">Where Elminster is chaos and whimsy, Khelben was order and purpose. As the Blackstaff of Waterdeep, he served as one of the secret Masked Lords of the city and wielded the legendary <em>Blackstaff</em>, an artifact of immense power that could absorb spells, enhance its wielder&#8217;s magic, and even trap the souls of its previous owners. Khelben was a chess player in a world of swordfighters: always thinking twelve moves ahead, always willing to sacrifice a piece to win the game.</p>
+<p>He founded the Moonstars, a splinter faction of the Harpers dedicated to more direct intervention in world affairs, because he believed the Harpers had become too cautious. Khelben did not debate. He acted. And in 1374 DR, he made the ultimate sacrifice, giving his life to restore the <em>mythal</em> ward around Myth Drannor, proving that even a man so devoted to logic and control could, in the end, choose love over reason.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Artemis Entreri</span><span class="profile-epithet">The Deadliest Blade in Calimshan</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Calishite)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Rogue (Assassin) / Fighter (Battle Master)</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Lawful Evil (shifting toward Neutral over time)</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> c. 1320 DR, Calimport</div>
+<div class="profile-detail"><span class="detail-label">Notable Items:</span> Charon&#8217;s Claw (sentient sword), jeweled dagger</div>
+<p style="margin-top:.6rem">Perhaps the finest assassin to ever draw breath, Artemis Entreri is a study in what happens when prodigious natural talent is forged in the crucible of suffering and refined by decades of pitiless practice. Born into poverty on the brutal streets of Calimport, sold by his own mother, abused by those who should have protected him, Entreri channeled his rage and his pain into the only skill that mattered in his world: the ability to kill. By the age of twenty, he was the most feared assassin in Calimshan.</p>
+<p>His rivalry with Drizzt Do&#8217;Urden is legendary, driven not by personal hatred but by something far more complex: Entreri saw in Drizzt a mirror of himself, a person of extraordinary skill shaped by a hostile environment, who had nonetheless chosen a fundamentally different path. Their duels were philosophical arguments conducted with steel, each man trying to prove that his way of living was the right one. Over time, Entreri&#8217;s certainty began to crack. His partnerships&#8212;particularly with the drow mercenary Jarlaxle&#8212;taught him that connection was not always weakness, that trust could be a source of strength rather than vulnerability.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Storm Silverhand</span><span class="profile-epithet">Bard of Shadowdale, Chosen of Mystra</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan, of the Seven Sisters)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Bard (Valor) / Fighter, Chosen of Mystra</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Chaotic Good</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 767 DR</div>
+<p style="margin-top:.6rem">One of the legendary Seven Sisters&#8212;all daughters of the goddess Mystra, born to different mortal mothers across several centuries&#8212;Storm Silverhand is the embodiment of human passion, joy, and fierce protectiveness. A warrior-bard of matchless skill who fights with equal ferocity using a sword, a song, or a devastating blast of silver fire. She has fought in more battles than most nations have waged and still finds time to tend a farm in Shadowdale, pen ballads that make grown warriors weep, and serve as one of the most effective Harper agents in history. Her silver hair, wild laughter, and absolute refusal to take herself seriously make her one of the most beloved figures in the Dalelands.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Szass Tam</span><span class="profile-epithet">Regent of Thay, Zulkir of Necromancy</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Mulan), now Lich</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard (School of Necromancy), Lich</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Neutral Evil</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> c. 900 DR</div>
+<p style="margin-top:.6rem">Once a mortal Mulan wizard of extraordinary ambition, Szass Tam has transcended death itself through necromancy, becoming the undead ruler of Thay and perhaps the single most politically powerful spellcaster on Faer&#251;n. He has unified the fractious Red Wizards under a single command structure, built an army of undead numbering in the hundreds of thousands, established trade enclaves across the continent, and positioned Thay as a major power that even the mightiest kingdoms approach with caution. His ultimate goal is nothing less than godhood itself, achieved through a ritual that would require the sacrifice of every living soul in Thay. He has come closer to achieving this goal than anyone realizes. He is patient. He has eternity.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Manshoon</span><span class="profile-epithet">The Many, Founder of the Zhentarim</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Lawful Evil</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 1229 DR, Zhentil Keep</div>
+<p style="margin-top:.6rem">Manshoon represents the darkest aspect of human ambition: the refusal to accept any limit, even death. The founder of the Zhentarim, the Black Network, he built one of the most feared criminal and mercantile organizations on the continent. When his enemies destroyed him, his contingency clones activated&#8212;multiple copies, each believing itself to be the original, each possessing his memories, his power, and his insatiable hunger for control. The resulting &#8220;Manshoon Wars&#8221; among his own copies left a trail of destruction across the Heartlands and is a cautionary tale about the consequences of human hubris. At least one clone still operates in Waterdeep, quietly rebuilding his power base.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Laeral Silverhand</span><span class="profile-epithet">Open Lord of Waterdeep</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan, of the Seven Sisters)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard (Archmage), Chosen of Mystra</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Chaotic Good</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 697 DR</div>
+<p style="margin-top:.6rem">The eldest of the Seven Sisters and the current Open Lord of Waterdeep, Laeral combines archmage-level magical power with the political acumen required to govern the most important city on the Sword Coast. She was once corrupted by the Crown of Horns, an artifact of Myrkul, and spent years as the mad &#8220;Lady of the North&#8221; before being freed by Khelben Blackstaff, whom she later married. After his death and the upheavals of the Spellplague and the Sundering, Laeral stepped into the role of Open Lord, replacing the ousted Dagult Neverember. She governs with a combination of arcane authority, political savvy, and genuine compassion.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>The Simbul (Alassra Silverhand)</span><span class="profile-epithet">Witch-Queen of Aglarond</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (of the Seven Sisters)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Wizard (Archmage), Chosen of Mystra</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Chaotic Good</div>
+<div class="profile-detail"><span class="detail-label">Born:</span> 764 DR</div>
+<p style="margin-top:.6rem">The most volatile and terrifying of the Seven Sisters, the Simbul is a walking apocalypse in human form. As Witch-Queen of Aglarond, she stood as the sole bulwark between her nation and the Red Wizards of Thay for centuries. Where other rulers would have raised armies, the Simbul simply appeared on the battlefield personally and annihilated entire Thayan invasion forces single-handedly. Her magical power is so immense, and her temper so unpredictable, that even Szass Tam approaches conflict with her cautiously. She is the human equivalent of a natural disaster: beautiful, magnificent, and absolutely devastating when provoked.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Cyric</span><span class="profile-epithet">Prince of Lies, the Mad God</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan), now Greater Deity</div>
+<div class="profile-detail"><span class="detail-label">Former Class:</span> Thief / Fighter</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Chaotic Evil</div>
+<p style="margin-top:.6rem">Once a mortal human thief of unremarkable origins but extraordinary ambition, Cyric ascended to godhood during the Time of Troubles, eventually claiming the portfolios of murder, lies, strife, and intrigue. His mortal-to-divine ascension is the most dramatic proof of what humanity can achieve and a dire warning of what happens when human ambition is untempered by wisdom or compassion. Cyric murdered Mystra, triggering the Spellplague that devastated Toril for a century. He is genuinely insane&#8212;a god driven mad by his own power&#8212;and his erratic behavior makes him unpredictable even by divine standards. He is, perhaps, the most dangerous being ever produced by the human race.</p>
+</div></div>
+
+<div class="profile-card"><div class="profile-header"><span>Dagult Neverember</span><span class="profile-epithet">Lord Protector of Neverwinter</span></div><div class="profile-body">
+<div class="profile-detail"><span class="detail-label">Race / Ethnicity:</span> Human (Chondathan)</div>
+<div class="profile-detail"><span class="detail-label">Class:</span> Fighter / Noble</div>
+<div class="profile-detail"><span class="detail-label">Alignment:</span> Lawful Neutral</div>
+<p style="margin-top:.6rem">The quintessential human politician, Dagult Neverember is ambitious, pragmatic, and willing to bend every rule that doesn&#8217;t outright break. He claimed lordship of both Waterdeep and Neverwinter simultaneously, embezzled a fortune from Waterdeep&#8217;s treasury (the famous 500,000 gold dragons that Laeral recovered), was ousted from Waterdeep by Laeral Silverhand, and now focuses his energy on rebuilding Neverwinter. He is neither hero nor villain but something entirely, quintessentially human: a man driven by ego, ambition, and a genuine, if self-serving, desire to build something that will outlast him.</p>
+</div></div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch8">
+<h1>Chapter VIII<br>Factions &amp; Organizations</h1>
+<p class="drop-cap">Humans are, above all else, social creatures. They form guilds, orders, cabals, and secret societies with a fervor unmatched by any other race on Faer&#251;n. Where an elf might spend centuries as a solitary wanderer and a dwarf might find sufficient community in their clan, humans compulsively organize themselves into factions, each pursuing its own vision of how the world should work.</p>
+
+<div class="feature-box"><div class="feature-title">The Harpers</div><p><strong>Type:</strong> Secret Society / Spy Network &#8226; <strong>Alignment:</strong> Chaotic Good &#8226; <strong>Symbol:</strong> A silver harp between the horns of a crescent moon</p><p>The Harpers are the conscience of the Realms: a loose, decentralized network of spellcasters, spies, bards, rangers, and rogues dedicated to promoting good, preserving historical knowledge, and maintaining the balance of power across Faer&#251;n. They operate in the shadows, opposing tyrants and evil organizations wherever they arise, but they do so without seeking power for themselves. A Harper&#8217;s greatest tool is information, and their greatest weapon is the truth, wielded at the right moment to the right audience. The Harpers have been founded, disbanded, and refounded multiple times throughout history, each iteration learning from the mistakes of the last. Notable agents include Elminster, Storm Silverhand, and dozens of unnamed operatives in every major city.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Zhentarim (The Black Network)</div><p><strong>Type:</strong> Mercantile-Criminal Syndicate &#8226; <strong>Alignment:</strong> LE to NE (shifting toward N) &#8226; <strong>Symbol:</strong> A black winged serpent</p><p>Founded by Manshoon and the dark priest Fzoul Chembryl, the Zhentarim began as a blatantly evil organization dedicated to dominating trade through intimidation, assassination, and dark magic. In more recent years, the Black Network has undergone a pragmatic transformation under new leadership that recognizes that honest-ish business generates more sustainable profit than constant villainy. The modern Zhentarim functions as a vast mercenary company and trade guild: morally flexible but professionally reliable, willing to take any job for the right price but generally preferring contracts that don&#8217;t involve mass murder. &#8220;Gold, not blood&#8221; is the unofficial motto of the reformed Network, though plenty of old-guard members still prefer the traditional approach.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Order of the Gauntlet</div><p><strong>Type:</strong> Militant Religious Order &#8226; <strong>Alignment:</strong> Lawful Good &#8226; <strong>Symbol:</strong> A clenched gauntlet</p><p>The Order of the Gauntlet is the fist of divine justice in Faer&#251;n. Composed primarily of paladins, clerics, and monks, the Order is a coalition of faithful warriors dedicated to confronting evil directly and destroying it without mercy or hesitation. Where the Harpers prefer subtlety and the Lords&#8217; Alliance favors diplomacy, the Order believes that evil must be met with righteous force. Their membership draws heavily from the churches of Tyr, Torm, Helm, and Hoar. They are the first to march against a rising evil and the last to leave the field.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Lords&#8217; Alliance</div><p><strong>Type:</strong> Political Coalition &#8226; <strong>Alignment:</strong> Lawful Neutral &#8226; <strong>Symbol:</strong> A crown atop a crossed sword and staff</p><p>A coalition of rulers from cities and towns across the Sword Coast and the North. Its members include Waterdeep, Neverwinter, Baldur&#8217;s Gate, Silverymoon, Mirabar, and several smaller settlements. The Alliance is as much a forum for political maneuvering as a defensive pact, and its deliberations are frequently contentious, but it represents the most ambitious attempt at cooperative governance in the history of the Sword Coast.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Red Wizards of Thay</div><p><strong>Type:</strong> Magocratic Order &#8226; <strong>Alignment:</strong> Neutral Evil &#8226; <strong>Symbol:</strong> A red flame</p><p>The ruling order of Thay and the most powerful organized magical force on Faer&#251;n. Each Red Wizard specializes in one of the eight schools of magic and bears distinctive arcane tattoos that mark their allegiance, rank, and achievements. Under Szass Tam, the Red Wizards operate a network of trade enclaves across the continent, selling magical goods and services while gathering intelligence for their undead master&#8217;s grand designs. They are feared, respected, and deeply distrusted in equal measure.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Purple Dragon Knights</div><p><strong>Type:</strong> Royal Military Order &#8226; <strong>Alignment:</strong> LG to LN &#8226; <strong>Symbol:</strong> A purple dragon on a white field</p><p>The elite military corps of Cormyr, sworn to defend the Obarskyr crown and the Forest Kingdom. The Purple Dragons are among the finest heavy cavalry on the continent, and they work alongside the War Wizards, Cormyr&#8217;s cadre of battlemages, to form a military force that combines martial discipline with arcane firepower. Membership is a source of tremendous pride, and the words &#8220;I serve the Dragon&#8221; carry weight throughout the Heartlands.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Shadow Thieves</div><p><strong>Type:</strong> Criminal Guild &#8226; <strong>Alignment:</strong> Neutral Evil</p><p>Based primarily in Amn, the Shadow Thieves are the largest and most organized thieves&#8217; guild in western Faer&#251;n. Their operations span the Sword Coast, including extensive networks in Waterdeep, Baldur&#8217;s Gate, and Athkatla. They deal in theft, smuggling, information brokerage, and assassination, operating with a professionalism that borders on the corporate. Their internal hierarchy is strict, and betrayal of the guild is punished with creativity and thoroughness.</p></div>
+
+<div class="feature-box"><div class="feature-title">The Emerald Enclave</div><p><strong>Type:</strong> Druidic Network &#8226; <strong>Alignment:</strong> Neutral</p><p>A loose confederation of druids, rangers, and nature-priests who work to maintain the balance between civilization and the wild. The Emerald Enclave opposes unnatural threats to the natural order&#8212;undead plagues, aberrant incursions, demonic corruption of the land&#8212;and serves as a bridge between the settled world and the ancient powers of the wilderness.</p></div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch9">
+<h1>Chapter IX<br>Roleplaying Humans</h1>
+<div class="lore-quote">Playing a human is easy. Playing a human <em>well</em> is one of the hardest things you can do at the table. There is nowhere to hide. No racial quirks to fall back on. No pointed ears or tusks to define you. You must create something from nothing&#8212;which is, perhaps, the most human act of all.<span class="attribution">&#8212; A Dungeon Master&#8217;s Reflection</span></div>
+
+<p class="drop-cap">The challenge of playing a human in a world of elves, dwarves, dragonborn, and tieflings is that humans have no built-in hook. An elf player can lean on the weight of millennia; a dwarf can invoke clan honor; a tiefling walks into every room carrying the drama of infernal heritage. A human must create their own drama, their own hook, their own reason for being memorable. This is not a weakness. It is a freedom.</p>
+
+<h2>Motivations &amp; Drives</h2>
+<table class="dnd-table"><thead><tr><th>d12</th><th>Motivation</th><th>Description</th></tr></thead><tbody>
+<tr><td>1</td><td><strong>Legacy</strong></td><td>You want to be remembered. Life is short, and you refuse to vanish without a trace. Your name will echo through history.</td></tr>
+<tr><td>2</td><td><strong>Defiance</strong></td><td>You rage against the idea that humans are lesser. You will prove the elder races wrong with deeds that shame their centuries of complacency.</td></tr>
+<tr><td>3</td><td><strong>Duty</strong></td><td>You serve something larger than yourself: a nation, a faith, a family, or an ideal that gives your brief life meaning and purpose.</td></tr>
+<tr><td>4</td><td><strong>Curiosity</strong></td><td>The world is vast and your time is short. You want to see it all, learn it all, understand it all before the candle burns out.</td></tr>
+<tr><td>5</td><td><strong>Redemption</strong></td><td>You have done terrible things, or terrible things were done to you. You seek to make them right, to prove that the past does not define the future.</td></tr>
+<tr><td>6</td><td><strong>Ambition</strong></td><td>You want power, wealth, or influence. You know exactly what you want, and you are willing to work, fight, or scheme to get it.</td></tr>
+<tr><td>7</td><td><strong>Protection</strong></td><td>Someone you love is in danger, or the world itself is threatened. You will stand in the breach, no matter the cost.</td></tr>
+<tr><td>8</td><td><strong>Knowledge</strong></td><td>You hunger to understand the deep secrets of the world: magic, history, the planes, the nature of the gods.</td></tr>
+<tr><td>9</td><td><strong>Vengeance</strong></td><td>Someone destroyed what you loved. You will find them. There will be a reckoning, and it will be terrible.</td></tr>
+<tr><td>10</td><td><strong>Freedom</strong></td><td>You have been enslaved, oppressed, or controlled. Never again. You will live free or die trying.</td></tr>
+<tr><td>11</td><td><strong>Faith</strong></td><td>Your god has spoken to you, in dreams or in visions or in the quiet certainty of your heart. You walk the path they have set.</td></tr>
+<tr><td>12</td><td><strong>Restlessness</strong></td><td>You don&#8217;t know what you&#8217;re looking for. You only know it isn&#8217;t here. The road calls, and you cannot refuse it.</td></tr>
+</tbody></table>
+
+<h2>Bonds</h2>
+<table class="dnd-table"><thead><tr><th>d8</th><th>Bond</th></tr></thead><tbody>
+<tr><td>1</td><td>I carry a locket with a portrait of someone I lost. I will see them avenged.</td></tr>
+<tr><td>2</td><td>My hometown was destroyed. I will rebuild it or build something better in its place.</td></tr>
+<tr><td>3</td><td>I owe a life-debt to a mentor who saved me. I will repay it, even if it costs me everything.</td></tr>
+<tr><td>4</td><td>I discovered an ancient human ruin that holds a secret. I must uncover it before someone dangerous does.</td></tr>
+<tr><td>5</td><td>I was raised by an elder race (elves, dwarves, etc.) and feel torn between two worlds.</td></tr>
+<tr><td>6</td><td>My family name was once great. I will restore its honor or die in the attempt.</td></tr>
+<tr><td>7</td><td>I serve a faction (Harpers, Zhentarim, etc.) and their mission is my mission.</td></tr>
+<tr><td>8</td><td>There is a prophecy about me, or I believe there is. I am determined to fulfill it.</td></tr>
+</tbody></table>
+
+<h2>Flaws</h2>
+<table class="dnd-table"><thead><tr><th>d8</th><th>Flaw</th></tr></thead><tbody>
+<tr><td>1</td><td>I am convinced I am destined for greatness. This makes me reckless and arrogant.</td></tr>
+<tr><td>2</td><td>I trust too easily. The world has hurt me for it, and it will hurt me again.</td></tr>
+<tr><td>3</td><td>I measure my worth in gold. If I am not wealthy, I am nothing.</td></tr>
+<tr><td>4</td><td>I carry a grudge like a dwarf carries a hammer: forever, and with intent to use it.</td></tr>
+<tr><td>5</td><td>My mortality terrifies me. I will do anything to extend my life, even things I should not.</td></tr>
+<tr><td>6</td><td>I cannot abide being told what to do. Authority is a chain, and I will break it.</td></tr>
+<tr><td>7</td><td>I am ashamed of my common humanity among extraordinary beings. I overcompensate constantly.</td></tr>
+<tr><td>8</td><td>I have a weakness for comfort, luxury, and indulgence that undermines my discipline.</td></tr>
+</tbody></table>
+
+<h2>Faith and the Divine</h2>
+<p class="drop-cap">Humans worship more gods, in more ways, than any other race on Faer&#251;n. While elves revere Corellon and dwarves honor Moradin with a devotion that borders on the monolithic, humans have spread their faith across a pantheon so vast that no single mortal could name every deity humans have worshipped. This theological diversity is both a strength and a weakness: it allows humans to find divine patronage for every conceivable endeavor, but it also makes them susceptible to false prophets, heretical cults, and the machinations of evil deities who find human worshippers easy to recruit.</p>
+
+<table class="dnd-table"><thead><tr><th>Deity</th><th>Domain</th><th>AL</th><th>Favored By</th></tr></thead><tbody>
+<tr><td><strong>Tymora</strong></td><td>Luck, Fortune</td><td>CG</td><td>Chondathans, adventurers everywhere</td></tr>
+<tr><td><strong>Tempus</strong></td><td>War, Battle</td><td>CN</td><td>Illuskans, soldiers of every nation</td></tr>
+<tr><td><strong>Helm</strong></td><td>Protection, Guardians</td><td>LN</td><td>Tethyrians, watchmen, bodyguards</td></tr>
+<tr><td><strong>Ilmater</strong></td><td>Suffering, Mercy</td><td>LG</td><td>Damarans, the poor and afflicted</td></tr>
+<tr><td><strong>Mystra</strong></td><td>Magic, the Weave</td><td>NG</td><td>Wizards everywhere, Halruaans</td></tr>
+<tr><td><strong>Lathander</strong></td><td>Dawn, Renewal</td><td>NG</td><td>Chondathans, optimists, farmers</td></tr>
+<tr><td><strong>Sune</strong></td><td>Love, Beauty</td><td>CG</td><td>Tethyrians, artists, lovers</td></tr>
+<tr><td><strong>Chauntea</strong></td><td>Agriculture, Life</td><td>NG</td><td>Rural communities everywhere</td></tr>
+<tr><td><strong>Kelemvor</strong></td><td>Death, Judgment</td><td>LN</td><td>All cultures (universal reverence)</td></tr>
+<tr><td><strong>Tyr</strong></td><td>Justice, Law</td><td>LG</td><td>Tethyrians, judges, paladins</td></tr>
+<tr><td><strong>Waukeen</strong></td><td>Trade, Wealth</td><td>N</td><td>Calishites, Amnians, merchants</td></tr>
+<tr><td><strong>Bane</strong></td><td>Tyranny, Fear</td><td>LE</td><td>Zhentarim, tyrants, conquerors</td></tr>
+<tr><td><strong>Shar</strong></td><td>Darkness, Loss</td><td>NE</td><td>The grieving, the desperate</td></tr>
+<tr><td><strong>Silvanus</strong></td><td>Wild Nature</td><td>N</td><td>Turami, druids, frontier communities</td></tr>
+<tr><td><strong>Sel&#251;ne</strong></td><td>Moon, Navigation</td><td>CG</td><td>Travelers, sailors, Damarans</td></tr>
+</tbody></table>
+
+<div class="sidebar"><div class="sidebar-title">A Final Word: The Human Advantage</div><p>In a world of magic and monsters, the human advantage is not mechanical. It is not the +1 to all stats, nor the bonus feat. The human advantage is <em>narrative</em>. Humans in Faer&#251;n are the dreamers, the builders, the destroyers, and the rebuilders. They are the race that looked at a world ruled by dragons and elves and said, &#8220;We can do better.&#8221; Sometimes they were right. Sometimes they were catastrophically wrong. But they never stopped trying.</p><p>That is the soul of a human character. Not what they are, but what they <em>choose</em> to become. Every human who picks up a sword, opens a spellbook, kneels before an altar, or steps onto the road is making a declaration: this brief, fragile, insignificant life will <em>matter</em>. And against all odds, against all reason, against the accumulated wisdom of races that have walked the world for millennia, they are usually right.</p></div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="ch10">
+<h1>Chapter X<br>Human Stat Blocks</h1>
+<p class="drop-cap">The following stat blocks represent common human NPCs that adventurers might encounter in their travels across Faer&#251;n. These are not heroes or villains (those require custom builds) but the rank-and-file humans who populate the world: the soldiers, the bandits, the priests, and the mages who form the backdrop against which epic stories unfold.</p>
+
+<div class="stat-block">
+<div class="stat-block-title">Human Veteran Soldier</div>
+<div class="stat-block-subtitle">Medium Humanoid (Human), Any Alignment</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Armor Class</span> 17 (splint armor) &#8226; <span class="prop-label">Hit Points</span> 58 (9d8 + 18) &#8226; <span class="prop-label">Speed</span> 30 ft.</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">16 (+3)</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">13 (+1)</div></div><div class="ability-score"><div class="label">CON</div><div class="value">14 (+2)</div></div><div class="ability-score"><div class="label">INT</div><div class="value">10 (+0)</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">11 (+0)</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">10 (+0)</div></div></div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Skills</span> Athletics +5, Perception +2 &#8226; <span class="prop-label">Languages</span> Common plus one &#8226; <span class="prop-label">CR</span> 3 (700 XP)</div>
+<div class="stat-property"><span class="trait-name">Multiattack.</span> The veteran makes two longsword attacks. If it has a shortsword drawn, it can also make a shortsword attack.</div>
+<div class="stat-property"><span class="trait-name">Longsword.</span> <em>Melee Weapon Attack:</em> +5 to hit, reach 5 ft., one target. <em>Hit:</em> 7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) if used with two hands.</div>
+<div class="stat-property"><span class="trait-name">Heavy Crossbow.</span> <em>Ranged Weapon Attack:</em> +3 to hit, range 100/400 ft., one target. <em>Hit:</em> 6 (1d10 + 1) piercing damage.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Human War Wizard</div>
+<div class="stat-block-subtitle">Medium Humanoid (Human), Lawful Neutral</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Armor Class</span> 12 (15 with <em>mage armor</em>) &#8226; <span class="prop-label">Hit Points</span> 49 (9d8 + 9) &#8226; <span class="prop-label">Speed</span> 30 ft.</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">9 (&#8722;1)</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">14 (+2)</div></div><div class="ability-score"><div class="label">CON</div><div class="value">12 (+1)</div></div><div class="ability-score"><div class="label">INT</div><div class="value">17 (+3)</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">12 (+1)</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">11 (+0)</div></div></div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Saving Throws</span> Int +6, Wis +4 &#8226; <span class="prop-label">Skills</span> Arcana +6, History +6 &#8226; <span class="prop-label">CR</span> 6 (2,300 XP)</div>
+<div class="stat-property"><span class="trait-name">Spellcasting.</span> The war wizard is a 9th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 14, +6 to hit). Cantrips: <em>fire bolt, light, mage hand, prestidigitation</em>. 1st (4 slots): <em>mage armor, magic missile, shield, thunderwave</em>. 2nd (3): <em>misty step, scorching ray, hold person</em>. 3rd (3): <em>counterspell, fireball, dispel magic</em>. 4th (3): <em>greater invisibility, ice storm</em>. 5th (1): <em>cone of cold</em>.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Rashemi Berserker</div>
+<div class="stat-block-subtitle">Medium Humanoid (Human), Chaotic Neutral</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Armor Class</span> 13 (hide armor) &#8226; <span class="prop-label">Hit Points</span> 67 (9d8 + 27) &#8226; <span class="prop-label">Speed</span> 30 ft. (40 ft. while raging)</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">16 (+3)</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">12 (+1)</div></div><div class="ability-score"><div class="label">CON</div><div class="value">17 (+3)</div></div><div class="ability-score"><div class="label">INT</div><div class="value">9 (&#8722;1)</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">11 (+0)</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">9 (&#8722;1)</div></div></div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Saving Throws</span> Str +5, Con +5 &#8226; <span class="prop-label">Damage Resistances</span> poison &#8226; <span class="prop-label">CR</span> 4 (1,100 XP)</div>
+<div class="stat-property"><span class="trait-name">Rashemaar (Recharges after a Short or Long Rest).</span> The berserker enters a battle trance for 1 minute: resistance to bludgeoning, piercing, and slashing damage; advantage on Strength checks and saves; +2 bonus melee damage; immune to frightened.</div>
+<div class="stat-property"><span class="trait-name">Reckless.</span> Advantage on all melee attacks this turn; attacks against it have advantage until next turn.</div>
+<div class="stat-property"><span class="trait-name">Multiattack.</span> Two greataxe attacks.</div>
+<div class="stat-property"><span class="trait-name">Greataxe.</span> <em>Melee Weapon Attack:</em> +5 to hit, reach 5 ft., one target. <em>Hit:</em> 9 (1d12 + 3) slashing damage.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Human Ilmatari Priest</div>
+<div class="stat-block-subtitle">Medium Humanoid (Human), Lawful Good</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Armor Class</span> 13 (chain shirt) &#8226; <span class="prop-label">Hit Points</span> 38 (7d8 + 7) &#8226; <span class="prop-label">Speed</span> 30 ft.</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">10 (+0)</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">10 (+0)</div></div><div class="ability-score"><div class="label">CON</div><div class="value">12 (+1)</div></div><div class="ability-score"><div class="label">INT</div><div class="value">13 (+1)</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">16 (+3)</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">13 (+1)</div></div></div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Skills</span> Medicine +7, Religion +4, Insight +5 &#8226; <span class="prop-label">CR</span> 2 (450 XP)</div>
+<div class="stat-property"><span class="trait-name">Endure Suffering.</span> When an ally within 30 feet takes damage, the priest can use its reaction to take half that damage instead (rounded down). Cannot reduce the priest below 1 HP.</div>
+<div class="stat-property"><span class="trait-name">Spellcasting.</span> 5th-level spellcaster (Wisdom, DC 13, +5). Prepared: <em>cure wounds, bless, lesser restoration, spiritual weapon, beacon of hope, revivify</em>.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Calishite Spy</div>
+<div class="stat-block-subtitle">Medium Humanoid (Human), Any Alignment</div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Armor Class</span> 12 &#8226; <span class="prop-label">Hit Points</span> 27 (6d8) &#8226; <span class="prop-label">Speed</span> 30 ft.</div>
+<div class="stat-rule"></div>
+<div class="ability-scores"><div class="ability-score"><div class="label">STR</div><div class="value">10 (+0)</div></div><div class="ability-score"><div class="label">DEX</div><div class="value">15 (+2)</div></div><div class="ability-score"><div class="label">CON</div><div class="value">10 (+0)</div></div><div class="ability-score"><div class="label">INT</div><div class="value">12 (+1)</div></div><div class="ability-score"><div class="label">WIS</div><div class="value">14 (+2)</div></div><div class="ability-score"><div class="label">CHA</div><div class="value">16 (+3)</div></div></div>
+<div class="stat-rule"></div>
+<div class="stat-property"><span class="prop-label">Skills</span> Deception +7, Insight +4, Perception +6, Persuasion +5, Stealth +4 &#8226; <span class="prop-label">CR</span> 1 (200 XP)</div>
+<div class="stat-property"><span class="trait-name">Cunning Action.</span> Dash, Disengage, or Hide as a bonus action.</div>
+<div class="stat-property"><span class="trait-name">Sneak Attack (1/Turn).</span> Extra 7 (2d6) damage with advantage or adjacent ally.</div>
+<div class="stat-property"><span class="trait-name">Shortsword.</span> +4 to hit, 5 (1d6+2) piercing. &#8226; <span class="trait-name">Hand Crossbow.</span> +4 to hit, range 30/120, 5 (1d6+2) piercing.</div>
+</div>
+<div class="pointed-divider">&#9674; &#9674; &#9674;</div>
+</div>
+
+<div class="page" id="appendix">
+<h1>Appendix<br>Random Tables</h1>
+<h2>Human Origin Backgrounds</h2>
+<table class="dnd-table"><thead><tr><th>d20</th><th>Background</th><th>You Were...</th></tr></thead><tbody>
+<tr><td>1</td><td>Dispossessed Noble</td><td>Born to a family that lost everything in a war, coup, or scandal. Noble blood, empty purse.</td></tr>
+<tr><td>2</td><td>Frontier Orphan</td><td>Raised in a borderland settlement destroyed by monsters. Survived by luck, wit, or kindness.</td></tr>
+<tr><td>3</td><td>Temple Foundling</td><td>Left on the steps of a temple as an infant. Raised by priests who shaped your values.</td></tr>
+<tr><td>4</td><td>Merchant&#8217;s Child</td><td>Raised on the road between trade cities. Learned to haggle before you learned to read.</td></tr>
+<tr><td>5</td><td>Soldier&#8217;s Get</td><td>Born in an army camp. Learned to march before you learned to walk. The army is your family.</td></tr>
+<tr><td>6</td><td>Dockside Rat</td><td>Grew up in a port city&#8217;s lower quarters. Learned to pick pockets, dodge guards, and charm sailors.</td></tr>
+<tr><td>7</td><td>Farmer&#8217;s Heir</td><td>Raised on a quiet farmstead until something terrible happened. Now you carry a sword instead of a hoe.</td></tr>
+<tr><td>8</td><td>Wizard&#8217;s Apprentice</td><td>Served a wizard as scribe, test subject, or errand runner. Learned cantrips and a deep distrust of magical accidents.</td></tr>
+<tr><td>9</td><td>Arena Survivor</td><td>Fought in gladiatorial pits, whether by choice or slavery. Won your freedom with blood.</td></tr>
+<tr><td>10</td><td>Shipwreck Survivor</td><td>The sole survivor of a maritime disaster. The sea took everything you had, and you took everything back.</td></tr>
+<tr><td>11</td><td>Plague Survivor</td><td>A magical plague killed your family. You lived, and you want to know why.</td></tr>
+<tr><td>12</td><td>Exiled Scholar</td><td>Banished from a university for dangerous research. The knowledge you carry is worth more than gold.</td></tr>
+<tr><td>13</td><td>Deserter</td><td>You fled a war you didn&#8217;t believe in. Now you fight on your own terms, for your own reasons.</td></tr>
+<tr><td>14</td><td>Cult Escapee</td><td>Raised in a cult and escaped. The cult wants you back, and their god may want you dead.</td></tr>
+<tr><td>15</td><td>Failed Merchant</td><td>Your business collapsed spectacularly. You owe money to people who collect debts with knives.</td></tr>
+<tr><td>16</td><td>Squire Unchained</td><td>You served a knight who died or was disgraced. You carry their sword and their unfinished mission.</td></tr>
+<tr><td>17</td><td>Street Performer</td><td>You earned your living with tumbling, fire-eating, or sleight of hand.</td></tr>
+<tr><td>18</td><td>Spellplague Touched</td><td>Exposed to residual Spellplague energy. It changed you. You&#8217;re still figuring out how.</td></tr>
+<tr><td>19</td><td>Political Exile</td><td>You backed the wrong side in a civil conflict. Your homeland is closed to you.</td></tr>
+<tr><td>20</td><td>Chosen by Prophecy</td><td>A seer declared you the subject of a prophecy. Whether you believe it or not, others do.</td></tr>
+</tbody></table>
+
+<h2>Human Trinkets</h2>
+<table class="dnd-table"><thead><tr><th>d12</th><th>Trinket</th></tr></thead><tbody>
+<tr><td>1</td><td>A tarnished silver coin from a kingdom that no longer exists</td></tr>
+<tr><td>2</td><td>A letter of recommendation from a lord who was later executed for treason</td></tr>
+<tr><td>3</td><td>A shard of stone from a fallen Netherese city, still faintly warm to the touch</td></tr>
+<tr><td>4</td><td>A tattoo needle used by Red Wizards, stained with enchanted ink</td></tr>
+<tr><td>5</td><td>A signet ring bearing a family crest that no herald can identify</td></tr>
+<tr><td>6</td><td>A pressed flower from the gardens of Myth Drannor, preserved by magic</td></tr>
+<tr><td>7</td><td>A small portrait of a person you have never met, painted by a master artist</td></tr>
+<tr><td>8</td><td>A page torn from a spellbook, written in a language that no living person can read</td></tr>
+<tr><td>9</td><td>An iron key to a door you have never found</td></tr>
+<tr><td>10</td><td>A bone dice set that always seems to roll just slightly in your favor</td></tr>
+<tr><td>11</td><td>A compass that points to something other than north; you have not yet determined what</td></tr>
+<tr><td>12</td><td>A sealed scroll case containing a map of a dungeon that does not appear on any other chart</td></tr>
+</tbody></table>
+
+<div class="section-divider"></div>
+<div style="text-align:center;margin:3rem 0 1rem;font-family:'Cinzel Decorative',serif;color:var(--accent-gold);font-size:1.5rem;opacity:.6">&#9830; &#9830; &#9830;</div>
+<p style="text-align:center;font-family:'Cinzel',serif;font-size:.85rem;color:var(--ink-mid);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem">End of the Lorebook</p>
+<p style="text-align:center;font-style:italic;color:var(--ink-mid);font-size:.9rem;margin-bottom:.5rem">May Tymora smile upon your rolls and Mystra guide your weave.</p>
+<p style="text-align:center;font-style:italic;color:var(--ink-mid);font-size:.85rem">The flame of humanity burns brief, but by the gods, it burns bright.</p>
+<div class="back-top"><a href="#top">&#9650; Return to Cover</a></div>
+</div>
+
+</div><!-- end .book-body -->
+</body>
+</html>
