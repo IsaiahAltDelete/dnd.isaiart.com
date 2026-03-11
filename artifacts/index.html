@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcane Artifact Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0" rel="stylesheet">
+  <style>
+    :root {
+      --bg-parchment: #e6cf9f;
+      --bg-paper: #f3e4be;
+      --bg-paper-deep: #e8d3a5;
+      --ink: #000000;
+      --header: #58180D;
+      --accent: #c9ad6a;
+      --accent-deep: #9a6a2f;
+      --charcoal: #2b2b2b;
+      --callout: #FDF1DC;
+      --line: rgba(88, 24, 13, 0.36);
+      --shadow: rgba(46, 24, 8, 0.20);
+      --radius: 22px;
+      --font-body: "Bookinsanity", "Cormorant Garamond", Georgia, serif;
+      --font-header: "Mr Eaves Small Caps", "Cinzel", Georgia, serif;
+      --font-callout: "Scaly Sans", "Inter", system-ui, sans-serif;
+      --font-drop: "Solberry", "Cinzel Decorative", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      font-family: var(--font-body);
+      background-color: var(--bg-parchment);
+      background-image:
+        radial-gradient(circle at 18% 14%, rgba(255,255,255,0.42) 0, rgba(255,255,255,0.16) 13%, transparent 26%),
+        radial-gradient(circle at 80% 12%, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.06) 11%, transparent 24%),
+        radial-gradient(circle at 16% 78%, rgba(124,82,38,0.14) 0, rgba(124,82,38,0.08) 11%, transparent 26%),
+        radial-gradient(circle at 84% 68%, rgba(124,82,38,0.16) 0, rgba(124,82,38,0.06) 12%, transparent 24%),
+        linear-gradient(135deg, rgba(255,255,255,0.10), rgba(0,0,0,0.03)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.06'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.85'/%3E%3C/svg%3E"),
+        linear-gradient(180deg, #f0ddb4 0%, #e4ca96 100%);
+      background-size: auto, auto, auto, auto, auto, 260px 260px, auto;
+      background-repeat: repeat;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 180px rgba(43, 43, 43, 0.22);
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .title-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 4px auto 22px;
+      color: var(--header);
+    }
+
+    .title-block .material-symbols-outlined {
+      font-size: 3rem;
+      color: var(--accent-deep);
+      text-shadow: 0 2px 0 rgba(255,255,255,0.35);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-header);
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+      text-wrap: balance;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.45);
+    }
+
+    .subhead {
+      max-width: 820px;
+      margin: 0 auto 22px;
+      text-align: center;
+      font-family: var(--font-callout);
+      color: rgba(43,43,43,0.78);
+      line-height: 1.5;
+      font-size: 0.98rem;
+    }
+
+    .toolbar {
+      width: min(960px, 100%);
+      margin: 0 auto 24px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(88,24,13,0.22);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.14)),
+        linear-gradient(180deg, rgba(253,241,220,0.88), rgba(240,220,180,0.72));
+      box-shadow:
+        0 12px 28px rgba(63, 35, 10, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.55);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px 18px;
+      backdrop-filter: blur(4px);
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--header);
+      font-family: var(--font-callout);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      min-width: 0;
+      appearance: none;
+      border: 1px solid rgba(88,24,13,0.35);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
+      color: var(--charcoal);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font: 600 0.98rem var(--font-callout);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+      outline: none;
+    }
+
+    .actions {
+      display: flex;
+      align-items: end;
+      justify-content: end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid rgba(88,24,13,0.45);
+      border-radius: 14px;
+      padding: 10px 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(246,229,194,0.92));
+      color: var(--header);
+      font: 700 0.95rem var(--font-callout);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow:
+        0 6px 18px rgba(83, 43, 12, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 8px 22px rgba(83, 43, 12, 0.14),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+      border-color: rgba(88,24,13,0.65);
+    }
+
+    button.primary {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(232,205,152,0.94));
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .artifact-shell {
+      position: relative;
+      width: min(1000px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(121,80,33,0.18), rgba(255,255,255,0.10));
+      box-shadow: 0 20px 46px rgba(59, 34, 12, 0.18);
+    }
+
+    .artifact-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid rgba(88,24,13,0.35);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.48), rgba(255,255,255,0.16)),
+        linear-gradient(180deg, rgba(253,241,220,0.94), rgba(236,216,171,0.92));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.68),
+        inset 0 -1px 0 rgba(88,24,13,0.08),
+        0 12px 30px rgba(59,34,12,0.09);
+    }
+
+    .artifact-card::before,
+    .artifact-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .artifact-card::before {
+      background:
+        radial-gradient(circle at top left, rgba(201,173,106,0.26), transparent 15%),
+        radial-gradient(circle at top right, rgba(201,173,106,0.22), transparent 15%),
+        radial-gradient(circle at bottom left, rgba(201,173,106,0.22), transparent 14%),
+        radial-gradient(circle at bottom right, rgba(201,173,106,0.20), transparent 14%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%2358180D' stroke-opacity='.04'%3E%3Cpath d='M0 40h240M0 120h240M0 200h240'/%3E%3Cpath d='M40 0v240M120 0v240M200 0v240'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, auto, auto, auto, 240px 240px;
+      mix-blend-mode: multiply;
+      opacity: 0.7;
+    }
+
+    .artifact-card::after {
+      border: 1px solid rgba(201,173,106,0.5);
+      inset: 10px;
+      border-radius: 18px;
+      mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      padding: 8px;
+      opacity: 0.3;
+    }
+
+    .artifact-inner {
+      position: relative;
+      padding: 34px 32px 30px;
+    }
+
+    .header-band {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-family: var(--font-callout);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(88,24,13,0.72);
+    }
+
+    .eyebrow .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(253,241,220,0.72);
+      border: 1px solid rgba(88,24,13,0.20);
+    }
+
+    h2 {
+      margin: 0;
+      text-align: center;
+      font-family: var(--font-header);
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.05;
+      color: var(--header);
+      text-shadow: 0 2px 0 rgba(255,255,255,0.42), 0 6px 18px rgba(88,24,13,0.10);
+      font-variant: small-caps;
+      letter-spacing: 0.03em;
+      text-wrap: balance;
+    }
+
+    .meta-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-card,
+    .info-card,
+    .section,
+    .callout,
+    .summary-box {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.06)),
+        rgba(253,241,220,0.58);
+      border: 1px solid rgba(88,24,13,0.16);
+      border-radius: 16px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    }
+
+    .meta-card {
+      padding: 12px 14px;
+      min-height: 88px;
+      display: grid;
+      align-content: start;
+      gap: 5px;
+    }
+
+    .meta-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-callout);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(88,24,13,0.75);
+    }
+
+    .meta-value {
+      font-size: 1.18rem;
+      color: var(--charcoal);
+      font-weight: 700;
+    }
+
+    .meta-note {
+      font-family: var(--font-callout);
+      font-size: 0.82rem;
+      color: rgba(43,43,43,0.78);
+    }
+
+    .surface-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 14px;
+      margin: 18px 0 20px;
+    }
+
+    .info-card {
+      padding: 16px 18px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-header);
+      font-variant: small-caps;
+      color: var(--header);
+      letter-spacing: 0.03em;
+      font-size: 1.1rem;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(88,24,13,0.16);
+      background: rgba(255,255,255,0.42);
+      font: 600 0.92rem var(--font-callout);
+      color: var(--charcoal);
+    }
+
+    .swatch {
+      width: 17px;
+      height: 17px;
+      border-radius: 4px;
+      border: 1px solid rgba(43,43,43,0.45);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.44);
+      flex: 0 0 auto;
+    }
+
+    .pattern-preview {
+      min-height: 132px;
+      border-radius: 16px;
+      border: 1px solid rgba(88,24,13,0.20);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0)),
+        var(--pattern-bg, linear-gradient(45deg, rgba(201,173,106,0.15), rgba(88,24,13,0.08)));
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .pattern-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--pattern-overlay, none);
+      opacity: 0.75;
+      mix-blend-mode: multiply;
+    }
+
+    .pattern-label {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(253,241,220,0.78);
+      border: 1px solid rgba(88,24,13,0.16);
+      font: 600 0.88rem var(--font-callout);
+      color: var(--header);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .section {
+      padding: 16px 18px;
+    }
+
+    .section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .section li {
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(88,24,13,0.18);
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+
+    .section li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .rule-prefix {
+      font-family: var(--font-callout);
+      font-weight: 700;
+      color: var(--header);
+      margin-right: 4px;
+    }
+
+    .callout {
+      padding: 16px 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.08)),
+        var(--callout);
+    }
+
+    .lore-hook {
+      font-size: 1.06rem;
+      line-height: 1.5;
+    }
+
+    .lore-hook::first-letter {
+      font-family: var(--font-drop);
+      font-size: 2.7rem;
+      line-height: 1;
+      float: left;
+      margin: 0 8px 0 0;
+      color: var(--header);
+    }
+
+    .summary-box {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .summary-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-callout);
+      color: rgba(43,43,43,0.82);
+    }
+
+    .summary-line strong {
+      color: var(--header);
+    }
+
+    .warning-note {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(88,24,13,0.22);
+      background: rgba(253,241,220,0.72);
+      font-family: var(--font-callout);
+      color: var(--header);
+    }
+
+    .warning-note.is-visible { display: block; }
+
+    .footer-note {
+      margin: 16px auto 0;
+      width: min(1000px, 100%);
+      text-align: center;
+      color: rgba(43,43,43,0.72);
+      font: 500 0.9rem var(--font-callout);
+    }
+
+    @media (max-width: 960px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        justify-content: start;
+      }
+      .meta-grid,
+      .surface-grid,
+      .columns {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding-inline: 10px; }
+      .artifact-inner { padding: 22px 18px 20px; }
+      .filters,
+      .meta-grid,
+      .surface-grid,
+      .columns {
+        grid-template-columns: 1fr;
+      }
+      .title-block { gap: 10px; }
+      .subhead { font-size: 0.92rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="title-block">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        <h1>Arcane Artifact Generator</h1>
+      </div>
+      <p class="subhead">Roll up sourcebook-ready relics with restrained power scaling, richer material detail, and a parchment-heavy fantasy compendium look. Legendary pieces can still appear at low tiers, but they arrive dormant until a stronger wielder awakens them.</p>
+    </header>
+
+    <section class="toolbar" aria-label="Artifact generation controls">
+      <div class="filters">
+        <div class="field">
+          <label for="schoolSelect"><span class="material-symbols-outlined">local_library</span> Arcane school</label>
+          <select id="schoolSelect"></select>
+        </div>
+        <div class="field">
+          <label for="raritySelect"><span class="material-symbols-outlined">military_tech</span> Rarity</label>
+          <select id="raritySelect"></select>
+        </div>
+        <div class="field">
+          <label for="tierSelect"><span class="material-symbols-outlined">shield</span> Party tier</label>
+          <select id="tierSelect"></select>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="rerollButton" class="primary" type="button"><span class="material-symbols-outlined">casino</span> Generate</button>
+        <button id="copyButton" type="button"><span class="material-symbols-outlined">content_copy</span> Copy entry</button>
+      </div>
+    </section>
+
+    <section class="artifact-shell">
+      <article class="artifact-card" aria-live="polite">
+        <div class="artifact-inner">
+          <div class="header-band">
+            <div class="eyebrow" id="eyebrow"></div>
+            <h2 id="artifactName">Loading Relic...</h2>
+            <div class="meta-grid" id="metaGrid"></div>
+          </div>
+
+          <div class="surface-grid">
+            <section class="info-card">
+              <h3 class="section-title"><span class="material-symbols-outlined">diamond</span> Materials & palette</h3>
+              <div class="chips" id="appearanceChips"></div>
+            </section>
+            <section class="info-card">
+              <h3 class="section-title"><span class="material-symbols-outlined">texture</span> Surface pattern</h3>
+              <div class="pattern-preview" id="patternPreview">
+                <div class="pattern-label"><span class="material-symbols-outlined">gesture</span><span id="patternLabel"></span></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="columns">
+            <div class="stack">
+              <section class="section">
+                <h3 class="section-title"><span class="material-symbols-outlined">menu_book</span> Spellcraft & rules</h3>
+                <ul id="rulesList"></ul>
+              </section>
+              <section class="section">
+                <h3 class="section-title"><span class="material-symbols-outlined">bolt</span> Enhancements</h3>
+                <ul id="boonsList"></ul>
+              </section>
+            </div>
+            <div class="stack">
+              <section class="section">
+                <h3 class="section-title"><span class="material-symbols-outlined">warning</span> Costs, drawbacks & quirks</h3>
+                <ul id="drawbacksList"></ul>
+              </section>
+              <section class="callout">
+                <h3 class="section-title"><span class="material-symbols-outlined">history_edu</span> Lore hook</h3>
+                <p class="lore-hook" id="loreHook"></p>
+              </section>
+            </div>
+          </div>
+
+          <div class="summary-box">
+            <div class="summary-line"><span class="material-symbols-outlined">star</span> <strong id="summaryPower">Power band</strong></div>
+            <div class="summary-line"><span class="material-symbols-outlined">info</span> <span id="summaryBalance"></span></div>
+            <div class="summary-line"><span class="material-symbols-outlined">token</span> <span id="summarySeed"></span></div>
+          </div>
+          <div class="warning-note" id="dormantNote"></div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Built as a single-file compendium page with an infinite parchment backdrop, icon-first UI, and more grounded item logic for low-level play.</p>
+  </main>
+
+  <script>
+    const schoolSelect = document.getElementById('schoolSelect');
+    const raritySelect = document.getElementById('raritySelect');
+    const tierSelect = document.getElementById('tierSelect');
+    const rerollButton = document.getElementById('rerollButton');
+    const copyButton = document.getElementById('copyButton');
+
+    const artifactName = document.getElementById('artifactName');
+    const eyebrow = document.getElementById('eyebrow');
+    const metaGrid = document.getElementById('metaGrid');
+    const appearanceChips = document.getElementById('appearanceChips');
+    const patternPreview = document.getElementById('patternPreview');
+    const patternLabel = document.getElementById('patternLabel');
+    const rulesList = document.getElementById('rulesList');
+    const boonsList = document.getElementById('boonsList');
+    const drawbacksList = document.getElementById('drawbacksList');
+    const loreHook = document.getElementById('loreHook');
+    const summaryPower = document.getElementById('summaryPower');
+    const summaryBalance = document.getElementById('summaryBalance');
+    const summarySeed = document.getElementById('summarySeed');
+    const dormantNote = document.getElementById('dormantNote');
+
+    const typeOptions = [
+      { name: 'Staff', icon: 'auto_awesome', base: '1d6 bludgeoning', weight: [3, 6], combatLabel: 'Melee form', schoolBias: ['Evocation', 'Conjuration', 'Transmutation'] },
+      { name: 'Wand', icon: 'magic_button', base: 'Arcane focus', weight: [1, 2], combatLabel: 'Focus form', schoolBias: ['Evocation', 'Illusion', 'Abjuration'] },
+      { name: 'Ring', icon: 'radio_button_checked', base: 'Worn focus', weight: [0, 1], combatLabel: 'Focus form', schoolBias: ['Enchantment', 'Divination', 'Illusion'] },
+      { name: 'Amulet', icon: 'deployed_code', base: 'Worn focus', weight: [1, 2], combatLabel: 'Focus form', schoolBias: ['Abjuration', 'Necromancy', 'Divination'] },
+      { name: 'Tome', icon: 'menu_book', base: 'Scholar focus', weight: [2, 5], combatLabel: 'Study form', schoolBias: ['Divination', 'Abjuration', 'Necromancy'] },
+      { name: 'Blade', icon: 'swords', base: '1d8 slashing', weight: [2, 4], combatLabel: 'Weapon form', schoolBias: ['Evocation', 'Necromancy', 'Abjuration'] },
+      { name: 'Shield', icon: 'shield', base: '+2 AC', weight: [5, 8], combatLabel: 'Defensive form', schoolBias: ['Abjuration', 'Conjuration', 'Transmutation'] },
+      { name: 'Armor', icon: 'shield_lock', base: 'Protective gear', weight: [10, 25], combatLabel: 'Protective form', schoolBias: ['Abjuration', 'Transmutation', 'Necromancy'] },
+      { name: 'Cloak', icon: 'styler', base: 'Worn focus', weight: [2, 4], combatLabel: 'Worn form', schoolBias: ['Illusion', 'Enchantment', 'Abjuration'] },
+      { name: 'Orb', icon: 'lens_blur', base: 'Arcane focus', weight: [2, 5], combatLabel: 'Focus form', schoolBias: ['Divination', 'Evocation', 'Conjuration'] },
+      { name: 'Bow', icon: 'arrow_forward', base: '1d6 piercing', weight: [2, 4], combatLabel: 'Weapon form', schoolBias: ['Transmutation', 'Divination', 'Conjuration'] },
+      { name: 'Instrument', icon: 'music_note', base: 'Arcane focus', weight: [2, 6], combatLabel: 'Performance form', schoolBias: ['Enchantment', 'Illusion', 'Abjuration'] }
+    ];
+
+    const schoolOptions = ['Any', 'Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
+    const rarityOptions = ['Any', 'Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary', 'Artifact'];
+    const tierOptions = [
+      { label: 'Auto', value: 'Auto' },
+      { label: 'Tier I · Levels 1-4', value: '1' },
+      { label: 'Tier II · Levels 5-10', value: '2' },
+      { label: 'Tier III · Levels 11-16', value: '3' },
+      { label: 'Tier IV · Levels 17+', value: '4' }
+    ];
+
+    const rarityRank = { 'Common': 0, 'Uncommon': 1, 'Rare': 2, 'Very Rare': 3, 'Legendary': 4, 'Artifact': 5 };
+    const powerLabels = ['Initiate-safe', 'Journeyman', 'Veteran', 'Mythic'];
+
+    const materials = [
+      { name: 'Ashwood', main: ['Flax', '#E3C98A'], accent: ['Soot', '#4B3427'], schools: ['Conjuration', 'Evocation', 'Transmutation'], types: ['Staff', 'Wand', 'Bow'], trait: 'warm-grained core', texture: 'polished woodgrain' },
+      { name: 'Moon-silver', main: ['Moonlit Silver', '#C9D1DD'], accent: ['Wine Brown', '#6A3429'], schools: ['Divination', 'Illusion', 'Abjuration'], types: ['Ring', 'Amulet', 'Orb', 'Shield'], trait: 'soft lunar gleam', texture: 'mirror-satin finish' },
+      { name: 'Sun-brass', main: ['Old Brass', '#C69D52'], accent: ['Oxblood', '#6B231A'], schools: ['Evocation', 'Enchantment', 'Abjuration'], types: ['Amulet', 'Instrument', 'Shield', 'Orb'], trait: 'bright ceremonial glow', texture: 'hammered gilt bands' },
+      { name: 'Witchwood', main: ['Walnut', '#7B563D'], accent: ['Verdigris', '#4C786B'], schools: ['Necromancy', 'Illusion', 'Enchantment'], types: ['Staff', 'Wand', 'Tome'], trait: 'dark resinous scent', texture: 'lacquered grain' },
+      { name: 'Blacksteel', main: ['Black Iron', '#46464F'], accent: ['Burnt Gold', '#B8893D'], schools: ['Abjuration', 'Necromancy', 'Evocation'], types: ['Blade', 'Shield', 'Armor'], trait: 'cold weighty mass', texture: 'brushed metal ridges' },
+      { name: 'Star-iron', main: ['Pale Iron', '#B8BFCA'], accent: ['Deep Indigo', '#3E4D7A'], schools: ['Divination', 'Evocation', 'Transmutation'], types: ['Blade', 'Orb', 'Armor', 'Amulet'], trait: 'meteor-burnished sheen', texture: 'pitted celestial grain' },
+      { name: 'Driftglass', main: ['Sea Glass', '#9FCBC3'], accent: ['Cinnamon', '#89513B'], schools: ['Illusion', 'Conjuration', 'Divination'], types: ['Orb', 'Ring', 'Amulet', 'Wand'], trait: 'mist-caught translucence', texture: 'sea-smoothed gloss' },
+      { name: 'Dragonbone', main: ['Ivory', '#E7DBCA'], accent: ['Garnet', '#8C2C2C'], schools: ['Necromancy', 'Abjuration', 'Conjuration'], types: ['Staff', 'Blade', 'Amulet', 'Armor'], trait: 'etched marrow lines', texture: 'bone-polished striations' },
+      { name: 'Velvet Vellum', main: ['Parchment', '#EEDBB8'], accent: ['Mulberry', '#653759'], schools: ['Divination', 'Illusion', 'Enchantment'], types: ['Tome', 'Cloak', 'Instrument'], trait: 'script-pressed fibers', texture: 'embossed folio grain' },
+      { name: 'Stoneglass', main: ['Quartz Smoke', '#B7B0A5'], accent: ['Moss', '#596A4C'], schools: ['Transmutation', 'Abjuration', 'Divination'], types: ['Orb', 'Shield', 'Ring'], trait: 'clouded mineral heart', texture: 'matte carved facets' }
+    ];
+
+    const gemstones = [
+      { name: 'Amethyst', main: ['Amethyst', '#8A68B6'], accent: ['Pale Lilac', '#DDD1F0'], schools: ['Illusion', 'Necromancy', 'Divination'] },
+      { name: 'Ruby', main: ['Ruby', '#B72833'], accent: ['Ash Gold', '#C8A763'], schools: ['Evocation', 'Enchantment'] },
+      { name: 'Emerald', main: ['Emerald', '#2F8F5B'], accent: ['Old Gold', '#BF9A56'], schools: ['Transmutation', 'Conjuration'] },
+      { name: 'Sapphire', main: ['Sapphire', '#345DAD'], accent: ['Moon Silver', '#D7E2F6'], schools: ['Abjuration', 'Divination'] },
+      { name: 'Moonstone', main: ['Moonstone', '#E7EDF4'], accent: ['Dust Rose', '#AE7E7E'], schools: ['Illusion', 'Abjuration', 'Divination'] },
+      { name: 'Garnet', main: ['Garnet', '#87323A'], accent: ['Bone', '#EAD8C2'], schools: ['Necromancy', 'Evocation'] },
+      { name: 'Opal', main: ['Opal', '#CFE3DE'], accent: ['Aurora', '#DA9DA8'], schools: ['Illusion', 'Enchantment', 'Conjuration'] },
+      { name: 'Smoky Quartz', main: ['Smoke', '#7A665A'], accent: ['Honey', '#D6AF68'], schools: ['Transmutation', 'Abjuration'] },
+      { name: 'Topaz', main: ['Topaz', '#C28B38'], accent: ['Rust', '#8A4C29'], schools: ['Evocation', 'Conjuration'] },
+      { name: 'Labradorite', main: ['Labradorite', '#6D798E'], accent: ['Peacock', '#2C7F8A'], schools: ['Divination', 'Necromancy', 'Illusion'] }
+    ];
+
+    const motifs = ['serpent-knot filigree', 'solar spokes', 'moth-wing etching', 'thorned lattice', 'tidal spirals', 'constellation pinwork', 'runic braidwork', 'ash-feather whorls', 'vine-scroll borders', 'labyrinth tracery', 'storm-barbed chevrons', 'grave-lily carving'];
+    const finishes = ['polished', 'weathered', 'satin-burnished', 'ink-stained', 'ceremonially lacquered', 'char-marked', 'frost-kissed', 'wax-sealed'];
+    const makers = ['a temple artificer', 'a hedge enchanter', 'a court relicsmith', 'a battlefield quartermage', 'a cloistered scribe', 'a wandering oathbinder', 'an old guild atelier', 'a grave-silent curator'];
+    const origins = ['to guard a border shrine', 'to hide contraband lore', 'to escort pilgrims through badlands', 'to settle duels without bloodshed', 'to outlast a plague winter', 'to watch for omens over sea trade', 'to keep oaths in a treacherous court', 'to survive a city under siege'];
+    const quirks = ['Its color shifts with the seasons.', 'A faint scent of rain follows it at dawn.', 'When set beside candlelight, hidden script briefly appears.', 'It hums one note when danger is near.', 'Dust refuses to settle on it for long.', 'The item runs cooler than the air around it.', 'Small motes gather around it during moonrise.', 'It leaves delicate ash, frost, or pollen traces after heavy use.'];
+
+    const passiveBoons = [
+      { text: 'You gain advantage on one specific low-stakes check per long rest related to warding or appraisal.', schools: ['Abjuration', 'Divination'], min: 0, max: 2 },
+      { text: 'The item sheds dim thematic light on command and can snuff mundane flames within 5 feet.', schools: ['Evocation', 'Illusion'], min: 0, max: 1 },
+      { text: 'As a bonus action, you can alter one small worn object’s color or surface finish for 1 hour.', schools: ['Transmutation', 'Illusion', 'Enchantment'], min: 0, max: 1 },
+      { text: 'It can whisper brief directional hints toward the last place you rested.', schools: ['Divination', 'Conjuration'], min: 0, max: 2 },
+      { text: 'Once per long rest, when you take force, fire, cold, necrotic, or psychic damage matching its school flavor, reduce that damage by your proficiency bonus.', schools: ['Abjuration', 'Necromancy', 'Evocation', 'Illusion'], min: 1, max: 4 },
+      { text: 'While attuned, you gain a +1 bonus to one narrow category of saving throw chosen by the item.', schools: ['Abjuration', 'Enchantment'], min: 1, max: 3 },
+      { text: 'You can cast a chosen cantrip through the item without material components.', schools: ['Any'], min: 0, max: 4 },
+      { text: 'Opportunity attacks against you are made with disadvantage once per short rest after you cast through the item.', schools: ['Conjuration', 'Illusion', 'Transmutation'], min: 2, max: 4 },
+      { text: 'When you roll initiative, you may immediately learn one obvious magical property of a visible creature or object within 30 feet.', schools: ['Divination'], min: 2, max: 4 },
+      { text: 'The item stores a single 1st-level spell you cast into it until dawn. It can release that spell once without a slot.', schools: ['Abjuration', 'Conjuration', 'Evocation', 'Enchantment', 'Illusion', 'Transmutation'], min: 2, max: 4 },
+      { text: 'Your first weapon hit each turn deals an extra 1d4 damage of the item’s theme while its charges remain.', schools: ['Evocation', 'Necromancy', 'Transmutation'], min: 2, max: 5 },
+      { text: 'You can ignore difficult terrain created by magic for 1 minute, once per short rest.', schools: ['Conjuration', 'Transmutation', 'Abjuration'], min: 3, max: 5 },
+      { text: 'When you fail a concentration check, the item can turn that failure into a success once per long rest.', schools: ['Abjuration', 'Divination'], min: 3, max: 5 },
+      { text: 'After casting a spell of 3rd level or lower through this item, you can step 10 feet without provoking opportunity attacks.', schools: ['Conjuration', 'Illusion'], min: 3, max: 5 }
+    ];
+
+    const drawbacks = [
+      { text: 'Potions and mundane food taste sharply bitter while attuned to this item.', min: 0, max: 5 },
+      { text: 'Whenever you expend the last charge, you glow or darken visibly until the end of your next turn.', min: 0, max: 5 },
+      { text: 'After you cast through the item, your voice briefly carries an eerie echo.', min: 0, max: 5 },
+      { text: 'If you use two or more charges in one turn, you have disadvantage on your next Dexterity check.', min: 1, max: 5 },
+      { text: 'The item dislikes haste. If you Dash immediately after using it, one small cosmetic effect flares uncontrollably.', min: 1, max: 5 },
+      { text: 'While below half hit points, the item’s cosmetic effects become impossible to hide.', min: 2, max: 5 },
+      { text: 'The item cannot regain charges on a night when you broke an oath, contract, or spoken promise.', min: 2, max: 5 },
+      { text: 'Each dawn, the item demands a minute of quiet maintenance or its first magical use fizzles harmlessly.', min: 2, max: 5 },
+      { text: 'When you critically fail an attack or spell attack made through the item, you take 1 force damage per rarity step above uncommon.', min: 3, max: 5 },
+      { text: 'The item imposes disadvantage on one specific social check against creatures that hate its style of magic.', min: 3, max: 5 },
+      { text: 'If another creature attuned to a magical item touches it, faint sparks reveal your location within 30 feet.', min: 4, max: 5 },
+      { text: 'The item remembers past wielders. Once per dawn, the GM may introduce a brief intrusive memory at an inconvenient time.', min: 4, max: 5 }
+    ];
+
+    const signatureFeatures = [
+      { text: 'A lattice of hidden sigils blooms across its surface whenever a charge is spent.', schools: ['Any'], min: 0, max: 5 },
+      { text: 'Its gemstone flashes in sequence like a measured heartbeat.', schools: ['Any'], min: 0, max: 5 },
+      { text: 'Fine metallic veins under the surface shift position over the course of the day.', schools: ['Divination', 'Transmutation', 'Illusion'], min: 1, max: 5 },
+      { text: 'Hairline seams open to reveal a second inner material when magic is channeled through it.', schools: ['Conjuration', 'Evocation', 'Necromancy'], min: 1, max: 5 },
+      { text: 'Its inlay pattern rearranges itself to mirror the current moon phase.', schools: ['Illusion', 'Divination', 'Abjuration'], min: 2, max: 5 },
+      { text: 'The handle or housing warms just before a spell or strike lands true.', schools: ['Evocation', 'Enchantment', 'Conjuration'], min: 2, max: 5 }
+    ];
+
+    const spells = [
+      { name: 'Blade Ward', school: 'Abjuration', level: 0 },
+      { name: 'Resistance', school: 'Abjuration', level: 0 },
+      { name: 'Mage Armor', school: 'Abjuration', level: 1 },
+      { name: 'Shield', school: 'Abjuration', level: 1 },
+      { name: 'Sanctuary', school: 'Abjuration', level: 1 },
+      { name: 'Aid', school: 'Abjuration', level: 2 },
+      { name: 'Arcane Lock', school: 'Abjuration', level: 2 },
+      { name: 'Counterspell', school: 'Abjuration', level: 3 },
+      { name: 'Dispel Magic', school: 'Abjuration', level: 3 },
+      { name: 'Dimension Door', school: 'Conjuration', level: 4 },
+      { name: 'Misty Step', school: 'Conjuration', level: 2 },
+      { name: 'Fog Cloud', school: 'Conjuration', level: 1 },
+      { name: 'Grease', school: 'Conjuration', level: 1 },
+      { name: 'Mage Hand', school: 'Conjuration', level: 0 },
+      { name: 'Create Food and Water', school: 'Conjuration', level: 3 },
+      { name: 'Guiding Hand', school: 'Divination', level: 1 },
+      { name: 'True Strike', school: 'Divination', level: 0 },
+      { name: 'Detect Magic', school: 'Divination', level: 1 },
+      { name: 'Locate Object', school: 'Divination', level: 2 },
+      { name: 'Clairvoyance', school: 'Divination', level: 3 },
+      { name: 'See Invisibility', school: 'Divination', level: 2 },
+      { name: 'Friends', school: 'Enchantment', level: 0 },
+      { name: 'Charm Person', school: 'Enchantment', level: 1 },
+      { name: 'Heroism', school: 'Enchantment', level: 1 },
+      { name: 'Calm Emotions', school: 'Enchantment', level: 2 },
+      { name: 'Suggestion', school: 'Enchantment', level: 2 },
+      { name: 'Enthrall', school: 'Enchantment', level: 2 },
+      { name: 'Fire Bolt', school: 'Evocation', level: 0 },
+      { name: 'Ray of Frost', school: 'Evocation', level: 0 },
+      { name: 'Magic Missile', school: 'Evocation', level: 1 },
+      { name: 'Burning Hands', school: 'Evocation', level: 1 },
+      { name: 'Shatter', school: 'Evocation', level: 2 },
+      { name: 'Scorching Ray', school: 'Evocation', level: 2 },
+      { name: 'Lightning Bolt', school: 'Evocation', level: 3 },
+      { name: 'Minor Illusion', school: 'Illusion', level: 0 },
+      { name: 'Disguise Self', school: 'Illusion', level: 1 },
+      { name: 'Silent Image', school: 'Illusion', level: 1 },
+      { name: 'Mirror Image', school: 'Illusion', level: 2 },
+      { name: 'Invisibility', school: 'Illusion', level: 2 },
+      { name: 'Major Image', school: 'Illusion', level: 3 },
+      { name: 'Chill Touch', school: 'Necromancy', level: 0 },
+      { name: 'False Life', school: 'Necromancy', level: 1 },
+      { name: 'Cause Fear', school: 'Necromancy', level: 1 },
+      { name: 'Gentle Repose', school: 'Necromancy', level: 2 },
+      { name: 'Blindness/Deafness', school: 'Necromancy', level: 2 },
+      { name: 'Speak with Dead', school: 'Necromancy', level: 3 },
+      { name: 'Magecraft Mend', school: 'Transmutation', level: 0 },
+      { name: 'Mending', school: 'Transmutation', level: 0 },
+      { name: 'Feather Fall', school: 'Transmutation', level: 1 },
+      { name: 'Jump', school: 'Transmutation', level: 1 },
+      { name: 'Alter Self', school: 'Transmutation', level: 2 },
+      { name: 'Spider Climb', school: 'Transmutation', level: 2 },
+      { name: 'Haste', school: 'Transmutation', level: 3 }
+    ];
+
+    const maxSpellByTierAndRarity = [
+      [0, 1, 2, 2, 3, 3],
+      [1, 2, 3, 4, 5, 5],
+      [2, 3, 4, 5, 6, 7],
+      [3, 4, 5, 6, 7, 9]
+    ];
+
+    let lastArtifact = null;
+
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function hashSeed(text) {
+      let h = 1779033703 ^ text.length;
+      for (let i = 0; i < text.length; i++) {
+        h = Math.imul(h ^ text.charCodeAt(i), 3432918353);
+        h = h << 13 | h >>> 19;
+      }
+      return () => {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+
+    function pick(arr, rng) {
+      return arr[Math.floor(rng() * arr.length)];
+    }
+
+    function sample(arr, count, rng) {
+      const copy = [...arr];
+      const out = [];
+      while (copy.length && out.length < count) {
+        out.push(copy.splice(Math.floor(rng() * copy.length), 1)[0]);
+      }
+      return out;
+    }
+
+    function optionMarkup(items, mapper = (item) => ({ value: item, label: item })) {
+      return items.map(item => {
+        const mapped = mapper(item);
+        return `<option value="${mapped.value}">${mapped.label}</option>`;
+      }).join('');
+    }
+
+    function filterBySchool(list, schoolKey) {
+      if (schoolKey === 'Any') return list;
+      return list.filter(item => !item.schools || item.schools.includes('Any') || item.schools.includes(schoolKey));
+    }
+
+    function weightedMaterial(typeName, schoolKey, rng) {
+      const matches = materials.filter(mat => mat.types.includes(typeName) || mat.schools.includes(schoolKey));
+      return pick(matches.length ? matches : materials, rng);
+    }
+
+    function weightedGem(schoolKey, rng) {
+      const matches = gemstones.filter(gem => gem.schools.includes(schoolKey));
+      return pick(matches.length ? matches : gemstones, rng);
+    }
+
+    function preferredType(schoolKey, rng) {
+      const matchingTypes = typeOptions.filter(t => t.schoolBias.includes(schoolKey));
+      return pick(matchingTypes.length ? matchingTypes : typeOptions, rng);
+    }
+
+    function resolveTier(selection, rng) {
+      if (selection !== 'Auto') return Number(selection);
+      const roll = rng();
+      if (roll < 0.42) return 1;
+      if (roll < 0.76) return 2;
+      if (roll < 0.94) return 3;
+      return 4;
+    }
+
+    function resolveRarity(selection, tier, rng) {
+      if (selection !== 'Any') return selection;
+      const tables = {
+        1: ['Common', 'Common', 'Uncommon', 'Uncommon', 'Rare'],
+        2: ['Uncommon', 'Uncommon', 'Rare', 'Rare', 'Very Rare'],
+        3: ['Rare', 'Rare', 'Very Rare', 'Very Rare', 'Legendary'],
+        4: ['Very Rare', 'Legendary', 'Legendary', 'Artifact']
+      };
+      return pick(tables[tier], rng);
+    }
+
+    function levelRangeForTier(tier) {
+      return [
+        'Levels 1-4',
+        'Levels 5-10',
+        'Levels 11-16',
+        'Levels 17+'
+      ][tier - 1];
+    }
+
+    function combatDetail(type, school, rarityIndex, effectiveRarityIndex) {
+      const martialBonus = Math.max(0, Math.min(3, effectiveRarityIndex - 1));
+      if (['Blade', 'Bow', 'Staff'].includes(type.name)) {
+        const bonusText = martialBonus ? `, +${martialBonus} magic bonus` : '';
+        return `${type.base}${bonusText}`;
+      }
+      if (type.name === 'Shield') {
+        return `${type.base}${martialBonus ? ` and +${Math.min(2, martialBonus)} magical resilience` : ''}`;
+      }
+      if (type.name === 'Armor') {
+        return `${type.base}${martialBonus ? `, treated as +${Math.min(3, martialBonus)} armor` : ''}`;
+      }
+      return `${type.base}${effectiveRarityIndex >= 2 ? ', spell attack rolls gain +1' : ''}`;
+    }
+
+    function spellLevelCap(tier, rarityIndex) {
+      return maxSpellByTierAndRarity[tier - 1][rarityIndex];
+    }
+
+    function buildSpellPackage(school, cap, tier, rarityIndex, rng) {
+      const pool = spells.filter(spell => (school === 'Any' || spell.school === school) && spell.level <= cap);
+      const cantrips = pool.filter(spell => spell.level === 0);
+      const leveled = pool.filter(spell => spell.level > 0);
+
+      const entries = [];
+      if (cantrips.length && (tier <= 2 || rng() > 0.38)) {
+        const c = pick(cantrips, rng);
+        entries.push({ label: 'At will', text: `${c.name} (${c.school}, cantrip)` });
+      }
+
+      if (leveled.length) {
+        const mainSpell = pick(leveled, rng);
+        if (tier === 1) {
+          const uses = rarityIndex >= 2 ? '1/long rest' : '1/day';
+          entries.push({ label: 'Spell', text: `${mainSpell.name} (${mainSpell.school}, level ${mainSpell.level}) · ${uses}` });
+        } else {
+          const charges = Math.min(10, Math.max(3, 2 + tier + Math.max(0, rarityIndex - 1) + Math.floor(rng() * 2)));
+          const cost = Math.max(1, Math.ceil(mainSpell.level / 2));
+          const recharge = tier <= 2 ? `1d${Math.min(6, 3 + tier)} + 1 at dawn` : `1d6 + ${Math.min(4, tier)} at dawn`;
+          entries.push({ label: 'Charges', text: `${charges} total charges` });
+          entries.push({ label: 'Recharge', text: recharge });
+          entries.push({ label: 'Spell slot', text: `${mainSpell.name} (${mainSpell.school}, level ${mainSpell.level}) costs ${cost} charge${cost > 1 ? 's' : ''}` });
+          if (rng() > 0.48) {
+            const secondaryPool = leveled.filter(spell => spell.name !== mainSpell.name && spell.level <= Math.max(1, cap - 1));
+            if (secondaryPool.length) {
+              const second = pick(secondaryPool, rng);
+              const cost2 = Math.max(1, Math.ceil(second.level / 2));
+              entries.push({ label: 'Reserve spell', text: `${second.name} (${second.school}, level ${second.level}) costs ${cost2} charge${cost2 > 1 ? 's' : ''}` });
+            }
+          }
+        }
+      }
+
+      if (!entries.length) {
+        entries.push({ label: 'Effect', text: 'Minor cosmetic transmutations and ritual-safe cantrip effects only.' });
+      }
+
+      return entries;
+    }
+
+    function chooseFeature(list, school, effectiveIndex, rng, count) {
+      const filtered = list.filter(item => (item.schools ? item.schools.includes('Any') || item.schools.includes(school) : true) && effectiveIndex >= item.min && effectiveIndex <= item.max);
+      return sample(filtered.length ? filtered : list, count, rng).map(entry => entry.text);
+    }
+
+    function buildName(type, material, gemstone, school, rarity, rng) {
+      const prefixes = ['Ashen', 'Velvet', 'Silent', 'Hollow', 'Gilded', 'Duskwrought', 'Moonlit', 'Stormbound', 'Cinder', 'Whispering', 'Graven', 'Wild', 'Opaline'];
+      const suffixBySchool = {
+        'Abjuration': ['Aegis', 'Ward', 'Bulwark', 'Seal'],
+        'Conjuration': ['Threshold', 'Gate', 'Passage', 'Summons'],
+        'Divination': ['Omen', 'Sight', 'Augury', 'Lantern'],
+        'Enchantment': ['Vow', 'Chorus', 'Murmur', 'Delight'],
+        'Evocation': ['Spark', 'Pyre', 'Thunder', 'Ember'],
+        'Illusion': ['Veil', 'Gleam', 'Masque', 'Mirage'],
+        'Necromancy': ['Morrow', 'Dirge', 'Grave', 'Hush'],
+        'Transmutation': ['Weave', 'Meld', 'Change', 'Turning']
+      };
+      const suffixes = suffixBySchool[school] || ['Oath', 'Sigil', 'Whorl', 'Mark'];
+      const formWord = type.name === 'Instrument' ? 'Canticle' : type.name;
+      const styleRoll = rng();
+      if (styleRoll < 0.35) return `${pick(prefixes, rng)} ${gemstone.name} ${formWord}`;
+      if (styleRoll < 0.7) return `${material.name} ${formWord} of ${pick(suffixes, rng)}`;
+      const title = rarity === 'Artifact' ? 'the First' : pick(['the Quiet', 'the Embered', 'the Hollow', 'the Goldbound', 'the Ashfeathered', 'the Lanterned'], rng);
+      return `${pick(prefixes, rng)} ${formWord}, ${title}`;
+    }
+
+    function patternStyles(mainHex, accentHex, rng) {
+      const patterns = [
+        {
+          label: 'Crosshatched vellum',
+          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.16)}, ${hexAlpha(accentHex, 0.18)}), linear-gradient(0deg, rgba(255,255,255,0.34), rgba(255,255,255,0.04))`,
+          overlay: `repeating-linear-gradient(45deg, transparent 0 12px, ${hexAlpha(accentHex, 0.18)} 12px 13px), repeating-linear-gradient(-45deg, transparent 0 14px, ${hexAlpha(mainHex, 0.16)} 14px 15px)`
+        },
+        {
+          label: 'Runic braidwork',
+          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.15)})`,
+          overlay: `radial-gradient(circle at 20% 30%, ${hexAlpha(accentHex, 0.34)} 0 6px, transparent 7px), radial-gradient(circle at 80% 70%, ${hexAlpha(mainHex, 0.28)} 0 7px, transparent 8px), repeating-linear-gradient(90deg, transparent 0 16px, ${hexAlpha(accentHex, 0.12)} 16px 18px)`
+        },
+        {
+          label: 'Hammered gilt bands',
+          bg: `linear-gradient(180deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.16)})`,
+          overlay: `repeating-linear-gradient(0deg, ${hexAlpha(accentHex, 0.08)} 0 18px, ${hexAlpha(accentHex, 0.22)} 18px 20px), radial-gradient(circle at 15% 15%, ${hexAlpha(mainHex, 0.20)} 0 4px, transparent 5px), radial-gradient(circle at 65% 55%, ${hexAlpha(mainHex, 0.15)} 0 6px, transparent 7px)`
+        },
+        {
+          label: 'Celestial lattice',
+          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.13)})`,
+          overlay: `radial-gradient(circle at 30% 28%, ${hexAlpha(accentHex, 0.32)} 0 2px, transparent 3px), radial-gradient(circle at 70% 62%, ${hexAlpha(mainHex, 0.26)} 0 3px, transparent 4px), linear-gradient(120deg, transparent 0 48%, ${hexAlpha(accentHex, 0.12)} 49% 51%, transparent 52%), linear-gradient(60deg, transparent 0 48%, ${hexAlpha(mainHex, 0.10)} 49% 51%, transparent 52%)`
+        }
+      ];
+      return pick(patterns, rng);
+    }
+
+    function hexAlpha(hex, alpha) {
+      const normalized = hex.replace('#', '');
+      const bigint = parseInt(normalized, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function itemWeight(type, rng) {
+      const [min, max] = type.weight;
+      const whole = min + Math.round(rng() * (max - min));
+      return `${whole} lb${whole === 1 ? '' : 's'}`;
+    }
+
+    function isDormant(rarityIndex, tier) {
+      return rarityIndex > tier + 1;
+    }
+
+    function buildLore(name, material, gem, school, type, maker, origin, quirk, rng) {
+      const schoolFlavor = {
+        'Abjuration': 'Its maker trusted barriers more than prayers, and packed every seam with careful ward-script.',
+        'Conjuration': 'Its magic favors thresholds, arrivals, and the thin places between where you stand and where you should not.',
+        'Divination': 'It was tuned to signs in smoke, reflected stars, and the little hesitations that come before disaster.',
+        'Enchantment': 'Its earliest owners used it to smooth tempers, bind bargains, and make rooms lean their way.',
+        'Evocation': 'Its core was meant to answer danger fast, with heat, force, and enough discipline to keep allies standing.',
+        'Illusion': 'It was built for misdirection first, beauty second, and the truth somewhere after that.',
+        'Necromancy': 'It keeps the manners of grave magic: formal, patient, and difficult to fool once it has learned your name.',
+        'Transmutation': 'The item was shaped with change in mind, as if every surface were only waiting for permission to become something else.'
+      };
+      const sentenceB = `${name} was fashioned from ${material.name.toLowerCase()} and set with ${gem.name.toLowerCase()} by ${maker} ${origin}.`;
+      const sentenceC = schoolFlavor[school] || 'Its enchantment is methodical and old-fashioned.';
+      const sentenceD = quirk;
+      return `${sentenceB} ${sentenceC} ${sentenceD}`;
+    }
+
+    function buildArtifact(seedText = `${Date.now()}-${Math.random()}`) {
+      const seeded = hashSeed(seedText)();
+      const rng = mulberry32(seeded);
+
+      const chosenSchool = schoolSelect.value;
+      const school = chosenSchool === 'Any' ? pick(schoolOptions.slice(1), rng) : chosenSchool;
+      const tier = resolveTier(tierSelect.value, rng);
+      const rarity = resolveRarity(raritySelect.value, tier, rng);
+      const rawRarityIndex = rarityRank[rarity];
+      const effectiveRarityIndex = isDormant(rawRarityIndex, tier) ? Math.min(rawRarityIndex, tier + 1) : rawRarityIndex;
+      const dormant = isDormant(rawRarityIndex, tier);
+
+      const type = chosenSchool === 'Any' ? pick(typeOptions, rng) : (rng() < 0.65 ? preferredType(school, rng) : pick(typeOptions, rng));
+      const material = weightedMaterial(type.name, school, rng);
+      const gem = weightedGem(school, rng);
+      const motif = pick(motifs, rng);
+      const finish = pick(finishes, rng);
+      const maker = pick(makers, rng);
+      const origin = pick(origins, rng);
+      const quirk = pick(quirks, rng);
+      const signature = chooseFeature(signatureFeatures, school, effectiveRarityIndex, rng, 1)[0];
+      const pattern = patternStyles(material.main[1], gem.main[1], rng);
+      const spellCap = spellLevelCap(tier, effectiveRarityIndex);
+      const spellPackage = buildSpellPackage(school, spellCap, tier, effectiveRarityIndex, rng);
+      const boonCount = effectiveRarityIndex <= 1 ? 2 : effectiveRarityIndex <= 3 ? 3 : 4;
+      const drawbackCount = effectiveRarityIndex <= 1 ? 1 : effectiveRarityIndex <= 3 ? 2 : 3;
+      const boons = chooseFeature(passiveBoons, school, effectiveRarityIndex, rng, boonCount);
+      const costs = chooseFeature(drawbacks, school, Math.max(0, effectiveRarityIndex), rng, drawbackCount);
+      const name = buildName(type, material, gem, school, rarity, rng);
+      const suggestedLevel = levelRangeForTier(tier);
+      const attunement = rawRarityIndex >= 2 || ['Ring', 'Amulet', 'Cloak', 'Orb'].includes(type.name) ? 'Required' : 'Optional';
+      const combat = combatDetail(type, school, rawRarityIndex, effectiveRarityIndex);
+      const weight = itemWeight(type, rng);
+      const powerBand = powerLabels[Math.min(tier - 1, powerLabels.length - 1)];
+      const balanceLine = dormant
+        ? `Dormant ${rarity.toLowerCase()} profile capped for ${suggestedLevel}.`
+        : `${rarity} item tuned for ${suggestedLevel}.`;
+
+      return {
+        seed: seeded,
+        name,
+        rarity,
+        type: type.name,
+        typeIcon: type.icon,
+        school,
+        tier,
+        suggestedLevel,
+        attunement,
+        weight,
+        material,
+        gem,
+        motif,
+        finish,
+        maker,
+        origin,
+        quirk,
+        signature,
+        dormant,
+        combat,
+        spellPackage,
+        boons,
+        costs,
+        powerBand,
+        balanceLine,
+        spellCap,
+        pattern,
+        lore: buildLore(name, material, gem, school, type, maker, origin, quirk, rng)
+      };
+    }
+
+    function renderArtifact(artifact) {
+      artifactName.textContent = artifact.name;
+      eyebrow.innerHTML = [
+        pill('military_tech', artifact.rarity),
+        pill(artifact.typeIcon, artifact.type),
+        pill('local_library', artifact.school),
+        pill('shield', artifact.suggestedLevel)
+      ].join('');
+
+      metaGrid.innerHTML = [
+        meta('military_tech', 'Rarity', artifact.rarity, artifact.dormant ? 'Dormant state at this tier' : 'Full current profile'),
+        meta('swords', 'Combat profile', artifact.combat, `${artifact.type} · ${artifact.attunement} attunement`),
+        meta('weight', 'Weight', artifact.weight, `${artifact.material.name} body with ${artifact.gem.name} setting`),
+        meta('star', 'Signature feature', artifact.signature, `${artifact.finish} · ${artifact.motif}`)
+      ].join('');
+
+      appearanceChips.innerHTML = [
+        chip('inventory_2', `Material: ${artifact.material.name}`),
+        chip('diamond', `Gemstone: ${artifact.gem.name}`),
+        chip('palette', `Main color: ${artifact.material.main[0]}`, artifact.material.main[1]),
+        chip('palette', `Accent: ${artifact.gem.main[0]}`, artifact.gem.main[1]),
+        chip('texture', `Texture: ${artifact.material.texture}`),
+        chip('gesture', `Motif: ${artifact.motif}`)
+      ].join('');
+
+      patternPreview.style.setProperty('--pattern-bg', artifact.pattern.bg);
+      patternPreview.style.setProperty('--pattern-overlay', artifact.pattern.overlay);
+      patternLabel.textContent = `${artifact.pattern.label} · ${artifact.finish}`;
+
+      rulesList.innerHTML = [
+        listEntry('Suggested wielder', artifact.suggestedLevel),
+        listEntry('Attunement', artifact.attunement),
+        ...artifact.spellPackage.map(entry => listEntry(entry.label, entry.text)),
+        listEntry('School cap', artifact.spellCap === 0 ? 'Cantrip-scale effect only' : `Supports spells up to level ${artifact.spellCap} at this tier`)
+      ].join('');
+
+      boonsList.innerHTML = [
+        ...artifact.boons.map(text => listText(text)),
+        listText(artifact.signature)
+      ].join('');
+
+      drawbacksList.innerHTML = [
+        ...artifact.costs.map(text => listText(text)),
+        listText(artifact.quirk)
+      ].join('');
+
+      loreHook.textContent = artifact.lore;
+      summaryPower.textContent = `Power band: ${artifact.powerBand}`;
+      summaryBalance.textContent = artifact.balanceLine;
+      summarySeed.textContent = `Seed ${artifact.seed}`;
+
+      dormantNote.classList.toggle('is-visible', artifact.dormant);
+      dormantNote.innerHTML = artifact.dormant
+        ? `<span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 6px;">lock</span>This ${artifact.rarity.toLowerCase()} item is intentionally throttled for ${artifact.suggestedLevel}. Stronger properties can awaken later through story progression, milestones, or a higher-tier bearer.`
+        : '';
+
+      lastArtifact = artifact;
+    }
+
+    function pill(icon, text) {
+      return `<span class="pill"><span class="material-symbols-outlined">${icon}</span>${text}</span>`;
+    }
+
+    function meta(icon, label, value, note) {
+      return `<div class="meta-card"><div class="meta-top"><span class="material-symbols-outlined">${icon}</span>${label}</div><div class="meta-value">${value}</div><div class="meta-note">${note}</div></div>`;
+    }
+
+    function chip(icon, text, swatchHex = null) {
+      const swatch = swatchHex ? `<span class="swatch" style="background:${swatchHex}"></span>` : '';
+      return `<span class="chip"><span class="material-symbols-outlined">${icon}</span>${swatch}${text}</span>`;
+    }
+
+    function listEntry(prefix, text) {
+      return `<li><span class="rule-prefix">${prefix}:</span>${text}</li>`;
+    }
+
+    function listText(text) {
+      return `<li>${text}</li>`;
+    }
+
+    function copyArtifact() {
+      if (!lastArtifact) return;
+      const lines = [
+        `${lastArtifact.name}`,
+        `${lastArtifact.rarity} ${lastArtifact.type} · ${lastArtifact.school}`,
+        `Suggested Level: ${lastArtifact.suggestedLevel}`,
+        `Attunement: ${lastArtifact.attunement}`,
+        `Combat Profile: ${lastArtifact.combat}`,
+        `Material: ${lastArtifact.material.name} (${lastArtifact.material.main[0]})`,
+        `Gemstone: ${lastArtifact.gem.name} (${lastArtifact.gem.main[0]})`,
+        `Texture: ${lastArtifact.material.texture}`,
+        `Motif: ${lastArtifact.motif}`,
+        '',
+        'Spellcraft & Rules',
+        ...Array.from(rulesList.querySelectorAll('li')).map(li => `- ${li.textContent.trim()}`),
+        '',
+        'Enhancements',
+        ...lastArtifact.boons.map(item => `- ${item}`),
+        `- ${lastArtifact.signature}`,
+        '',
+        'Costs, Drawbacks & Quirks',
+        ...lastArtifact.costs.map(item => `- ${item}`),
+        `- ${lastArtifact.quirk}`,
+        '',
+        'Lore Hook',
+        lastArtifact.lore,
+        '',
+        `Seed: ${lastArtifact.seed}`
+      ].join('\n');
+
+      navigator.clipboard.writeText(lines).then(() => {
+        const previous = copyButton.innerHTML;
+        copyButton.innerHTML = '<span class="material-symbols-outlined">check</span>Copied';
+        setTimeout(() => copyButton.innerHTML = previous, 1400);
+      });
+    }
+
+    function refresh() {
+      const artifact = buildArtifact();
+      renderArtifact(artifact);
+    }
+
+    schoolSelect.innerHTML = optionMarkup(schoolOptions);
+    raritySelect.innerHTML = optionMarkup(rarityOptions);
+    tierSelect.innerHTML = optionMarkup(tierOptions, item => ({ value: item.value, label: item.label }));
+
+    raritySelect.value = 'Any';
+    schoolSelect.value = 'Any';
+    tierSelect.value = 'Auto';
+
+    rerollButton.addEventListener('click', refresh);
+    copyButton.addEventListener('click', copyArtifact);
+    schoolSelect.addEventListener('change', refresh);
+    raritySelect.addEventListener('change', refresh);
+    tierSelect.addEventListener('change', refresh);
+
+    refresh();
+  </script>
+</body>
+</html>
