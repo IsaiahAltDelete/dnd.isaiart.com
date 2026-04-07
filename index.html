@@ -1,131 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
-<title>Isaiart's D&D Resources</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
-
-body {
-    background-image: url('https://i.imgur.com/B1kEKpW.png');
-    background-attachment: fixed;
-    color: #642211;
-    font-family: "Crimson Text", "Times New Roman", serif;
-    margin: 0;
-    padding: 20px;
-}
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: rgba(253, 248, 236, 0.97);
-    border: 4px double #642211;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    position: relative;
-}
-.container::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 1px solid #642211;
-    border-radius: 10px;
-    pointer-events: none;
-}
-h1 {
-    color: #642211;
-    text-align: center;
-    font-size: 2.5em;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-    position: relative;
-    padding: 20px 0;
-}
-.section {
-    background-color: rgba(253, 248, 236, 0.95);
-    border: 2px solid #642211;
-    margin-bottom: 25px;
-    padding: 20px;
-    border-radius: 5px;
-    position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-.section::before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    border: 1px solid rgba(100, 34, 17, 0.3);
-    border-radius: 3px;
-    pointer-events: none;
-}
-a {
-    color: #642211;
-    text-decoration: none;
-    display: block;
-    padding: 12px 15px;
-    margin: 8px 0;
-    border: 2px solid #642211;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    position: relative;
-    background: linear-gradient(to right, transparent 50%, rgba(100, 34, 17, 0.1) 50%);
-    background-size: 200% 100%;
-    background-position: 0 0;
-}
-a:hover {
-    background-position: -100% 0;
-    transform: translateX(5px);
-    color: #642211;
-}
-h2 {
-    margin-top: 0;
-    color: #642211;
-    border-bottom: 2px solid #642211;
-    padding-bottom: 10px;
-    font-size: 1.5em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-</style>
-</head>
-<body>
-<div class="container">
-    <h1><a href="https://dnd.isaiart.com/faranthis" target="_blank" style="display: inline; border: none; padding: 0; margin: 0;">Isaiart's</a> D&D Resources</h1>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <title>Isaiart's D&D Resources</title>
     
-    <div class="section">
-        <h2>Character Tools</h2>
-        <a href="https://dnd.isaiart.com/cs" target="_blank">Character Sheet</a>
-        <a href="https://dnd.isaiart.com/characters" target="_blank">Character Generator</a>
-        <a href="https://dnd.isaiart.com/npcs" target="_blank">NPC Generator</a>
-    </div>
+    <!-- Google Fonts: Marcellus (Headings), Crimson Text (Body), Poppins (Utility) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
-    <div class="section">
-        <h2>Game Tools</h2>
-        <a href="https://dnd.isaiart.com/artifacts" target="_blank">Artifact Generator</a>
-        <a href="https://dnd.isaiart.com/monsters" target="_blank">Monster Generator</a>
-        <a href="https://dnd.isaiart.com/cities" target="_blank">City Generator</a>
-    </div>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        main: '#1E1A17',
+                        maroon: '#58180D', /* The classic D&D Red */
+                        maroonLight: '#8A2A1B',
+                        gold: '#C9AD6A',
+                        page: '#F5EFE2',
+                        callout: '#FDF1DC',
+                    },
+                    fontFamily: {
+                        heading: ['Marcellus', 'serif'],
+                        body: ['"Crimson Text"', 'serif'],
+                        utility: ['Poppins', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'page': '0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 100px rgba(201, 173, 106, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
 
-    <div class="section">
-        <h2>Rulebooks</h2>
-        <a href="https://dnd.isaiart.com/humans" target="_blank">Human Handbook</a>
-        <a href="https://dnd.isaiart.com/phb" target="_blank">Player's Handbook</a>
-        <a href="https://dnd.isaiart.com/planes" target="_blank">Forgotten Realms Planes</a>
-        <a href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank">Dungeon Master's Guide</a>
-        <a href="https://online.anyflip.com/rmzy/oapq/mobile/index.html#p=1" target="_blank">Xanathar's Guide to Everything</a>
-        <a href="https://anyflip.com/eqxhe/cpgo" target="_blank">Tasha's Cauldron of Everything</a>
-    </div>
-</div>
+    <style>
+        /* Scrolling Background Animation */
+        body {
+            background-color: #1a1a1a;
+            background-image: url('https://i.imgur.com/B1kEKpW.png');
+            background-repeat: repeat;
+            animation: scrollBackground 100s linear infinite;
+        }
+
+        @keyframes scrollBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* Tapered Gold Divider with Maroon Diamond */
+        .dnd-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #C9AD6A 15%, #C9AD6A 85%, transparent);
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .dnd-divider::after {
+            content: '♦';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: #58180D; /* Maroon Diamond */
+            font-size: 14px;
+            background-color: #F5EFE2;
+            padding: 0 12px;
+        }
+
+        .callout-divider::after {
+            background-color: #FDF1DC;
+        }
+
+        /* Subtle entrance animation */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #58180D; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8A2A1B; }
+    </style>
+</head>
+<body class="text-main font-body antialiased min-h-screen p-3 sm:p-6 md:p-8 flex justify-center items-start">
+
+    <!-- Main Page Container (The "Sourcebook Page") -->
+    <!-- Added a thick maroon top border for that official book feel -->
+    <main class="bg-page max-w-6xl w-full shadow-page border border-maroon/20 border-t-[12px] border-t-maroon rounded-sm p-5 sm:p-8 md:p-10 relative overflow-hidden mt-2 mb-8">
+        
+        <!-- Subtle maroon corner ornaments -->
+        <div class="absolute top-4 left-4 w-4 h-4 border-t border-l border-maroon/30 hidden sm:block"></div>
+        <div class="absolute top-4 right-4 w-4 h-4 border-t border-r border-maroon/30 hidden sm:block"></div>
+        <div class="absolute bottom-4 left-4 w-4 h-4 border-b border-l border-maroon/30 hidden sm:block"></div>
+        <div class="absolute bottom-4 right-4 w-4 h-4 border-b border-r border-maroon/30 hidden sm:block"></div>
+
+        <!-- Header Section (Character Sheet Style) -->
+        <header class="flex flex-col lg:flex-row gap-6 lg:gap-10 items-end mb-10 fade-in-up">
+            <!-- Title Block -->
+            <div class="w-full lg:w-1/3 border-b-2 border-gold pb-2">
+                <h1 class="font-heading text-maroon text-4xl sm:text-5xl md:text-6xl uppercase tracking-wider mb-1">
+                    <a href="https://dnd.isaiart.com/faranthis" target="_blank" class="hover:text-maroonLight transition-colors duration-300">Isaiart's</a>
+                </h1>
+                <h2 class="font-heading text-main text-lg sm:text-xl md:text-2xl uppercase tracking-widest">D&D Resources</h2>
+            </div>
+
+            <!-- Metadata Block (The "Stats") - Now uses a responsive grid -->
+            <div class="w-full lg:w-2/3 bg-callout border border-maroon/10 border-t-4 border-t-maroon rounded-b-sm p-4 sm:p-5 shadow-sm">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5">
+                    <div class="border-b border-gold/40 pb-1">
+                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Class & Level</div>
+                        <div class="font-body text-main text-base sm:text-lg leading-tight">Dungeon Master 20</div>
+                    </div>
+                    <div class="border-b border-gold/40 pb-1">
+                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Background</div>
+                        <div class="font-body text-main text-base sm:text-lg leading-tight">World Builder</div>
+                    </div>
+                    <div class="border-b border-gold/40 pb-1">
+                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Player Name</div>
+                        <div class="font-body text-main text-base sm:text-lg leading-tight">Isaiart</div>
+                    </div>
+                    <div class="border-b border-gold/40 pb-1">
+                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Alignment</div>
+                        <div class="font-body text-main text-base sm:text-lg leading-tight">Chaotic Creative</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+
+            <!-- Section 1: Character Tools -->
+            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-1">
+                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
+                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">person_book</span>
+                    Character Tools
+                </h3>
+                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
+                
+                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
+                    Essential instruments for forging heroes, villains, and the common folk who populate the realms.
+                </p>
+
+                <div class="space-y-2">
+                    <!-- Link Item with Maroon Hover Effect -->
+                    <a href="https://dnd.isaiart.com/cs" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">assignment_ind</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Character Sheet</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Type:</strong> Digital Record
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/characters" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">psychology</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Character Generator</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Type:</strong> Creation Tool
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/npcs" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">groups</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">NPC Generator</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Type:</strong> World Building
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Section 2: Game Tools -->
+            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-2">
+                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
+                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">swords</span>
+                    Game Tools
+                </h3>
+                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
+                
+                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
+                    Arcane mechanisms to conjure legendary items, fearsome beasts, and sprawling metropolises.
+                </p>
+
+                <div class="space-y-2">
+                    <a href="https://dnd.isaiart.com/artifacts" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">diamond</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Artifact Generator</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Rarity:</strong> Legendary
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/monsters" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">pets</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Monster Generator</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Challenge:</strong> Variable
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/cities" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">location_city</span>
+                            <div>
+                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">City Generator</div>
+                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
+                                    <strong class="text-maroon/80">Scale:</strong> Settlement
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Section 3: Rulebooks -->
+            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-3 md:col-span-2 lg:col-span-1">
+                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
+                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">menu_book</span>
+                    Rulebooks
+                </h3>
+                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
+                
+                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
+                    The sacred texts containing the laws of physics, magic, and society within the multiverse.
+                </p>
+
+                <div class="space-y-1">
+                    <a href="https://dnd.isaiart.com/humans" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Human Handbook</div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/phb" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Player's Handbook</div>
+                        </div>
+                    </a>
+
+                    <a href="https://dnd.isaiart.com/planes" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">public</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Forgotten Realms Planes</div>
+                        </div>
+                    </a>
+
+                    <a href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Dungeon Master's Guide</div>
+                        </div>
+                    </a>
+
+                    <a href="https://online.anyflip.com/rmzy/oapq/mobile/index.html#p=1" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Xanathar's Guide</div>
+                        </div>
+                    </a>
+
+                    <a href="https://anyflip.com/eqxhe/cpgo" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
+                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">science</span>
+                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Tasha's Cauldron</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+        </div>
+        
+        <!-- Bottom Page Decoration -->
+        <div class="mt-10 sm:mt-14 text-center fade-in-up delay-3">
+            <div class="dnd-divider"></div>
+            <p class="font-utility text-[10px] sm:text-xs text-maroon/70 font-semibold uppercase tracking-widest mt-4">
+                Compiled for the Adventuring Scholar • Edition 2024
+            </p>
+        </div>
+
+    </main>
+
 </body>
 </html>
