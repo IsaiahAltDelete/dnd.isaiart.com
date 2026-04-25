@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Arcanist's Compendium of Arms & Artifice</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --parchment:#ede0c8;
+  --parchment-light:#f5ecda;
+  --parchment-dark:#d4c4a0;
+  --ink:#1a1008;
+  --ink-light:#3d2e14;
+  --dark-red:#6f1f11;
+  --deep-red:#58120a;
+  --blood-red:#8b1a0e;
+  --gold:#c9a84c;
+  --gold-dark:#a88932;
+  --gold-light:#dfc06a;
+  --rule-gold:#CEB31F;
+  --table-light:#f4ece0;
+  --table-dark:#e8dcc8;
+  --sidebar-bg:#e0d3b8;
+  --callout-bg:#dce8ed;
+  --callout-border:#93b7c7;
+  --stat-bg:#f2e8d5;
+  --stat-border:#a0522d;
+  --nav-bg:#2a1a0a;
+  --nav-text:#c9a84c;
+  --nav-hover:#ede0c8;
+  --shadow:rgba(26,16,8,0.3);
+  --font-display:'Cinzel Decorative', serif;
+  --font-heading:'Cinzel', serif;
+  --font-body:'Crimson Text', serif;
+  --font-flavor:'IM Fell English', serif;
+  --font-special:'MedievalSharp', cursive;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.65;
+  color:var(--ink);
+  background:var(--parchment);
+  display:flex;
+  min-height:100vh;
+}
+
+/* ===== SIDE NAVIGATION ===== */
+.side-nav{
+  position:fixed;
+  left:0;top:0;bottom:0;
+  width:280px;
+  background:var(--nav-bg);
+  z-index:1000;
+  overflow-y:auto;
+  overflow-x:hidden;
+  border-right:3px solid var(--gold-dark);
+  box-shadow:4px 0 20px rgba(0,0,0,0.4);
+  transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.side-nav::-webkit-scrollbar{width:6px}
+.side-nav::-webkit-scrollbar-track{background:rgba(0,0,0,0.2)}
+.side-nav::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:3px}
+.nav-header{
+  padding:24px 20px 16px;
+  text-align:center;
+  border-bottom:2px solid var(--gold-dark);
+  background:linear-gradient(180deg,#1a0e04 0%,var(--nav-bg) 100%);
+}
+.nav-header h2{
+  font-family:var(--font-display);
+  color:var(--gold);
+  font-size:15px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  line-height:1.4;
+  text-shadow:0 0 10px rgba(201,168,76,0.3);
+}
+.nav-header .nav-subtitle{
+  font-family:var(--font-flavor);
+  color:var(--gold-dark);
+  font-size:11px;
+  margin-top:4px;
+  font-style:italic;
+  letter-spacing:1px;
+}
+.nav-dragon{
+  display:block;
+  margin:12px auto 0;
+  width:60px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.nav-section{padding:8px 0}
+.nav-section-title{
+  font-family:var(--font-heading);
+  color:var(--gold-dark);
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  padding:12px 20px 4px;
+  opacity:0.7;
+}
+.nav-link{
+  display:block;
+  padding:8px 20px 8px 24px;
+  color:#b8a070;
+  text-decoration:none;
+  font-family:var(--font-body);
+  font-size:14px;
+  transition:all 0.25s ease;
+  border-left:3px solid transparent;
+  position:relative;
+}
+.nav-link:hover,.nav-link.active{
+  color:var(--gold-light);
+  background:rgba(201,168,76,0.08);
+  border-left-color:var(--gold);
+}
+.nav-link::before{
+  content:'◆';
+  position:absolute;
+  left:10px;
+  font-size:6px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--gold-dark);
+  opacity:0;
+  transition:opacity 0.25s;
+}
+.nav-link:hover::before,.nav-link.active::before{opacity:1}
+.nav-link.sub{padding-left:36px;font-size:13px;color:#8a7a5a}
+.nav-link.sub:hover{color:var(--gold-light)}
+
+/* Mobile nav toggle */
+.nav-toggle{
+  display:none;
+  position:fixed;
+  top:12px;left:12px;z-index:1100;
+  width:44px;height:44px;
+  background:var(--nav-bg);
+  border:2px solid var(--gold-dark);
+  border-radius:6px;
+  cursor:pointer;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--gold);border-radius:1px;transition:all 0.3s}
+
+/* ===== MAIN CONTENT ===== */
+.main-content{
+  margin-left:280px;
+  flex:1;
+  min-width:0;
+}
+
+/* Page texture overlay */
+.page-texture{
+  position:relative;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(160,130,80,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 30%, rgba(180,150,100,0.06) 0%, transparent 60%),
+    linear-gradient(180deg, #e8d4b4 0%, var(--parchment) 3%, var(--parchment-light) 50%, var(--parchment) 97%, #d8c8a4 100%);
+}
+
+/* ===== COVER SECTION ===== */
+.cover-section{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:60px 40px;
+  background:
+    radial-gradient(ellipse at center, rgba(110,60,20,0.06) 0%, transparent 70%),
+    linear-gradient(180deg, #d4b88a 0%, var(--parchment) 15%, var(--parchment-light) 50%, var(--parchment) 85%, #d4b88a 100%);
+  position:relative;
+  overflow:hidden;
+}
+.cover-section::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.cover-ornament{
+  width:300px;
+  max-width:80%;
+  height:auto;
+  margin-bottom:20px;
+  opacity:0;
+  animation:coverFadeIn 1.2s ease-out 0.3s forwards;
+}
+.cover-title{
+  font-family:var(--font-display);
+  font-size:clamp(28px,5vw,52px);
+  color:var(--dark-red);
+  line-height:1.15;
+  letter-spacing:2px;
+  margin-bottom:8px;
+  opacity:0;
+  animation:coverFadeIn 1s ease-out 0.6s forwards;
+  text-shadow:0 2px 4px rgba(111,31,17,0.15);
+}
+.cover-subtitle{
+  font-family:var(--font-heading);
+  font-size:clamp(13px,2vw,18px);
+  color:var(--gold-dark);
+  letter-spacing:6px;
+  text-transform:uppercase;
+  margin-bottom:24px;
+  opacity:0;
+  animation:coverFadeIn 1s ease-out 0.9s forwards;
+}
+.cover-flavor{
+  font-family:var(--font-flavor);
+  font-style:italic;
+  font-size:clamp(14px,1.8vw,18px);
+  color:var(--ink-light);
+  max-width:560px;
+  line-height:1.7;
+  opacity:0;
+  animation:coverFadeIn 1s ease-out 1.2s forwards;
+}
+.cover-divider{
+  width:200px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:24px auto;
+  opacity:0;
+  animation:coverFadeIn 1s ease-out 1s forwards;
+}
+.cover-edition{
+  font-family:var(--font-heading);
+  font-size:12px;
+  color:var(--gold-dark);
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-top:12px;
+  opacity:0;
+  animation:coverFadeIn 1s ease-out 1.4s forwards;
+}
+@keyframes coverFadeIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ===== CHAPTER SECTIONS ===== */
+.chapter{
+  padding:60px 40px 80px;
+  max-width:900px;
+  margin:0 auto;
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity 0.6s ease, transform 0.6s ease;
+}
+.chapter.visible{opacity:1;transform:translateY(0)}
+
+.chapter-number{
+  font-family:var(--font-heading);
+  font-size:13px;
+  color:var(--gold-dark);
+  letter-spacing:5px;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:4px;
+}
+.chapter-title{
+  font-family:var(--font-display);
+  font-size:clamp(26px,4vw,40px);
+  color:var(--dark-red);
+  text-align:center;
+  margin-bottom:4px;
+  line-height:1.2;
+}
+.chapter-rule{
+  display:block;
+  width:100%;
+  max-width:500px;
+  height:3px;
+  margin:16px auto 32px;
+  background:linear-gradient(90deg,transparent 0%,var(--rule-gold) 20%,var(--gold) 50%,var(--rule-gold) 80%,transparent 100%);
+  border:none;
+  opacity:0.6;
+}
+
+/* ===== HEADINGS ===== */
+h2.section-title{
+  font-family:var(--font-heading);
+  font-size:26px;
+  color:var(--dark-red);
+  margin:48px 0 4px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border-bottom:2px solid var(--rule-gold);
+  padding-bottom:6px;
+}
+h3.subsection-title{
+  font-family:var(--font-heading);
+  font-size:20px;
+  color:var(--dark-red);
+  margin:32px 0 8px;
+}
+h4.entry-title{
+  font-family:var(--font-heading);
+  font-size:17px;
+  color:var(--deep-red);
+  margin:24px 0 4px;
+  font-style:italic;
+}
+
+/* First letter drop cap */
+.drop-cap::first-letter{
+  font-family:var(--font-display);
+  font-size:3.4em;
+  float:left;
+  line-height:0.8;
+  margin:4px 8px 0 0;
+  color:var(--dark-red);
+}
+
+/* ===== STAT BLOCKS ===== */
+.stat-block{
+  background:var(--stat-bg);
+  border:2px solid var(--stat-border);
+  border-image:linear-gradient(to bottom,var(--stat-border),var(--gold-dark)) 1;
+  padding:20px 24px;
+  margin:24px 0;
+  position:relative;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+.stat-block::before,.stat-block::after{
+  content:'';
+  display:block;
+  height:3px;
+  background:linear-gradient(90deg,transparent,var(--dark-red),var(--gold),var(--dark-red),transparent);
+  margin:0 -24px;
+}
+.stat-block::before{margin-bottom:12px;margin-top:-4px}
+.stat-block::after{margin-top:12px;margin-bottom:-4px}
+.stat-name{
+  font-family:var(--font-heading);
+  font-size:22px;
+  color:var(--dark-red);
+  margin-bottom:2px;
+}
+.stat-type{
+  font-family:var(--font-body);
+  font-style:italic;
+  font-size:14px;
+  color:var(--ink-light);
+  margin-bottom:8px;
+}
+.stat-divider{
+  height:2px;
+  background:linear-gradient(90deg,var(--dark-red),var(--gold),var(--dark-red));
+  margin:8px 0;
+  opacity:0.5;
+}
+.stat-line{margin:3px 0;font-size:15px}
+.stat-line strong{font-weight:700;color:var(--ink)}
+.stat-props{display:flex;flex-wrap:wrap;gap:4px 16px;margin:4px 0}
+.stat-props .prop{font-size:14px}
+.stat-props .prop strong{color:var(--dark-red);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+.spell-list{margin:4px 0 4px 16px;font-size:14px;line-height:1.8}
+.charge-info{
+  font-family:var(--font-body);
+  font-style:italic;
+  font-size:14px;
+  color:var(--ink-light);
+  margin:4px 0;
+}
+
+/* ===== TABLES ===== */
+.phb-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:20px 0;
+  font-size:15px;
+}
+.phb-table caption{
+  font-family:var(--font-heading);
+  font-size:16px;
+  color:var(--dark-red);
+  text-align:left;
+  margin-bottom:6px;
+  font-weight:600;
+}
+.phb-table thead th{
+  font-family:var(--font-heading);
+  font-size:13px;
+  color:var(--dark-red);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border-bottom:2px solid var(--dark-red);
+  text-align:left;
+  padding:8px 10px;
+  font-weight:600;
+}
+.phb-table tbody tr:nth-child(even){background:var(--table-dark)}
+.phb-table tbody tr:nth-child(odd){background:var(--table-light)}
+.phb-table td{padding:7px 10px;vertical-align:top}
+.phb-table tbody tr{transition:background 0.2s}
+.phb-table tbody tr:hover{background:rgba(201,168,76,0.15)}
+
+/* ===== CALLOUT BOXES ===== */
+.read-aloud{
+  background:var(--callout-bg);
+  border-left:4px solid var(--callout-border);
+  padding:16px 20px;
+  margin:20px 0;
+  font-family:var(--font-flavor);
+  font-style:italic;
+  font-size:16px;
+  line-height:1.7;
+  color:#2a3a4a;
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.03);
+}
+.sidebar-box{
+  background:var(--sidebar-bg);
+  border:1px solid #b8a888;
+  padding:16px 20px;
+  margin:24px 0;
+  box-shadow:1px 2px 6px rgba(0,0,0,0.08);
+}
+.sidebar-box .sidebar-title{
+  font-family:var(--font-heading);
+  font-size:16px;
+  color:var(--dark-red);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:8px;
+  border-bottom:1px solid var(--gold-dark);
+  padding-bottom:4px;
+}
+.sidebar-box p{font-size:14px;line-height:1.6;margin-top:6px}
+
+/* ===== RARITY BADGES ===== */
+.rarity{
+  display:inline-block;
+  font-family:var(--font-heading);
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  padding:3px 10px;
+  border-radius:3px;
+  vertical-align:middle;
+  margin-left:6px;
+}
+.rarity.common{background:#b8b8b8;color:#333}
+.rarity.uncommon{background:#1a8a1a;color:#fff}
+.rarity.rare{background:#1a5ab8;color:#fff}
+.rarity.very-rare{background:#7b2dba;color:#fff}
+.rarity.legendary{background:#c45e10;color:#fff}
+.rarity.artifact{background:linear-gradient(135deg,#8b0000,#daa520);color:#fff}
+
+/* ===== RARITY SPECTRUM BAR ===== */
+.rarity-spectrum{
+  display:flex;
+  margin:20px 0;
+  border-radius:6px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+.rarity-spectrum .band{
+  flex:1;
+  padding:12px 8px;
+  text-align:center;
+  font-family:var(--font-heading);
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,0.4);
+  transition:flex 0.3s ease;
+}
+.rarity-spectrum .band:hover{flex:1.5}
+.rarity-spectrum .common-band{background:#888}
+.rarity-spectrum .uncommon-band{background:#1a7a1a}
+.rarity-spectrum .rare-band{background:#1a4aa0}
+.rarity-spectrum .veryrare-band{background:#6a20a8}
+.rarity-spectrum .legendary-band{background:#b85010}
+.rarity-spectrum .artifact-band{background:linear-gradient(135deg,#8b0000,#daa520)}
+
+/* ===== ORNAMENTAL SVG ELEMENTS ===== */
+.ornament{display:block;margin:24px auto;opacity:0.5}
+
+/* ===== ACCORDION ===== */
+.accordion{margin:16px 0}
+.accordion-header{
+  font-family:var(--font-heading);
+  font-size:16px;
+  color:var(--dark-red);
+  cursor:pointer;
+  padding:12px 16px;
+  background:var(--sidebar-bg);
+  border:1px solid #c0aa80;
+  border-bottom:none;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  user-select:none;
+  transition:background 0.2s;
+}
+.accordion-header:hover{background:var(--parchment-dark)}
+.accordion-header .arrow{
+  transition:transform 0.3s;
+  font-size:12px;
+  color:var(--gold-dark);
+}
+.accordion-header.open .arrow{transform:rotate(180deg)}
+.accordion-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.4s ease;
+  border:1px solid #c0aa80;
+  border-top:none;
+  background:var(--parchment-light);
+}
+.accordion-body.open{max-height:2000px}
+.accordion-body .inner{padding:16px}
+
+/* ===== PROGRESS BARS (for item power) ===== */
+.power-bar{
+  display:flex;align-items:center;gap:10px;margin:6px 0;
+}
+.power-bar .label{
+  font-family:var(--font-heading);
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--ink-light);
+  min-width:80px;
+}
+.power-bar .bar{
+  flex:1;height:10px;background:#d4c4a0;border-radius:5px;overflow:hidden;
+}
+.power-bar .fill{
+  height:100%;border-radius:5px;
+  transition:width 1s ease-out;
+}
+.power-bar .fill.low{background:linear-gradient(90deg,#5a9a5a,#7aba7a)}
+.power-bar .fill.mid{background:linear-gradient(90deg,#3a6ab8,#5a8ada)}
+.power-bar .fill.high{background:linear-gradient(90deg,#7a2db0,#9a4dd0)}
+.power-bar .fill.max{background:linear-gradient(90deg,#c45e10,#e8a020)}
+.power-bar .fill.godly{background:linear-gradient(90deg,#8b0000,#daa520)}
+
+/* ===== SCROLL TO TOP ===== */
+.scroll-top{
+  position:fixed;
+  bottom:24px;right:24px;
+  width:44px;height:44px;
+  background:var(--nav-bg);
+  border:2px solid var(--gold-dark);
+  color:var(--gold);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  opacity:0;
+  transform:translateY(20px);
+  transition:all 0.3s;
+  z-index:900;
+  font-size:20px;
+}
+.scroll-top.visible{opacity:1;transform:translateY(0)}
+.scroll-top:hover{background:var(--gold-dark);color:var(--nav-bg)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.anim-item{opacity:0;transform:translateY(20px);transition:all 0.5s ease-out}
+.anim-item.visible{opacity:1;transform:translateY(0)}
+
+/* ===== D20 DICE ICON ===== */
+.d20-icon{
+  display:inline-block;
+  width:20px;height:20px;
+  background:var(--dark-red);
+  clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);
+  text-align:center;
+  line-height:20px;
+  color:#fff;
+  font-size:8px;
+  font-weight:bold;
+  vertical-align:middle;
+  margin-right:4px;
+}
+
+/* ===== TOC ===== */
+.toc{
+  columns:2;
+  column-gap:40px;
+  margin:20px 0;
+}
+.toc-entry{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 0;
+  border-bottom:1px dotted #b8a888;
+  font-size:15px;
+  break-inside:avoid;
+}
+.toc-entry a{
+  color:var(--dark-red);
+  text-decoration:none;
+  font-family:var(--font-heading);
+  font-size:14px;
+  transition:color 0.2s;
+}
+.toc-entry a:hover{color:var(--blood-red);text-decoration:underline}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .side-nav{transform:translateX(-100%)}
+  .side-nav.open{transform:translateX(0)}
+  .nav-toggle{display:flex}
+  .main-content{margin-left:0}
+  .chapter{padding:40px 20px 60px}
+  .toc{columns:1}
+}
+@media(max-width:600px){
+  .stat-block{padding:14px 16px}
+  .rarity-spectrum{flex-wrap:wrap}
+  .rarity-spectrum .band{flex:none;width:50%;padding:8px}
+}
+
+/* Smooth page transitions between sections */
+.section-break{
+  height:40px;
+  background:linear-gradient(180deg,transparent,rgba(160,130,80,0.08),transparent);
+}
+
+/* Inline lists */
+.inline-list{padding-left:20px;margin:8px 0}
+.inline-list li{margin:4px 0;font-size:15px}
+</style>
+</head>
+<body>
+
+<!-- MOBILE NAV TOGGLE -->
+<button class="nav-toggle" onclick="document.querySelector('.side-nav').classList.toggle('open')" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ===== SIDE NAVIGATION ===== -->
+<nav class="side-nav" id="sideNav">
+  <div class="nav-header">
+    <h2>The Arcanist's<br>Compendium</h2>
+    <div class="nav-subtitle">of Arms & Artifice</div>
+    <span class="nav-dragon"></span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Frontmatter</div>
+    <a href="#cover" class="nav-link active">Cover</a>
+    <a href="#toc" class="nav-link">Table of Contents</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter I</div>
+    <a href="#ch1" class="nav-link">The Nature of Magic Items</a>
+    <a href="#rarity" class="nav-link sub">Rarity Classification</a>
+    <a href="#attunement" class="nav-link sub">Attunement</a>
+    <a href="#identification" class="nav-link sub">Identification</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter II</div>
+    <a href="#ch2" class="nav-link">Weapons of Legend</a>
+    <a href="#vorpal" class="nav-link sub">Vorpal Sword</a>
+    <a href="#blackrazor" class="nav-link sub">Blackrazor</a>
+    <a href="#holyavenger" class="nav-link sub">Holy Avenger</a>
+    <a href="#staffmagi" class="nav-link sub">Staff of the Magi</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter III</div>
+    <a href="#ch3" class="nav-link">Artifacts of the Ages</a>
+    <a href="#swordkas" class="nav-link sub">Sword of Kas</a>
+    <a href="#vecna" class="nav-link sub">Eye &amp; Hand of Vecna</a>
+    <a href="#orbdragon" class="nav-link sub">Orb of Dragonkind</a>
+    <a href="#axedwarvish" class="nav-link sub">Axe of Dwarvish Lords</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter IV</div>
+    <a href="#ch4" class="nav-link">Armor & Wondrous Items</a>
+    <a href="#armorplus" class="nav-link sub">Enchanted Armor</a>
+    <a href="#wondrous" class="nav-link sub">Wondrous Items</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter V</div>
+    <a href="#ch5" class="nav-link">Sentient Items</a>
+    <a href="#sentient-creation" class="nav-link sub">Creating Sentient Items</a>
+    <a href="#communication" class="nav-link sub">Communication</a>
+    <a href="#conflict" class="nav-link sub">Conflict</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter VI</div>
+    <a href="#ch6" class="nav-link">Crafting & Forging</a>
+    <a href="#crafting-rules" class="nav-link sub">Crafting Rules</a>
+    <a href="#materials" class="nav-link sub">Materials</a>
+    <a href="#enchanting" class="nav-link sub">Enchanting</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter VII</div>
+    <a href="#ch7" class="nav-link">D20 Random Tables</a>
+    <a href="#weapon-gen" class="nav-link sub">Weapon Generator</a>
+    <a href="#quirks" class="nav-link sub">Item Quirks</a>
+    <a href="#curses" class="nav-link sub">Curses</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Chapter VIII</div>
+    <a href="#ch8" class="nav-link">Design & Aesthetics</a>
+    <a href="#visual-style" class="nav-link sub">Visual Style</a>
+    <a href="#colors-gems" class="nav-link sub">Colors & Gems</a>
+    <a href="#spells-items" class="nav-link sub">Spells on Items</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Appendices</div>
+    <a href="#appendixA" class="nav-link">A: Items by Rarity</a>
+    <a href="#appendixB" class="nav-link">B: Quick Reference</a>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content page-texture">
+
+<!-- ==================== COVER ==================== -->
+<section class="cover-section" id="cover">
+  <svg class="cover-ornament" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:transparent"/>
+        <stop offset="15%" style="stop-color:#a88932"/>
+        <stop offset="50%" style="stop-color:#dfc06a"/>
+        <stop offset="85%" style="stop-color:#a88932"/>
+        <stop offset="100%" style="stop-color:transparent"/>
+      </linearGradient>
+    </defs>
+    <line x1="0" y1="30" x2="300" y2="30" stroke="url(#goldGrad)" stroke-width="1.5"/>
+    <circle cx="150" cy="30" r="8" fill="none" stroke="#a88932" stroke-width="1.5"/>
+    <circle cx="150" cy="30" r="3" fill="#a88932"/>
+    <path d="M130 30 Q140 20 150 22 Q160 20 170 30" fill="none" stroke="#a88932" stroke-width="1"/>
+    <path d="M130 30 Q140 40 150 38 Q160 40 170 30" fill="none" stroke="#a88932" stroke-width="1"/>
+    <path d="M100 30 L115 25 L115 35 Z" fill="#a88932" opacity="0.5"/>
+    <path d="M200 30 L185 25 L185 35 Z" fill="#a88932" opacity="0.5"/>
+  </svg>
+  <h1 class="cover-title">The Arcanist's Compendium<br>of Arms & Artifice</h1>
+  <div class="cover-subtitle">A Complete Guide to Magic Items</div>
+  <div class="cover-divider"></div>
+  <p class="cover-flavor">
+    "Every blade has a story. Every staff holds a secret. Every ring whispers promises of power
+    to those bold enough to listen. Herein lie the laws that govern the arcane treasures
+    of the realms — from the humblest enchanted dagger to artifacts that shake the very foundations of the planes."
+  </p>
+  <div class="cover-divider"></div>
+  <div class="cover-edition">Comprehensive Fifth Edition Supplement</div>
+</section>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<section class="chapter" id="toc">
+  <div class="chapter-number">Contents</div>
+  <h1 class="chapter-title">Table of Contents</h1>
+  <hr class="chapter-rule">
+
+  <div class="toc">
+    <div class="toc-entry"><a href="#ch1">I. The Nature of Magic Items</a></div>
+    <div class="toc-entry"><a href="#rarity">&nbsp;&nbsp;Rarity Classification</a></div>
+    <div class="toc-entry"><a href="#attunement">&nbsp;&nbsp;Attunement</a></div>
+    <div class="toc-entry"><a href="#identification">&nbsp;&nbsp;Identification</a></div>
+    <div class="toc-entry"><a href="#ch2">II. Weapons of Legend</a></div>
+    <div class="toc-entry"><a href="#vorpal">&nbsp;&nbsp;Vorpal Sword</a></div>
+    <div class="toc-entry"><a href="#blackrazor">&nbsp;&nbsp;Blackrazor</a></div>
+    <div class="toc-entry"><a href="#holyavenger">&nbsp;&nbsp;Holy Avenger</a></div>
+    <div class="toc-entry"><a href="#staffmagi">&nbsp;&nbsp;Staff of the Magi</a></div>
+    <div class="toc-entry"><a href="#ch3">III. Artifacts of the Ages</a></div>
+    <div class="toc-entry"><a href="#swordkas">&nbsp;&nbsp;Sword of Kas</a></div>
+    <div class="toc-entry"><a href="#vecna">&nbsp;&nbsp;Eye & Hand of Vecna</a></div>
+    <div class="toc-entry"><a href="#orbdragon">&nbsp;&nbsp;Orb of Dragonkind</a></div>
+    <div class="toc-entry"><a href="#axedwarvish">&nbsp;&nbsp;Axe of the Dwarvish Lords</a></div>
+    <div class="toc-entry"><a href="#ch4">IV. Armor & Wondrous Items</a></div>
+    <div class="toc-entry"><a href="#ch5">V. Sentient Items</a></div>
+    <div class="toc-entry"><a href="#conflict">&nbsp;&nbsp;Conflict & Control</a></div>
+    <div class="toc-entry"><a href="#ch6">VI. Crafting & Forging</a></div>
+    <div class="toc-entry"><a href="#materials">&nbsp;&nbsp;Materials & Components</a></div>
+    <div class="toc-entry"><a href="#ch7">VII. D20 Random Tables</a></div>
+    <div class="toc-entry"><a href="#ch8">VIII. Design & Aesthetics</a></div>
+    <div class="toc-entry"><a href="#appendixA">Appendix A: Items by Rarity</a></div>
+    <div class="toc-entry"><a href="#appendixB">Appendix B: Quick Reference</a></div>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER I ==================== -->
+<section class="chapter" id="ch1">
+  <div class="chapter-number">Chapter I</div>
+  <h1 class="chapter-title">The Nature of Magic Items</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">Magic items are the lifeblood of adventure. From the lowliest +1 dagger pulled from a goblin's hoard to the world-shattering artifacts that have toppled empires and slain gods, these objects represent the convergence of arcane power and physical form. This compendium serves as your definitive guide to understanding, identifying, crafting, and wielding the magical arms and armor of the realms.</p>
+
+  <p>Every magic item carries within it a spark of the Weave — that invisible lattice of magical energy that permeates all of existence. When a skilled artificer, wizard, or divine agent binds that energy into an object, the result transcends the mundane. Steel becomes unbreakable. Leather turns aside dragon's breath. A simple wooden staff channels enough arcane force to level a castle.</p>
+
+  <div class="read-aloud">
+    "I have held in my hands a blade so cold it froze the tears on my cheeks, and a ring so warm it thawed the ice in my heart. The tools of the arcane are not mere objects — they are companions, burdens, and sometimes jailers."<br>
+    — Fousio Faranthis, Acquisitor of Baldur's Gate
+  </div>
+
+  <!-- RARITY -->
+  <h2 class="section-title" id="rarity">Rarity Classification</h2>
+
+  <p>Each magic item belongs to a category of rarity that broadly determines its power level, its value in gold, and how likely adventurers are to encounter it in the wild. The six tiers of rarity are:</p>
+
+  <div class="rarity-spectrum">
+    <div class="band common-band">Common</div>
+    <div class="band uncommon-band">Uncommon</div>
+    <div class="band rare-band">Rare</div>
+    <div class="band veryrare-band">Very Rare</div>
+    <div class="band legendary-band">Legendary</div>
+    <div class="band artifact-band">Artifact</div>
+  </div>
+
+  <table class="phb-table">
+    <caption>Rarity Overview</caption>
+    <thead>
+      <tr><th>Rarity</th><th>Character Level</th><th>Value (gp)</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="rarity common">Common</span></td><td>1st or higher</td><td>50–100</td><td>Potion of Healing, Driftglobe</td></tr>
+      <tr><td><span class="rarity uncommon">Uncommon</span></td><td>1st or higher</td><td>101–500</td><td>+1 Weapon, Cloak of Protection</td></tr>
+      <tr><td><span class="rarity rare">Rare</span></td><td>5th or higher</td><td>501–5,000</td><td>+2 Weapon, Flame Tongue</td></tr>
+      <tr><td><span class="rarity very-rare">Very Rare</span></td><td>11th or higher</td><td>5,001–50,000</td><td>+3 Weapon, Staff of Power</td></tr>
+      <tr><td><span class="rarity legendary">Legendary</span></td><td>17th or higher</td><td>50,001+</td><td>Vorpal Sword, Holy Avenger</td></tr>
+      <tr><td><span class="rarity artifact">Artifact</span></td><td>Varies</td><td>Priceless</td><td>Eye of Vecna, Sword of Kas</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">Artifacts vs. Legendary Items</div>
+    <p>Artifacts occupy a tier beyond legendary. They are unique objects — often only one exists in all the multiverse. An artifact cannot be destroyed by ordinary means. Each has a specific, often convoluted method of destruction that may itself require an entire quest to accomplish. Artifacts also carry random beneficial and detrimental properties that make each one unpredictable and dangerous.</p>
+  </div>
+
+  <!-- ATTUNEMENT -->
+  <h2 class="section-title" id="attunement">Attunement</h2>
+
+  <p>Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called <strong>attunement</strong>. Without it, a creature gains only the item's nonmagical benefits.</p>
+
+  <h3 class="subsection-title">Rules of Attunement</h3>
+
+  <p><strong>Process.</strong> Attuning to an item requires a creature to spend a short rest focused on only that item while being in physical contact with it. This focus can take the form of weapon practice, meditation, prayer, or similar activity appropriate to the item.</p>
+
+  <p><strong>Limit.</strong> A creature can be attuned to no more than <strong>three</strong> magic items at a time. Any attempt to attune to a fourth item fails — the creature must end its attunement to an existing item first.</p>
+
+  <p><strong>Exclusivity.</strong> An item can be attuned to only one creature at a time. A creature can't attune to more than one copy of the same item.</p>
+
+  <p><strong>Prerequisites.</strong> Some items require the wielder to belong to a specific class, possess a certain alignment, or meet other conditions before attunement can occur.</p>
+
+  <p><strong>Ending Attunement.</strong> Attunement ends if the creature no longer satisfies the prerequisites, if another creature attunes to the item, if the creature is more than 100 feet from the item for 24 hours, if the creature dies, or if the creature voluntarily ends the bond during a short rest.</p>
+
+  <table class="phb-table">
+    <caption>Attunement Prerequisites by Item</caption>
+    <thead><tr><th>Prerequisite</th><th>Meaning</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td>Class</td><td>Must be a member of the specified class</td><td>Holy Avenger (Paladin), Staff of the Magi (Sorcerer, Warlock, or Wizard)</td></tr>
+      <tr><td>Spellcaster</td><td>Must be able to cast at least one spell</td><td>Wand of the War Mage, Staff of Power</td></tr>
+      <tr><td>Alignment</td><td>Must match the item's alignment</td><td>Moonblade (Neutral Good Elf/Half-Elf)</td></tr>
+      <tr><td>Race/Lineage</td><td>Must belong to a specific race</td><td>Axe of the Dwarvish Lords (Dwarf), Moonblade (Elf/Half-Elf)</td></tr>
+      <tr><td>None</td><td>Any creature can attune</td><td>Cloak of Protection, Ring of Spell Storing</td></tr>
+    </tbody>
+  </table>
+
+  <!-- IDENTIFICATION -->
+  <h2 class="section-title" id="identification">Identifying Magic Items</h2>
+
+  <p>The most common method of identifying a magic item is the <em>identify</em> spell. However, a short rest spent focusing on an item also reveals its properties and how to use them, along with the number of charges it holds (if any). Potions are an exception — a small taste is enough to identify one.</p>
+
+  <p>Some items bear visual cues to their magical nature: faintly glowing runes, an unusual heft, warmth or cold to the touch, or an aura visible under <em>detect magic</em>. A cursed item, however, typically appears beneficial until its true nature manifests.</p>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">Variant: More Difficult Identification</div>
+    <p>Under this variant rule, a short rest does not reveal an item's properties. The <em>identify</em> spell, an Arcana check (DC set by the DM based on rarity), or experimentation over time are the only methods. This variant makes items more mysterious and can enhance the drama of discovering a powerful artifact.</p>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER II ==================== -->
+<section class="chapter" id="ch2">
+  <div class="chapter-number">Chapter II</div>
+  <h1 class="chapter-title">Weapons of Legend</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">The weapons in this chapter represent the pinnacle of magical armament — legendary instruments of war that have turned the tides of history. Each entry includes a full mechanical stat block, lore, and design notes for Dungeon Masters seeking to introduce these items into their campaigns.</p>
+
+  <!-- VORPAL SWORD -->
+  <h2 class="section-title" id="vorpal">Vorpal Sword</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Vorpal Sword <span class="rarity legendary">Legendary</span></div>
+    <div class="stat-type">Weapon (any sword that deals slashing damage), legendary (requires attunement)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">You gain a <strong>+3 bonus</strong> to attack and damage rolls made with this magic weapon. In addition, the weapon ignores resistance to slashing damage.</p>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Vorpal Strike.</strong> When you attack a creature that has at least one head with this weapon and roll a 20 on the attack roll, you cut off one of the creature's heads. The creature dies if it can't survive without the lost head. A creature is immune to this effect if it is immune to slashing damage, doesn't have or need a head, has legendary actions, or the DM decides that the creature is too big for its head to be cut off with this weapon. Such a creature instead takes an extra <strong>6d8 slashing damage</strong> from the hit.</p>
+    <div class="stat-divider"></div>
+    <div class="stat-props">
+      <div class="prop"><strong>Type:</strong> Slashing Sword</div>
+      <div class="prop"><strong>Attunement:</strong> Yes</div>
+      <div class="prop"><strong>Weight:</strong> Varies by base weapon</div>
+    </div>
+  </div>
+
+  <div class="power-bar"><span class="label">Offense</span><div class="bar"><div class="fill max" style="width:95%"></div></div></div>
+  <div class="power-bar"><span class="label">Defense</span><div class="bar"><div class="fill low" style="width:10%"></div></div></div>
+  <div class="power-bar"><span class="label">Utility</span><div class="bar"><div class="fill low" style="width:15%"></div></div></div>
+  <div class="power-bar"><span class="label">Overall</span><div class="bar"><div class="fill max" style="width:85%"></div></div></div>
+
+  <p>The vorpal sword is the quintessential killing weapon. Its ability to decapitate on a natural 20 makes it one of the most feared weapons in existence. Against creatures without legendary actions, a single lucky strike can end an encounter outright — no saving throw, no death saves, just a severed head rolling across the floor. Against sturdier foes with legendary actions, the 6d8 bonus damage on a critical is still devastating.</p>
+
+  <!-- BLACKRAZOR -->
+  <h2 class="section-title" id="blackrazor">Blackrazor</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Blackrazor <span class="rarity legendary">Legendary</span></div>
+    <div class="stat-type">Weapon (greatsword), legendary (requires attunement by a creature of non-lawful alignment)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">You gain a <strong>+3 bonus</strong> to attack and damage rolls made with this magic weapon. It has the following additional properties.</p>
+    <p class="stat-line"><strong>Devour Soul.</strong> Whenever you use Blackrazor to reduce a creature to 0 hit points, the sword slays the creature and devours its soul (unless the creature is a construct or undead). A creature whose soul has been devoured can be restored only by a <em>wish</em> spell. When it devours a soul, you gain temporary hit points equal to the slain creature's hit point maximum. These temporary hit points last for 24 hours.</p>
+    <p class="stat-line"><strong>Haste.</strong> While holding Blackrazor, you can cast <em>haste</em> on yourself once per day. The sword maintains concentration on the spell, freeing you to concentrate on a different spell.</p>
+    <p class="stat-line"><strong>Soul Awareness.</strong> While you hold Blackrazor, you are aware of the presence of Tiny or larger creatures within 60 feet that aren't constructs or undead.</p>
+    <p class="stat-line"><strong>Immunities.</strong> While attuned, you can't be charmed or frightened.</p>
+    <div class="stat-divider"></div>
+    <div class="stat-props">
+      <div class="prop"><strong>Sentient:</strong> Yes (Chaotic Neutral)</div>
+      <div class="prop"><strong>INT:</strong> 17</div>
+      <div class="prop"><strong>WIS:</strong> 10</div>
+      <div class="prop"><strong>CHA:</strong> 19</div>
+      <div class="prop"><strong>Communication:</strong> Telepathy</div>
+      <div class="prop"><strong>Senses:</strong> Hearing, darkvision 120 ft.</div>
+    </div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Personality.</strong> Blackrazor speaks in a haughty, imperious tone. Its purpose is to consume souls. It craves the act of killing and grows impatient during long periods without combat. If denied souls, Blackrazor may attempt to take control of its wielder (Charisma contest).</p>
+  </div>
+
+  <div class="power-bar"><span class="label">Offense</span><div class="bar"><div class="fill godly" style="width:98%"></div></div></div>
+  <div class="power-bar"><span class="label">Defense</span><div class="bar"><div class="fill mid" style="width:50%"></div></div></div>
+  <div class="power-bar"><span class="label">Utility</span><div class="bar"><div class="fill mid" style="width:55%"></div></div></div>
+  <div class="power-bar"><span class="label">Overall</span><div class="bar"><div class="fill godly" style="width:92%"></div></div></div>
+
+  <!-- HOLY AVENGER -->
+  <h2 class="section-title" id="holyavenger">Holy Avenger</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Holy Avenger <span class="rarity legendary">Legendary</span></div>
+    <div class="stat-type">Weapon (any sword), legendary (requires attunement by a paladin)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">You gain a <strong>+3 bonus</strong> to attack and damage rolls made with this magic weapon. When you hit a fiend or an undead with it, that creature takes an extra <strong>2d10 radiant damage</strong>.</p>
+    <p class="stat-line"><strong>Protective Aura.</strong> While you hold the drawn sword, it creates a 10-foot-radius aura around you. You and all creatures friendly to you in the aura have advantage on saving throws against spells and other magical effects. If you have 17 or more levels in the paladin class, the radius of the aura increases to 30 feet.</p>
+    <div class="stat-divider"></div>
+    <div class="stat-props">
+      <div class="prop"><strong>Type:</strong> Any Sword</div>
+      <div class="prop"><strong>Attunement:</strong> Paladin Only</div>
+      <div class="prop"><strong>Aura:</strong> 10 ft. (30 ft. at Paladin 17+)</div>
+    </div>
+  </div>
+
+  <!-- STAFF OF THE MAGI -->
+  <h2 class="section-title" id="staffmagi">Staff of the Magi</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Staff of the Magi <span class="rarity legendary">Legendary</span></div>
+    <div class="stat-type">Staff, legendary (requires attunement by a sorcerer, warlock, or wizard)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">This staff can be wielded as a magic quarterstaff that grants a <strong>+2 bonus</strong> to attack and damage rolls made with it. While you hold it, you gain a <strong>+2 bonus</strong> to spell attack rolls.</p>
+    <p class="stat-line"><strong>Spell Absorption.</strong> While holding the staff, you have advantage on saving throws against spells. In addition, you can use your reaction when another creature casts a spell that targets only you. If you do, the staff absorbs the magic of the spell, canceling its effect and gaining a number of charges equal to the absorbed spell's level. If this brings the staff's total charges above 50, the staff explodes (see Retributive Strike).</p>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Charges.</strong> The staff has <strong>50 charges</strong> for the following properties. It regains 4d6 + 2 expended charges daily at dawn. If you expend the last charge, roll a d20. On a 20, the staff regains 1d12 + 1 charges.</p>
+    <div class="spell-list">
+      <strong>At Will (0 charges):</strong> <em>arcane lock, detect magic, enlarge/reduce, light, mage hand, protection from evil and good</em><br>
+      <strong>1 charge each:</strong> <em>dispel magic, fireball (7th level), flaming sphere, ice storm, invisibility, knock, lightning bolt (7th level), passwall, web</em><br>
+      <strong>4 charges:</strong> <em>conjure elemental, telekinesis</em><br>
+      <strong>7 charges:</strong> <em>plane shift</em>
+    </div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Retributive Strike.</strong> You can break the staff over your knee as an action, triggering a devastating explosion. Each creature in a 30-foot-radius sphere centered on you takes force damage equal to 16 × the remaining charges. You have a 50% chance of being transported to a random plane instead of taking damage; otherwise you take the full damage.</p>
+    <div class="stat-divider"></div>
+    <div class="stat-props">
+      <div class="prop"><strong>Max Charges:</strong> 50</div>
+      <div class="prop"><strong>Recharge:</strong> 4d6+2 at dawn</div>
+      <div class="prop"><strong>Spell Save DC:</strong> Uses your own</div>
+    </div>
+  </div>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">The Retributive Strike: Last Resort</div>
+    <p>Breaking the Staff of the Magi is perhaps the single most devastating action a player character can take. With all 50 charges, the explosion deals <strong>800 force damage</strong> within a 30-foot sphere. Even divided (you take half, split among all creatures), this is enough to obliterate virtually anything. The 50% chance of planar travel instead of death makes it a legendary gamble — the stuff campaigns are made of.</p>
+  </div>
+
+  <div class="power-bar"><span class="label">Offense</span><div class="bar"><div class="fill godly" style="width:95%"></div></div></div>
+  <div class="power-bar"><span class="label">Defense</span><div class="bar"><div class="fill max" style="width:90%"></div></div></div>
+  <div class="power-bar"><span class="label">Utility</span><div class="bar"><div class="fill godly" style="width:98%"></div></div></div>
+  <div class="power-bar"><span class="label">Overall</span><div class="bar"><div class="fill godly" style="width:97%"></div></div></div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER III ==================== -->
+<section class="chapter" id="ch3">
+  <div class="chapter-number">Chapter III</div>
+  <h1 class="chapter-title">Artifacts of the Ages</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">Artifacts transcend legendary status. Each is unique — forged by gods, shaped by cataclysmic events, or imbued with the essence of beings whose power defies mortal comprehension. An artifact cannot be destroyed by any ordinary means. Each has specific destruction conditions that often require quests unto themselves.</p>
+
+  <p>All artifacts carry <strong>random properties</strong> — beneficial and detrimental — rolled or selected by the DM. These properties are in addition to the artifact's fixed abilities and make each one unique even across different campaigns.</p>
+
+  <table class="phb-table">
+    <caption>Artifact Random Properties</caption>
+    <thead><tr><th>Property Type</th><th>Minor</th><th>Major</th></tr></thead>
+    <tbody>
+      <tr><td>Beneficial</td><td>Resistance to a damage type, +1 to AC, advantage on one type of save</td><td>Immunity to a condition, regain hit points at dawn, flying speed of 30 ft.</td></tr>
+      <tr><td>Detrimental</td><td>Disadvantage on one type of save, vulnerability to a damage type, cosmetic mutation</td><td>Afflicted with a curse, takes damage at dawn, attracts hostile extraplanar creatures</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SWORD OF KAS -->
+  <h2 class="section-title" id="swordkas">Sword of Kas</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Sword of Kas <span class="rarity artifact">Artifact</span></div>
+    <div class="stat-type">Weapon (longsword), artifact (requires attunement)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">You gain a <strong>+3 bonus</strong> to attack and damage rolls made with this magic weapon, which deals an extra <strong>2d10 slashing damage</strong> to undead.</p>
+    <p class="stat-line"><strong>Random Properties:</strong> 1 minor beneficial, 1 major beneficial, 1 minor detrimental, 1 major detrimental.</p>
+    <p class="stat-line"><strong>Spirit of Kas.</strong> While attuned, your Strength score becomes 22 (if not already higher). You gain advantage on attack rolls against Vecna and advantage on saving throws against spells cast by Vecna.</p>
+    <p class="stat-line"><strong>Spells.</strong> While the sword is on your person, you can cast: <em>call lightning, divine word,</em> and <em>finger of death</em>. Once used, a property can't be used again until the next dawn.</p>
+    <div class="stat-divider"></div>
+    <div class="stat-props">
+      <div class="prop"><strong>Sentient:</strong> Yes (Chaotic Evil)</div>
+      <div class="prop"><strong>INT:</strong> 15</div>
+      <div class="prop"><strong>WIS:</strong> 13</div>
+      <div class="prop"><strong>CHA:</strong> 16</div>
+      <div class="prop"><strong>Purpose:</strong> Destroy Vecna</div>
+    </div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Personality.</strong> The sword hungers for revenge against Vecna above all else. It will attempt to dominate any wielder who does not pursue the destruction of the archlich. It communicates telepathically and can attempt to charm its wielder during moments of weakness.</p>
+    <p class="stat-line"><strong>Destroying the Sword.</strong> A creature attuned to both the Eye and Hand of Vecna can use the <em>wish</em> property of those combined artifacts to unmake the Sword of Kas. This is the only known method of destroying it.</p>
+  </div>
+
+  <!-- EYE & HAND OF VECNA -->
+  <h2 class="section-title" id="vecna">Eye & Hand of Vecna</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Eye of Vecna <span class="rarity artifact">Artifact</span></div>
+    <div class="stat-type">Wondrous item, artifact (requires attunement)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Attaching the Eye.</strong> To attune to the eye, you must gouge out your own eye and press the artifact into your empty socket. The eye grafts itself to your skull and remains until you die.</p>
+    <p class="stat-line"><strong>Properties.</strong> While attuned, your alignment shifts one step toward neutral evil. You gain truesight out to 120 feet. You can use an action to see as if wearing a <em>ring of X-ray vision</em>. You can cast <em>clairvoyance</em> at will.</p>
+    <p class="stat-line"><strong>Random Properties:</strong> 1 minor beneficial, 1 major beneficial, 1 minor detrimental.</p>
+  </div>
+
+  <div class="stat-block anim-item" style="margin-top:16px">
+    <div class="stat-name">Hand of Vecna <span class="rarity artifact">Artifact</span></div>
+    <div class="stat-type">Wondrous item, artifact (requires attunement)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Attaching the Hand.</strong> To attune to the hand, you must lop off your left hand at the wrist and press the artifact against the stump. The hand grafts itself to your arm and becomes fully functional.</p>
+    <p class="stat-line"><strong>Properties.</strong> While attuned, your Strength becomes 20 (if not already higher). Any melee spell attack you make with the hand deals an extra 2d8 cold damage. You can cast <em>finger of death</em> and <em>sleep</em> (as a 5th-level spell) at will.</p>
+    <p class="stat-line"><strong>Combined Power.</strong> If a creature is attuned to both the Hand and Eye simultaneously, it can cast <em>wish</em> once every 30 days. Using it for any purpose other than duplicating a spell has a 5% chance of causing Vecna to appear and reclaim both artifacts.</p>
+  </div>
+
+  <!-- ORB OF DRAGONKIND -->
+  <h2 class="section-title" id="orbdragon">Orb of Dragonkind</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Orb of Dragonkind <span class="rarity artifact">Artifact</span></div>
+    <div class="stat-type">Wondrous item, artifact (requires attunement)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line"><strong>Random Properties:</strong> 2 minor beneficial, 1 minor detrimental, 1 major detrimental.</p>
+    <p class="stat-line"><strong>Spells.</strong> The orb has 7 charges and regains 1d4 + 3 charges daily at dawn. While attuned, you can expend 1+ charges to cast: <em>cure wounds</em> (5th level, 3 charges), <em>daylight</em> (1 charge), <em>death ward</em> (2 charges), <em>scrying</em> (3 charges).</p>
+    <p class="stat-line"><strong>Call Dragons.</strong> While controlling the orb, you can use an action to call all dragons within 40 miles. Each dragon must make a DC 18 Wisdom saving throw or be compelled to travel toward you by the most expedient means.</p>
+    <p class="stat-line"><strong>Control.</strong> You must succeed on a DC 15 Charisma check when first attuning. On failure, you become charmed by the orb (DC 18 <em>suggestion</em> at will on you).</p>
+    <p class="stat-line"><strong>Destroying the Orb.</strong> An orb can be destroyed only by crushing it beneath the foot of a dragon of the same type as the dragon essence trapped within it, and that dragon must willingly do so.</p>
+  </div>
+
+  <!-- AXE OF DWARVISH LORDS -->
+  <h2 class="section-title" id="axedwarvish">Axe of the Dwarvish Lords</h2>
+
+  <div class="stat-block anim-item">
+    <div class="stat-name">Axe of the Dwarvish Lords <span class="rarity artifact">Artifact</span></div>
+    <div class="stat-type">Weapon (battleaxe), artifact (requires attunement by a dwarf)</div>
+    <div class="stat-divider"></div>
+    <p class="stat-line">You gain a <strong>+3 bonus</strong> to attack and damage rolls made with this magic axe. The axe functions as a <em>dwarven thrower</em> and a <em>sword of sharpness</em> (adapted for an axe).</p>
+    <p class="stat-line"><strong>Random Properties:</strong> 2 minor beneficial, 1 major beneficial, 2 minor detrimental.</p>
+    <p class="stat-line"><strong>Conjure Earth Elemental.</strong> If you are holding the axe, you can cast <em>conjure elemental</em> (earth elemental only) once per dawn.</p>
+    <p class="stat-line"><strong>Travel the Depths.</strong> You can cast <em>teleport</em> once per 3 days. The destination must be within a mountain, hill, or underground structure you have visited.</p>
+    <p class="stat-line"><strong>Curse.</strong> Non-dwarf creatures that attune to the axe experience gradual physical transformation: facial hair growth, height reduction by 1 inch per day (to a minimum of 4 feet), and a compulsion to braid their hair. These effects reverse only if the axe's attunement ends.</p>
+    <p class="stat-line"><strong>Destroying the Axe.</strong> The only way to destroy the axe is to melt it in the magma forge of the dwarven god Moradin — an act that Moradin must personally sanction.</p>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER IV ==================== -->
+<section class="chapter" id="ch4">
+  <div class="chapter-number">Chapter IV</div>
+  <h1 class="chapter-title">Armor & Wondrous Items</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">Not all magic is bound in blades. Armor that turns aside arcane fire, cloaks that fold shadows around the wearer, belts that grant the strength of giants — the category of magical protections and wondrous items is vast and varied. This chapter surveys the most notable examples across every rarity tier.</p>
+
+  <h2 class="section-title" id="armorplus">Enchanted Armor</h2>
+
+  <table class="phb-table">
+    <caption>Notable Magic Armor</caption>
+    <thead><tr><th>Armor</th><th>Rarity</th><th>Type</th><th>Key Property</th></tr></thead>
+    <tbody>
+      <tr><td>+1 Shield</td><td><span class="rarity uncommon">Uncommon</span></td><td>Shield</td><td>+1 bonus to AC (on top of shield's +2)</td></tr>
+      <tr><td>Mithral Armor</td><td><span class="rarity uncommon">Uncommon</span></td><td>Medium/Heavy</td><td>No Stealth disadvantage, no Strength requirement</td></tr>
+      <tr><td>Adamantine Armor</td><td><span class="rarity uncommon">Uncommon</span></td><td>Medium/Heavy</td><td>Critical hits become normal hits</td></tr>
+      <tr><td>Dragon Scale Mail</td><td><span class="rarity very-rare">Very Rare</span></td><td>Scale Mail</td><td>Resistance to dragon type's damage, advantage on saves vs. dragon breath</td></tr>
+      <tr><td>Demon Armor</td><td><span class="rarity very-rare">Very Rare</span></td><td>Plate</td><td>+1 AC, unarmed strike deals 1d8+STR slashing, cursed (can't doff)</td></tr>
+      <tr><td>Armor of Invulnerability</td><td><span class="rarity legendary">Legendary</span></td><td>Plate</td><td>Resistance to nonmagical damage; action to gain immunity for 10 min (1/day)</td></tr>
+      <tr><td>Plate Armor of Etherealness</td><td><span class="rarity legendary">Legendary</span></td><td>Plate</td><td>Cast <em>etherealness</em> once per long rest</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="wondrous">Wondrous Items</h2>
+
+  <p>Wondrous items form the broadest category of magic items — a catch-all for objects that don't fit neatly into weapons, armor, potions, or scrolls. These include cloaks, boots, belts, helms, rings, amulets, orbs, figurines, and stranger things. Below is a sampling across rarity tiers.</p>
+
+  <table class="phb-table">
+    <caption>Wondrous Items by Rarity</caption>
+    <thead><tr><th>Item</th><th>Rarity</th><th>Key Property</th></tr></thead>
+    <tbody>
+      <tr><td>Bag of Holding</td><td><span class="rarity uncommon">Uncommon</span></td><td>Extradimensional space holds up to 500 lbs / 64 cu. ft.</td></tr>
+      <tr><td>Cloak of Protection</td><td><span class="rarity uncommon">Uncommon</span></td><td>+1 to AC and saving throws</td></tr>
+      <tr><td>Boots of Speed</td><td><span class="rarity rare">Rare</span></td><td>Double walking speed for 10 min; click heels to activate</td></tr>
+      <tr><td>Cloak of Displacement</td><td><span class="rarity rare">Rare</span></td><td>Attackers have disadvantage; ends on hit, resets at start of your turn</td></tr>
+      <tr><td>Belt of Giant Strength</td><td><span class="rarity very-rare">Very Rare+</span></td><td>Sets Strength to 21–29 depending on giant type</td></tr>
+      <tr><td>Robe of the Archmagi</td><td><span class="rarity legendary">Legendary</span></td><td>AC 15 + Dex, advantage on spell saves, +2 spell save DC and attack</td></tr>
+      <tr><td>Deck of Many Things</td><td><span class="rarity legendary">Legendary</span></td><td>Draw cards for wildly powerful and dangerous effects</td></tr>
+      <tr><td>Ring of Three Wishes</td><td><span class="rarity legendary">Legendary</span></td><td>Cast <em>wish</em> up to three times</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">The Deck of Many Things: Handle with Care</div>
+    <p>The Deck of Many Things is perhaps the most campaign-altering item in the entire game. A single draw can grant a keep, a rare magic item, or the service of a warrior — or it can imprison your soul, strip you of all possessions, or pit you against an avatar of death. Many DMs approach this item with extreme caution, and for good reason: it can upend a campaign in a single moment. Use it as a narrative climax, not a random treasure drop.</p>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER V ==================== -->
+<section class="chapter" id="ch5">
+  <div class="chapter-number">Chapter V</div>
+  <h1 class="chapter-title">Sentient Items</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">Some magic items possess sentience and personality — they think, they feel, they scheme. Such an item might be possessed, haunted by the spirit of a previous owner, or rendered self-aware through the sheer potency of the magic used to forge it. A sentient item behaves like a character, complete with personality quirks, ideals, bonds, and flaws. Most sentient items are weapons. Consumable items such as potions and scrolls are never sentient.</p>
+
+  <div class="read-aloud">
+    "The blade whispered to me as I drew it from the scabbard. Not in words — not at first. It was more like a current of warmth, a feeling of righteous anger that I knew was not my own. By the third day, it spoke my name. By the tenth, I wasn't sure whose thoughts were whose."<br>
+    — Journal of Ser Valdris Thorn, Knight of the Radiant Order
+  </div>
+
+  <h2 class="section-title" id="sentient-creation">Creating Sentient Items</h2>
+
+  <h3 class="subsection-title">Mental Ability Scores</h3>
+  <p>A sentient item has Intelligence, Wisdom, and Charisma scores. Roll <strong>4d6 drop the lowest</strong> for each, or assign scores appropriate to the item's nature. A battle-hungry greatsword might have high Charisma (force of personality) but low Wisdom (poor judgment). A contemplative spellbook might have towering Intelligence but modest Charisma.</p>
+
+  <h3 class="subsection-title">Alignment</h3>
+  <table class="phb-table">
+    <caption>Sentient Item Alignment (d100)</caption>
+    <thead><tr><th>d100</th><th>Alignment</th></tr></thead>
+    <tbody>
+      <tr><td>01–15</td><td>Lawful Good</td></tr>
+      <tr><td>16–35</td><td>Neutral Good</td></tr>
+      <tr><td>36–50</td><td>Chaotic Good</td></tr>
+      <tr><td>51–63</td><td>Lawful Neutral</td></tr>
+      <tr><td>64–73</td><td>True Neutral</td></tr>
+      <tr><td>74–85</td><td>Chaotic Neutral</td></tr>
+      <tr><td>86–89</td><td>Lawful Evil</td></tr>
+      <tr><td>90–96</td><td>Neutral Evil</td></tr>
+      <tr><td>97–00</td><td>Chaotic Evil</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="communication">Communication</h2>
+
+  <table class="phb-table">
+    <caption>Sentient Item Communication (d100)</caption>
+    <thead><tr><th>d100</th><th>Communication Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>01–60</td><td>Empathic</td><td>Shares emotions only — warmth, cold, anger, satisfaction, fear. The wielder senses these as gut feelings distinct from their own emotions.</td></tr>
+      <tr><td>61–90</td><td>Telepathic</td><td>Can communicate full sentences and complex thoughts to the wielder. May also share sensory impressions, memories, or mental images.</td></tr>
+      <tr><td>91–00</td><td>Speech</td><td>Can speak aloud in one or more languages. Other creatures can hear the item's voice. Some items sing, hum, mutter, or scream.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection-title">Senses</h3>
+  <table class="phb-table">
+    <caption>Sentient Item Senses (d4)</caption>
+    <thead><tr><th>d4</th><th>Senses</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Hearing and normal vision out to 30 ft.</td></tr>
+      <tr><td>2</td><td>Hearing and normal vision out to 60 ft.</td></tr>
+      <tr><td>3</td><td>Hearing and darkvision out to 120 ft.</td></tr>
+      <tr><td>4</td><td>Hearing and truesight out to 120 ft.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="conflict">Conflict & Control</h2>
+
+  <p>A sentient item has a will of its own. If its wielder acts in a manner opposed to the item's alignment or purpose, <strong>conflict</strong> can arise. When conflict occurs:</p>
+
+  <p><strong>Step 1: Contest.</strong> The item makes a Charisma check contested by the wielder's Charisma check.</p>
+
+  <p><strong>Step 2: Demands.</strong> If the item wins, it may demand: to be carried at all times, that the wielder dispose of items the sentient item finds repugnant, that its goals be pursued exclusively, or that it be given to someone else.</p>
+
+  <p><strong>Step 3: Consequences.</strong> If the wielder refuses to comply, the item can: suppress its activated properties, make attunement impossible, or <strong>attempt to take control of the wielder</strong> (the wielder is charmed by the item for 1d12 hours on a failed Charisma save, DC = 12 + item's Charisma modifier).</p>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">Roleplaying Sentient Item Conflicts</div>
+    <p>The best sentient item conflicts feel like a relationship, not a mechanic. The DM should voice the item, give it consistent personality traits, and let the tension build organically. A chaotic neutral blade that starts as a fun companion but gradually becomes possessive and demanding creates far more memorable gameplay than a simple contested Charisma check.</p>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER VI ==================== -->
+<section class="chapter" id="ch6">
+  <div class="chapter-number">Chapter VI</div>
+  <h1 class="chapter-title">Crafting & Forging</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">The creation of magic items is among the most closely guarded arts in the multiverse. It requires mastery of arcane theory, access to rare materials, and — for the most powerful items — sacrifices that few are willing to make. This chapter presents comprehensive rules for player characters and NPCs who wish to forge their own magical arms and armor.</p>
+
+  <h2 class="section-title" id="crafting-rules">Crafting Rules</h2>
+
+  <table class="phb-table">
+    <caption>Magic Item Crafting Requirements</caption>
+    <thead><tr><th>Rarity</th><th>Min. Level</th><th>Creation Cost (gp)</th><th>Workweeks</th><th>Proficiency</th></tr></thead>
+    <tbody>
+      <tr><td><span class="rarity common">Common</span></td><td>3rd</td><td>50</td><td>1</td><td>Tool proficiency matching the item</td></tr>
+      <tr><td><span class="rarity uncommon">Uncommon</span></td><td>3rd</td><td>200</td><td>2</td><td>Tool proficiency + relevant spell</td></tr>
+      <tr><td><span class="rarity rare">Rare</span></td><td>6th</td><td>2,000</td><td>10</td><td>Tool proficiency + relevant spell + rare component</td></tr>
+      <tr><td><span class="rarity very-rare">Very Rare</span></td><td>11th</td><td>20,000</td><td>25</td><td>Multiple proficiencies + rare components + exotic forge</td></tr>
+      <tr><td><span class="rarity legendary">Legendary</span></td><td>17th</td><td>100,000</td><td>50</td><td>Master-level proficiency + legendary component + divine sanction</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection-title">The Crafting Process</h3>
+
+  <p><strong>Step 1: Formula.</strong> You must possess the item's formula — a document describing the item's creation process, required materials, and specific magical procedures. Formulas for common and uncommon items can sometimes be purchased (100–500 gp). Formulas for rare and higher items must be discovered through quests, research, or bargaining with powerful entities.</p>
+
+  <p><strong>Step 2: Materials.</strong> You need a nonmagical version of the item (or the raw materials to create one), plus one or more special components. Higher-rarity items require rarer and more dangerous components — see the Materials section below.</p>
+
+  <p><strong>Step 3: The Work.</strong> Each workweek of crafting requires 8 hours of work per day, 5 days per week. Multiple characters can combine their efforts, dividing the total time required among them. Each contributing character must meet the level and proficiency requirements.</p>
+
+  <p><strong>Step 4: Complications.</strong> At the DM's discretion, crafting may trigger complications — rival interest, material degradation, magical mishaps, or the attention of extraplanar beings. Roll on the Crafting Complications table when appropriate.</p>
+
+  <h2 class="section-title" id="materials">Materials & Components</h2>
+
+  <table class="phb-table">
+    <caption>Exotic Crafting Materials</caption>
+    <thead><tr><th>Material</th><th>Source</th><th>Properties</th><th>Rarity Tier</th></tr></thead>
+    <tbody>
+      <tr><td>Adamantine</td><td>Deep mines, elemental earth</td><td>Virtually indestructible; critical hit immunity</td><td>Uncommon+</td></tr>
+      <tr><td>Mithral</td><td>Underdark veins, dwarven hoards</td><td>Half-weight metal; no disadvantage on Stealth</td><td>Uncommon+</td></tr>
+      <tr><td>Dragon Scales</td><td>Slain dragon</td><td>Elemental resistance matching dragon type</td><td>Very Rare</td></tr>
+      <tr><td>Star Metal (Meteoric Iron)</td><td>Fallen meteorites</td><td>Extra radiant damage; effective against fiends</td><td>Rare+</td></tr>
+      <tr><td>Infernal Iron</td><td>Avernus, the Nine Hells</td><td>Fire-resistant; soul-trapping potential</td><td>Rare+</td></tr>
+      <tr><td>Feywild Heartwood</td><td>Ancient treants, Feywild</td><td>Enhances enchantment and illusion magic</td><td>Rare</td></tr>
+      <tr><td>Astral Silver</td><td>Astral Plane mining</td><td>Bypasses resistances of planar creatures</td><td>Very Rare</td></tr>
+      <tr><td>Primordial Crystal</td><td>Elemental Chaos remnants</td><td>Stores raw elemental energy; volatile</td><td>Legendary</td></tr>
+      <tr><td>Divine Ichor</td><td>Wounded or willing deity</td><td>Elevates item to artifact status; sentience risk</td><td>Artifact</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="enchanting">Enchanting</h2>
+
+  <p>Enchanting is the process of imbuing a nonmagical (or already magical) object with new magical properties. It differs from crafting in that enchanting modifies an existing item rather than creating one from scratch.</p>
+
+  <table class="phb-table">
+    <caption>Enchantment Types</caption>
+    <thead><tr><th>Enchantment</th><th>Effect</th><th>Min. Spell Level</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Enhancement (+1/+2/+3)</td><td>Bonus to attack/damage or AC</td><td>3rd / 5th / 9th</td><td>200 / 2,000 / 20,000 gp</td></tr>
+      <tr><td>Elemental Infusion</td><td>Extra 1d6 elemental damage</td><td>3rd</td><td>500 gp + elemental gem</td></tr>
+      <tr><td>Spell Storing</td><td>Stores a spell for later use</td><td>Equal to stored spell</td><td>500 × spell level</td></tr>
+      <tr><td>Resistance</td><td>Resistance to one damage type</td><td>3rd</td><td>1,000 gp + rare material</td></tr>
+      <tr><td>Sentience Awakening</td><td>Grants sentience to the item</td><td>7th+</td><td>10,000 gp + soul gem or willing spirit</td></tr>
+      <tr><td>Planar Binding</td><td>Binds item to a specific plane</td><td>5th</td><td>5,000 gp + planar material</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sidebar-box">
+    <div class="sidebar-title">Crafting Complications (d6)</div>
+    <p><strong>1.</strong> A rival artificer learns of your work and attempts to steal the item or its formula.<br>
+    <strong>2.</strong> The magical energies attract the attention of an extraplanar entity (demon, fey lord, or celestial).<br>
+    <strong>3.</strong> A critical material component degrades during the process. You must acquire a replacement or accept a flaw in the final item.<br>
+    <strong>4.</strong> The item develops an unintended minor magical property (roll on the Minor Magical Property table).<br>
+    <strong>5.</strong> The enchantment process causes a wild magic surge. Roll on the Wild Magic Surge table.<br>
+    <strong>6.</strong> No complication. The crafting proceeds without incident.</p>
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER VII ==================== -->
+<section class="chapter" id="ch7">
+  <div class="chapter-number">Chapter VII</div>
+  <h1 class="chapter-title">D20 Random Tables</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">Sometimes the most memorable items in a campaign are the ones nobody planned for. The following tables let you generate unique magic items on the fly using a d20 — from the base weapon to its enchantment, appearance, quirks, history, and potential curses.</p>
+
+  <!-- WEAPON GENERATOR -->
+  <h2 class="section-title" id="weapon-gen"><span class="d20-icon">20</span> Random Weapon Generator</h2>
+
+  <table class="phb-table">
+    <caption>Base Weapon Type (d20)</caption>
+    <thead><tr><th>d20</th><th>Weapon</th><th>Damage</th><th>Properties</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Dagger</td><td>1d4 piercing</td><td>Finesse, light, thrown (20/60)</td></tr>
+      <tr><td>2</td><td>Shortsword</td><td>1d6 piercing</td><td>Finesse, light</td></tr>
+      <tr><td>3</td><td>Longsword</td><td>1d8 slashing</td><td>Versatile (1d10)</td></tr>
+      <tr><td>4</td><td>Greatsword</td><td>2d6 slashing</td><td>Heavy, two-handed</td></tr>
+      <tr><td>5</td><td>Rapier</td><td>1d8 piercing</td><td>Finesse</td></tr>
+      <tr><td>6</td><td>Battleaxe</td><td>1d8 slashing</td><td>Versatile (1d10)</td></tr>
+      <tr><td>7</td><td>Greataxe</td><td>1d12 slashing</td><td>Heavy, two-handed</td></tr>
+      <tr><td>8</td><td>Warhammer</td><td>1d8 bludgeoning</td><td>Versatile (1d10)</td></tr>
+      <tr><td>9</td><td>Maul</td><td>2d6 bludgeoning</td><td>Heavy, two-handed</td></tr>
+      <tr><td>10</td><td>Morningstar</td><td>1d8 piercing</td><td>—</td></tr>
+      <tr><td>11</td><td>Flail</td><td>1d8 bludgeoning</td><td>—</td></tr>
+      <tr><td>12</td><td>Halberd</td><td>1d10 slashing</td><td>Heavy, reach, two-handed</td></tr>
+      <tr><td>13</td><td>Glaive</td><td>1d10 slashing</td><td>Heavy, reach, two-handed</td></tr>
+      <tr><td>14</td><td>Trident</td><td>1d6 piercing</td><td>Thrown (20/60), versatile (1d8)</td></tr>
+      <tr><td>15</td><td>Scimitar</td><td>1d6 slashing</td><td>Finesse, light</td></tr>
+      <tr><td>16</td><td>Spear</td><td>1d6 piercing</td><td>Thrown (20/60), versatile (1d8)</td></tr>
+      <tr><td>17</td><td>Longbow</td><td>1d8 piercing</td><td>Ammunition (150/600), heavy, two-handed</td></tr>
+      <tr><td>18</td><td>Hand Crossbow</td><td>1d6 piercing</td><td>Ammunition (30/120), light, loading</td></tr>
+      <tr><td>19</td><td>Quarterstaff</td><td>1d6 bludgeoning</td><td>Versatile (1d8)</td></tr>
+      <tr><td>20</td><td>Whip</td><td>1d4 slashing</td><td>Finesse, reach</td></tr>
+    </tbody>
+  </table>
+
+  <table class="phb-table">
+    <caption>Enchantment Type (d20)</caption>
+    <thead><tr><th>d20</th><th>Enchantment</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Flamebound</td><td>+1d6 fire damage on hit</td></tr>
+      <tr><td>2</td><td>Frostforged</td><td>+1d6 cold damage; hit creatures must save vs. reduced speed</td></tr>
+      <tr><td>3</td><td>Thunderstrike</td><td>+1d6 thunder damage; crit pushes target 10 ft.</td></tr>
+      <tr><td>4</td><td>Venom-Touched</td><td>+1d6 poison damage; target must save vs. poisoned condition</td></tr>
+      <tr><td>5</td><td>Radiant Edge</td><td>+1d6 radiant damage vs. fiends and undead</td></tr>
+      <tr><td>6</td><td>Shadow-Wreathed</td><td>+1d6 necrotic damage; wielder gains +2 to Stealth in dim light</td></tr>
+      <tr><td>7</td><td>Arcane Conduit</td><td>Can be used as spellcasting focus; +1 to spell attack rolls</td></tr>
+      <tr><td>8</td><td>Vampiric</td><td>On crit, regain HP equal to half damage dealt</td></tr>
+      <tr><td>9</td><td>Phase-Touched</td><td>Once per short rest, attack through walls/cover within 5 ft.</td></tr>
+      <tr><td>10</td><td>Gravitational</td><td>Can't be disarmed; thrown weapons return instantly</td></tr>
+      <tr><td>11</td><td>Warding</td><td>+1 to AC while wielded; cast <em>shield</em> once per long rest</td></tr>
+      <tr><td>12</td><td>Soulbound</td><td>Can be summoned to hand as bonus action from up to 60 ft.</td></tr>
+      <tr><td>13</td><td>Storm-Calling</td><td>+1d8 lightning damage; once per dawn, cast <em>call lightning</em></td></tr>
+      <tr><td>14</td><td>Chrono-Touched</td><td>Once per long rest, reroll an attack; must use new result</td></tr>
+      <tr><td>15</td><td>Fey-Kissed</td><td>+1d6 psychic damage; wielder gains darkvision 60 ft.</td></tr>
+      <tr><td>16</td><td>Titan-Forged</td><td>Counts as one size larger for damage purposes</td></tr>
+      <tr><td>17</td><td>Echo-Blade</td><td>On hit, make one additional attack as bonus action (1/short rest)</td></tr>
+      <tr><td>18</td><td>Nullifying</td><td>Dispels active magic on target; hit = DC 13 CON or lose concentration</td></tr>
+      <tr><td>19</td><td>Bloodthirsty</td><td>+2 to attack after you take damage (until end of next turn)</td></tr>
+      <tr><td>20</td><td>Awakened</td><td>Item is sentient! Roll on the Sentient Item tables in Chapter V</td></tr>
+    </tbody>
+  </table>
+
+  <!-- QUIRKS -->
+  <h2 class="section-title" id="quirks"><span class="d20-icon">20</span> Item Quirks & History</h2>
+
+  <table class="phb-table">
+    <caption>Minor Magical Quirks (d20)</caption>
+    <thead><tr><th>d20</th><th>Quirk</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>The item hums faintly when within 120 feet of a specific creature type (dragons, undead, fey, etc.)</td></tr>
+      <tr><td>2</td><td>Flowers bloom within 10 feet of the item when it's drawn or worn</td></tr>
+      <tr><td>3</td><td>The wielder's eyes change color while attuned (gold, silver, red, etc.)</td></tr>
+      <tr><td>4</td><td>The item weighs nothing — it feels as though it isn't there</td></tr>
+      <tr><td>5</td><td>The item is uncomfortably warm to the touch, always, as though sitting near a hearth</td></tr>
+      <tr><td>6</td><td>Small illusory motes of light drift from the item when used in combat</td></tr>
+      <tr><td>7</td><td>The item smells faintly of a specific substance: old books, lavender, brimstone, the sea</td></tr>
+      <tr><td>8</td><td>The item casts no shadow</td></tr>
+      <tr><td>9</td><td>Inscriptions on the item change languages each dawn</td></tr>
+      <tr><td>10</td><td>The item produces an audible tone when it strikes — like a tuning fork or a bell</td></tr>
+      <tr><td>11</td><td>Attuned creature has vivid, prophetic dreams about events from the item's past</td></tr>
+      <tr><td>12</td><td>The item leaves faintly glowing marks on surfaces it touches</td></tr>
+      <tr><td>13</td><td>Animals are uneasy around the item; horses shy, dogs growl</td></tr>
+      <tr><td>14</td><td>Rain never falls on the item or its wielder</td></tr>
+      <tr><td>15</td><td>The item occasionally whispers a single word in an unknown language</td></tr>
+      <tr><td>16</td><td>The wielder's hair grows noticeably faster while attuned</td></tr>
+      <tr><td>17</td><td>The item is always perfectly clean — blood, mud, and grime slide off</td></tr>
+      <tr><td>18</td><td>When the item deals a killing blow, the target briefly appears as a spectral echo</td></tr>
+      <tr><td>19</td><td>The item subtly changes its physical appearance over time — new engravings appear</td></tr>
+      <tr><td>20</td><td>When unsheathed or activated, nearby flames flicker and dim for a heartbeat</td></tr>
+    </tbody>
+  </table>
+
+  <table class="phb-table">
+    <caption>Item Origin / History (d20)</caption>
+    <thead><tr><th>d20</th><th>Origin</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Forged by a dwarven king to defend his people against a great dragon</td></tr>
+      <tr><td>2</td><td>Created by a lich as a trap — designed to corrupt its wielder over time</td></tr>
+      <tr><td>3</td><td>A gift from a celestial being to a champion who has long since died</td></tr>
+      <tr><td>4</td><td>Pulled from the corpse of a demon prince by a legendary adventurer</td></tr>
+      <tr><td>5</td><td>Grown from a seed planted in the Feywild during a rare eclipse</td></tr>
+      <tr><td>6</td><td>Found in the treasure hoard of an ancient dragon, origin unknown</td></tr>
+      <tr><td>7</td><td>Fashioned from meteor iron that fell during a prophesied celestial event</td></tr>
+      <tr><td>8</td><td>Created by a mad artificer who poured their own life force into the item</td></tr>
+      <tr><td>9</td><td>A relic of a fallen empire, the last remnant of a once-mighty civilization</td></tr>
+      <tr><td>10</td><td>Forged in the fires of Mount Celestia by a solar working on divine command</td></tr>
+      <tr><td>11</td><td>Stolen from a god's personal armory — the deity still wants it back</td></tr>
+      <tr><td>12</td><td>Created by elven bladesmiths over the course of a century-long ritual</td></tr>
+      <tr><td>13</td><td>The item is a transformed creature, polymorphed permanently into this form</td></tr>
+      <tr><td>14</td><td>Assembled from fragments found across three different planes of existence</td></tr>
+      <tr><td>15</td><td>Blessed by a dying cleric with their last breath and final prayer</td></tr>
+      <tr><td>16</td><td>An accidental creation — the byproduct of a failed teleportation circle</td></tr>
+      <tr><td>17</td><td>Part of a matched set of items, each held by a different legendary hero</td></tr>
+      <tr><td>18</td><td>The weapon of a long-dead god, fallen to the Material Plane during the Dawn War</td></tr>
+      <tr><td>19</td><td>Commissioned by a merchant prince as a status symbol — its power was unintended</td></tr>
+      <tr><td>20</td><td>Nobody knows. The item simply appeared one day, as if it had always been there</td></tr>
+    </tbody>
+  </table>
+
+  <!-- CURSES -->
+  <h2 class="section-title" id="curses"><span class="d20-icon">20</span> Curses</h2>
+
+  <table class="phb-table">
+    <caption>Item Curses (d20)</caption>
+    <thead><tr><th>d20</th><th>Curse</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Possessive</td><td>Can't be voluntarily parted with; attunement can't be ended willingly</td></tr>
+      <tr><td>2</td><td>Jealous</td><td>Other magic items within 5 ft. have their properties suppressed</td></tr>
+      <tr><td>3</td><td>Blood Price</td><td>Each use deals 1d4 necrotic damage to the wielder</td></tr>
+      <tr><td>4</td><td>Alignment Shift</td><td>Each week of attunement shifts alignment one step toward the item's alignment</td></tr>
+      <tr><td>5</td><td>Addiction</td><td>Each dawn, DC 12 WIS save or suffer disadvantage on all attacks not made with this weapon</td></tr>
+      <tr><td>6</td><td>Paranoia</td><td>Wielder becomes convinced allies are plotting against them; disadvantage on Insight checks</td></tr>
+      <tr><td>7</td><td>Fragile Mind</td><td>After each long rest, DC 10 WIS save or gain 1 level of exhaustion</td></tr>
+      <tr><td>8</td><td>Beacon</td><td>The item glows brightly in darkness (30 ft. bright, 30 ft. dim) and cannot be extinguished</td></tr>
+      <tr><td>9</td><td>Hunger</td><td>Wielder must eat double rations or gain no benefit from rests</td></tr>
+      <tr><td>10</td><td>Nightmares</td><td>Can't benefit from long rests unless a DC 13 WIS save succeeds</td></tr>
+      <tr><td>11</td><td>Recoil</td><td>On a natural 1, the wielder takes the weapon's damage</td></tr>
+      <tr><td>12</td><td>Time Debt</td><td>Wielder ages 1 year for every week of attunement</td></tr>
+      <tr><td>13</td><td>Phantom Pain</td><td>Wielder perceives pain from wounds even after healing (disadvantage on CON saves)</td></tr>
+      <tr><td>14</td><td>Cowardice</td><td>When below half HP, must succeed DC 14 WIS save or use action to Disengage and flee</td></tr>
+      <tr><td>15</td><td>Whispers</td><td>Wielder hears constant, distracting murmuring; disadvantage on Perception checks relying on hearing</td></tr>
+      <tr><td>16</td><td>Magnetic</td><td>Metallic objects within 10 ft. are pulled toward wielder (disadvantage on Stealth near metal)</td></tr>
+      <tr><td>17</td><td>Hollowing</td><td>One ability score of the DM's choice decreases by 1 for each month of attunement</td></tr>
+      <tr><td>18</td><td>Necrotic Aura</td><td>Plants wilt and small animals die within 10 feet; NPCs become uncomfortable</td></tr>
+      <tr><td>19</td><td>Memory Drain</td><td>After 30 days, wielder loses one meaningful memory (DM's choice)</td></tr>
+      <tr><td>20</td><td>Sentient Malice</td><td>The item is secretly sentient and evil; it pretends to be a normal item while subtly manipulating events</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== CHAPTER VIII ==================== -->
+<section class="chapter" id="ch8">
+  <div class="chapter-number">Chapter VIII</div>
+  <h1 class="chapter-title">Design & Aesthetics</h1>
+  <hr class="chapter-rule">
+
+  <p class="drop-cap">A magic item's visual design is as important as its mechanical properties. The way an item looks, feels, sounds, and even smells contributes to its presence in the narrative. This chapter provides DMs and players with tools and tables for designing visually distinctive and memorable magic items.</p>
+
+  <h2 class="section-title" id="visual-style">Visual Style by Rarity</h2>
+
+  <p>As items increase in rarity, their visual signature becomes more dramatic. A common magic item might look nearly identical to its mundane counterpart with only a subtle tell — a faint shimmer, an unusual heft. A legendary item, on the other hand, should be unmistakable: a weapon that hums with visible power, armor that seems to drink in light, a staff crowned with a gem that pulses like a heartbeat.</p>
+
+  <table class="phb-table">
+    <caption>Visual Design Guide by Rarity</caption>
+    <thead><tr><th>Rarity</th><th>Visual Presence</th><th>Design Cues</th></tr></thead>
+    <tbody>
+      <tr><td><span class="rarity common">Common</span></td><td>Subtle, easy to overlook</td><td>Slight warmth, faint rune, unusual weight, minor color tint</td></tr>
+      <tr><td><span class="rarity uncommon">Uncommon</span></td><td>Noticeable up close</td><td>Visible runes, unusual material blend, faint glow, etched motifs</td></tr>
+      <tr><td><span class="rarity rare">Rare</span></td><td>Clearly magical</td><td>Active glow, audible hum, moving patterns, gem inlays, elemental effects</td></tr>
+      <tr><td><span class="rarity very-rare">Very Rare</span></td><td>Dramatic and awe-inspiring</td><td>Floating components, shifting colors, visible aura, ambient effects in radius</td></tr>
+      <tr><td><span class="rarity legendary">Legendary</span></td><td>Unmistakable, iconic</td><td>Reality-bending visual effects, sentient glow, environmental impact, audible presence</td></tr>
+      <tr><td><span class="rarity artifact">Artifact</span></td><td>Overwhelming, alien</td><td>Warps perception, distorts light/sound, physically painful to behold for the unworthy</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="colors-gems">Colors, Gems & Magical Resonance</h2>
+
+  <table class="phb-table">
+    <caption>Gem & Color Associations</caption>
+    <thead><tr><th>Color/Gem</th><th>Damage Type</th><th>Emotional Resonance</th><th>Common Usage</th></tr></thead>
+    <tbody>
+      <tr><td style="color:#c00">Ruby / Crimson</td><td>Fire</td><td>Rage, passion, courage</td><td>Flame weapons, berserker items</td></tr>
+      <tr><td style="color:#06c">Sapphire / Azure</td><td>Cold / Force</td><td>Wisdom, calm, authority</td><td>Frost weapons, divination items</td></tr>
+      <tr><td style="color:#0a0">Emerald / Verdant</td><td>Poison / Acid</td><td>Growth, envy, nature</td><td>Druidic items, serpent weapons</td></tr>
+      <tr><td style="color:#808">Amethyst / Violet</td><td>Psychic / Necrotic</td><td>Mystery, madness, ambition</td><td>Mind-affecting items, warlock pacts</td></tr>
+      <tr><td style="color:#cc0">Topaz / Gold</td><td>Radiant</td><td>Justice, divinity, glory</td><td>Paladin weapons, holy items</td></tr>
+      <tr><td style="color:#555">Onyx / Obsidian</td><td>Necrotic</td><td>Death, void, entropy</td><td>Necromantic items, cursed objects</td></tr>
+      <tr><td style="color:#999">Diamond / Prismatic</td><td>Force / Radiant</td><td>Perfection, clarity, power</td><td>Artifacts, items of pure magic</td></tr>
+      <tr><td style="color:#c60">Amber / Warm Gold</td><td>Lightning / Thunder</td><td>Energy, chaos, vitality</td><td>Storm weapons, tempest items</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title" id="spells-items">Common Spells on Items</h2>
+
+  <table class="phb-table">
+    <caption>Frequently Enchanted Spells</caption>
+    <thead><tr><th>Spell</th><th>Level</th><th>Typical Item</th><th>Charges / Use</th></tr></thead>
+    <tbody>
+      <tr><td><em>Shield</em></td><td>1st</td><td>Shield, bracers, ring</td><td>3–5 charges</td></tr>
+      <tr><td><em>Fireball</em></td><td>3rd</td><td>Wand, staff, necklace</td><td>7 charges (upcast variant)</td></tr>
+      <tr><td><em>Fly</em></td><td>3rd</td><td>Boots, cloak, broom</td><td>At will or 1/day</td></tr>
+      <tr><td><em>Invisibility</em></td><td>2nd</td><td>Ring, cloak, hat</td><td>At will or 3 charges</td></tr>
+      <tr><td><em>Detect Magic</em></td><td>1st</td><td>Lens, monocle, gem</td><td>At will</td></tr>
+      <tr><td><em>Teleport</em></td><td>7th</td><td>Helm, amulet, portal key</td><td>1/day or 3 charges</td></tr>
+      <tr><td><em>Haste</em></td><td>3rd</td><td>Boots, weapon, belt</td><td>1/day</td></tr>
+      <tr><td><em>Counterspell</em></td><td>3rd</td><td>Ring, staff, amulet</td><td>3–7 charges</td></tr>
+      <tr><td><em>Wish</em></td><td>9th</td><td>Ring, luck blade, artifact</td><td>1–3 total uses (destroyed after)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="read-aloud">
+    "The finest items are not the loudest. A true masterwork whispers its power — in the balance of the blade, the warmth of the leather, the way light bends just slightly around its edge. Only the crude enchanter decorates with blinding light. The master lets the work speak."<br>
+    — Elminster Aumar
+  </div>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== APPENDIX A ==================== -->
+<section class="chapter" id="appendixA">
+  <div class="chapter-number">Appendix A</div>
+  <h1 class="chapter-title">Items by Rarity</h1>
+  <hr class="chapter-rule">
+
+  <h3 class="subsection-title">Common Items</h3>
+  <p>Potion of Healing, Potion of Climbing, Driftglobe, Cloak of Many Fashions, Hat of Disguise (limited), Candle of the Deep, Charlatan's Die, Clockwork Amulet, Ear Horn of Hearing, Enduring Spellbook, Ersatz Eye, Heward's Handy Spice Pouch, Moon-Touched Sword, Mystery Key, Orb of Direction, Pole of Collapsing, Rope of Mending, Talking Doll, Tankard of Sobriety, Wand of Pyrotechnics, Wand of Smiles.</p>
+
+  <h3 class="subsection-title">Uncommon Items</h3>
+  <p>+1 Weapon, +1 Shield, +1 Armor, Bag of Holding, Boots of Elvenkind, Bracers of Archery, Brooch of Shielding, Cloak of Elvenkind, Cloak of Protection, Decanter of Endless Water, Eversmoking Bottle, Gauntlets of Ogre Power, Goggles of Night, Headband of Intellect, Immovable Rod, Javelin of Lightning, Lantern of Revealing, Mithral Armor, Adamantine Armor, Pearl of Power, Periapt of Wound Closure, Ring of Jumping, Sending Stones, Stone of Good Luck, Wand of Magic Missiles, Wand of the War Mage (+1), Winged Boots.</p>
+
+  <h3 class="subsection-title">Rare Items</h3>
+  <p>+2 Weapon, +2 Shield, Amulet of Health, Belt of Dwarvenkind, Boots of Speed, Cape of the Mountebank, Cloak of Displacement, Cube of Force, Flame Tongue, Helm of Teleportation, Mantle of Spell Resistance, Necklace of Fireballs, Ring of Evasion, Ring of Protection, Ring of Spell Storing, Rope of Entanglement, Staff of Healing, Staff of the Woodlands, Sun Blade, Sword of Wounding, Wand of Fireballs, Wand of Lightning Bolts.</p>
+
+  <h3 class="subsection-title">Very Rare Items</h3>
+  <p>+3 Weapon, +3 Shield, Amulet of the Planes, Animated Shield, Belt of Giant Strength (Fire, Frost, Stone), Candle of Invocation, Carpet of Flying, Crystal Ball, Dancing Sword, Dragon Scale Mail, Dwarven Plate, Dwarven Thrower, Efreeti Bottle, Figurine of Wondrous Power (Obsidian Steed), Manual of Bodily Health, Oathbow, Ring of Regeneration, Robe of Stars, Rod of Absorption, Staff of Fire, Staff of Frost, Staff of Power, Sword of Sharpness, Tome of Clear Thought.</p>
+
+  <h3 class="subsection-title">Legendary Items</h3>
+  <p>Apparatus of the Crab, Armor of Invulnerability, Belt of Giant Strength (Cloud, Storm), Blackrazor, Crystal Ball of True Seeing, Cubic Gate, Deck of Many Things, Defender, Efreeti Chain, Hammer of Thunderbolts, Holy Avenger, Horn of Valhalla (Iron), Iron Flask, Luck Blade, Moonblade, Plate Armor of Etherealness, Ring of Djinni Summoning, Ring of Elemental Command, Ring of Invisibility, Ring of Spell Turning, Ring of Three Wishes, Robe of the Archmagi, Rod of Lordly Might, Scarab of Protection, Sphere of Annihilation, Staff of the Magi, Talisman of Pure Good, Talisman of Ultimate Evil, Vorpal Sword, Wave, Whelm.</p>
+
+  <h3 class="subsection-title">Artifacts</h3>
+  <p>Axe of the Dwarvish Lords, Book of Exalted Deeds, Book of Vile Darkness, Eye of Vecna, Hand of Vecna, Orb of Dragonkind, Sword of Kas, Wand of Orcus, Rod of Seven Parts, Codex of the Infinite Planes, Machine of Lum the Mad, Mighty Servant of Leuk-O, Invulnerable Coat of Arn, Mace of Cuthbert, Crown of Karsus.</p>
+</section>
+
+<div class="section-break"></div>
+
+<!-- ==================== APPENDIX B ==================== -->
+<section class="chapter" id="appendixB">
+  <div class="chapter-number">Appendix B</div>
+  <h1 class="chapter-title">Quick Reference</h1>
+  <hr class="chapter-rule">
+
+  <h2 class="section-title">Attunement Quick Reference</h2>
+  <table class="phb-table">
+    <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Max Attuned Items</td><td>3 at a time per creature</td></tr>
+      <tr><td>Time to Attune</td><td>Short rest (1 hour) focused on the item</td></tr>
+      <tr><td>End Attunement</td><td>Short rest, death, 100+ ft. separation for 24 hrs, or voluntarily</td></tr>
+      <tr><td>Curse Override</td><td>Cursed items can't have attunement ended without <em>remove curse</em></td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title">Damage Type Reference</h2>
+  <table class="phb-table">
+    <thead><tr><th>Type</th><th>Common Source</th><th>Typical Resistance/Immunity</th></tr></thead>
+    <tbody>
+      <tr><td>Slashing</td><td>Swords, axes</td><td>Oozes, some constructs</td></tr>
+      <tr><td>Piercing</td><td>Arrows, rapiers</td><td>Skeletons (resistance)</td></tr>
+      <tr><td>Bludgeoning</td><td>Maces, hammers</td><td>Few natural resistances</td></tr>
+      <tr><td>Fire</td><td>Flame Tongue, fireball</td><td>Demons, fire elementals, red dragons</td></tr>
+      <tr><td>Cold</td><td>Frost Brand, ice storm</td><td>White dragons, ice elementals</td></tr>
+      <tr><td>Lightning</td><td>Javelin of Lightning</td><td>Blue dragons, shambling mounds</td></tr>
+      <tr><td>Thunder</td><td>Hammer of Thunderbolts</td><td>Few natural resistances</td></tr>
+      <tr><td>Poison</td><td>Venom-coated weapons</td><td>Undead (immune), many fiends</td></tr>
+      <tr><td>Acid</td><td>Acid splash items</td><td>Black dragons, oozes</td></tr>
+      <tr><td>Necrotic</td><td>Blackrazor, shadow items</td><td>Undead (often immune)</td></tr>
+      <tr><td>Radiant</td><td>Holy Avenger, Sun Blade</td><td>Very few (some celestials)</td></tr>
+      <tr><td>Force</td><td>Staff of the Magi</td><td>Almost nothing resists force</td></tr>
+      <tr><td>Psychic</td><td>Mind-affecting items</td><td>Mindless creatures (immune)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title">Crafting Time Quick Chart</h2>
+  <table class="phb-table">
+    <thead><tr><th>Rarity</th><th>Solo Crafter</th><th>2 Crafters</th><th>3+ Crafters</th></tr></thead>
+    <tbody>
+      <tr><td>Common</td><td>1 workweek</td><td>3 days</td><td>2 days</td></tr>
+      <tr><td>Uncommon</td><td>2 workweeks</td><td>1 workweek</td><td>4 days</td></tr>
+      <tr><td>Rare</td><td>10 workweeks</td><td>5 workweeks</td><td>4 workweeks</td></tr>
+      <tr><td>Very Rare</td><td>25 workweeks</td><td>13 workweeks</td><td>9 workweeks</td></tr>
+      <tr><td>Legendary</td><td>50 workweeks</td><td>25 workweeks</td><td>17 workweeks</td></tr>
+    </tbody>
+  </table>
+
+  <div class="read-aloud" style="margin-top:40px;text-align:center">
+    "May your blade stay sharp, your armor hold true,<br>
+    and may the items you forge tell stories<br>
+    long after you've left the table."<br><br>
+    — The Arcanist's Compendium of Arms & Artifice
+  </div>
+
+  <svg class="ornament" viewBox="0 0 300 40" xmlns="http://www.w3.org/2000/svg" width="300">
+    <line x1="0" y1="20" x2="300" y2="20" stroke="#a88932" stroke-width="1" opacity="0.5"/>
+    <circle cx="150" cy="20" r="6" fill="none" stroke="#a88932" stroke-width="1.5"/>
+    <circle cx="150" cy="20" r="2" fill="#a88932"/>
+    <path d="M120 20 L135 14 L135 26 Z" fill="#a88932" opacity="0.4"/>
+    <path d="M180 20 L165 14 L165 26 Z" fill="#a88932" opacity="0.4"/>
+  </svg>
+</section>
+
+</div><!-- end main-content -->
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===== SCROLL ANIMATIONS =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.chapter, .anim-item').forEach(el => observer.observe(el));
+
+// ===== SCROLL TO TOP BUTTON =====
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTop');
+  if (window.scrollY > 600) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+
+// ===== ACTIVE NAV LINK TRACKING =====
+const sections = document.querySelectorAll('section[id], h2[id], h3[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 120;
+    if (window.scrollY >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+}
+window.addEventListener('scroll', updateActiveNav);
+
+// ===== CLOSE MOBILE NAV ON LINK CLICK =====
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.querySelector('.side-nav').classList.remove('open');
+    }
+  });
+});
+
+// ===== ACCORDION FUNCTIONALITY =====
+document.querySelectorAll('.accordion-header').forEach(header => {
+  header.addEventListener('click', () => {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+  });
+});
+
+// ===== STAGGERED TABLE ROW ANIMATION =====
+const tableObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const rows = entry.target.querySelectorAll('tbody tr');
+      rows.forEach((row, i) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-10px)';
+        row.style.transition = `opacity 0.3s ease ${i * 0.04}s, transform 0.3s ease ${i * 0.04}s`;
+        requestAnimationFrame(() => {
+          row.style.opacity = '1';
+          row.style.transform = 'translateX(0)';
+        });
+      });
+      tableObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.phb-table').forEach(table => tableObserver.observe(table));
+
+// ===== POWER BAR ANIMATION =====
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const fill = entry.target.querySelector('.fill');
+      const width = fill.style.width;
+      fill.style.width = '0%';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          fill.style.width = width;
+        });
+      });
+      barObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.power-bar').forEach(bar => barObserver.observe(bar));
+</script>
+
+</body>
+</html>

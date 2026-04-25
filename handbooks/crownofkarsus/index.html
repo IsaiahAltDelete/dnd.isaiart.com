@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crown of Karsus | Artifact</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050508;
+    min-height: 100vh;
+    font-family: 'Crimson Text', serif;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(80, 0, 0, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(60, 0, 80, 0.12) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  /* 3D Wrapper & Entrance Animation */
+  .card-scene {
+    perspective: 1500px;
+    transform-style: preserve-3d;
+    animation: card-entrance 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  @keyframes card-entrance {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card-wrapper {
+    transform-style: preserve-3d;
+    will-change: transform;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .card {
+    background: linear-gradient(160deg, #1a0f0a 0%, #120a08 40%, #0f0a14 100%);
+    border: 1px solid #6b3a1f;
+    border-radius: 6px;
+    position: relative;
+    box-shadow:
+      0 0 0 1px #2a1208,
+      0 15px 40px rgba(0,0,0,0.8),
+      0 0 30px rgba(180, 40, 0, 0.2),
+      0 0 60px rgba(100, 0, 0, 0.1),
+      inset 0 0 40px rgba(0,0,0,0.5);
+    animation: pulse-glow 4s ease-in-out infinite alternate;
+    transform: translateZ(30px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Magical Shimmer Overlay */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 100, 0, 0.03) 50%, transparent 100%);
+    background-size: 200% 200%;
+    animation: shimmer 6s linear infinite;
+    pointer-events: none;
+    z-index: 20;
+    border-radius: 6px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 1px #2a1208, 0 15px 40px rgba(0,0,0,0.8), 0 0 30px rgba(180, 40, 0, 0.2), 0 0 60px rgba(100, 0, 0, 0.1), inset 0 0 40px rgba(0,0,0,0.5); }
+    100% { box-shadow: 0 0 0 1px #3a1808, 0 20px 50px rgba(0,0,0,0.9), 0 0 50px rgba(200, 60, 0, 0.35), 0 0 90px rgba(150, 20, 0, 0.2), inset 0 0 50px rgba(0,0,0,0.6); }
+  }
+
+  /* Corner ornaments */
+  .corner-tl, .corner-br, .corner-tr, .corner-bl {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: #8b4513;
+    border-style: solid;
+    z-index: 30;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+  .corner-tl { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+  .corner-br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+  .corner-tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+
+  .card:hover .corner-tl, .card:hover .corner-br, .card:hover .corner-tr, .card:hover .corner-bl {
+    border-color: #c4501a;
+    width: 26px;
+    height: 26px;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(196, 80, 26, 0.6);
+  }
+
+  /* Ambient particles */
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #ff4400;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float-particle linear forwards;
+    opacity: 0;
+    box-shadow: 0 0 6px currentColor;
+    z-index: 5;
+  }
+  @keyframes float-particle {
+    0% { transform: translateY(15px) translateX(0) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; transform: translateY(0px) translateX(4px) scale(1); }
+    80% { opacity: 0.5; }
+    100% { transform: translateY(-60px) translateX(20px) scale(0); opacity: 0; }
+  }
+
+  /* Header band */
+  .header-band {
+    background: linear-gradient(90deg, #1a0800 0%, #2d1005 30%, #3a1408 50%, #2d1005 70%, #1a0800 100%);
+    border-bottom: 1px solid #6b3a1f;
+    padding: 16px 20px 12px;
+    position: relative;
+    transform: translateZ(40px);
+    z-index: 10;
+  }
+
+  .header-band::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c4501a, #e8691e, #c4501a, transparent);
+    box-shadow: 0 0 10px #e8691e;
+  }
+
+  .item-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    color: #e8d5a3;
+    text-shadow: 0 0 15px rgba(255, 100, 0, 0.6), 0 0 30px rgba(180, 40, 0, 0.3);
+    letter-spacing: 1.5px;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .rarity-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .rarity-dash {
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #8b3a10);
+  }
+  .rarity-dash:last-child {
+    background: linear-gradient(270deg, transparent, #8b3a10);
+  }
+
+  .rarity-text {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(9px, 1.5vw, 11px);
+    font-weight: 600;
+    color: #c4501a;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Crown image area */
+  .crown-visual {
+    background: linear-gradient(180deg, #0f0805 0%, #1a0f0a 100%);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .crown-visual::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(180, 40, 0, 0.25) 0%, rgba(100, 20, 0, 0.05) 40%, transparent 70%);
+    animation: pulse-orb 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-orb {
+    0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  }
+
+  .crown-icon-wrapper {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 16px;
+    transform: translateZ(60px);
+  }
+
+  .crown-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 80, 0, 0.5));
+    animation: crown-float 4s ease-in-out infinite;
+    transition: filter 0.5s ease, transform 0.5s ease;
+  }
+
+  @media (min-width: 1024px) {
+    .crown-img {
+      width: 190px;
+      height: 190px;
+    }
+  }
+
+  .card-wrapper:hover .crown-img {
+    filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 30px rgba(255, 100, 0, 0.7)) drop-shadow(0 0 60px rgba(200, 50, 0, 0.4));
+  }
+
+  @keyframes crown-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.03); }
+  }
+
+  .item-type {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(9px, 1.5vw, 10px);
+    color: #8b6914;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    transform: translateZ(20px);
+    text-align: center;
+  }
+
+  /* Stats block */
+  .stats-block {
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.3);
+    transform: translateZ(15px);
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .stat-row:hover {
+    background: rgba(255, 100, 0, 0.08);
+    transform: translateX(4px);
+  }
+
+  .stat-row .material-icons {
+    font-size: 16px;
+    color: #c4501a;
+    opacity: 0.9;
+    width: 20px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(9px, 1.5vw, 10px);
+    color: #8b6040;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex: 1;
+  }
+
+  .stat-value {
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(13px, 2vw, 14px);
+    color: #d4b896;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .stat-value.danger { color: #e05030; text-shadow: 0 0 8px rgba(224, 80, 48, 0.4); }
+  .stat-value.gold { color: #d4a840; text-shadow: 0 0 8px rgba(212, 168, 64, 0.4); }
+  .stat-value.highlight { color: #e8d5a3; text-shadow: 0 0 8px rgba(232, 213, 163, 0.4); }
+
+  /* Divider */
+  .ornate-divider {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 10px;
+  }
+
+  .div-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #6b2010, transparent);
+  }
+
+  .div-diamond {
+    width: 6px;
+    height: 6px;
+    background: #8b3a10;
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px rgba(180, 60, 0, 0.8);
+    transition: transform 0.4s ease, background 0.4s ease;
+  }
+  
+  .card-wrapper:hover .div-diamond {
+    background: #c4501a;
+    transform: rotate(225deg);
+  }
+
+  /* Properties section */
+  .properties {
+    padding: 16px 20px;
+    transform: translateZ(20px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: #8b5030;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .section-title .material-icons {
+    font-size: 14px;
+    color: #8b4513;
+  }
+
+  .property {
+    padding: 10px 14px;
+    background: rgba(60, 20, 8, 0.15);
+    border-left: 2px solid #6b2010;
+    border-radius: 0 4px 4px 0;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(15px);
+    animation: slide-in-right 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  /* Staggered animation delays for properties */
+  .property:nth-child(2) { animation-delay: 0.2s; }
+  .property:nth-child(3) { animation-delay: 0.4s; }
+  .property:nth-child(4) { animation-delay: 0.6s; }
+  .property:nth-child(5) { animation-delay: 0.8s; }
+
+  @keyframes slide-in-right {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .property::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(255,100,0,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .property:hover {
+    transform: translateX(6px) scale(1.01);
+    background: rgba(60, 20, 8, 0.3);
+    border-left-color: #c4501a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), -2px 0 15px rgba(196, 80, 26, 0.3);
+  }
+  .property:hover::before { opacity: 1; }
+
+  .property.cursed {
+    border-left-color: #800000;
+    background: rgba(80, 0, 0, 0.15);
+  }
+  .property.cursed:hover {
+    border-left-color: #ff2020;
+    background: rgba(80, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), -2px 0 15px rgba(255, 32, 32, 0.3);
+  }
+
+  .property.active {
+    border-left-color: #8b6914;
+    background: rgba(60, 40, 8, 0.15);
+  }
+  .property.active:hover {
+    border-left-color: #ffd700;
+    background: rgba(60, 40, 8, 0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), -2px 0 15px rgba(255, 215, 0, 0.2);
+  }
+
+  .prop-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .prop-header .material-icons {
+    font-size: 16px;
+    color: #c4501a;
+  }
+
+  .prop-header.cursed .material-icons { color: #cc0000; }
+  .prop-header.active .material-icons { color: #c4a020; }
+
+  .prop-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(11px, 2vw, 13px);
+    font-weight: 700;
+    color: #d4a876;
+    letter-spacing: 0.5px;
+  }
+
+  .prop-name.cursed { color: #cc4040; }
+  .prop-name.active { color: #d4b840; }
+
+  .prop-tag {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: #8b5030;
+    letter-spacing: 1px;
+    margin-left: auto;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(139, 80, 48, 0.3);
+  }
+
+  .prop-tag.active-tag { color: #a88020; border-color: rgba(168, 128, 32, 0.3); }
+
+  .prop-desc {
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(13px, 2vw, 14.5px);
+    color: #a08060;
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+  }
+
+  .prop-desc strong {
+    color: #d4b896;
+    font-weight: 600;
+  }
+
+  .prop-desc .danger { color: #e05030; font-weight: 600; text-shadow: 0 0 5px rgba(224, 80, 48, 0.3); }
+  .prop-desc .gold { color: #d4a840; font-weight: 600; text-shadow: 0 0 5px rgba(212, 168, 64, 0.3); }
+
+  /* Lore block */
+  .lore-block {
+    margin: 0 20px 20px;
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #2a1208;
+    border-radius: 4px;
+    position: relative;
+    transform: translateZ(15px);
+    transition: border-color 0.4s ease, background 0.4s ease;
+  }
+  
+  .lore-block:hover {
+    border-color: #4a2010;
+    background: rgba(20, 5, 0, 0.6);
+  }
+
+  .lore-block::before {
+    content: '\201C';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 32px;
+    color: #8b3a10;
+    line-height: 1;
+    background: #120a08;
+    padding: 0 6px;
+    text-shadow: 0 0 10px rgba(139, 58, 16, 0.5);
+  }
+
+  .lore-text {
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(13px, 2vw, 14px);
+    color: #8a6a4a;
+    line-height: 1.6;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Attunement footer */
+  .footer {
+    border-top: 1px solid #2a1208;
+    padding: 12px 20px;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    z-index: 10;
+    transform: translateZ(20px);
+  }
+
+  .attunement {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .attunement .material-icons {
+    font-size: 14px;
+    color: #8b4513;
+  }
+
+  .attunement-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(9px, 1.5vw, 10px);
+    font-weight: 500;
+    color: #8b5030;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .dc-badge {
+    background: rgba(139, 53, 19, 0.15);
+    border: 1px solid #8b2a10;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 0 10px rgba(139, 42, 16, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .dc-badge:hover {
+    background: rgba(200, 50, 20, 0.25);
+    box-shadow: 0 0 15px rgba(200, 50, 20, 0.5);
+    transform: scale(1.05);
+  }
+
+  .dc-badge .material-icons {
+    font-size: 14px;
+    color: #ff4020;
+    animation: pulse-icon 2s infinite;
+  }
+
+  @keyframes pulse-icon {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+  }
+
+  .dc-text {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(10px, 1.5vw, 11px);
+    font-weight: 700;
+    color: #ff5030;
+    letter-spacing: 1px;
+  }
+
+  /* Floating background runes */
+  .bg-rune {
+    position: absolute;
+    font-family: 'Cinzel Decorative', serif;
+    color: rgba(255, 80, 0, 0.06);
+    pointer-events: none;
+    user-select: none;
+    animation: rune-float linear infinite;
+    z-index: 0;
+    text-shadow: 0 0 15px rgba(255, 60, 0, 0.2);
+  }
+
+  @keyframes rune-float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background Runes Container -->
+<div id="rune-container" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+
+<div class="card-scene">
+  <div class="card-wrapper" id="cardWrapper">
+    
+    <!-- 
+      Responsive Layout: 
+      Mobile: max-w-[400px] (stacked)
+      Desktop: max-w-[850px] (side-by-side grid)
+      Natively scaled down by ~20% to prevent 3D transform overflow hang
+    -->
+    <div class="card w-full max-w-[400px] lg:max-w-[850px]">
+      
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+
+      <!-- Header (Full Width) -->
+      <div class="header-band w-full">
+        <div class="item-name">Crown of Karsus</div>
+        <div class="rarity-line">
+          <div class="rarity-dash"></div>
+          <span class="rarity-text">Artifact: Beyond Legendary</span>
+          <div class="rarity-dash"></div>
+        </div>
+      </div>
+
+      <!-- Main Content Area (Flex Col on Mobile, Flex Row on Desktop) -->
+      <div class="flex flex-col lg:flex-row w-full flex-1 relative z-10">
+        
+        <!-- Left Column: Visual & Stats -->
+        <div class="w-full lg:w-[42%] flex flex-col border-b lg:border-b-0 lg:border-r border-[#3a1a08] bg-gradient-to-b from-[#0f0805] to-[#1a0f0a]">
+          
+          <!-- Crown Visual -->
+          <div class="crown-visual flex-1" id="crownVisual">
+            <div class="crown-icon-wrapper">
+              <img src="https://fbi.cults3d.com/uploaders/23323277/illustration-file/11d2239c-d717-4841-b00d-17b265c3599f/5.png" class="crown-img" alt="Crown of Karsus">
+            </div>
+            <div class="item-type">Headwear • Netherese Artifact • 339 BDR</div>
+          </div>
+
+          <!-- Divider (Mobile Only) -->
+          <div class="ornate-divider lg:hidden">
+            <div class="div-line"></div>
+            <div class="div-diamond"></div>
+            <div class="div-line"></div>
+            <div class="div-diamond"></div>
+            <div class="div-line"></div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-block border-t border-[#2a1208] lg:border-t-0">
+            <div class="stat-row">
+              <span class="material-icons">psychology</span>
+              <span class="stat-label">Intelligence on Attune</span>
+              <span class="stat-value highlight">30 (Maximum)</span>
+            </div>
+            <div class="stat-row">
+              <span class="material-icons">security</span>
+              <span class="stat-label">Weave Independence</span>
+              <span class="stat-value gold">Complete</span>
+            </div>
+            <div class="stat-row">
+              <span class="material-icons">warning</span>
+              <span class="stat-label">Mortality Save DC</span>
+              <span class="stat-value danger">DC 30 CON · Each Turn</span>
+            </div>
+            <div class="stat-row">
+              <span class="material-icons">favorite_border</span>
+              <span class="stat-label">Mortality Failure</span>
+              <span class="stat-value danger">10d10 Psychic (No Reduction)</span>
+            </div>
+            <div class="stat-row">
+              <span class="material-icons">inventory_2</span>
+              <span class="stat-label">Weight</span>
+              <span class="stat-value">0 lbs (Exists Partially Outside Space)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Properties & Lore -->
+        <div class="w-full lg:w-[58%] flex flex-col relative">
+          
+          <!-- Properties -->
+          <div class="properties flex-1">
+            <div class="section-title">
+              <span class="material-icons">auto_fix_high</span>
+              Properties
+            </div>
+
+            <div class="property">
+              <div class="prop-header">
+                <span class="material-icons">blur_on</span>
+                <span class="prop-name">Netherese Resonance</span>
+                <span class="prop-tag">Passive</span>
+              </div>
+              <p class="prop-desc">Exists partially outside the Weave. <strong>Invisible to all divination below 9th level.</strong> Gods sense its presence within their domains but cannot directly observe or retrieve it.</p>
+            </div>
+
+            <div class="property">
+              <div class="prop-header">
+                <span class="material-icons">bolt</span>
+                <span class="prop-name">Weave Dominance</span>
+                <span class="prop-tag active-tag">Active · 1/Day</span>
+              </div>
+              <p class="prop-desc">Impose your will on the Weave without spell slots. Choose one: <span class="gold">Counterspell any spell within 1 mile automatically</span>, dispel any magical effect including divine miracles, or replicate any spell of <strong>9th level or lower</strong> with no components or concentration. Each use permanently raises Mortality DC by 5.</p>
+            </div>
+
+            <div class="property active">
+              <div class="prop-header active">
+                <span class="material-icons">star</span>
+                <span class="prop-name active">Echo of the Avatar</span>
+                <span class="prop-tag active-tag">Active · 1/Existence</span>
+              </div>
+              <p class="prop-desc">Attempt to cast <strong>Karsus's Avatar</strong>, a <span class="danger">12th Level Spell</span>. Choose a deity whose portfolio you wish to claim. DC 35 spellcasting check. Success: hold divine power for <strong>1d4 rounds</strong> before it tears you apart. Failure: <span class="danger">instant death</span>. Crown crumbles either way. Cannot be cast twice across all of existence.</p>
+            </div>
+
+            <div class="property cursed">
+              <div class="prop-header cursed">
+                <span class="material-icons">link</span>
+                <span class="prop-name cursed">Cannot Be Removed</span>
+                <span class="prop-tag">Cursed</span>
+              </div>
+              <p class="prop-desc">Fuses to the wearer's skull upon attunement. Removable only by <span class="danger">direct divine intervention</span>, a Wish cast by an INT 30 20th-level wizard, or death, which triggers one final <strong>maximum damage Mortality Failure</strong>.</p>
+            </div>
+          </div>
+
+          <!-- Lore (Pushed to bottom of right column) -->
+          <div class="lore-block mt-auto">
+            <p class="lore-text">"The Crown has laid low all who attempt to harness its power: archwizards, emperors, gods. It would tear you apart."</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer (Full Width) -->
+      <div class="footer w-full">
+        <div class="attunement">
+          <span class="material-icons">lock</span>
+          <span class="attunement-text">Requires Attunement (Spellcaster)</span>
+        </div>
+        <div class="dc-badge">
+          <span class="material-icons">dangerous</span>
+          <span class="dc-text">DC 30 · LETHAL</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- 3D Parallax Hover Effect ---
+  const wrapper = document.getElementById('cardWrapper');
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let isHovering = false;
+
+  // Only apply 3D effect on non-touch devices for better performance
+  if (window.matchMedia("(pointer: fine)").matches) {
+    document.addEventListener('mousemove', (e) => {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      
+      // Calculate rotation based on mouse position relative to center
+      targetX = ((windowWidth / 2) - e.pageX) / 80;
+      targetY = ((windowHeight / 2) - e.pageY) / 80;
+      isHovering = true;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      targetX = 0;
+      targetY = 0;
+      isHovering = false;
+    });
+
+    // Smooth interpolation (Lerp) for buttery 3D movement
+    function animateParallax() {
+      if (!isHovering) {
+        targetX = 0;
+        targetY = 0;
+      }
+      
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      
+      wrapper.style.transform = `rotateY(${currentX}deg) rotateX(${-currentY}deg)`;
+      requestAnimationFrame(animateParallax);
+    }
+    animateParallax();
+  }
+
+  // --- Dynamic Magical Particles ---
+  const crownVisual = document.getElementById('crownVisual');
+  const colors =['#ff4400', '#ff6600', '#ff2200', '#aa3300', '#d4a840'];
+
+  function spawnParticle() {
+    if (!crownVisual) return;
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Randomize position, size, and animation duration
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.top = (Math.random() * 50 + 50) + '%'; // Spawn mostly in lower half
+    
+    const size = Math.random() * 2.5 + 1;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.animationDuration = (Math.random() * 2.5 + 2) + 's';
+    
+    crownVisual.appendChild(particle);
+    
+    // Cleanup
+    setTimeout(() => {
+      if (particle.parentNode) particle.parentNode.removeChild(particle);
+    }, 4500);
+  }
+
+  // Spawn particles periodically
+  setInterval(spawnParticle, 350);
+
+  // --- Floating Background Runes ---
+  const runeContainer = document.getElementById('rune-container');
+  const runes =['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛟ', 'ᛞ'];
+
+  function spawnRune() {
+    const rune = document.createElement('div');
+    rune.className = 'bg-rune';
+    rune.innerText = runes[Math.floor(Math.random() * runes.length)];
+    
+    // Randomize properties
+    rune.style.left = Math.random() * 100 + 'vw';
+    const fontSize = Math.random() * 40 + 25;
+    rune.style.fontSize = fontSize + 'px';
+    rune.style.animationDuration = (Math.random() * 20 + 15) + 's';
+    rune.style.opacity = Math.random() * 0.6 + 0.1;
+    
+    runeContainer.appendChild(rune);
+    
+    // Cleanup
+    setTimeout(() => {
+      if (rune.parentNode) rune.parentNode.removeChild(rune);
+    }, 35000);
+  }
+
+  // Initial spawn and interval
+  for(let i=0; i<20; i++) {
+    setTimeout(spawnRune, Math.random() * 5000);
+  }
+  setInterval(spawnRune, 1500);
+</script>
+</body>
+</html>
