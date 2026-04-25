@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2025 Forgotten Realms Wizard Handbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0a14;
+      --bg2: #120f1c;
+      --panel: #1a1428;
+      --panel-2: #221b35;
+      --paper: #f0e6cc;
+      --paper-2: #e2d3b0;
+      --paper-3: #f7f0de;
+      --ink: #1e170d;
+      --ink-light: #3a2f1e;
+      --muted: #7a6b54;
+      --gold: #c9a84c;
+      --gold-2: #e8c46a;
+      --gold-3: #fad97a;
+      --gold-glow: rgba(232, 196, 106, 0.6);
+      --blue: #7ab0f5;
+      --blue-glow: rgba(122, 176, 245, 0.5);
+      --violet: #a87ef5;
+      --violet-glow: rgba(168, 126, 245, 0.5);
+      --green: #82c98a;
+      --green-glow: rgba(130, 201, 138, 0.5);
+      --red: #e08070;
+      --red-glow: rgba(224, 128, 112, 0.5);
+      --line: rgba(232, 196, 106, 0.22);
+      --line-bright: rgba(232, 196, 106, 0.45);
+      --shadow: rgba(0, 0, 0, 0.5);
+      --shadow-gold: rgba(201, 168, 76, 0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--paper);
+      font-family: 'IM Fell English', Georgia, serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════
+       CANVAS & CURSOR
+    ═══════════════════════════════════════ */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* Trail dots rendered by JS - no lag ring */
+    .trail-dot {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9997;
+      transform: translate(-50%,-50%);
+      animation: trailFade 0.55s ease-out forwards;
+      mix-blend-mode: screen;
+    }
+    @keyframes trailFade {
+      0%   { opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity: 0;   transform: translate(-50%,-50%) scale(0.1); }
+    }
+
+    /* ═══════════════════════════════════════
+       ANIMATED BACKGROUND
+    ═══════════════════════════════════════ */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 15% 20%, rgba(168,126,245,0.07) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 10%, rgba(201,168,76,0.09) 0%, transparent 38%),
+        radial-gradient(ellipse at 50% 90%, rgba(122,176,245,0.06) 0%, transparent 40%),
+        linear-gradient(160deg, #0d0a14 0%, #130e1e 40%, #0a0812 100%);
+      animation: bgShift 18s ease-in-out infinite alternate;
+    }
+    @keyframes bgShift {
+      0%   { filter: hue-rotate(0deg) brightness(1); }
+      50%  { filter: hue-rotate(8deg) brightness(1.05); }
+      100% { filter: hue-rotate(-5deg) brightness(0.97); }
+    }
+
+    /* ═══════════════════════════════════════
+       LAYOUT — SIDEBAR + CONTENT
+    ═══════════════════════════════════════ */
+    .site-wrapper {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 218px;
+      height: 100vh;
+      background: rgba(10,8,18,0.96);
+      border-right: 1px solid rgba(232,196,106,0.13);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(201,168,76,0.25) transparent;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.25); border-radius: 4px; }
+
+    .sidebar-inner {
+      padding: 26px 0 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-brand {
+      padding: 0 18px 22px;
+      border-bottom: 1px solid rgba(232,196,106,0.1);
+      margin-bottom: 14px;
+    }
+    .sidebar-sigil {
+      width: 34px; height: 34px;
+      margin-bottom: 10px;
+      opacity: 0.45;
+      animation: slowRotate 22s linear infinite;
+    }
+    .sidebar-brand-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.66rem;
+      color: var(--gold-2);
+      line-height: 1.45;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 16px rgba(232,196,106,0.35);
+    }
+    .sidebar-brand-sub {
+      font-family: 'Cinzel', serif;
+      font-size: 0.56rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    .sidebar-nav-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.54rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(122,107,84,0.7);
+      padding: 10px 18px 4px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 18px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.69rem;
+      letter-spacing: 0.05em;
+      color: rgba(240,230,204,0.55);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      border-left: 2px solid transparent;
+      position: relative;
+    }
+    .sidebar-link .link-rune {
+      font-size: 0.78rem;
+      opacity: 0.45;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      width: 14px;
+      text-align: center;
+    }
+    .sidebar-link:hover {
+      color: var(--gold-2);
+      border-left-color: rgba(201,168,76,0.6);
+      background: rgba(201,168,76,0.06);
+    }
+    .sidebar-link:hover .link-rune { opacity: 1; transform: scale(1.15); }
+    .sidebar-link.active {
+      color: var(--gold-3);
+      border-left-color: var(--gold-3);
+      background: rgba(201,168,76,0.1);
+      text-shadow: 0 0 8px rgba(232,196,106,0.4);
+    }
+    .sidebar-link.active .link-rune { opacity: 1; }
+    .sidebar-link.active::after {
+      content: '';
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold-3);
+      box-shadow: 0 0 6px var(--gold-glow);
+    }
+
+    /* Mobile toggle button */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 14px; left: 14px;
+      z-index: 201;
+      width: 40px; height: 40px;
+      background: rgba(10,8,18,0.95);
+      border: 1px solid rgba(232,196,106,0.28);
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+    }
+    .sidebar-toggle span {
+      display: block;
+      width: 100%;
+      height: 1.5px;
+      background: var(--gold-2);
+      transition: transform 0.28s, opacity 0.28s;
+      transform-origin: center;
+    }
+    .sidebar-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .sidebar-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .sidebar-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 99;
+    }
+    .sidebar-overlay.visible { display: block; }
+
+    /* ── MAIN CONTENT ── */
+    .page {
+      margin-left: 218px;
+      width: calc(100% - 218px);
+      padding: 32px 44px 80px;
+      position: relative;
+      z-index: 1;
+      max-width: calc(218px + 980px);
+    }
+
+    a {
+      color: var(--gold-2);
+      text-decoration: none;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    a:hover {
+      color: var(--gold-3);
+      text-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    /* ═══════════════════════════════════════
+       TYPOGRAPHY
+    ═══════════════════════════════════════ */
+    h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2rem, 6vw, 4.4rem);
+      color: var(--gold-3);
+      line-height: 1.1;
+      margin: 0 0 18px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 40px var(--gold-glow), 0 0 80px rgba(201,168,76,0.25), 2px 2px 0 rgba(0,0,0,0.5);
+      animation: titleGlow 4s ease-in-out infinite alternate;
+    }
+    @keyframes titleGlow {
+      0%   { text-shadow: 0 0 30px var(--gold-glow), 0 0 60px rgba(201,168,76,0.2), 2px 2px 0 rgba(0,0,0,0.5); }
+      100% { text-shadow: 0 0 50px var(--gold-glow), 0 0 100px rgba(201,168,76,0.35), 0 0 140px rgba(168,126,245,0.15), 2px 2px 0 rgba(0,0,0,0.5); }
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      color: var(--gold-2);
+      margin: 0 0 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      position: relative;
+      padding-bottom: 14px;
+      text-shadow: 0 0 20px rgba(232,196,106,0.3);
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-2), var(--gold-glow), var(--gold-2), transparent);
+      animation: runeLineShimmer 3s linear infinite;
+    }
+    @keyframes runeLineShimmer {
+      0%   { background-position: -200% center; opacity: 0.6; }
+      50%  { opacity: 1; }
+      100% { background-position: 200% center; opacity: 0.6; }
+    }
+
+    h3 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+      color: var(--paper);
+      margin: 18px 0 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 12px 0 8px;
+    }
+
+    p { margin: 0 0 14px; font-size: 1.02rem; }
+
+    .eyebrow {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      animation: shimmerText 3s ease-in-out infinite;
+    }
+    @keyframes shimmerText {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; color: var(--gold-3); }
+    }
+
+    .lead {
+      font-size: clamp(1.0rem, 2.2vw, 1.2rem);
+      color: var(--paper-2);
+      max-width: 920px;
+      font-style: italic;
+      line-height: 1.8;
+    }
+
+    .toc-note {
+      color: var(--paper-2);
+      font-style: italic;
+      max-width: 860px;
+    }
+
+    .small {
+      font-size: 0.91rem;
+      color: var(--paper-2);
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════
+       HERO SECTION
+    ═══════════════════════════════════════ */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line-bright);
+      border-radius: 4px;
+      padding: clamp(32px, 6vw, 64px) clamp(24px, 5vw, 56px);
+      background:
+        linear-gradient(145deg, rgba(34,27,53,0.97) 0%, rgba(18,12,28,0.98) 60%, rgba(26,20,40,0.96) 100%);
+      box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 32px 100px rgba(0,0,0,0.6), inset 0 1px 0 rgba(232,196,106,0.15);
+    }
+
+    /* Outer ornamental border */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(232,196,106,0.18);
+      border-radius: 2px;
+      pointer-events: none;
+      animation: borderPulse 4s ease-in-out infinite;
+    }
+    @keyframes borderPulse {
+      0%, 100% { border-color: rgba(232,196,106,0.18); box-shadow: none; }
+      50% { border-color: rgba(232,196,106,0.35); box-shadow: 0 0 20px rgba(232,196,106,0.08) inset; }
+    }
+
+    /* Large arcane circle watermark */
+    .hero-arcane {
+      position: absolute;
+      right: -80px; top: 50%;
+      transform: translateY(-50%);
+      width: 560px; height: 560px;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    .hero-arcane svg {
+      width: 100%; height: 100%;
+      animation: slowRotate 60s linear infinite;
+    }
+    .hero-arcane-inner {
+      position: absolute;
+      right: -80px; top: 50%;
+      transform: translateY(-50%);
+      width: 560px; height: 560px;
+      opacity: 0.04;
+      pointer-events: none;
+    }
+    .hero-arcane-inner svg {
+      width: 100%; height: 100%;
+      animation: slowRotate 40s linear infinite reverse;
+    }
+    @keyframes slowRotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Corner ornaments */
+    .corner { position: absolute; width: 48px; height: 48px; pointer-events: none; }
+    .corner svg { width: 100%; height: 100%; }
+    .corner-tl { top: 10px; left: 10px; }
+    .corner-tr { top: 10px; right: 10px; transform: scaleX(-1); }
+    .corner-bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+    .corner-br { bottom: 10px; right: 10px; transform: scale(-1,-1); }
+
+    /* ═══════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════ */
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 26px 0 0;
+      position: relative;
+      z-index: 2;
+    }
+    .nav a {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(232,196,106,0.3);
+      border-radius: 2px;
+      padding: 7px 14px;
+      color: var(--paper-2);
+      background: rgba(201,168,76,0.06);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(232,196,106,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .nav a:hover {
+      color: var(--gold-3);
+      border-color: var(--gold-2);
+      background: rgba(201,168,76,0.14);
+      box-shadow: 0 0 16px rgba(232,196,106,0.25), inset 0 0 16px rgba(232,196,106,0.05);
+      text-shadow: 0 0 8px var(--gold-glow);
+      transform: translateY(-2px);
+    }
+    .nav a:hover::before { transform: translateX(100%); }
+
+    /* ═══════════════════════════════════════
+       CALLOUT
+    ═══════════════════════════════════════ */
+    .callout {
+      position: relative;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--gold);
+      background: rgba(201,168,76,0.06);
+      border-radius: 0 4px 4px 0;
+      padding: 16px 20px;
+      margin: 18px 0;
+      font-style: italic;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .callout:hover {
+      border-color: rgba(232,196,106,0.4);
+      border-left-color: var(--gold-3);
+      background: rgba(201,168,76,0.1);
+    }
+    .callout strong { color: var(--gold-2); font-style: normal; }
+    .callout.warning {
+      border-left-color: var(--red);
+      background: rgba(224,128,112,0.07);
+    }
+    .callout.warning strong { color: var(--red); }
+
+    /* ═══════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════ */
+    .section {
+      margin-top: 32px;
+      padding: clamp(24px, 4vw, 40px);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: rgba(26,20,40,0.7);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s, box-shadow 0.4s;
+      /* Scroll reveal initial state */
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    .section.revealed {
+      animation: revealSection 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes revealSection {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section:hover {
+      border-color: rgba(232,196,106,0.32);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35), 0 0 40px rgba(201,168,76,0.06);
+    }
+
+    /* Decorative corner marks on sections */
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border-top: 2px solid var(--gold);
+      border-left: 2px solid var(--gold);
+      opacity: 0.4;
+      transition: opacity 0.3s, width 0.3s, height 0.3s;
+    }
+    .section::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 40px; height: 40px;
+      border-bottom: 2px solid var(--gold);
+      border-right: 2px solid var(--gold);
+      opacity: 0.4;
+      transition: opacity 0.3s, width 0.3s, height 0.3s;
+    }
+    .section:hover::before,
+    .section:hover::after {
+      opacity: 0.7;
+      width: 60px; height: 60px;
+    }
+
+    /* Section ambient glow shimmer */
+    .section-shimmer {
+      position: absolute;
+      top: -100%; left: -60%;
+      width: 30%; height: 300%;
+      background: linear-gradient(90deg, transparent, rgba(232,196,106,0.03), transparent);
+      animation: sectionShimmer 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes sectionShimmer {
+      0%   { transform: translateX(0) skewX(-15deg); }
+      100% { transform: translateX(500%) skewX(-15deg); }
+    }
+
+    /* ═══════════════════════════════════════
+       GRID & CARDS
+    ═══════════════════════════════════════ */
+    .grid { display: grid; gap: 18px; }
+    .grid.two   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(232,196,106,0.18);
+      border-radius: 4px;
+      padding: 20px;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(232,196,106,0.08), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 28px rgba(232,196,106,0.12);
+      border-color: rgba(232,196,106,0.38);
+      background: rgba(255,255,255,0.07);
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* Paper cards (parchment texture) */
+    .card.paper {
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+        linear-gradient(165deg, #f5ead4 0%, #ecddbf 40%, #e6d5b5 80%, #deca9e 100%);
+      color: var(--ink);
+      border-color: rgba(100, 76, 38, 0.25);
+      box-shadow: inset 0 0 40px rgba(160,130,70,0.08), 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .card.paper:hover {
+      transform: translateY(-3px) scale(1.005) rotate(0.3deg);
+      box-shadow: inset 0 0 40px rgba(160,130,70,0.12), 0 16px 40px rgba(0,0,0,0.35);
+      border-color: rgba(100, 76, 38, 0.4);
+    }
+    .card.paper h3, .card.paper h4 { color: #3d2810; }
+    .card.paper .small { color: #6b5535; }
+
+    /* School-colored cards */
+    .card.school-card { border-left: 3px solid var(--gold); }
+    .card.subclass { border-left: 3px solid var(--violet); }
+    .card.official { border-left-color: var(--gold); }
+    .card.homebrew { border-left-color: var(--blue); }
+
+    /* ═══════════════════════════════════════
+       TAGS & PILLS
+    ═══════════════════════════════════════ */
+    .tag {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      border: 1px solid rgba(232,196,106,0.28);
+      border-radius: 2px;
+      padding: 2px 10px;
+      color: var(--gold-2);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      margin: 2px 3px 4px 0;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tag:hover { border-color: var(--gold-2); background: rgba(232,196,106,0.1); }
+    .tag.blue   { color: var(--blue); border-color: rgba(122,176,245,0.3); }
+    .tag.green  { color: var(--green); border-color: rgba(130,201,138,0.3); }
+    .tag.red    { color: var(--red); border-color: rgba(224,128,112,0.3); }
+    .tag.violet { color: var(--violet); border-color: rgba(168,126,245,0.3); }
+    .pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; }
+
+    /* ═══════════════════════════════════════
+       TABLES
+    ═══════════════════════════════════════ */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 0.95rem;
+      border: 1px solid rgba(232,196,106,0.18);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 11px 14px;
+      border: 1px solid rgba(232,196,106,0.14);
+      vertical-align: top;
+      transition: background 0.2s;
+    }
+    th {
+      font-family: 'Cinzel', serif;
+      background: rgba(201,168,76,0.14);
+      color: var(--gold-2);
+      text-align: left;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      border-color: rgba(232,196,106,0.22);
+    }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+    tr:not(:first-child):hover td {
+      background: rgba(232,196,106,0.07);
+    }
+    .compact td { padding: 7px 10px; }
+
+    /* Paper card tables */
+    .card.paper table th {
+      background: rgba(74,48,24,0.12);
+      color: #3d2810;
+      border-color: rgba(74,48,24,0.2);
+    }
+    .card.paper table td, .card.paper table th {
+      border-color: rgba(74,48,24,0.15);
+    }
+    .card.paper tr:not(:first-child):hover td {
+      background: rgba(74,48,24,0.06);
+    }
+
+    /* ═══════════════════════════════════════
+       LISTS
+    ═══════════════════════════════════════ */
+    ul { margin-top: 8px; padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    ol { padding-left: 22px; }
+    ol li { margin-bottom: 10px; }
+
+    /* ═══════════════════════════════════════
+       DECORATIVE ELEMENTS
+    ═══════════════════════════════════════ */
+    .rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-glow), var(--gold), transparent);
+      margin: 24px 0;
+      opacity: 0.4;
+      position: relative;
+    }
+    .rule::before {
+      content: '✦';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: var(--panel);
+      padding: 0 8px;
+      color: var(--gold);
+      font-size: 0.7rem;
+      animation: spinGlyph 6s linear infinite;
+    }
+    @keyframes spinGlyph {
+      0%   { transform: translate(-50%,-50%) rotate(0deg); }
+      100% { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+
+    .section-divider {
+      text-align: center;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: 0.8em;
+      margin: 32px 0;
+      opacity: 0.35;
+      animation: dividerPulse 5s ease-in-out infinite;
+      font-family: 'Cinzel', serif;
+    }
+    @keyframes dividerPulse {
+      0%, 100% { opacity: 0.35; letter-spacing: 0.8em; }
+      50% { opacity: 0.6; letter-spacing: 1em; }
+    }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    .footer {
+      margin-top: 48px;
+      padding: 24px;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      position: relative;
+    }
+    .footer::before {
+      content: '✦ ✦ ✦';
+      display: block;
+      color: var(--gold);
+      margin-bottom: 10px;
+      opacity: 0.4;
+      letter-spacing: 1em;
+      animation: dividerPulse 6s ease-in-out infinite;
+    }
+
+    /* ═══════════════════════════════════════
+       SPARKLE TRAIL
+    ═══════════════════════════════════════ */
+    .sparkle-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9997;
+      border-radius: 50%;
+      animation: sparkleFade 0.8s ease-out forwards;
+    }
+    @keyframes sparkleFade {
+      0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 860px) {
+      /* Show mobile toggle, hide sidebar by default */
+      .sidebar-toggle { display: flex; }
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        width: 240px;
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      /* Content fills full width */
+      .page {
+        margin-left: 0;
+        width: 100%;
+        padding: 70px 18px 60px;
+        max-width: 100%;
+      }
+
+      /* Collapse grids */
+      .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr; }
+
+      /* Scrollable tables */
+      table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      /* Smaller h1 on mobile */
+      h1 { font-size: clamp(1.6rem, 8vw, 2.8rem); }
+      h2 { font-size: clamp(1.2rem, 5vw, 1.7rem); }
+
+      /* Hero tighter */
+      .hero { padding: 28px 20px 24px; border-radius: 4px; }
+      .hero-arcane, .hero-arcane-inner { display: none; }
+      .corner { display: none; }
+
+      /* Sections tighter */
+      .section { padding: 20px 16px; }
+
+      /* Nav pills wrap nicely */
+      .nav { gap: 6px; }
+      .nav a { font-size: 0.65rem; padding: 6px 10px; }
+
+      /* Cards */
+      .card { padding: 16px; }
+      .card:hover { transform: none; } /* no lift on touch */
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: clamp(1.4rem, 9vw, 2.2rem); }
+      .page { padding: 65px 14px 50px; }
+      .section { padding: 16px 13px; }
+      .callout { padding: 12px 14px; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #particle-canvas, .bg-layer, .sidebar, .sidebar-toggle, .sidebar-overlay { display: none !important; }
+      .page { margin-left: 0; width: 100%; padding: 20px; }
+      .section { opacity: 1 !important; transform: none !important; box-shadow: none; background: white; border: 1px solid #ccc; }
+      h1, h2, h3, h4 { color: black; text-shadow: none; animation: none; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Animated BG -->
+<div class="bg-layer"></div>
+<canvas id="particle-canvas"></canvas>
+
+<!-- Corner SVG template (reused) -->
+<svg style="display:none">
+  <symbol id="corner-svg" viewBox="0 0 48 48" fill="none">
+    <path d="M2 46 L2 2 L46 2" stroke="currentColor" stroke-width="1.5" opacity="0.8"/>
+    <path d="M2 2 L12 2" stroke="currentColor" stroke-width="2.5" opacity="1"/>
+    <path d="M2 2 L2 12" stroke="currentColor" stroke-width="2.5" opacity="1"/>
+    <circle cx="2" cy="2" r="2" fill="currentColor" opacity="0.8"/>
+    <circle cx="26" cy="2" r="1" fill="currentColor" opacity="0.4"/>
+    <circle cx="2" cy="26" r="1" fill="currentColor" opacity="0.4"/>
+  </symbol>
+</svg>
+
+<div class="site-wrapper">
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-inner">
+    <div class="sidebar-brand">
+      <svg class="sidebar-sigil" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="47" stroke="#c9a84c" stroke-width="1.2"/>
+        <circle cx="50" cy="50" r="33" stroke="#c9a84c" stroke-width="0.7" stroke-dasharray="4 5"/>
+        <polygon points="50,8 87,71 13,71" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <polygon points="50,92 13,29 87,29" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <circle cx="50" cy="50" r="3.5" fill="#c9a84c"/>
+      </svg>
+      <div class="sidebar-brand-title">Forgotten Realms<br>Wizard Handbook</div>
+      <div class="sidebar-brand-sub">2025 Edition</div>
+    </div>
+
+    <div class="sidebar-nav-label">Sections</div>
+    <a href="#top" class="sidebar-link" data-section="top"><span class="link-rune">✦</span>Introduction</a>
+    <a href="#class-core" class="sidebar-link" data-section="class-core"><span class="link-rune">ᚱ</span>Class Core</a>
+    <a href="#realms-wizardry" class="sidebar-link" data-section="realms-wizardry"><span class="link-rune">ᛊ</span>Realms Wizardry</a>
+    <a href="#style" class="sidebar-link" data-section="style"><span class="link-rune">ᚷ</span>Magic Style</a>
+    <a href="#components" class="sidebar-link" data-section="components"><span class="link-rune">ᚦ</span>Components</a>
+    <a href="#focuses" class="sidebar-link" data-section="focuses"><span class="link-rune">ᛖ</span>Focuses</a>
+    <a href="#spellbooks" class="sidebar-link" data-section="spellbooks"><span class="link-rune">ᛒ</span>Spellbooks</a>
+    <a href="#schools" class="sidebar-link" data-section="schools"><span class="link-rune">ᚨ</span>Schools</a>
+    <a href="#familiars" class="sidebar-link" data-section="familiars"><span class="link-rune">ᛗ</span>Familiars</a>
+    <a href="#subclasses" class="sidebar-link" data-section="subclasses"><span class="link-rune">ᚾ</span>Subclasses</a>
+    <a href="#spell-list" class="sidebar-link" data-section="spell-list"><span class="link-rune">ᛁ</span>Spell Lists</a>
+    <a href="#tables" class="sidebar-link" data-section="tables"><span class="link-rune">ᚲ</span>Decision Tables</a>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ══════════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════════ -->
+  <header class="hero" id="top">
+
+    <!-- Arcane circle watermarks -->
+    <div class="hero-arcane">
+      <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="250" cy="250" r="240" stroke="#c9a84c" stroke-width="1"/>
+        <circle cx="250" cy="250" r="200" stroke="#c9a84c" stroke-width="0.5"/>
+        <circle cx="250" cy="250" r="160" stroke="#c9a84c" stroke-width="1"/>
+        <polygon points="250,30 459,375 41,375" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+        <polygon points="250,470 41,125 459,125" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+        <circle cx="250" cy="250" r="6" fill="#c9a84c"/>
+        <line x1="250" y1="10" x2="250" y2="490" stroke="#c9a84c" stroke-width="0.3" stroke-dasharray="4 8"/>
+        <line x1="10" y1="250" x2="490" y2="250" stroke="#c9a84c" stroke-width="0.3" stroke-dasharray="4 8"/>
+        <line x1="73" y1="73" x2="427" y2="427" stroke="#c9a84c" stroke-width="0.3" stroke-dasharray="4 8"/>
+        <line x1="427" y1="73" x2="73" y2="427" stroke="#c9a84c" stroke-width="0.3" stroke-dasharray="4 8"/>
+        <text x="250" y="258" text-anchor="middle" fill="#c9a84c" font-size="11" letter-spacing="6" font-family="serif" opacity="0.7">MYSTRYL</text>
+        <text x="250" y="284" text-anchor="middle" fill="#c9a84c" font-size="8" letter-spacing="4" font-family="serif" opacity="0.5">ARCANIST</text>
+        <!-- Rune marks around circle -->
+        <g opacity="0.6" font-size="10" fill="#c9a84c" font-family="serif">
+          <text x="244" y="22" text-anchor="middle">ᚦ</text>
+          <text x="244" y="488" text-anchor="middle">ᚨ</text>
+          <text x="14" y="254" text-anchor="middle">ᚱ</text>
+          <text x="480" y="254" text-anchor="middle">ᛊ</text>
+          <text x="70" y="78" text-anchor="middle">ᚷ</text>
+          <text x="424" y="78" text-anchor="middle">ᛒ</text>
+          <text x="70" y="432" text-anchor="middle">ᛖ</text>
+          <text x="424" y="432" text-anchor="middle">ᛗ</text>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-arcane-inner">
+      <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="250" cy="250" r="230" stroke="#a87ef5" stroke-width="0.5" stroke-dasharray="8 12"/>
+        <circle cx="250" cy="250" r="180" stroke="#a87ef5" stroke-width="0.5" stroke-dasharray="4 8"/>
+        <polygon points="250,50 454,362 46,362" stroke="#a87ef5" stroke-width="0.5" fill="none" stroke-dasharray="6 10"/>
+        <polygon points="250,450 46,138 454,138" stroke="#a87ef5" stroke-width="0.5" fill="none" stroke-dasharray="6 10"/>
+      </svg>
+    </div>
+
+    <!-- Corner ornaments -->
+    <div class="corner corner-tl" style="color: var(--gold)">
+      <svg viewBox="0 0 48 48" fill="none"><use href="#corner-svg"/></svg>
+    </div>
+    <div class="corner corner-tr" style="color: var(--gold)">
+      <svg viewBox="0 0 48 48" fill="none"><use href="#corner-svg"/></svg>
+    </div>
+    <div class="corner corner-bl" style="color: var(--gold)">
+      <svg viewBox="0 0 48 48" fill="none"><use href="#corner-svg"/></svg>
+    </div>
+    <div class="corner corner-br" style="color: var(--gold)">
+      <svg viewBox="0 0 48 48" fill="none"><use href="#corner-svg"/></svg>
+    </div>
+
+    <div style="position:relative; z-index:2;">
+      <div class="eyebrow">✦ &nbsp; Forgotten Realms Arcane Character Guide &nbsp; ✦</div>
+      <h1>2025 Wizard<br>Handbook</h1>
+      <p class="lead">A heavier, more character-facing wizard guide for modern Dungeons &amp; Dragons play in Faer&ucirc;n. This version treats a wizard as a scholar of the Weave, not just a spell list. It adds Realms flavor, school identity, component rituals, familiar options, focuses, spellbook design, subclass expansion, and rollable tables for building a wizard who feels specific.</p>
+
+      <div class="callout">
+        <strong>Compatibility note:</strong> Use this as a 2024 rules / 2025 table guide. Official rules are summarized where useful. New familiars, subclass concepts, focus traditions, and school rituals are marked as roleplay tools or homebrew options for DM approval.
+      </div>
+
+      <nav class="nav" aria-label="Page navigation">
+        <a href="#class-core">Class Core</a>
+        <a href="#realms-wizardry">Realms Wizardry</a>
+        <a href="#style">Magic Style</a>
+        <a href="#components">Components</a>
+        <a href="#focuses">Focuses</a>
+        <a href="#spellbooks">Spellbooks</a>
+        <a href="#schools">Schools</a>
+        <a href="#familiars">Familiars</a>
+        <a href="#subclasses">Subclasses</a>
+        <a href="#tables">Decision Tables</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════
+       CLASS CORE
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="class-core">
+    <div class="section-shimmer"></div>
+    <h2>Wizard Class Core in 2025 Play</h2>
+    <p class="toc-note">The modern wizard is less about being a walking fireball launcher and more about preparation, research, ritual access, spellbook identity, and tactical swapping. A good wizard sheet should show what the character studies, what their magic looks like, how they prepare, and what kind of arcane institution or private obsession shaped them.</p>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>What makes a wizard feel legitimate</h3>
+        <ul>
+          <li><strong>A method:</strong> They do not simply want magic. They understand a repeatable procedure.</li>
+          <li><strong>A text:</strong> Their spellbook, tablets, knot-cord ledger, crystal index, or tattooed formulae are the center of the character.</li>
+          <li><strong>A theory of the Weave:</strong> Every wizard has an explanation for what magic is, even if that explanation is arrogant, incomplete, or dangerously wrong.</li>
+          <li><strong>A research habit:</strong> They take notes after every monster, ruin, spell, curse, portal, ward, corpse, prophecy, and magical failure.</li>
+          <li><strong>A casting grammar:</strong> Verbal, somatic, and material components should have a recognizable style.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>The wizard role in the party</h3>
+        <ul>
+          <li><strong>Planner:</strong> Prepares answers before the problem appears.</li>
+          <li><strong>Translator:</strong> Reads runes, old Netherese fragments, magical residue, and dead civilizations.</li>
+          <li><strong>Controller:</strong> Alters movement, sightlines, space, memory, and risk.</li>
+          <li><strong>Protector:</strong> Uses abjurations, counterspells, alarms, circles, wards, and contingencies.</li>
+          <li><strong>Problem-breaker:</strong> Turns impossible situations into strange but solvable procedures.</li>
+        </ul>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Level</th><th>Modern Wizard Feature</th><th>Roleplay Interpretation</th><th>Character Sheet Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Spellcasting</td><td>You have a functioning magical literacy. Your spells are not instincts. They are procedures encoded in symbols, gestures, tones, diagrams, and reagents.</td><td>Describe the spellbook, preferred focus, and casting style immediately.</td></tr>
+        <tr><td>1</td><td>Ritual Adept</td><td>You can draw power from the written procedure itself. This makes your book a working instrument, not a notebook.</td><td>Mark ritual spells clearly. Add a ritual kit, chalks, silver thread, incense, folding rule, or astrolabe.</td></tr>
+        <tr><td>1</td><td>Arcane Recovery</td><td>Resting is not napping. It is recalibration. The wizard reads, reorders formulae, adjusts breath patterns, and reopens a channel to the Weave.</td><td>Write how your recovery looks. Quiet reading, rapid diagramming, mantra correction, or focus maintenance.</td></tr>
+        <tr><td>2</td><td>Scholar</td><td>Your noncombat expertise shows what kind of wizard you are: historian, physician, theologian, investigator, natural philosopher, or pure arcanist.</td><td>Use expertise as a personality anchor, not just a bonus.</td></tr>
+        <tr><td>3</td><td>Wizard Subclass</td><td>Your training stops being general. You become a specialist, whether by school, institution, battlefield role, forbidden research, or Realms tradition.</td><td>Pick a school culture and a visual casting grammar.</td></tr>
+        <tr><td>5</td><td>Memorize Spell</td><td>You can re-index the active layer of your mind after study. This is the wizard fantasy: you did not know the answer this morning, but you can make yourself know it by lunch.</td><td>Show what short rest study looks like. Notes, murmured proofs, memory palace, or spellbook consultation.</td></tr>
+        <tr><td>18</td><td>Spell Mastery</td><td>Some formulas are no longer spells you cast. They are reflexes. They live in your posture, pulse, and pronunciation.</td><td>Choose spells that reveal identity, not just optimization.</td></tr>
+        <tr><td>20</td><td>Signature Spells</td><td>Your name becomes attached to certain effects. Apprentices can identify you by the geometry of the spell itself.</td><td>Name the personal versions of those spells.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       REALMS WIZARDRY
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="realms-wizardry">
+    <div class="section-shimmer"></div>
+    <h2>Wizardry in the Forgotten Realms</h2>
+    <p>In Faer&ucirc;n, arcane magic usually means contact with the Weave, the vast structure through which mortals shape magical power. A wizard is not only a caster. A wizard is someone trained to read, test, mark, and manipulate that structure through repeatable formulae. Sorcerers burn with power. Warlocks bargain for power. Clerics receive power through divine channels. Wizards build a method, then force reality to respect it.</p>
+
+    <div class="grid three">
+      <div class="card school-card"><h3>The Weave is a medium</h3><p>A Realms wizard treats magic like light through glass, music through air, or law through language. It is present, but not usable without technique. Your spellbook teaches your mind how to address it.</p></div>
+      <div class="card school-card"><h3>Institutions matter</h3><p>Candlekeep, Silverymoon, the Watchful Order of Magists and Protectors, Thayan circles, old Netherese fragments, Halruaan skyship traditions, and elven high magic all create different kinds of wizards.</p></div>
+      <div class="card school-card"><h3>Reputation matters</h3><p>In the Realms, a wizard may be feared before they speak. Some are sages. Some are artillery. Some are living siege engines. Some are political problems wearing robes.</p></div>
+    </div>
+
+    <table>
+      <thead><tr><th>Realms Tradition</th><th>What It Feels Like</th><th>Spellbook Style</th><th>Social Reaction</th></tr></thead>
+      <tbody>
+        <tr><td>Candlekeep Scribe-Mage</td><td>Scholarly, archival, exacting, quotation-heavy.</td><td>Indexed codex, cross-referenced margins, pressed specimen tabs, waxed citation tags.</td><td>Trusted by sages, annoying to impatient adventurers.</td></tr>
+        <tr><td>Waterdhavian Guild Wizard</td><td>Licensed, polished, civic, legally careful.</td><td>Bound urban grimoire with seals, permit tags, registered spell formulae.</td><td>Respected in cities, watched by authorities.</td></tr>
+        <tr><td>Thayan Renegade</td><td>Severe, surgical, ruthless, circle-trained.</td><td>Red leather, bone clasps, coded circles, blood-stabilized inks.</td><td>Feared, suspected, useful in emergencies.</td></tr>
+        <tr><td>Silverymoon Spellguard Student</td><td>Protective, elegant, civic-minded, mythic.</td><td>Moon-silver plates, star maps, protective sigils, abjuration seals.</td><td>Welcomed in good-aligned settlements, hated by infiltrators.</td></tr>
+        <tr><td>Netherese Remnant Scholar</td><td>Ambitious, antique, gravitational, dangerously theoretical.</td><td>Black vellum, floating glyphs, dead-language annotations, impossible diagrams.</td><td>Fascinating to scholars, alarming to everyone sane.</td></tr>
+        <tr><td>Elven High-Arcanist Aspirant</td><td>Musical, ancient, patient, ritualized.</td><td>Living leaf-pages, silver thread, harmonic notation, moonlit inks.</td><td>Viewed as refined, aloof, and potentially centuries ahead.</td></tr>
+        <tr><td>Rashemi Witch-Scribe</td><td>Folk-ritual, spirit-aware, masked, practical.</td><td>Birch-bark folios, braided charms, spirit names hidden under mundane recipes.</td><td>Respected locally, misunderstood outside Rashemen.</td></tr>
+        <tr><td>Calishite Elementalist</td><td>Precise, elemental, transactional, desert-hardened.</td><td>Brass plates, sand-sealed pages, heat-reactive calligraphy.</td><td>Valued by merchants, rulers, and planar opportunists.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       MAGIC STYLE
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="style">
+    <div class="section-shimmer"></div>
+    <h2>Your Style of Magic in Roleplay</h2>
+    <p>A wizard should have a visible magical grammar. When the character casts, other people should gradually learn their habits: the hand angles, the voice, the smell of their components, the light their diagrams produce, and the way their spells fail. Pick a style that can apply to every spell, then adjust it by school.</p>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>The four-part casting identity</h3>
+        <ol>
+          <li><strong>The theory:</strong> What does your wizard believe magic actually is?</li>
+          <li><strong>The body:</strong> How do their hands, eyes, breath, and posture change while casting?</li>
+          <li><strong>The tool:</strong> What object helps them impose their theory onto the Weave?</li>
+          <li><strong>The aftermath:</strong> What trace does their magic leave behind?</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Example: Abjuration ward style</h3>
+        <p>An abjurer might cast by drawing invisible polygons with two fingers, speaking each edge as a legal clause. Their spells smell like cold iron and rain on stone. When their ward absorbs damage, golden fracture-lines appear in the air, like a cracked cathedral window mending itself.</p>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>d20</th><th>Arcane Style</th><th>Verbal Mood</th><th>Somatic Mood</th><th>Spell Residue</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Geometric abjurer</td><td>Clipped legal phrases</td><td>Sharp right angles</td><td>Gold grid-lines</td></tr>
+        <tr><td>2</td><td>Storm mathematician</td><td>Rising thunder-counts</td><td>Spiral finger motions</td><td>Ozone and blue sparks</td></tr>
+        <tr><td>3</td><td>Candlekeep citation mage</td><td>Quoted fragments and page numbers</td><td>Page-turn gestures</td><td>Floating footnotes</td></tr>
+        <tr><td>4</td><td>Netherese ruin scholar</td><td>Dead syllables with wrong gravity</td><td>Slow vertical pulls</td><td>Dust falling upward</td></tr>
+        <tr><td>5</td><td>Silverymoon ward-singer</td><td>Soft sung tones</td><td>Open-palmed circles</td><td>Moonlit mist</td></tr>
+        <tr><td>6</td><td>Thayan combat scribe</td><td>Commands, not prayers</td><td>Knife-like strokes</td><td>Red sigil burns</td></tr>
+        <tr><td>7</td><td>Elven harmonic wizard</td><td>Chorded vowels</td><td>Dance-like precision</td><td>Silver sound-rings</td></tr>
+        <tr><td>8</td><td>Planar taxonomist</td><td>Names, categories, coordinates</td><td>Measuring motions</td><td>Compass halos</td></tr>
+        <tr><td>9</td><td>Necromantic anatomist</td><td>Clinical whispers</td><td>Pulse-counting taps</td><td>Pale afterimages</td></tr>
+        <tr><td>10</td><td>Illusion playwright</td><td>Theatrical cues</td><td>Stage direction gestures</td><td>Velvet shadows</td></tr>
+        <tr><td>11</td><td>Conjuration architect</td><td>Spatial proofs</td><td>Door-drawing motions</td><td>Blueprint lines</td></tr>
+        <tr><td>12</td><td>Divination astrologer</td><td>Names of stars and hours</td><td>Constellation tracing</td><td>Tiny starfields</td></tr>
+        <tr><td>13</td><td>Transmutation alchemist</td><td>Recipe language</td><td>Pinching, grinding, folding</td><td>Metallic perfume</td></tr>
+        <tr><td>14</td><td>Evocation artillery mage</td><td>Range calls and impact words</td><td>Braced stances</td><td>Heat shimmer</td></tr>
+        <tr><td>15</td><td>Sea-witch arcanist</td><td>Tide chants</td><td>Flowing wrist motions</td><td>Salt beads</td></tr>
+        <tr><td>16</td><td>Shadow theoretician</td><td>Quiet negative phrases</td><td>Gesture withheld until the last instant</td><td>Light draining from edges</td></tr>
+        <tr><td>17</td><td>Mythal apprentice</td><td>Layered syllables</td><td>Both hands weaving through air</td><td>Ancient elven knots</td></tr>
+        <tr><td>18</td><td>Urban ward engineer</td><td>Practical measurements</td><td>Locking and bracing motions</td><td>Brickwork glyphs</td></tr>
+        <tr><td>19</td><td>Dream researcher</td><td>Half-remembered lullabies</td><td>Slow, sleeping gestures</td><td>Blurred colors</td></tr>
+        <tr><td>20</td><td>Personal prodigy</td><td>Your own invented grammar</td><td>Improvised but repeatable</td><td>A signature only you leave</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       COMPONENTS
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="components">
+    <div class="section-shimmer"></div>
+    <h2>Verbal, Somatic, and Material Components</h2>
+    <p>Components should not be treated like invisible accounting. They are the most wizardly part of wizard play. They show that magic is physical, linguistic, and material. A spell is not only an effect. It is a performance of knowledge.</p>
+
+    <div class="grid three">
+      <div class="card"><h3>Verbal components</h3><p>The words do not have to be literal Common. They can be tonal keys, dead-language variables, draconic consonants, elven harmonic vowels, mathematical counts, or the name of an ancient theorem.</p></div>
+      <div class="card"><h3>Somatic components</h3><p>The gesture is not random finger-wiggling. It is a diagram drawn through air. If the spell changes space, the body marks space. If the spell protects, the hand closes a boundary.</p></div>
+      <div class="card"><h3>Material components</h3><p>The component is a sympathetic anchor. It tells the Weave what kind of change is being requested: glass for sight, fleece for illusion, iron for binding, ash for ending, silver for lunar law.</p></div>
+    </div>
+
+    <table>
+      <thead><tr><th>Component</th><th>Basic Description</th><th>Legit Wizard Upgrade</th><th>Failure Flavor</th></tr></thead>
+      <tbody>
+        <tr><td>Verbal</td><td>A spoken magical phrase.</td><td>Give every school a different vocal mode. Abjuration sounds like law. Evocation sounds like force. Divination sounds like time.</td><td>The wrong syllable makes the Weave resist, echo, or answer a slightly different question.</td></tr>
+        <tr><td>Somatic</td><td>A required gesture.</td><td>Make gestures precise enough that bound hands, injury, armor, panic, or being underwater matters in the fiction.</td><td>The gesture collapses into sparks, reversed diagrams, or a ward that points inward.</td></tr>
+        <tr><td>Material</td><td>A component or focus used to complete the spell.</td><td>Carry a pouch that looks like research, not clutter: labeled vials, fossil chips, chalk, wire, salt, miniature lenses, bone needles.</td><td>The reagent smokes, spoils, cracks, screams, blooms, or leaves a permanent stain on the spellbook.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="grid two">
+      <div class="card paper">
+        <h3>d12 Verbal Component Styles</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>Ancient Netherese numbers recited backward.</td></tr>
+          <tr><td>2</td><td>Elven syllables sung in three-part harmony.</td></tr>
+          <tr><td>3</td><td>Thayan command words spoken like military orders.</td></tr>
+          <tr><td>4</td><td>Candlekeep citations: author, title, page, correction.</td></tr>
+          <tr><td>5</td><td>Draconic consonants that sound like stone cracking.</td></tr>
+          <tr><td>6</td><td>Legal clauses from a personal contract with reality.</td></tr>
+          <tr><td>7</td><td>A nursery rhyme from childhood, made unsettling by precision.</td></tr>
+          <tr><td>8</td><td>A short prayer to Mystra, Azuth, or no god at all.</td></tr>
+          <tr><td>9</td><td>Soft counting under the breath until the spell releases.</td></tr>
+          <tr><td>10</td><td>A true name fragment never spoken above a whisper.</td></tr>
+          <tr><td>11</td><td>A single word repeated with changing stress each time.</td></tr>
+          <tr><td>12</td><td>Silence first, then one perfect syllable.</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card paper">
+        <h3>d12 Somatic Component Styles</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>Two fingers sketch glowing geometric gates.</td></tr>
+          <tr><td>2</td><td>The palm rotates as if opening a lock.</td></tr>
+          <tr><td>3</td><td>Each spell begins by touching the spellbook spine.</td></tr>
+          <tr><td>4</td><td>Gestures imitate sword forms, but without a weapon.</td></tr>
+          <tr><td>5</td><td>The wrist makes tiny alchemical stirring motions.</td></tr>
+          <tr><td>6</td><td>The hand closes around empty air as if seizing thread.</td></tr>
+          <tr><td>7</td><td>The wizard traces constellations only they can see.</td></tr>
+          <tr><td>8</td><td>One hand writes while the other erases.</td></tr>
+          <tr><td>9</td><td>The body remains still while only the eyes move.</td></tr>
+          <tr><td>10</td><td>The caster taps pulse points on wrist, throat, and brow.</td></tr>
+          <tr><td>11</td><td>The gesture looks like folding paper in the air.</td></tr>
+          <tr><td>12</td><td>Every spell ends with a small warding sign over the heart.</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <h3>Material Pouch as Character Design</h3>
+    <table>
+      <thead><tr><th>d20</th><th>Component Detail</th><th>What It Says About the Wizard</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Every reagent is labeled in three scripts.</td><td>Careful, academic, impossible to surprise with a technicality.</td></tr>
+        <tr><td>2</td><td>The pouch smells like rain, copper, and old parchment.</td><td>Abjuration or storm theory dominates their casting.</td></tr>
+        <tr><td>3</td><td>Glass beads float above the pouch until needed.</td><td>The wizard uses gravity or force notation.</td></tr>
+        <tr><td>4</td><td>Ritual chalk is cut into hexagonal sticks.</td><td>They think in grids, borders, and safe zones.</td></tr>
+        <tr><td>5</td><td>Small bones are carved with respectful names.</td><td>Necromancy is treated as anatomy, memory, or duty.</td></tr>
+        <tr><td>6</td><td>A tiny brass astrolabe folds out of one pocket.</td><td>Divination or planar navigation shapes their worldview.</td></tr>
+        <tr><td>7</td><td>The pouch contains sand from seven deserts.</td><td>Elemental, Calishite, or travel-based training.</td></tr>
+        <tr><td>8</td><td>Silver wire is wound around a broken ring.</td><td>Binding, protection, and old promises matter.</td></tr>
+        <tr><td>9</td><td>A dead moth is preserved between crystal slides.</td><td>They study illusion, light, and fragile perception.</td></tr>
+        <tr><td>10</td><td>All liquids are carried in stoppered black vials.</td><td>Secretive, paranoid, or trained by dangerous teachers.</td></tr>
+        <tr><td>11</td><td>One pocket contains a miniature emergency spell circle.</td><td>They expect plans to fail and prepare anyway.</td></tr>
+        <tr><td>12</td><td>The pouch has a little bell that rings near curses.</td><td>Protective folk-magic has mixed with formal wizardry.</td></tr>
+        <tr><td>13</td><td>A pressed blue flower from Silverymoon is always present.</td><td>Sentiment is hidden inside discipline.</td></tr>
+        <tr><td>14</td><td>Ink stains never fully leave the caster's fingers.</td><td>The wizard writes more than they sleep.</td></tr>
+        <tr><td>15</td><td>Fragments of red lacquer are kept in a forbidden compartment.</td><td>Thayan influence, exile, or stolen training.</td></tr>
+        <tr><td>16</td><td>Salt, iron filings, and ash are wrapped separately.</td><td>They respect boundaries between warding, binding, and ending.</td></tr>
+        <tr><td>17</td><td>A tiny mirror is cracked in exactly eight pieces.</td><td>Illusion and divination overlap in their practice.</td></tr>
+        <tr><td>18</td><td>The pouch is ugly, durable, and military-issued.</td><td>Battlefield wizardry shaped them.</td></tr>
+        <tr><td>19</td><td>Reagents are tied with colored thread by school.</td><td>Their mind organizes the world into arcane taxonomies.</td></tr>
+        <tr><td>20</td><td>One component is never used, only touched before hard choices.</td><td>The wizard has a personal vow, grief, or superstition.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       FOCUSES
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="focuses">
+    <div class="section-shimmer"></div>
+    <h2>Arcane Focuses</h2>
+    <p>A focus is the wizard's handshake with the Weave. Mechanically it may only replace certain material components, but in roleplay it is a declaration of discipline. A wand says precision. A staff says authority and reach. An orb says contemplation. A spellbook as focus says the written formula is alive.</p>
+
+    <div class="callout">
+      <strong>Table rule suggestion:</strong> Any exotic focus below can be treated as a normal arcane focus unless it tries to grant mechanical benefits. If it adds bonuses, charges, damage, extra spells, or special senses, it becomes a magic item and needs DM approval.
+    </div>
+
+    <table>
+      <thead><tr><th>Focus</th><th>Best For</th><th>Casting Look</th><th>Forgotten Realms Flavor</th></tr></thead>
+      <tbody>
+        <tr><td>Wand</td><td>Precise spells, counterspells, duels, delicate abjurations.</td><td>Fine lines, cutting arcs, exact targeting.</td><td>Common among trained duelists, Waterdhavian mages, and formal apprentices.</td></tr>
+        <tr><td>Staff</td><td>Authority, travel, defense, ritual circles, battlefield control.</td><td>The staff plants the spell into the ground or sweeps it across a wide area.</td><td>A staff makes the wizard look like a public power, not just a private scholar.</td></tr>
+        <tr><td>Orb</td><td>Divination, illusion, planar magic, memory work.</td><td>The orb reflects scenes, possibilities, and incorrect futures.</td><td>Used by astrologers, seers, and mages who distrust linear time.</td></tr>
+        <tr><td>Crystal</td><td>Psionic flavor, Netherese research, elemental resonance.</td><td>The crystal refracts the spell into multiple ghost-lines before one becomes real.</td><td>Works well for alien, Far Realm, or ancient empire aesthetics.</td></tr>
+        <tr><td>Rod</td><td>Command, binding, enforcement, law-magic.</td><td>The spell is imposed, not requested.</td><td>Strong fit for abjurers, enchanters, and civic battle-mages.</td></tr>
+        <tr><td>Spellbook</td><td>Ritual-heavy characters, scholars, scribes, prepared problem-solvers.</td><td>Pages turn by themselves. The written formula lifts into the air.</td><td>Modern wizard rules strongly support this identity. The book can be the focus.</td></tr>
+        <tr><td>Ink brush</td><td>Calligraphic magic, glyphs, wards, illusions.</td><td>The caster paints temporary symbols in the air.</td><td>Excellent for Candlekeep, Kara-Tur-influenced, or courtly mages.</td></tr>
+        <tr><td>Astrolabe</td><td>Divination, teleportation, planar work, time-themed spells.</td><td>Rings align, then release a spell through a precise celestial angle.</td><td>Good for navigators, Spelljammer-adjacent scholars, and Netherese ruin hunters.</td></tr>
+        <tr><td>Abacus or counting chain</td><td>Mathematical wizards, force magic, logistics, battlefield calculation.</td><td>Beads click into place as the spell resolves.</td><td>Perfect for a wizard who treats magic as proof, debt, or accounting.</td></tr>
+        <tr><td>Mask</td><td>Illusion, enchantment, fear, false identity.</td><td>The spoken component comes from the mask, not the mouth.</td><td>Works well in Rashemen, urban intrigue, or secret societies.</td></tr>
+        <tr><td>Rings</td><td>Abjuration, enchantment, noble wizardry, pact-like aesthetics without being a warlock.</td><td>The ring flashes with sigils as the spell travels through the hand.</td><td>A subtle focus for court wizards and hidden spellcasters.</td></tr>
+        <tr><td>Tattooed focus marks</td><td>Emergency casting, body-as-spellbook themes, exile characters.</td><td>Glyphs shine under the skin and fade after the spell.</td><td>Use as flavor unless the DM approves a special item or feat interaction.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Focus Personality Table</h3>
+    <table>
+      <thead><tr><th>d12</th><th>Focus Quirk</th><th>Roleplay Effect</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>It is warmer than the surrounding air.</td><td>The focus feels alive or recently used.</td></tr>
+        <tr><td>2</td><td>It hums when a prepared spell would solve the current problem.</td><td>The wizard looks competent and unsettling.</td></tr>
+        <tr><td>3</td><td>It briefly displays the last spell cast through it.</td><td>Enemies can study your habits if they are observant.</td></tr>
+        <tr><td>4</td><td>It refuses to lie flat on holy ground.</td><td>A mystery, a divine irritation, or old magic is implied.</td></tr>
+        <tr><td>5</td><td>It casts a shadow in the wrong direction near portals.</td><td>Planar instability becomes visible.</td></tr>
+        <tr><td>6</td><td>It smells like a different place after each spell school.</td><td>Magic leaves sensory evidence.</td></tr>
+        <tr><td>7</td><td>It has a tiny flaw that only another wizard would notice.</td><td>A rival can identify your teacher, tradition, or stolen method.</td></tr>
+        <tr><td>8</td><td>It chills when lies are spoken near it, but unreliably.</td><td>The wizard may trust it too much.</td></tr>
+        <tr><td>9</td><td>It was inherited, stolen, or won from a mentor.</td><td>The focus carries social consequences.</td></tr>
+        <tr><td>10</td><td>It cracks a little each time the wizard breaks a personal rule.</td><td>Morality becomes visible through equipment.</td></tr>
+        <tr><td>11</td><td>It does not work properly for anyone else.</td><td>The focus is personalized, not generic.</td></tr>
+        <tr><td>12</td><td>It seems unimpressive until magic touches it.</td><td>The wizard hides power in plain sight.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SPELLBOOKS
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="spellbooks">
+    <div class="section-shimmer"></div>
+    <h2>Spellbook Styling and Legitimacy</h2>
+    <p>The spellbook is the wizard's second body. Damage to it should feel personal. Copying into it should feel like an event. Opening it should reveal the character's mind. A fighter's weapon can be plain because the fighting happens in the hands. A wizard's book should never feel plain unless the plainness is the point.</p>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>What a spellbook contains besides spells</h3>
+        <ul>
+          <li>Failed formulae crossed out so violently the page has grooves.</li>
+          <li>Notes about which enemy resisted which spell and why.</li>
+          <li>Maps of magical residues in old ruins.</li>
+          <li>Recipes for inks, ritual chalk, lens polish, and warding wax.</li>
+          <li>Private symbols for fear, grief, forbidden research, and trusted allies.</li>
+          <li>A backup index that only makes sense after casting Identify or solving a cipher.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>How to make prepared spells feel real</h3>
+        <p>At the end of a long rest, the wizard is not choosing buttons. They are loading their mind with unstable procedures. Each prepared spell has a mental shelf, a rhythm, a safety catch, and a final trigger. Unprepared spells are not forgotten. They are archived too deeply to cast quickly.</p>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>d20</th><th>Spellbook Form</th><th>How It Changes Casting</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Traditional gilt-edged tome with metal corners.</td><td>Classic, authoritative, easy to display as scholarship.</td></tr>
+        <tr><td>2</td><td>Stack of vellum folios locked in a carved case.</td><td>Flexible, archival, vulnerable to wind and theft.</td></tr>
+        <tr><td>3</td><td>Crystal plates read by angling them toward light.</td><td>Alien, precise, excellent for diviners and Netherese themes.</td></tr>
+        <tr><td>4</td><td>Leather cord of knotted spell formulae.</td><td>Folk-wizard, tactile, good for travelers and non-academics.</td></tr>
+        <tr><td>5</td><td>Black book whose ink appears only under moonlight.</td><td>Secretive, lunar, elven, Selunite, or shadow-adjacent.</td></tr>
+        <tr><td>6</td><td>Brass plate codex with sliding inscriptions.</td><td>Heavy, durable, industrial, ideal for evokers and abjurers.</td></tr>
+        <tr><td>7</td><td>Tattoo archive copied from skin into portable mirrors.</td><td>Personal, risky, dramatic when captured or injured.</td></tr>
+        <tr><td>8</td><td>Living bark pages that grow new margins over time.</td><td>Elven, druid-adjacent, natural philosopher style.</td></tr>
+        <tr><td>9</td><td>Spell cards stored in a lacquered deck.</td><td>Fast indexing, gambler aesthetic, easy to lose one spell.</td></tr>
+        <tr><td>10</td><td>Wax tablets erased and rewritten every dawn.</td><td>Temporary, disciplined, paranoid about records.</td></tr>
+        <tr><td>11</td><td>Prayer-book format, but every hymn is a formula.</td><td>Blurs wizardry with devotion to Mystra, Azuth, or Savras.</td></tr>
+        <tr><td>12</td><td>Book of anatomical diagrams and surgical notes.</td><td>Necromancy, medicine, transmutation, or biological wizardry.</td></tr>
+        <tr><td>13</td><td>Fold-out star map with spells hidden in constellations.</td><td>Divination, teleportation, and planar magic feel natural.</td></tr>
+        <tr><td>14</td><td>A child's primer rebuilt into an archmage's grimoire.</td><td>Sentimental, unsettling, or evidence of self-taught genius.</td></tr>
+        <tr><td>15</td><td>Ledger of debts, names, and magical exchanges.</td><td>Enchantment, conjuration, contracts, and urban intrigue.</td></tr>
+        <tr><td>16</td><td>Red-bound Thayan manual with all insignia cut away.</td><td>Renegade past, stolen education, or dangerous teacher.</td></tr>
+        <tr><td>17</td><td>Invisible book readable only through the focus.</td><td>High secrecy, useful for spies and fugitives.</td></tr>
+        <tr><td>18</td><td>Cookbook, travel journal, or artist sketchbook in disguise.</td><td>Excellent for hiding a wizard in plain sight.</td></tr>
+        <tr><td>19</td><td>Floating ring of small pages orbiting a central clasp.</td><td>Very magical, dramatic, hard to hide.</td></tr>
+        <tr><td>20</td><td>One page, impossibly folded into itself.</td><td>Ancient, planar, or dangerously experimental.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Spellbook Security</h3>
+    <table>
+      <thead><tr><th>Security Method</th><th>Flavor</th><th>Complication</th></tr></thead>
+      <tbody>
+        <tr><td>Ciphered notation</td><td>Only the owner understands the shorthand.</td><td>A rival with enough samples may learn your style.</td></tr>
+        <tr><td>False mundane cover</td><td>The spellbook looks like a cookbook, hymnbook, legal ledger, or family diary.</td><td>Someone may destroy it because they think it is worthless.</td></tr>
+        <tr><td>Protective glyphs</td><td>The book resists theft through alarm magic, minor shocks, or loud spectral warnings.</td><td>It may trigger at the worst time.</td></tr>
+        <tr><td>Memory key</td><td>Pages are readable only after recalling a personal phrase, song, or theorem.</td><td>Memory magic becomes especially threatening.</td></tr>
+        <tr><td>Living familiar index</td><td>The familiar knows where every spell is located.</td><td>The familiar can be bribed, tricked, scared, or distracted.</td></tr>
+        <tr><td>Backup copy</td><td>A hidden second book is stored with a patron, faction, temple, or bank.</td><td>Retrieving it creates a story hook.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SCHOOLS
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="schools">
+    <div class="section-shimmer"></div>
+    <h2>The Eight Main Schools of Magic</h2>
+    <p>The schools should be more than labels on spells. In a Realms campaign, each school is a philosophical approach to the Weave. Two wizards can cast the same spell for different reasons, but school identity tells you what kinds of problems the character respects.</p>
+
+    <div class="grid two">
+      <div class="card school-card">
+        <h3>Abjuration</h3>
+        <div class="pill-row"><span class="tag">Wards</span><span class="tag">Boundaries</span><span class="tag">Countermagic</span></div>
+        <p><strong>Core idea:</strong> The world is dangerous because boundaries fail. Abjuration restores the line between harm and the self.</p>
+        <p><strong>Roleplay:</strong> Abjurers notice exits, thresholds, curses, contracts, weak walls, exposed allies, and magical residue. They may seem paranoid because their whole art is based on imagining what goes wrong first.</p>
+        <p><strong>Visuals:</strong> Shields, golden panes, rings, locked doors, cold iron sparks, mathematical borders.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Conjuration</h3>
+        <div class="pill-row"><span class="tag blue">Space</span><span class="tag blue">Summoning</span><span class="tag blue">Arrival</span></div>
+        <p><strong>Core idea:</strong> Distance is a technical problem. A conjurer wins by making there into here.</p>
+        <p><strong>Roleplay:</strong> Conjurers think about containers, doors, angles, true names, and contracts. They often become excellent logisticians because summoning a creature and packing a wagon are spiritually similar problems.</p>
+        <p><strong>Visuals:</strong> Doorframes of light, chalk circles, blueprints, folding corridors, sudden pressure changes.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Divination</h3>
+        <div class="pill-row"><span class="tag violet">Sight</span><span class="tag violet">Probability</span><span class="tag violet">Truth</span></div>
+        <p><strong>Core idea:</strong> Ignorance is the enemy. The future, the hidden, and the distant can be interrogated.</p>
+        <p><strong>Roleplay:</strong> Diviners answer questions with probabilities, not comfort. They may become fatalistic, smug, or quietly compassionate because they have watched too many outcomes collapse into one.</p>
+        <p><strong>Visuals:</strong> Reflections, star maps, eyes, smoke windows, dice hanging in the air.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Enchantment</h3>
+        <div class="pill-row"><span class="tag red">Mind</span><span class="tag red">Desire</span><span class="tag red">Influence</span></div>
+        <p><strong>Core idea:</strong> A person is also a system. Attention, fear, loyalty, sleep, anger, memory, and love can be redirected.</p>
+        <p><strong>Roleplay:</strong> Enchanters should be handled carefully. The style can be courtly, therapeutic, manipulative, military, or monstrous. Ethical boundaries matter more here than almost anywhere.</p>
+        <p><strong>Visuals:</strong> Soft voices, mirrored eyes, threads of light around the head, perfume, clocklike pupils.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Evocation</h3>
+        <div class="pill-row"><span class="tag red">Force</span><span class="tag red">Energy</span><span class="tag red">Impact</span></div>
+        <p><strong>Core idea:</strong> Energy can be shaped, aimed, vented, and weaponized. Evocation is not wild blasting. It is controlled disaster.</p>
+        <p><strong>Roleplay:</strong> Evokers understand pressure, heat, recoil, impact, friendly fire, siegecraft, and morale. A good evoker is not reckless. A bad evoker is a public hazard.</p>
+        <p><strong>Visuals:</strong> Flame lattices, thunder rings, force cracks, frost blooms, acid geometry.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Illusion</h3>
+        <div class="pill-row"><span class="tag violet">Perception</span><span class="tag violet">Image</span><span class="tag violet">Belief</span></div>
+        <p><strong>Core idea:</strong> Reality is not only what exists. Reality is also what the mind can be made to accept.</p>
+        <p><strong>Roleplay:</strong> Illusionists study expectation. They know where people look first, what guards ignore, what monsters fear, and what grief wants to see.</p>
+        <p><strong>Visuals:</strong> Velvet shadows, duplicate outlines, false doors, impossible lighting, delayed sound.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Necromancy</h3>
+        <div class="pill-row"><span class="tag green">Life</span><span class="tag green">Death</span><span class="tag green">Memory</span></div>
+        <p><strong>Core idea:</strong> Life and death are processes with rules. Necromancy studies the border everyone else is terrified to map.</p>
+        <p><strong>Roleplay:</strong> Necromancers are not automatically villains, but they are never socially neutral. A healer of last resort, mortuary scholar, ancestor-speaker, battlefield corpse-thief, and lich aspirant all sit under the same school.</p>
+        <p><strong>Visuals:</strong> Pale light, bone diagrams, black veins of script, cold breath, candle flames burning downward.</p>
+      </div>
+      <div class="card school-card">
+        <h3>Transmutation</h3>
+        <div class="pill-row"><span class="tag green">Change</span><span class="tag green">Matter</span><span class="tag green">Becoming</span></div>
+        <p><strong>Core idea:</strong> Nothing is fixed. Flesh, stone, metal, speed, size, and shape are temporary arrangements.</p>
+        <p><strong>Roleplay:</strong> Transmuters become practical philosophers. They may see identity as flexible, bodies as materials, and civilization as applied alchemy.</p>
+        <p><strong>Visuals:</strong> Molten metal, crawling runes, color shifts, stone softening like wax, skin briefly becoming glass.</p>
+      </div>
+    </div>
+
+    <h3>School Pairing Ideas</h3>
+    <table>
+      <thead><tr><th>Primary School</th><th>Secondary Flavor</th><th>Resulting Wizard Concept</th></tr></thead>
+      <tbody>
+        <tr><td>Abjuration</td><td>Divination</td><td>A threat analyst who predicts harm before warding against it.</td></tr>
+        <tr><td>Abjuration</td><td>Necromancy</td><td>A mortuary warder who seals tombs and prevents undeath.</td></tr>
+        <tr><td>Conjuration</td><td>Enchantment</td><td>A binder who negotiates with summoned beings and writes magical contracts.</td></tr>
+        <tr><td>Conjuration</td><td>Transmutation</td><td>A matter engineer who moves resources and reshapes what arrives.</td></tr>
+        <tr><td>Divination</td><td>Illusion</td><td>A truth/liar paradox who studies perception to reveal what is hidden.</td></tr>
+        <tr><td>Enchantment</td><td>Abjuration</td><td>A mind-ward specialist who protects memory, consent, and identity.</td></tr>
+        <tr><td>Evocation</td><td>Abjuration</td><td>A battlefield shield-breaker and shield-maker in the same body.</td></tr>
+        <tr><td>Illusion</td><td>Conjuration</td><td>A stage-portalist who makes false spaces become tactical realities.</td></tr>
+        <tr><td>Necromancy</td><td>Divination</td><td>An ancestor-reader or corpse-oracle.</td></tr>
+        <tr><td>Transmutation</td><td>Evocation</td><td>A kinetic alchemist who converts force, heat, and matter.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       FAMILIARS
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="familiars">
+    <div class="section-shimmer"></div>
+    <h2>Familiars</h2>
+    <p>A familiar is not just a scouting drone. It is a recurring character, a magical relationship, and a visible sign of the wizard's method. In the Realms, a familiar might be a spirit wearing an animal shape, a tiny extraplanar assistant, a bound mote of the Weave, a minor celestial spy, a shadowy mistake, or the soul of a previous experiment that refuses to leave.</p>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>Using ordinary familiars well</h3>
+        <p>The classic familiar forms still work because they create clear table functions. Owls feel scholarly and nocturnal. Cats feel secretive and judgmental. Ravens feel prophetic. Spiders feel surgical and unsettling. Frogs, crabs, lizards, rats, bats, hawks, fish, snakes, seahorses, and weasels all say something if the wizard chose them deliberately.</p>
+      </div>
+      <div class="card">
+        <h3>Familiar bond rules for roleplay</h3>
+        <ul>
+          <li>The familiar knows one secret the wizard refuses to say aloud.</li>
+          <li>The familiar imitates the wizard's casting style badly.</li>
+          <li>The familiar reacts to schools of magic before the wizard notices them.</li>
+          <li>The familiar has an opinion on every spell added to the book.</li>
+          <li>When resummoned, the familiar remembers the feeling of dying, but not always the details.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>New Familiar Forms for Forgotten Realms Campaigns</h3>
+    <p class="small">These are intended as reskins or light homebrew. For easiest balance, use an existing familiar stat block and add only the listed roleplay trait. If the trait creates mechanical advantage, require DM approval.</p>
+    <table>
+      <thead><tr><th>Familiar</th><th>Suggested Base</th><th>Appearance</th><th>Roleplay Trait</th><th>Best Wizard Fit</th></tr></thead>
+      <tbody>
+        <tr><td>Tressym Kit</td><td>Cat or owl</td><td>A winged cat with suspicious intelligence.</td><td>Refuses to sit on cursed objects and hisses at invisible smugness.</td><td>Candlekeep, Waterdeep, diviners, social wizards.</td></tr>
+        <tr><td>Bookmouse</td><td>Rat</td><td>A tiny mouse with ink-dark paws and parchment-colored fur.</td><td>Can always find the last page the wizard read.</td><td>Scribes, ritualists, academics.</td></tr>
+        <tr><td>Ink Moth</td><td>Bat</td><td>A silent moth whose wings look like spilled calligraphy.</td><td>Lands on false writing, forged signatures, and altered texts.</td><td>Illusionists, investigators, archivists.</td></tr>
+        <tr><td>Glass Scarab</td><td>Spider</td><td>A transparent beetle with tiny sigils inside its shell.</td><td>Glows faintly when near magical locks or wards.</td><td>Abjurers, dungeon delvers, ward-breakers.</td></tr>
+        <tr><td>Spellfire Finch</td><td>Raven</td><td>A blue-white bird that leaves harmless sparks when startled.</td><td>Sings when raw magical power has recently passed through an area.</td><td>Weave scholars, spellfire-adjacent characters, Mystra devotees.</td></tr>
+        <tr><td>Miniature Flumph</td><td>Octopus or owl</td><td>A palm-sized floating jellyfish creature with polite manners.</td><td>Dislikes cruelty and sulks near malicious psychic residue.</td><td>Good-aligned sages, Underdark researchers, psionic flavor.</td></tr>
+        <tr><td>Mythal Sprite</td><td>Sprite-flavored owl or bat</td><td>A thumb-sized humanoid made of silver leaves and moonlight.</td><td>Becomes visible only inside old elven magic or sacred groves.</td><td>Elven wizards, bladesingers, mythal researchers.</td></tr>
+        <tr><td>Netherese Shardling</td><td>Lizard</td><td>A floating stone shard with one blinking glyph-eye.</td><td>Orbits upside down near gravity anomalies, portals, and ancient ruins.</td><td>Netherese scholars, conjurers, dangerous prodigies.</td></tr>
+        <tr><td>Moon Toad</td><td>Frog</td><td>A pale toad with constellations shifting across its back.</td><td>Croaks once when a secret is almost spoken.</td><td>Diviners, Selunite wizards, swamp sages.</td></tr>
+        <tr><td>Ashling Crow</td><td>Raven</td><td>A soot-black bird whose feathers shed cold ash.</td><td>Repeats the last words spoken near a dead body, but only once.</td><td>Necromancers, battlefield medics, grim investigators.</td></tr>
+        <tr><td>Brass Gearling</td><td>Weasel</td><td>A tiny clockwork animal with a spirit-light inside.</td><td>Ticks faster near unstable constructs, traps, and mechanisms.</td><td>Transmuters, artificer-adjacent wizards, Lantanese themes.</td></tr>
+        <tr><td>Mirror Eel</td><td>Fish or snake</td><td>A silver eel that swims through air as if underwater.</td><td>Reflects the face of whoever last lied to the wizard.</td><td>Illusionists, enchanters, sea-themed wizards.</td></tr>
+        <tr><td>Ward Hound Pup</td><td>Weasel</td><td>A tiny spectral dog made of gold lines and translucent fur.</td><td>Sleeps across thresholds and growls at broken protections.</td><td>Abjurers, guardians, loyal protectors.</td></tr>
+        <tr><td>Starling Impersonator</td><td>Raven</td><td>A starling that repeats voices too accurately.</td><td>Can mimic its wizard's verbal components, but cannot cast.</td><td>Enchanters, spies, playwright illusionists.</td></tr>
+        <tr><td>Candle Wisp</td><td>Bat</td><td>A floating wick-flame with tiny moth wings.</td><td>Brightens near active rituals and dims near antimagic.</td><td>Ritual casters, temple-trained wizards, tomb explorers.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="grid two">
+      <div class="card paper">
+        <h3>d12 Familiar Personality</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>Academic snob. Only impressed by clean notation.</td></tr>
+          <tr><td>2</td><td>Cowardly scout. Useful, but complains constantly.</td></tr>
+          <tr><td>3</td><td>Protective guardian. Stands between the wizard and danger despite being tiny.</td></tr>
+          <tr><td>4</td><td>Morbid assistant. Fascinated by bones, curses, and murder scenes.</td></tr>
+          <tr><td>5</td><td>Greedy collector. Steals spell components and shiny buttons.</td></tr>
+          <tr><td>6</td><td>Silent judge. Communicates disappointment with eye contact.</td></tr>
+          <tr><td>7</td><td>Performer. Wants applause after every successful scout mission.</td></tr>
+          <tr><td>8</td><td>Old soul. Talks like it remembers ancient empires.</td></tr>
+          <tr><td>9</td><td>Overly brave. Needs to be recalled before making things worse.</td></tr>
+          <tr><td>10</td><td>Devotional. Treats the wizard's spellbook like a holy object.</td></tr>
+          <tr><td>11</td><td>Petty rival. Thinks it could run the party better.</td></tr>
+          <tr><td>12</td><td>Gentle conscience. Pushes the wizard away from cruelty.</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card paper">
+        <h3>d12 Familiar Bond Secret</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>It knows the wizard's true name or childhood nickname.</td></tr>
+          <tr><td>2</td><td>It remembers a mentor the wizard pretends not to miss.</td></tr>
+          <tr><td>3</td><td>It was first summoned during a panic, not a lesson.</td></tr>
+          <tr><td>4</td><td>It has seen the backup spellbook location.</td></tr>
+          <tr><td>5</td><td>It dislikes one spell because it saw what it did before.</td></tr>
+          <tr><td>6</td><td>It recognizes a rival wizard by smell.</td></tr>
+          <tr><td>7</td><td>It is not the first familiar. The wizard does not discuss the others.</td></tr>
+          <tr><td>8</td><td>It once returned from being dismissed with a message from somewhere else.</td></tr>
+          <tr><td>9</td><td>It knows which party member the wizard trusts most.</td></tr>
+          <tr><td>10</td><td>It reacts strangely to temples of Mystra, Azuth, Shar, or Savras.</td></tr>
+          <tr><td>11</td><td>It can identify the wizard's fear before the wizard admits it.</td></tr>
+          <tr><td>12</td><td>It occasionally dreams in the wizard's memories.</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SUBCLASSES
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="subclasses">
+    <div class="section-shimmer"></div>
+    <h2>Subclasses and Arcane Traditions</h2>
+    <p>Modern wizard subclasses arrive at level 3. In this handbook, subclasses are divided into official-style summaries and new homebrew traditions. The goal is not only to add power. The goal is to give a wizard a visible institution, research obsession, and casting culture.</p>
+
+    <h3>Official Core Traditions</h3>
+    <div class="grid two">
+      <div class="card subclass official">
+        <h3>Abjurer</h3>
+        <div class="pill-row"><span class="tag">Official core</span><span class="tag">Protection</span><span class="tag">Countermagic</span></div>
+        <p><strong>Fantasy:</strong> You turn fear into architecture. Harm arrives, meets a boundary, and fails.</p>
+        <p><strong>Roleplay:</strong> Abjurers watch doors, wounds, curses, contracts, and battlefield angles. They are the party's magical insurance policy, but also the person most likely to say, "This is exactly how people die."</p>
+        <p><strong>Spellbook style:</strong> Diagrams of circles, locks, shield planes, emergency clauses, and damage studies.</p>
+      </div>
+      <div class="card subclass official">
+        <h3>Diviner</h3>
+        <div class="pill-row"><span class="tag violet">Official core</span><span class="tag violet">Foresight</span><span class="tag violet">Control</span></div>
+        <p><strong>Fantasy:</strong> You do not overpower fate. You read the seam where fate is weak and press there.</p>
+        <p><strong>Roleplay:</strong> Diviners can feel socially difficult because they answer with uncomfortable probabilities. They may seem passive until the exact second they intervene.</p>
+        <p><strong>Spellbook style:</strong> Star charts, dice records, dream maps, eye symbols, time-stamped predictions.</p>
+      </div>
+      <div class="card subclass official">
+        <h3>Evoker</h3>
+        <div class="pill-row"><span class="tag red">Official core</span><span class="tag red">Damage</span><span class="tag red">Battlefield impact</span></div>
+        <p><strong>Fantasy:</strong> You are not a bomb. You are a siege engineer made of math.</p>
+        <p><strong>Roleplay:</strong> Evokers should think about blast radius, ally placement, heat bloom, shockwave, recoil, and collateral law. They know that destruction is a discipline.</p>
+        <p><strong>Spellbook style:</strong> Ranging notes, burn tests, crystallized lightning samples, pressure diagrams.</p>
+      </div>
+      <div class="card subclass official">
+        <h3>Illusionist</h3>
+        <div class="pill-row"><span class="tag violet">Official core</span><span class="tag violet">Deception</span><span class="tag violet">Creative control</span></div>
+        <p><strong>Fantasy:</strong> You understand that a battlefield is also an audience.</p>
+        <p><strong>Roleplay:</strong> Illusionists care about expectation, fear, grief, comedy, attention, and misdirection. They are strongest when the player describes what people would naturally assume.</p>
+        <p><strong>Spellbook style:</strong> Stage diagrams, color studies, false entries, mirrored ink, and scripts for imaginary scenes.</p>
+      </div>
+      <div class="card subclass official">
+        <h3>Bladesinger</h3>
+        <div class="pill-row"><span class="tag">Official Realms option</span><span class="tag">Elven tradition</span><span class="tag">Weapon and spell</span></div>
+        <p><strong>Fantasy:</strong> Magic is sung through motion. Defense, footwork, blade angle, and spell rhythm become one technique.</p>
+        <p><strong>Roleplay:</strong> In the Realms, this tradition works best when treated as a culturally guarded art, not just "wizard with sword." It can be solemn, beautiful, arrogant, or rebellious depending on who taught it and whether the character was supposed to learn it.</p>
+        <p><strong>Spellbook style:</strong> Notation resembles choreography: steps, beats, breath marks, blade turns, and song cues.</p>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+
+    <h3>Homebrew 2025 Traditions for a Fuller Wizard Roster</h3>
+    <p class="small">These subclass outlines are designed to feel compatible with the modern subclass level pattern. They are not official rules. Use them as inspiration or tune them with your DM.</p>
+
+    <div class="grid two">
+      <div class="card subclass homebrew">
+        <h3>School of Conjuration</h3>
+        <div class="pill-row"><span class="tag blue">Homebrew</span><span class="tag blue">Summons</span><span class="tag blue">Teleportation</span></div>
+        <p><strong>Level 3, Conjuration Savant:</strong> Add two low-level conjuration spells to your spellbook for free. When you gain access to a new spell level, add one conjuration spell of that level for free.</p>
+        <p><strong>Level 3, Minor Gate:</strong> As a bonus action, create a palm-sized portal within 30 feet until the end of your turn.</p>
+        <p><strong>Level 6, Anchored Summons:</strong> Your summoned or conjured creatures gain a small defensive benefit while within 30 feet of you.</p>
+        <p><strong>Level 10, Folded Step:</strong> Once per turn when you cast a conjuration spell, you may move 10 feet without provoking opportunity attacks.</p>
+        <p><strong>Level 14, Perfect Arrival:</strong> When you teleport or summon, choose one: arrive silently, arrive shielded, or arrive with a brief pulse that reveals nearby invisible creatures.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>School of Enchantment</h3>
+        <div class="pill-row"><span class="tag red">Homebrew</span><span class="tag red">Mind</span><span class="tag red">Social control</span></div>
+        <p><strong>Level 3, Enchantment Savant:</strong> Add two low-level enchantment spells to your spellbook for free.</p>
+        <p><strong>Level 3, Measured Voice:</strong> Gain proficiency or expertise in one social skill. When you cast an enchantment spell, your voice becomes subtly layered with harmless harmonic undertones.</p>
+        <p><strong>Level 6, Guarded Consent:</strong> You gain advantage on saving throws against being charmed.</p>
+        <p><strong>Level 10, Fractured Attention:</strong> When a creature succeeds against one of your enchantment spells, you may impose a minor distraction until the start of your next turn.</p>
+        <p><strong>Level 14, Rewrite the Moment:</strong> Once per long rest, after a creature fails a save against your enchantment spell, you may choose to alter how it remembers the immediate emotional tone of the scene.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>School of Necromancy</h3>
+        <div class="pill-row"><span class="tag green">Homebrew</span><span class="tag green">Life force</span><span class="tag green">Death study</span></div>
+        <p><strong>Level 3, Necromancy Savant:</strong> Add two low-level necromancy spells to your spellbook for free.</p>
+        <p><strong>Level 3, Grave Diagnosis:</strong> You can examine a corpse or undead trace to learn one useful fact: approximate time of death, magical cause, emotional residue, or whether necromancy altered it.</p>
+        <p><strong>Level 6, Borrowed Vitality:</strong> When a creature dies near you, you may gain temporary hit points or empower a later necromancy spell.</p>
+        <p><strong>Level 10, Deathward Formula:</strong> You gain resistance to necrotic damage or advantage against effects that reduce hit point maximum.</p>
+        <p><strong>Level 14, Named Dead:</strong> Your necromancy works better when you know the dead creature's name, story, or cause of death. This should reward investigation, not corpse farming.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>School of Transmutation</h3>
+        <div class="pill-row"><span class="tag green">Homebrew</span><span class="tag green">Alchemy</span><span class="tag green">Transformation</span></div>
+        <p><strong>Level 3, Transmutation Savant:</strong> Add two low-level transmutation spells to your spellbook for free.</p>
+        <p><strong>Level 3, Field Alchemy:</strong> During a short rest, alter one small mundane object: harden it, soften it, recolor it, purify it, chill it, warm it, or make it briefly useful as a tool.</p>
+        <p><strong>Level 6, Mutable Body:</strong> After casting a transmutation spell, gain a temporary physical adjustment.</p>
+        <p><strong>Level 10, Alchemical Conservation:</strong> When you cast a transmutation spell, choose one harmless cosmetic detail that remains after the spell ends.</p>
+        <p><strong>Level 14, Master of Becoming:</strong> Once per long rest, stabilize a transformation so it lasts longer or resists being dispelled.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>Weavewright</h3>
+        <div class="pill-row"><span class="tag">Homebrew Realms</span><span class="tag">Mystra</span><span class="tag">Repair and structure</span></div>
+        <p><strong>Concept:</strong> A Weavewright studies damaged magic, wild magic scars, dead mythals, broken wards, spellplague-tainted ruins, and unstable portals.</p>
+        <p><strong>Level 3, Weave Diagnosis:</strong> You can spend 10 minutes studying a magical effect to learn its school, approximate strength, and whether it is damaged, corrupted, divine, planar, or artificial.</p>
+        <p><strong>Level 6, Stitch the Pattern:</strong> When an ally within 30 feet fails a saving throw against a spell, you may add a small bonus as a reaction.</p>
+        <p><strong>Level 10, Arcane Sutures:</strong> When you dispel or counter a spell, you may create a small protective aftereffect around yourself or an ally.</p>
+        <p><strong>Level 14, Repair the Impossible:</strong> Once per long rest, attempt to stabilize a failing portal, mythal fragment, magic item, or curse.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>Netherese Arcanist</h3>
+        <div class="pill-row"><span class="tag blue">Homebrew Realms</span><span class="tag blue">Ancient empire</span><span class="tag blue">High-risk theory</span></div>
+        <p><strong>Concept:</strong> You study lost Netherese magic, floating enclaves, mythallar fragments, gravity, shadowed ruins, and the terrifying confidence of dead archwizards.</p>
+        <p><strong>Level 3, Imperial Formulae:</strong> Add one spell involving force, levitation, teleportation, illusion, or transmutation to your spellbook for free when you unlock a new spell level.</p>
+        <p><strong>Level 6, Gravitic Correction:</strong> A limited number of times, nudge a creature or object 5 feet after casting a wizard spell.</p>
+        <p><strong>Level 10, Arrogant Calculation:</strong> When you fail an Arcana check involving ancient magic, you may reroll it, but the DM introduces a complication on a second failure.</p>
+        <p><strong>Level 14, Fallen Enclave Theorem:</strong> Once per long rest, briefly distort local gravity or magical architecture to create cover, difficult terrain, or a floating platform.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>Red Wizard Renegade</h3>
+        <div class="pill-row"><span class="tag red">Homebrew Realms</span><span class="tag red">Thay</span><span class="tag red">Circle discipline</span></div>
+        <p><strong>Concept:</strong> You were trained by a system that treats magic as hierarchy, weapon, and tool of rule. You may have fled it, survived it, or still believe parts of it.</p>
+        <p><strong>Level 3, Circle Drill:</strong> When you cast a spell from your chosen school, you may leave a visible circle mark that helps allies identify your magic and enemies fear your training.</p>
+        <p><strong>Level 6, Harsh Efficiency:</strong> A limited number of times, when a spell forces a save, you may gain a small benefit if the target fails by 5 or more.</p>
+        <p><strong>Level 10, Severed Allegiance:</strong> You gain defensive benefits against domination, magical coercion, or spells used by authoritarian arcane orders.</p>
+        <p><strong>Level 14, Circle Without Masters:</strong> Once per long rest, turn allied positioning into a temporary casting circle that strengthens one spell or ward.</p>
+      </div>
+      <div class="card subclass homebrew">
+        <h3>Mythal Savant</h3>
+        <div class="pill-row"><span class="tag violet">Homebrew Realms</span><span class="tag violet">Elven high magic</span><span class="tag violet">Layered wards</span></div>
+        <p><strong>Concept:</strong> You cannot cast true high magic alone, but you study its ruins, songs, ethics, and architecture. You learn to think in layered magical environments.</p>
+        <p><strong>Level 3, Layered Notation:</strong> When you prepare spells after a long rest, choose one school. Your descriptions and minor sensory effects from that school become mythal-like and persistent.</p>
+        <p><strong>Level 6, Harmonized Ward:</strong> After casting a spell that protects, conceals, or reshapes an area, you may grant an ally a small temporary benefit inside that area.</p>
+        <p><strong>Level 10, Song of Structure:</strong> You can identify overlapping magical effects more easily.</p>
+        <p><strong>Level 14, Echo of High Magic:</strong> Once per long rest, create a brief environmental blessing: calm hostile weather, reveal an invisible threshold, strengthen a ward, or suppress a minor curse.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SPELL LIST
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="spell-list">
+    <div class="section-shimmer"></div>
+    <h2>Spell List Use: Not Just What You Know, But Why</h2>
+    <p>The spell list from the original handbook remains useful, but a more legitimate wizard should organize spells by function, school, and research identity. The same spell can mean different things depending on the wizard. Shield is fear management for an abjurer. Shield is battlefield timing for an evoker. Shield is proof that geometry hates knives for a mathematician.</p>
+
+    <table>
+      <thead><tr><th>Wizard Need</th><th>Low-Level Examples</th><th>Mid-Level Examples</th><th>High-Level Examples</th><th>Roleplay Question</th></tr></thead>
+      <tbody>
+        <tr><td>Defense</td><td>Mage Armor, Shield, Protection from Evil and Good</td><td>Counterspell, Dispel Magic, Glyph of Warding</td><td>Globe of Invulnerability, Mind Blank, Foresight</td><td>What does your wizard fear enough to prepare against daily?</td></tr>
+        <tr><td>Mobility</td><td>Jump, Longstrider, Feather Fall</td><td>Misty Step, Fly, Dimension Door</td><td>Teleport, Plane Shift, Gate</td><td>Does travel feel like escape, freedom, logistics, or intrusion?</td></tr>
+        <tr><td>Control</td><td>Fog Cloud, Grease, Sleep</td><td>Web, Hypnotic Pattern, Sleet Storm, Slow</td><td>Forcecage, Reverse Gravity, Prismatic Wall</td><td>How does your wizard prefer to end a fight without simply killing?</td></tr>
+        <tr><td>Damage</td><td>Magic Missile, Burning Hands, Chromatic Orb</td><td>Fireball, Lightning Bolt, Ice Storm, Wall of Fire</td><td>Disintegrate, Chain Lightning, Meteor Swarm</td><td>Is your damage elegant, brutal, military, elemental, or personal?</td></tr>
+        <tr><td>Information</td><td>Detect Magic, Identify, Comprehend Languages</td><td>Detect Thoughts, Clairvoyance, Tongues</td><td>Legend Lore, Scrying, True Seeing, Foresight</td><td>What truth does your wizard believe is worth the risk of knowing?</td></tr>
+        <tr><td>Social and deception</td><td>Disguise Self, Charm Person, Illusory Script</td><td>Suggestion, Major Image, Nystul's Magic Aura</td><td>Modify Memory, Seeming, Project Image</td><td>Where is your wizard's ethical line?</td></tr>
+        <tr><td>Creation and utility</td><td>Unseen Servant, Tenser's Floating Disk, Find Familiar</td><td>Rope Trick, Fabricate, Arcane Eye</td><td>Creation, Wall of Stone, Magnificent Mansion</td><td>Does your wizard solve problems like an engineer or like a magician?</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Prepared Spell Loadout Templates</h3>
+    <table>
+      <thead><tr><th>Loadout</th><th>What You Prepare For</th><th>Example Identity</th></tr></thead>
+      <tbody>
+        <tr><td>Dungeon Forensics</td><td>Traps, ruins, magical locks, old languages, cursed objects, hidden doors.</td><td>Candlekeep investigator, Watchful Order consultant, tomb scholar.</td></tr>
+        <tr><td>Ward Tank</td><td>Taking hits, blocking casters, protecting allies, controlling entries.</td><td>Abjurer, Silverymoon defender, bodyguard mage.</td></tr>
+        <tr><td>Battlefield Architect</td><td>Lines of sight, movement denial, forced positioning, safe blasts.</td><td>Evoker, conjurer, military wizard, siege scholar.</td></tr>
+        <tr><td>Intrigue Wizard</td><td>Disguises, charm, false papers, illusions, information gathering.</td><td>Waterdeep court mage, Harper asset, Zhentarim consultant.</td></tr>
+        <tr><td>Planar Technician</td><td>Portals, summons, circles, bindings, languages, extraplanar risk.</td><td>Conjurer, Netherese ruin delver, Spelljammer researcher.</td></tr>
+        <tr><td>Occult Physician</td><td>Death, curses, disease, undeath, body change, magical contamination.</td><td>Necromancer, transmuter, plague scholar, battlefield anatomist.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       DECISION TABLES
+  ══════════════════════════════════════════════════ -->
+  <section class="section" id="tables">
+    <div class="section-shimmer"></div>
+    <h2>Decision Tables</h2>
+    <p>Use these to make quick choices when building a wizard or adding depth to an existing character.</p>
+
+    <div class="grid two">
+      <div class="card paper">
+        <h3>d20 Wizard Origin Problem</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>Your first spell saved someone and ruined your life.</td></tr>
+          <tr><td>2</td><td>Your teacher vanished into their own spellbook.</td></tr>
+          <tr><td>3</td><td>You stole your education from a place that wants it back.</td></tr>
+          <tr><td>4</td><td>You were accepted by Candlekeep, then expelled for one correct but dangerous theory.</td></tr>
+          <tr><td>5</td><td>Your familiar appeared before you learned Find Familiar.</td></tr>
+          <tr><td>6</td><td>You inherited a spellbook written for someone with your exact handwriting.</td></tr>
+          <tr><td>7</td><td>Your ward failed once. You count every consequence.</td></tr>
+          <tr><td>8</td><td>You learned magic to disprove a prophecy.</td></tr>
+          <tr><td>9</td><td>A Red Wizard trained you, but not out of kindness.</td></tr>
+          <tr><td>10</td><td>You found a Netherese formula that sometimes edits itself.</td></tr>
+          <tr><td>11</td><td>Your village treats you as a miracle. You know better.</td></tr>
+          <tr><td>12</td><td>You owe a debt to a ghost, spell, angel, devil, archmage, or city.</td></tr>
+          <tr><td>13</td><td>You became a wizard because sorcery ran in the family and skipped you.</td></tr>
+          <tr><td>14</td><td>Your spellbook contains a page no one can remove.</td></tr>
+          <tr><td>15</td><td>You are hiding a forbidden school behind respectable work.</td></tr>
+          <tr><td>16</td><td>You survived an antimagic disaster and now overprepare.</td></tr>
+          <tr><td>17</td><td>Your mentor was famous. You are tired of being compared to them.</td></tr>
+          <tr><td>18</td><td>You discovered your own name in an old list of dead archmages.</td></tr>
+          <tr><td>19</td><td>You believe magic is sick and you intend to heal it.</td></tr>
+          <tr><td>20</td><td>You are your own experiment.</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card paper">
+        <h3>d20 Magical Flaw</h3>
+        <table class="compact"><tbody>
+          <tr><td>1</td><td>Your verbal components echo one second late.</td></tr>
+          <tr><td>2</td><td>Your shadow performs the somatic gesture before you do.</td></tr>
+          <tr><td>3</td><td>Animals stare at your spellbook.</td></tr>
+          <tr><td>4</td><td>Your spells smell like a place you have never visited.</td></tr>
+          <tr><td>5</td><td>Your focus grows heavier near lies.</td></tr>
+          <tr><td>6</td><td>You cannot cast comfortably without correcting nearby bad handwriting.</td></tr>
+          <tr><td>7</td><td>One school of magic always leaves visible marks on your skin.</td></tr>
+          <tr><td>8</td><td>Your familiar knows when you are about to make a foolish decision.</td></tr>
+          <tr><td>9</td><td>Your spellbook occasionally writes questions in the margins.</td></tr>
+          <tr><td>10</td><td>Mirrors show your prepared spells as halos.</td></tr>
+          <tr><td>11</td><td>Spilled ink crawls toward you.</td></tr>
+          <tr><td>12</td><td>Your counterspells sound like doors slamming.</td></tr>
+          <tr><td>13</td><td>Your illusions are slightly too beautiful.</td></tr>
+          <tr><td>14</td><td>Your necromancy attracts moths, even underground.</td></tr>
+          <tr><td>15</td><td>Your evocations leave harmless scorch-symbols of your initials.</td></tr>
+          <tr><td>16</td><td>Your divinations sometimes answer in a dead mentor's voice.</td></tr>
+          <tr><td>17</td><td>Your transmutations leave one object stubbornly unchanged.</td></tr>
+          <tr><td>18</td><td>Your conjurations arrive with a faint bell tone.</td></tr>
+          <tr><td>19</td><td>Your enchantments make nearby candles lean toward you.</td></tr>
+          <tr><td>20</td><td>Your abjurations protect one unintended thing every time.</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <h3>Wizard Personality by School</h3>
+    <table>
+      <thead><tr><th>School</th><th>Healthy Trait</th><th>Dangerous Trait</th><th>Party Dynamic</th></tr></thead>
+      <tbody>
+        <tr><td>Abjuration</td><td>Protective</td><td>Controlling</td><td>"I already thought of that threat."</td></tr>
+        <tr><td>Conjuration</td><td>Resourceful</td><td>Careless with boundaries</td><td>"I can get us something for this."</td></tr>
+        <tr><td>Divination</td><td>Insightful</td><td>Fatalistic</td><td>"We should not open that door yet."</td></tr>
+        <tr><td>Enchantment</td><td>Empathetic</td><td>Manipulative</td><td>"Words will work better than steel."</td></tr>
+        <tr><td>Evocation</td><td>Decisive</td><td>Destructive</td><td>"Stand there, not there."</td></tr>
+        <tr><td>Illusion</td><td>Creative</td><td>Dishonest</td><td>"They will see what they expect to see."</td></tr>
+        <tr><td>Necromancy</td><td>Unflinching</td><td>Exploitative</td><td>"Death has already told us something."</td></tr>
+        <tr><td>Transmutation</td><td>Adaptive</td><td>Boundary-blind</td><td>"Nothing about this problem has to remain itself."</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Name Your Magic</h3>
+    <p>A legitimate wizard should eventually personalize spells. Not every spell needs a new mechanical effect. A name alone can create identity.</p>
+    <table>
+      <thead><tr><th>Standard Spell</th><th>Personal Naming Pattern</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Shield</td><td>[Wizard's Name]'s [Material] Ward</td><td>Fousio's Auric Ward</td></tr>
+        <tr><td>Magic Missile</td><td>[Number] [Object]s of [Force or Color]</td><td>Five Blue Nails of Certainty</td></tr>
+        <tr><td>Counterspell</td><td>The [Gesture] Rebuttal</td><td>The Two-Finger Rebuttal</td></tr>
+        <tr><td>Misty Step</td><td>[Place] Step or [Substance] Step</td><td>Moonmist Step</td></tr>
+        <tr><td>Fireball</td><td>[Teacher's Name]'s [Disaster]</td><td>Malreth's Sudden Sun</td></tr>
+        <tr><td>Find Familiar</td><td>Call of the [Trait] Companion</td><td>Call of the Ink-Wing Companion</td></tr>
+        <tr><td>Glyph of Warding</td><td>The [Shape] That Waits</td><td>The Hexagon That Waits</td></tr>
+        <tr><td>Wall of Force</td><td>[Invisible Material] Wall</td><td>Glass Without Mercy</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       CHARACTER-FIRST
+  ══════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-shimmer"></div>
+    <h2>Building a Character-First Wizard</h2>
+    <p>When making or revising a wizard, answer these in order. The result will be much stronger than choosing spells first.</p>
+
+    <ol>
+      <li><strong>What problem made them study magic?</strong> Protection, poverty, curiosity, revenge, grief, illness, social power, forbidden knowledge, or survival.</li>
+      <li><strong>Who taught them the first correct thing?</strong> A guild, parent, ghost, Red Wizard, Candlekeep sage, elven mentor, stolen book, familiar, rival, or dead civilization.</li>
+      <li><strong>What does their spellbook look like?</strong> Decide this before picking a robe color.</li>
+      <li><strong>What is their casting grammar?</strong> Pick verbal, somatic, material, and residue details.</li>
+      <li><strong>What school do they respect most?</strong> Not necessarily their subclass, but the school that explains their worldview.</li>
+      <li><strong>What school makes them uncomfortable?</strong> This creates roleplay friction.</li>
+      <li><strong>How does their familiar challenge them?</strong> The familiar should not only obey. It should reflect, irritate, warn, or expose them.</li>
+      <li><strong>What spell would they never sell?</strong> A wizard's relationship to knowledge becomes clearer when some knowledge is sacred.</li>
+    </ol>
+
+    <div class="callout warning">
+      <strong>DM note:</strong> The wizard becomes much more fun when spell acquisition is part of the world. Put scrolls in enemy bookshelves, half-burned lab notes, dead archmage lockboxes, temple libraries, sea chests, Thayan ledgers, elven ruins, lich phylactery vaults, and court records. Make the wizard hunt knowledge like a rogue hunts locks.
+    </div>
+  </section>
+
+  <footer class="footer">
+    2025 Forgotten Realms Wizard Handbook &mdash; Official rules summarized for table use. Homebrew sections are marked and should be tuned with the DM.
+  </footer>
+
+</main>
+
+</div><!-- /.site-wrapper -->
+
+<script>
+// ═══════════════════════════════════════════
+// CURSOR TRAIL (no lag ring — pure trail)
+// ═══════════════════════════════════════════
+const trailColors = ['#fad97a','#e8c46a','#c9a84c','#a87ef5','#7ab0f5','#82c98a'];
+const trailDots = [];
+const TRAIL_LEN = 16;
+let tmx = 0, tmy = 0;
+
+// Pre-create trail dots
+for (let i = 0; i < TRAIL_LEN; i++) {
+  const d = document.createElement('div');
+  const t = 1 - i / TRAIL_LEN;
+  const sz = 2 + t * 7;
+  d.style.cssText = `
+    position:fixed; pointer-events:none; z-index:9999;
+    width:${sz}px; height:${sz}px; border-radius:50%;
+    background:${trailColors[i % 3]};
+    box-shadow:0 0 ${sz*1.8}px ${trailColors[i % 3]};
+    opacity:0; transform:translate(-50%,-50%);
+    transition:opacity 0.1s; mix-blend-mode:screen;
+  `;
+  document.body.appendChild(d);
+  trailDots.push({ el: d, x: 0, y: 0 });
+}
+
+document.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+
+(function animTrail() {
+  let px = tmx, py = tmy;
+  trailDots.forEach((dot, i) => {
+    dot.x += (px - dot.x) * (0.45 - i * 0.018);
+    dot.y += (py - dot.y) * (0.45 - i * 0.018);
+    dot.el.style.left = dot.x + 'px';
+    dot.el.style.top  = dot.y + 'px';
+    dot.el.style.opacity = (1 - i / TRAIL_LEN) * 0.75;
+    px = dot.x; py = dot.y;
+  });
+  requestAnimationFrame(animTrail);
+})();
+
+// Sparkle burst on click
+const sparkColors = ['#fad97a','#e8c46a','#a87ef5','#7ab0f5','#fff8e0','#c9a84c'];
+document.addEventListener('click', e => {
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('div');
+    const sz = 3 + Math.random() * 6;
+    const angle = (i / 8) * Math.PI * 2;
+    const dist = 20 + Math.random() * 30;
+    s.style.cssText = `
+      position:fixed; pointer-events:none; z-index:9997;
+      width:${sz}px; height:${sz}px; border-radius:50%;
+      left:${e.clientX}px; top:${e.clientY}px;
+      background:${sparkColors[Math.floor(Math.random()*sparkColors.length)]};
+      box-shadow:0 0 ${sz*2}px ${sparkColors[0]};
+      transform:translate(-50%,-50%);
+      animation:clickBurst 0.55s ease-out forwards;
+      --dx:${Math.cos(angle)*dist}px; --dy:${Math.sin(angle)*dist}px;
+      mix-blend-mode:screen;
+    `;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 600);
+  }
+});
+const burstStyle = document.createElement('style');
+burstStyle.textContent = `@keyframes clickBurst { to { transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0; } }`;
+document.head.appendChild(burstStyle);
+
+// ═══════════════════════════════════════════
+// PARTICLE CANVAS
+// ═══════════════════════════════════════════
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+const runeChars = ['ᚦ','ᚨ','ᚱ','ᛊ','ᚷ','ᛒ','ᛖ','ᛗ','ᚾ','ᛁ','ᚲ','ᛞ','ᛟ','ᛠ','✦','✧','⬡','◈','⋆','∞','⊕'];
+const PARTICLE_COUNT = 50;
+const particles = Array.from({length: PARTICLE_COUNT}, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  vx: (Math.random() - 0.5) * 0.28,
+  vy: (Math.random() - 0.5) * 0.28 - 0.08,
+  size: 8 + Math.random() * 11,
+  alpha: 0.05 + Math.random() * 0.16,
+  char: runeChars[Math.floor(Math.random() * runeChars.length)],
+  rot: Math.random() * Math.PI * 2,
+  rotSpeed: (Math.random() - 0.5) * 0.005,
+  color: Math.random() < 0.5 ? 'rgba(201,168,76,' : Math.random() < 0.5 ? 'rgba(168,126,245,' : 'rgba(122,176,245,'
+}));
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.rotSpeed;
+    if (p.x < -20) p.x = W + 20;
+    if (p.x > W + 20) p.x = -20;
+    if (p.y < -20) p.y = H + 20;
+    if (p.y > H + 20) p.y = -20;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.font = `${p.size}px serif`;
+    ctx.fillStyle = p.color + p.alpha + ')';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.char, 0, 0);
+    ctx.restore();
+  });
+  if (Math.random() < 0.002) {
+    const sx = Math.random() * W, sy = Math.random() * H * 0.5;
+    const len = 60 + Math.random() * 80;
+    const grad = ctx.createLinearGradient(sx, sy, sx + len, sy + len * 0.3);
+    grad.addColorStop(0, 'rgba(201,168,76,0)');
+    grad.addColorStop(0.5, 'rgba(201,168,76,0.35)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.strokeStyle = grad; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + len, sy + len * 0.3); ctx.stroke();
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ═══════════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════════
+const sections = document.querySelectorAll('.section');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('revealed'), 50);
+      obs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+sections.forEach(s => obs.observe(s));
+
+// ═══════════════════════════════════════════
+// SIDEBAR ACTIVE LINK ON SCROLL
+// ═══════════════════════════════════════════
+const sidebarLinks = document.querySelectorAll('.sidebar-link[data-section]');
+const sectionTargets = [...sidebarLinks].map(l => document.getElementById(l.dataset.section)).filter(Boolean);
+
+function updateActiveLink() {
+  let current = '';
+  sectionTargets.forEach(sec => {
+    const top = sec.getBoundingClientRect().top;
+    if (top < window.innerHeight * 0.45) current = sec.id;
+  });
+  sidebarLinks.forEach(l => {
+    l.classList.toggle('active', l.dataset.section === current);
+  });
+}
+window.addEventListener('scroll', updateActiveLink, { passive: true });
+updateActiveLink();
+
+// Close mobile sidebar when a link is clicked
+sidebarLinks.forEach(l => {
+  l.addEventListener('click', () => {
+    if (window.innerWidth <= 860) closeSidebar();
+  });
+});
+
+// ═══════════════════════════════════════════
+// MOBILE SIDEBAR TOGGLE
+// ═══════════════════════════════════════════
+const sidebarEl  = document.getElementById('sidebar');
+const toggleBtn  = document.getElementById('sidebarToggle');
+const overlayEl  = document.getElementById('sidebarOverlay');
+
+function openSidebar()  { sidebarEl.classList.add('open'); toggleBtn.classList.add('open'); overlayEl.classList.add('visible'); }
+function closeSidebar() { sidebarEl.classList.remove('open'); toggleBtn.classList.remove('open'); overlayEl.classList.remove('visible'); }
+
+toggleBtn.addEventListener('click', () => sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar());
+overlayEl.addEventListener('click', closeSidebar);
+
+// ═══════════════════════════════════════════
+// AMBIENT CARD SHIMMER
+// ═══════════════════════════════════════════
+const cards = document.querySelectorAll('.card:not(.paper)');
+function shimmerRandomCard() {
+  if (!cards.length) return;
+  const c = cards[Math.floor(Math.random() * cards.length)];
+  c.style.transition = 'box-shadow 0.3s';
+  c.style.boxShadow = '0 0 28px rgba(201,168,76,0.18), 0 0 55px rgba(168,126,245,0.07)';
+  setTimeout(() => { c.style.boxShadow = ''; }, 800);
+}
+setInterval(shimmerRandomCard, 3400);
+
+// ═══════════════════════════════════════════
+// NAV LINK RIPPLE
+// ═══════════════════════════════════════════
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    const rect = this.getBoundingClientRect();
+    ripple.style.cssText = `position:absolute;left:${e.clientX-rect.left}px;top:${e.clientY-rect.top}px;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.6);pointer-events:none;transform:scale(0);animation:rippleOut 0.5s ease-out forwards;`;
+    this.style.position = 'relative'; this.style.overflow = 'hidden';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = '@keyframes rippleOut { to { transform: scale(30); opacity: 0; } }';
+document.head.appendChild(rippleStyle);
+</script>
+
+</body>
+</html>
