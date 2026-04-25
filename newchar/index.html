@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D20 Character Forge</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --parchment: #f5efe0;
+    --parchment-dark: #e8dfc8;
+    --gold: #c9922a;
+    --gold-light: #e8b84b;
+    --red: #8b1a1a;
+    --shadow: rgba(26,20,16,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #2a1f14;
+    background-image: 
+      radial-gradient(ellipse at 20% 20%, #3d2a18 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, #1a0f08 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .page-title {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold-light);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 0 0 40px rgba(201,146,42,0.4), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+  }
+
+  .page-subtitle {
+    font-family: 'Cinzel', serif;
+    color: #b8956a;
+    font-size: 0.95rem;
+    text-align: center;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0.8;
+  }
+
+  .forge-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ROLL TABLES */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .table-card {
+    background: var(--parchment);
+    background-image: 
+      url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid #c8b89a;
+    border-radius: 4px;
+    box-shadow: 0 4px 20px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .table-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  .table-header {
+    background: linear-gradient(180deg, #2a1f14 0%, #1a1410 100%);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .table-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    color: var(--ink);
+    font-weight: bold;
+  }
+
+  .table-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .table-body {
+    padding: 10px 0;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    padding: 4px 16px;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  .table-row:hover { background: rgba(201,146,42,0.08); }
+
+  .table-row.highlight {
+    background: rgba(201,146,42,0.2);
+    font-weight: 500;
+  }
+
+  .roll-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-weight: 600;
+    padding-top: 1px;
+  }
+
+  .roll-val { color: var(--ink); }
+
+  /* DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b8956a, transparent);
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    color: #b8956a;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ROLL BUTTON */
+  .roll-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .roll-btn {
+    position: relative;
+    background: linear-gradient(180deg, #c9922a 0%, #8b6010 100%);
+    border: none;
+    border-radius: 4px;
+    padding: 18px 60px;
+    cursor: pointer;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    color: #fff8e8;
+    letter-spacing: 2px;
+    box-shadow: 
+      0 4px 0 #5a3d08,
+      0 6px 20px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.15s;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .roll-btn:hover {
+    background: linear-gradient(180deg, #e8a830 0%, #a07018 100%);
+    transform: translateY(-1px);
+    box-shadow: 
+      0 5px 0 #5a3d08,
+      0 8px 24px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+
+  .roll-btn:active {
+    transform: translateY(3px);
+    box-shadow: 
+      0 1px 0 #5a3d08,
+      0 3px 10px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .roll-btn .dice-icon {
+    margin-right: 10px;
+    font-style: normal;
+  }
+
+  /* CHARACTER SHEET OUTPUT */
+  .sheet-wrapper {
+    display: none;
+    animation: sheetReveal 0.6s ease forwards;
+  }
+
+  .sheet-wrapper.visible { display: block; }
+
+  @keyframes sheetReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .character-sheet {
+    background: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    border: 1px solid #c8b89a;
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.7);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sheet-top-bar {
+    background: linear-gradient(180deg, #2a1f14, #1a1410);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .sheet-name-block { flex: 1; }
+
+  .sheet-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--gold-light);
+    text-shadow: 0 0 20px rgba(201,146,42,0.3);
+    line-height: 1.1;
+  }
+
+  .sheet-class-line {
+    font-family: 'Cinzel', serif;
+    color: #b8956a;
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .sheet-badge {
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sheet-body {
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 600px) {
+    .sheet-body { grid-template-columns: 1fr; }
+  }
+
+  .sheet-section { margin-bottom: 4px; }
+
+  .sheet-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid var(--parchment-dark);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+
+  .sheet-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px dotted rgba(168,140,100,0.3);
+    gap: 12px;
+  }
+
+  .sheet-field:last-child { border-bottom: none; }
+
+  .field-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    color: #6b5540;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .field-value {
+    font-size: 0.92rem;
+    color: var(--ink);
+    text-align: right;
+    font-style: italic;
+  }
+
+  .field-value.highlight {
+    color: var(--red);
+    font-weight: 500;
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .stat-box {
+    background: var(--parchment-dark);
+    border: 1px solid #c0aa88;
+    border-radius: 3px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+
+  .stat-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem;
+    letter-spacing: 1.5px;
+    color: #6b5540;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .stat-score {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .stat-mod {
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+  }
+
+  .flavor-text {
+    grid-column: 1 / -1;
+    background: linear-gradient(180deg, #2a1f14, #1a1410);
+    border-top: 2px solid var(--gold);
+    padding: 18px 28px;
+    font-style: italic;
+    color: #d4b896;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    letter-spacing: 0.3px;
+  }
+
+  .flavor-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-style: normal;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* RE-ROLL */
+  .reroll-btn {
+    background: transparent;
+    border: 1px solid #b8956a;
+    border-radius: 3px;
+    padding: 10px 28px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: #b8956a;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .reroll-btn:hover {
+    background: rgba(184,149,106,0.1);
+    border-color: var(--gold-light);
+    color: var(--gold-light);
+  }
+
+  /* SCROLLBAR */
+  .table-body::-webkit-scrollbar { width: 4px; }
+  .table-body::-webkit-scrollbar-track { background: var(--parchment-dark); }
+  .table-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+  /* ROLL ANIMATION */
+  @keyframes rollFlash {
+    0% { background: rgba(201,146,42,0.4); }
+    100% { background: rgba(201,146,42,0.2); }
+  }
+
+  .rolling { animation: rollFlash 0.15s ease 3; }
+
+  .corner-ornament {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    opacity: 0.25;
+  }
+  .corner-ornament.tl { top: 8px; left: 8px; }
+  .corner-ornament.tr { top: 8px; right: 8px; transform: scaleX(-1); }
+  .corner-ornament.bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+  .corner-ornament.br { bottom: 8px; right: 8px; transform: scale(-1); }
+</style>
+</head>
+<body>
+
+<div class="page-title">Character Forge</div>
+<div class="page-subtitle">Roll d20 on each table · Level 3</div>
+
+<div class="forge-container">
+
+  <!-- TABLE SECTION LABEL -->
+  <div class="section-divider"><span class="section-label">The Tables</span></div>
+
+  <div class="tables-grid">
+
+    <!-- RACE -->
+    <div class="table-card" id="tbl-race">
+      <div class="table-header">
+        <div class="table-icon">⚔</div>
+        <div class="table-title">Race</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Human</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">High Elf</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Wood Elf</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Drow (Dark Elf)</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Half-Elf</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Halfling (Lightfoot)</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Halfling (Stout)</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Dwarf (Mountain)</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Dwarf (Hill)</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Gnome (Forest)</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Gnome (Rock)</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Tiefling</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Dragonborn</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Half-Orc</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Aasimar</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Genasi (Fire)</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Genasi (Water)</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Tabaxi</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Kenku</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Githyanki</span></div>
+      </div>
+    </div>
+
+    <!-- CLASS -->
+    <div class="table-card" id="tbl-class">
+      <div class="table-header">
+        <div class="table-icon">✦</div>
+        <div class="table-title">Class</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Barbarian</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Bard</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Cleric</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Druid</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Fighter</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Fighter</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Monk</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Paladin</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Ranger</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Rogue</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Rogue</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Sorcerer</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Warlock</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Wizard</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Wizard</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Artificer</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Blood Hunter</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Ranger</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Paladin</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Multiclass — Roll Twice</span></div>
+      </div>
+    </div>
+
+    <!-- GENDER & PRESENTATION -->
+    <div class="table-card" id="tbl-gender">
+      <div class="table-header">
+        <div class="table-icon">◈</div>
+        <div class="table-title">Gender & Presentation</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1–5</span><span class="roll-val">Male, masculine presentation</span></div>
+        <div class="table-row"><span class="roll-num">6–10</span><span class="roll-val">Female, feminine presentation</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Male, androgynous presentation</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Female, androgynous presentation</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Non-binary, androgynous</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Non-binary, feminine lean</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Non-binary, masculine lean</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Fluid — varies day to day</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Male, feminine presentation</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Female, masculine presentation</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Agender, utilitarian presentation</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Deliberately ambiguous — player's choice</span></div>
+      </div>
+    </div>
+
+    <!-- AGE -->
+    <div class="table-card" id="tbl-age">
+      <div class="table-header">
+        <div class="table-icon">⌛</div>
+        <div class="table-title">Age</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1–2</span><span class="roll-val">Very young — barely adult (17–19)</span></div>
+        <div class="table-row"><span class="roll-num">3–5</span><span class="roll-val">Young adult (20–25)</span></div>
+        <div class="table-row"><span class="roll-num">6–9</span><span class="roll-val">Mid twenties (26–30)</span></div>
+        <div class="table-row"><span class="roll-num">10–13</span><span class="roll-val">Established adult (31–40)</span></div>
+        <div class="table-row"><span class="roll-num">14–15</span><span class="roll-val">Middle aged (41–55)</span></div>
+        <div class="table-row"><span class="roll-num">16–17</span><span class="roll-val">Older adult (56–70)</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Elderly (71–90)</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Ancient for race — near limit</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Unnaturally old — secret reason</span></div>
+      </div>
+    </div>
+
+    <!-- BUILD & HEIGHT -->
+    <div class="table-card" id="tbl-build">
+      <div class="table-header">
+        <div class="table-icon">⬛</div>
+        <div class="table-title">Build & Height</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Very short, very slight — almost invisible in crowds</span></div>
+        <div class="table-row"><span class="roll-num">2–3</span><span class="roll-val">Short, lean — wiry and quick</span></div>
+        <div class="table-row"><span class="roll-num">4–5</span><span class="roll-val">Short, stocky — dense and grounded</span></div>
+        <div class="table-row"><span class="roll-num">6–8</span><span class="roll-val">Average height, lean build</span></div>
+        <div class="table-row"><span class="roll-num">9–12</span><span class="roll-val">Average height, average build</span></div>
+        <div class="table-row"><span class="roll-num">13–14</span><span class="roll-val">Average height, broad and muscular</span></div>
+        <div class="table-row"><span class="roll-num">15–16</span><span class="roll-val">Tall, lean — almost too thin</span></div>
+        <div class="table-row"><span class="roll-num">17–18</span><span class="roll-val">Tall, athletic and proportioned</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Very tall, imposing frame</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Unusual for race — note-worthy in any crowd</span></div>
+      </div>
+    </div>
+
+    <!-- SKIN TONE -->
+    <div class="table-card" id="tbl-skin">
+      <div class="table-header">
+        <div class="table-icon">◉</div>
+        <div class="table-title">Skin & Complexion</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Pale as bone — almost translucent</span></div>
+        <div class="table-row"><span class="roll-num">2–3</span><span class="roll-val">Fair with rosy undertone</span></div>
+        <div class="table-row"><span class="roll-num">4–5</span><span class="roll-val">Light with cool undertone</span></div>
+        <div class="table-row"><span class="roll-num">6–7</span><span class="roll-val">Light olive, Mediterranean warm</span></div>
+        <div class="table-row"><span class="roll-num">8–9</span><span class="roll-val">Medium warm brown</span></div>
+        <div class="table-row"><span class="roll-num">10–11</span><span class="roll-val">Medium-deep warm brown</span></div>
+        <div class="table-row"><span class="roll-num">12–13</span><span class="roll-val">Deep brown, rich undertone</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Very deep brown — near black</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Ashen grey — unusual, striking</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Blue-black (Drow lineage or Genasi)</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Faintly blue or silver tinted</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Warm bronze-gold cast</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Deep red or burgundy cast (Tiefling)</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Iridescent — shifts in light</span></div>
+      </div>
+    </div>
+
+    <!-- HAIR -->
+    <div class="table-card" id="tbl-hair">
+      <div class="table-header">
+        <div class="table-icon">~</div>
+        <div class="table-title">Hair</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Shaved or bald — by choice or necessity</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Close-cropped, jet black</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Short, dark brown — practical cut</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Short, warm brown, slightly wavy</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Medium, chestnut — often tied back</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Long, straight black — severe and clean</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Long, wavy dark brown</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Curly, tight coils, dark</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Loose curls, warm auburn</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Fiery red, medium length</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Blonde, fine and straight</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Dirty blonde, perpetually disheveled</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Prematurely grey — fully silver</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Pure white — natural or magical</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Locs, dark — well kept</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Braids, dark with decorative elements</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Unnatural colour — deep blue or violet</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Unnatural colour — silver-white with glow</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Wild and untamed — a force of nature</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Something deeply unusual — player defines</span></div>
+      </div>
+    </div>
+
+    <!-- EYES -->
+    <div class="table-card" id="tbl-eyes">
+      <div class="table-header">
+        <div class="table-icon">◉</div>
+        <div class="table-title">Eyes</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1–2</span><span class="roll-val">Deep brown — warm and readable</span></div>
+        <div class="table-row"><span class="roll-num">3–4</span><span class="roll-val">Dark brown — nearly black</span></div>
+        <div class="table-row"><span class="roll-num">5–6</span><span class="roll-val">Hazel — shifts green to brown</span></div>
+        <div class="table-row"><span class="roll-num">7–8</span><span class="roll-val">Green — clear and sharp</span></div>
+        <div class="table-row"><span class="roll-num">9–10</span><span class="roll-val">Grey-blue — cold and assessing</span></div>
+        <div class="table-row"><span class="roll-num">11–12</span><span class="roll-val">Blue — pale, almost icy</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Amber — unsettlingly warm</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Violet — rare, always noticed</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Silver — like polished coins</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Red — inheritance of something</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Solid white — no visible pupil</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Gold — catch light like flame</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Heterochromia — two different colours</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Faintly glowing — magical origin</span></div>
+      </div>
+    </div>
+
+    <!-- FACE -->
+    <div class="table-card" id="tbl-face">
+      <div class="table-header">
+        <div class="table-icon">◇</div>
+        <div class="table-title">Facial Features</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Sharp jaw, high cheekbones — severe beauty</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Round face, soft features — disarmingly gentle</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Long narrow face — aristocratic</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Square jaw, blunt — honest face</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Heart-shaped — wide forehead, narrow chin</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Heavy brow, deep-set eyes — intense</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Strong nose, commanding presence</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Fine features — almost too symmetrical</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Weather-worn — lines from wind and sun</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Young-looking — consistently underestimated</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Notable scar — across one cheek or brow</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Tattoo — face or neck, meaningful</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Full beard or strong facial hair</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Freckles — heavy across nose and cheeks</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Dimples — unexpected warmth</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Burn scarring — partial face</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Unusual for race — horns, points, markings</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Perpetual expression — always looks amused</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Striking in an indefinable way — people stare</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Unforgettable — define one truly unusual feature</span></div>
+      </div>
+    </div>
+
+    <!-- ALIGNMENT -->
+    <div class="table-card" id="tbl-alignment">
+      <div class="table-header">
+        <div class="table-icon">⊕</div>
+        <div class="table-title">Alignment</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1–2</span><span class="roll-val">Lawful Good — the earnest hero</span></div>
+        <div class="table-row"><span class="roll-num">3–5</span><span class="roll-val">Neutral Good — does right, their way</span></div>
+        <div class="table-row"><span class="roll-num">6–7</span><span class="roll-val">Chaotic Good — good heart, bad methods</span></div>
+        <div class="table-row"><span class="roll-num">8–10</span><span class="roll-val">Lawful Neutral — order above all</span></div>
+        <div class="table-row"><span class="roll-num">11–12</span><span class="roll-val">True Neutral — balance, pragmatism</span></div>
+        <div class="table-row"><span class="roll-num">13–14</span><span class="roll-val">Chaotic Neutral — free and unbound</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Lawful Evil — order serves ambition</span></div>
+        <div class="table-row"><span class="roll-num">16–17</span><span class="roll-val">Neutral Evil — self above all, no code</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Chaotic Evil — destruction is the point</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Unaligned — beyond mortal moral framework</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">In transition — was one thing, becoming another</span></div>
+      </div>
+    </div>
+
+    <!-- BACKGROUND -->
+    <div class="table-card" id="tbl-background">
+      <div class="table-header">
+        <div class="table-icon">📜</div>
+        <div class="table-title">Background</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Acolyte — raised in temple service</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Criminal — knows the wrong people</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Folk Hero — ordinary person, extraordinary moment</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Noble — born to privilege</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Sage — educated, academic</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Soldier — trained for war</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Outlander — raised beyond civilization</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Charlatan — professional deceiver</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Entertainer — performer by trade</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Guild Artisan — skilled craftsperson</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Hermit — years of solitude and reflection</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Sailor — the sea was home</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Urchin — survived the streets alone</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Spy — trained in secrets</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Far Traveller — from somewhere distant</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Haunted One — touched by something dark</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Knight — sworn to a cause or lord</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Pirate — law is optional at sea</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Archaeologist — seeker of ancient things</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Custom — define something unusual</span></div>
+      </div>
+    </div>
+
+    <!-- PERSONALITY TRAIT -->
+    <div class="table-card" id="tbl-personality">
+      <div class="table-header">
+        <div class="table-icon">♦</div>
+        <div class="table-title">Dominant Personality Trait</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Relentlessly optimistic — sometimes infuriatingly</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Deeply cynical — seen too much</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Intensely curious — cannot leave a mystery alone</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Protective — positions between others and danger</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Ambitious — always calculating the next step</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Reckless — considers consequences an afterthought</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Meticulous — everything has a proper place</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Warm — genuinely interested in everyone</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Guarded — trust is earned over years</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Irreverent — nothing is too sacred for a joke</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Earnest — means everything they say</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Detached — observes more than participates</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Fierce — passionate about everything</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Patient — willing to wait for the right moment</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Charismatic — rooms change when they enter</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Haunted — something follows them everywhere</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Pragmatic — solutions matter, not feelings</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Idealistic — the world should be better</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Restless — cannot stay still for long</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Contradictory — two opposing traits at war</span></div>
+      </div>
+    </div>
+
+    <!-- MOTIVATION / BOND -->
+    <div class="table-card" id="tbl-motivation">
+      <div class="table-header">
+        <div class="table-icon">❋</div>
+        <div class="table-title">Core Motivation</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Revenge — something was taken</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Redemption — something was done</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Protection — someone needs keeping safe</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Knowledge — the answer is out there</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Belonging — searching for a place to be home</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Power — raw, honest ambition</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Freedom — from something specific</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Duty — sworn to something larger</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Survival — day by day, nothing more</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Love — for a person, place, or ideal</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Curiosity — pure intellectual hunger</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Legacy — to be remembered after death</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Justice — the scales need balancing</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Escape — from identity, past, expectation</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Wealth — honest mercenary drive</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Faith — the divine demands it</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Curiosity about self — who am I really</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">A secret — they're looking for something specific</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Nothing yet — the motivation is still forming</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Something they won't admit even to themselves</span></div>
+      </div>
+    </div>
+
+    <!-- FLAW -->
+    <div class="table-card" id="tbl-flaw">
+      <div class="table-header">
+        <div class="table-icon">✕</div>
+        <div class="table-title">Notable Flaw</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Pride — cannot admit being wrong</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Cowardice in one specific area</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Addiction — substance, gambling, something</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Obsession — one thing above all reason</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Dishonesty — lies even when truth would work</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Arrogance — underestimates everything</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Cruelty — enjoys power over others</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Naivety — cannot read bad intentions</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Paranoia — trusts no one, not even allies</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Recklessness — no sense of consequence</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Greed — always wants more</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Jealousy — cannot celebrate others</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Guilt — crippled by past action</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Stubbornness — will not change course</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Impulsiveness — acts before thinking</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Detachment — cannot connect emotionally</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Ruthlessness — ends justify any means</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Self-destruction — unconsciously sabotages success</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Denial — refuses to see a fundamental truth</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">The flaw is a strength taken too far</span></div>
+      </div>
+    </div>
+
+    <!-- VOICE & MANNER -->
+    <div class="table-card" id="tbl-voice">
+      <div class="table-header">
+        <div class="table-icon">◈</div>
+        <div class="table-title">Voice & Manner</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">Quiet — people lean in to hear</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Loud — fills every room naturally</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Precise — every word chosen carefully</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Rambling — gets there eventually</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Formal — always sounds educated</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Crude — blunt and unfiltered</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Poetic — speaks in images and metaphors</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Dry — flat delivery, devastating wit</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Warm — makes everyone feel heard</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Clipped — minimal, impatient with words</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Laughs often — even at wrong moments</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Rarely speaks — actions first</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Accent — from somewhere distant and identifiable</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Uses archaic language — sounds older than they are</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Questions everything — answers a question with a question</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Story-teller — turns everything into a narrative</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Whispers when most serious</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Speaks to themselves — not always quietly</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Unusual speech pattern — a specific verbal habit</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">Changes register completely depending on audience</span></div>
+      </div>
+    </div>
+
+    <!-- SECRET -->
+    <div class="table-card" id="tbl-secret">
+      <div class="table-header">
+        <div class="table-icon">◆</div>
+        <div class="table-title">Hidden Secret</div>
+      </div>
+      <div class="table-body">
+        <div class="table-row"><span class="roll-num">1</span><span class="roll-val">False identity — not who they claim to be</span></div>
+        <div class="table-row"><span class="roll-num">2</span><span class="roll-val">Wanted — a crime, real or fabricated</span></div>
+        <div class="table-row"><span class="roll-num">3</span><span class="roll-val">Hidden bloodline — noble, monstrous, or divine</span></div>
+        <div class="table-row"><span class="roll-num">4</span><span class="roll-val">Former allegiance to the enemy</span></div>
+        <div class="table-row"><span class="roll-num">5</span><span class="roll-val">Knows something that would destroy someone</span></div>
+        <div class="table-row"><span class="roll-num">6</span><span class="roll-val">Killed someone they weren't supposed to</span></div>
+        <div class="table-row"><span class="roll-num">7</span><span class="roll-val">Owes a dangerous debt — to someone or something</span></div>
+        <div class="table-row"><span class="roll-num">8</span><span class="roll-val">Doesn't believe what they claim to believe</span></div>
+        <div class="table-row"><span class="roll-num">9</span><span class="roll-val">Has a family no one knows about</span></div>
+        <div class="table-row"><span class="roll-num">10</span><span class="roll-val">Has died before — and remembers it</span></div>
+        <div class="table-row"><span class="roll-num">11</span><span class="roll-val">Is being watched — they can feel it</span></div>
+        <div class="table-row"><span class="roll-num">12</span><span class="roll-val">Carries something they shouldn't have</span></div>
+        <div class="table-row"><span class="roll-num">13</span><span class="roll-val">Made a deal with something ancient</span></div>
+        <div class="table-row"><span class="roll-num">14</span><span class="roll-val">Caused a disaster — no one knows it was them</span></div>
+        <div class="table-row"><span class="roll-num">15</span><span class="roll-val">Loves someone they shouldn't</span></div>
+        <div class="table-row"><span class="roll-num">16</span><span class="roll-val">Has a power they hide completely</span></div>
+        <div class="table-row"><span class="roll-num">17</span><span class="roll-val">Was someone else entirely — before</span></div>
+        <div class="table-row"><span class="roll-num">18</span><span class="roll-val">Knows how this ends — and hasn't said</span></div>
+        <div class="table-row"><span class="roll-num">19</span><span class="roll-val">Something follows them — has for years</span></div>
+        <div class="table-row"><span class="roll-num">20</span><span class="roll-val">The secret isn't theirs — they're protecting someone</span></div>
+      </div>
+    </div>
+
+  </div><!-- end tables-grid -->
+
+  <!-- ABILITY SCORES NOTE -->
+  <div class="section-divider"><span class="section-label">Ability Scores</span></div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-icon">⚄</div>
+      <div class="table-title">Roll Your Stats — 4d6 Drop Lowest × 6, Assign Freely</div>
+    </div>
+    <div class="table-body" style="max-height: none; padding: 12px 16px;">
+      <div style="font-size: 0.88rem; color: var(--ink); line-height: 1.8; padding: 4px 0;">
+        Roll <strong>4d6</strong>, drop the lowest die, record the total. Do this six times. Assign the six results to STR, DEX, CON, INT, WIS, CHA in whatever order fits your character. The generator below will roll representative scores for you, but these can be rerolled at your table.
+      </div>
+    </div>
+  </div>
+
+  <!-- ROLL BUTTON -->
+  <div class="roll-section">
+    <div class="section-divider" style="width: 100%;"><span class="section-label">Generate Character</span></div>
+    <button class="roll-btn" onclick="rollCharacter()">
+      <i class="dice-icon">⚄</i> Roll the Dice
+    </button>
+  </div>
+
+  <!-- CHARACTER SHEET OUTPUT -->
+  <div class="sheet-wrapper" id="sheet-wrapper">
+    <div class="section-divider"><span class="section-label">Your Character</span></div>
+    <div class="character-sheet" id="character-sheet">
+      <div class="sheet-top-bar">
+        <div class="sheet-name-block">
+          <div class="sheet-name" id="out-name">—</div>
+          <div class="sheet-class-line" id="out-class-line">—</div>
+        </div>
+        <div class="sheet-badge">Level 3</div>
+      </div>
+
+      <div class="sheet-body">
+
+        <div>
+          <div class="sheet-section">
+            <div class="sheet-section-title">Identity</div>
+            <div class="sheet-field">
+              <span class="field-label">Race</span>
+              <span class="field-value" id="out-race">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Class</span>
+              <span class="field-value highlight" id="out-class">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Subclass</span>
+              <span class="field-value highlight" id="out-subclass">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Background</span>
+              <span class="field-value" id="out-background">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Alignment</span>
+              <span class="field-value" id="out-alignment">—</span>
+            </div>
+          </div>
+
+          <div class="sheet-section" style="margin-top: 16px;">
+            <div class="sheet-section-title">Ability Scores</div>
+            <div class="stat-grid" id="out-stats"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sheet-section">
+            <div class="sheet-section-title">Appearance</div>
+            <div class="sheet-field">
+              <span class="field-label">Gender</span>
+              <span class="field-value" id="out-gender">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Age</span>
+              <span class="field-value" id="out-age">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Build</span>
+              <span class="field-value" id="out-build">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Skin</span>
+              <span class="field-value" id="out-skin">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Hair</span>
+              <span class="field-value" id="out-hair">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Eyes</span>
+              <span class="field-value" id="out-eyes">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Face</span>
+              <span class="field-value" id="out-face">—</span>
+            </div>
+          </div>
+
+          <div class="sheet-section" style="margin-top: 16px;">
+            <div class="sheet-section-title">Character</div>
+            <div class="sheet-field">
+              <span class="field-label">Personality</span>
+              <span class="field-value" id="out-personality">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Motivation</span>
+              <span class="field-value" id="out-motivation">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Flaw</span>
+              <span class="field-value" id="out-flaw">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Voice</span>
+              <span class="field-value" id="out-voice">—</span>
+            </div>
+            <div class="sheet-field">
+              <span class="field-label">Secret</span>
+              <span class="field-value" id="out-secret">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end sheet-body -->
+
+      <div class="flavor-text" id="out-flavor">
+        <span class="flavor-label">First Impression</span>
+        <span id="out-flavor-text">—</span>
+      </div>
+
+    </div><!-- end character-sheet -->
+
+    <div style="display:flex; justify-content:center;">
+      <button class="reroll-btn" onclick="rollCharacter()">⚄ Roll Again</button>
+    </div>
+
+  </div><!-- end sheet-wrapper -->
+
+</div><!-- end forge-container -->
+
+<script>
+const d20 = () => Math.ceil(Math.random() * 20);
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+const RACES = ["Human","High Elf","Wood Elf","Drow","Half-Elf","Lightfoot Halfling","Stout Halfling","Mountain Dwarf","Hill Dwarf","Forest Gnome","Rock Gnome","Tiefling","Dragonborn","Half-Orc","Aasimar","Fire Genasi","Water Genasi","Tabaxi","Kenku","Githyanki"];
+
+const CLASSES = {
+  "Barbarian": ["Path of the Berserker","Path of the Totem Warrior","Path of the Ancestral Guardian","Path of the Storm Herald","Path of the Zealot","Path of the Beast","Path of Wild Magic"],
+  "Bard": ["College of Lore","College of Valor","College of Glamour","College of Swords","College of Whispers","College of Eloquence","College of Creation"],
+  "Cleric": ["Life Domain","Light Domain","Trickery Domain","War Domain","Knowledge Domain","Nature Domain","Tempest Domain","Death Domain","Forge Domain","Grave Domain","Arcana Domain","Order Domain","Peace Domain","Twilight Domain"],
+  "Druid": ["Circle of the Land","Circle of the Moon","Circle of Spores","Circle of Stars","Circle of Wildfire","Circle of Dreams","Circle of Shepherd"],
+  "Fighter": ["Battle Master","Champion","Eldritch Knight","Arcane Archer","Cavalier","Samurai","Psi Warrior","Rune Knight"],
+  "Monk": ["Way of the Open Hand","Way of Shadow","Way of the Four Elements","Way of the Astral Self","Way of the Drunken Master","Way of the Kensei","Way of the Sun Soul","Way of Mercy","Way of the Long Death"],
+  "Paladin": ["Oath of Devotion","Oath of the Ancients","Oath of Vengeance","Oath of Glory","Oath of Conquest","Oath of Redemption","Oath of the Watchers","Oathbreaker"],
+  "Ranger": ["Hunter","Beast Master","Gloom Stalker","Horizon Walker","Monster Slayer","Fey Wanderer","Swarmkeeper","Drakewarden"],
+  "Rogue": ["Thief","Arcane Trickster","Assassin","Inquisitive","Mastermind","Scout","Swashbuckler","Phantom","Soulknife"],
+  "Sorcerer": ["Draconic Bloodline","Wild Magic","Storm Sorcery","Shadow Magic","Divine Soul","Aberrant Mind","Clockwork Soul","Lunar Sorcery"],
+  "Warlock": ["The Fiend","The Great Old One","The Archfey","The Celestial","The Hexblade","The Fathomless","The Genie","The Undead","The Undying"],
+  "Wizard": ["School of Abjuration","School of Conjuration","School of Divination","School of Enchantment","School of Evocation","School of Illusion","School of Necromancy","School of Transmutation","Order of Scribes","Bladesinging","Chronurgy Magic","Graviturgy Magic"],
+  "Artificer": ["Alchemist","Armorer","Artillerist","Battle Smith"],
+  "Blood Hunter": ["Order of the Ghostslayer","Order of the Lycan","Order of the Mutant","Order of the Profane Soul"]
+};
+
+const CLASS_LIST = Object.keys(CLASSES);
+
+const GENDERS = ["Male, masculine presentation","Male, masculine presentation","Male, masculine presentation","Female, feminine presentation","Female, feminine presentation","Female, feminine presentation","Male, androgynous","Female, androgynous","Non-binary, androgynous","Non-binary, feminine lean","Non-binary, masculine lean","Gender-fluid","Male, feminine presentation","Female, masculine presentation","Agender, utilitarian","Deliberately ambiguous"];
+const AGES = ["Very young — barely adult (17–19)","Young adult (20–25)","Young adult (20–25)","Mid-twenties (26–30)","Mid-twenties (26–30)","Mid-twenties (26–30)","Established adult (31–40)","Established adult (31–40)","Established adult (31–40)","Middle aged (41–55)","Middle aged (41–55)","Older adult (56–70)","Older adult (56–70)","Elderly (71–90)","Ancient for race","Unnaturally old — some reason"];
+const BUILDS = ["Very short, very slight","Short, lean — wiry and quick","Short, stocky — dense","Short, stocky — dense","Average height, lean","Average height, lean","Average height, average","Average height, average","Average height, average","Average height, broad and muscular","Average height, broad and muscular","Tall, lean — almost too thin","Tall, lean — almost too thin","Tall, athletic","Tall, athletic","Very tall, imposing","Very tall, imposing","Very tall, imposing","Noteworthy — unusual for race","Striking silhouette — immediately noticed"];
+const SKINS = ["Pale as bone — almost translucent","Fair with rosy undertone","Fair with rosy undertone","Light with cool undertone","Light with cool undertone","Light olive, warm Mediterranean","Light olive, warm Mediterranean","Medium warm brown","Medium warm brown","Medium warm brown","Medium-deep warm brown","Medium-deep warm brown","Deep brown, rich undertone","Deep brown, rich undertone","Very deep brown — near black","Ashen grey — striking","Blue-black — Drow or Genasi lineage","Faintly silver-blue tinted","Warm bronze-gold cast","Iridescent — shifts in different light"];
+const HAIRS = ["Shaved or bald","Close-cropped, jet black","Short, dark brown","Short, warm brown, wavy","Medium chestnut, often tied back","Long, straight black — severe","Long, wavy dark brown","Tight coils, dark","Loose curls, warm auburn","Fiery red, medium length","Blonde, fine and straight","Dirty blonde, perpetually disheveled","Prematurely grey — fully silver","Pure white","Locs, dark — well kept","Braids, dark with decorative elements","Unnatural — deep blue or violet","Unnatural — silver-white with faint glow","Wild and untamed","Defined by player — something unusual"];
+const EYES = ["Deep brown — warm and readable","Deep brown","Dark brown — nearly black","Dark brown","Hazel — shifts green to brown","Hazel","Green — clear and sharp","Green","Grey-blue — cold and assessing","Blue — pale, almost icy","Blue","Amber — unsettlingly warm","Violet — rare, always noticed","Silver — like polished coins","Red — inheritance of something","Solid white — no visible pupil","Gold — catch light like flame","Heterochromia — two colours","Faintly glowing — magical origin","Gold"];
+const FACES = ["Sharp jaw, high cheekbones","Round face, soft features","Long narrow face — aristocratic","Square jaw, honest face","Heart-shaped","Heavy brow, deep-set eyes","Strong nose, commanding presence","Fine features — almost too symmetrical","Weather-worn — wind and sun lines","Young-looking — underestimated","Notable scar — cheek or brow","Face tattoo — meaningful","Full beard or strong facial hair","Heavy freckles across nose and cheeks","Dimples — unexpected warmth","Burn scarring — partial face","Unusual for race — horns, markings","Perpetual amused expression","Striking in an indefinable way","Truly unforgettable — player defines one feature"];
+const ALIGNMENTS = ["Lawful Good","Lawful Good","Neutral Good","Neutral Good","Neutral Good","Chaotic Good","Chaotic Good","Lawful Neutral","Lawful Neutral","Lawful Neutral","True Neutral","True Neutral","Chaotic Neutral","Chaotic Neutral","Lawful Evil","Neutral Evil","Neutral Evil","Chaotic Evil","Unaligned — beyond moral framework","In transition — was one thing, becoming another"];
+const BACKGROUNDS = ["Acolyte","Criminal","Folk Hero","Noble","Sage","Soldier","Outlander","Charlatan","Entertainer","Guild Artisan","Hermit","Sailor","Urchin","Spy","Far Traveller","Haunted One","Knight","Pirate","Archaeologist","Custom — define something unusual"];
+const PERSONALITIES = ["Relentlessly optimistic","Deeply cynical — seen too much","Intensely curious","Protective — positions between others and danger","Ambitious — always calculating","Reckless — consequences are an afterthought","Meticulous — everything in its place","Warm — genuinely interested in everyone","Guarded — trust is earned over years","Irreverent — nothing too sacred for a joke","Earnest — means everything they say","Detached — observes more than participates","Fierce — passionate about everything","Patient — willing to wait","Charismatic — rooms change when they enter","Haunted — something follows them","Pragmatic — solutions matter, not feelings","Idealistic — the world should be better","Restless — cannot stay still","Contradictory — two opposing traits at war"];
+const MOTIVATIONS = ["Revenge — something was taken","Redemption — something was done","Protection — someone needs keeping safe","Knowledge — the answer is out there","Belonging — searching for home","Power — raw, honest ambition","Freedom — from something specific","Duty — sworn to something larger","Survival — day by day","Love — for a person, place, or ideal","Curiosity — pure intellectual hunger","Legacy — to be remembered","Justice — the scales need balancing","Escape — from identity or past","Wealth — honest mercenary drive","Faith — the divine demands it","Curiosity about self — who am I","A secret — looking for something specific","Nothing yet — still forming","Something they won't admit to themselves"];
+const FLAWS = ["Pride — cannot admit being wrong","Cowardice in one specific area","Addiction — substance or habit","Obsession — one thing above reason","Dishonesty — lies when truth would work","Arrogance — underestimates everything","Cruelty — enjoys power over others","Naivety — cannot read bad intentions","Paranoia — trusts no one","Recklessness — no sense of consequence","Greed — always wants more","Jealousy — cannot celebrate others","Guilt — crippled by past action","Stubbornness — will not change course","Impulsiveness — acts before thinking","Detachment — cannot connect emotionally","Ruthlessness — ends justify any means","Self-destruction — unconsciously sabotages success","Denial — refuses a fundamental truth","The flaw is a strength taken too far"];
+const VOICES = ["Quiet — people lean in to hear","Loud — fills every room","Precise — every word chosen","Rambling — gets there eventually","Formal — always sounds educated","Crude and unfiltered","Poetic — speaks in images","Dry — flat delivery, devastating wit","Warm — makes everyone feel heard","Clipped — minimal, impatient","Laughs often — even at wrong moments","Rarely speaks — actions first","Strong accent from somewhere distant","Uses archaic language","Questions everything","Story-teller — everything becomes narrative","Whispers when most serious","Speaks to themselves — not always quietly","Unusual verbal habit — a specific pattern","Changes register completely by audience"];
+const SECRETS = ["False identity — not who they claim","Wanted — a crime real or fabricated","Hidden bloodline — noble, monstrous, or divine","Former allegiance to the enemy","Knows something that would destroy someone","Killed someone they weren't supposed to","Owes a dangerous debt","Doesn't believe what they claim to","Has a family no one knows about","Has died before — and remembers it","Is being watched — can feel it","Carries something they shouldn't have","Made a deal with something ancient","Caused a disaster — no one knows it was them","Loves someone they shouldn't","Has a power they hide completely","Was someone else entirely — before","Knows how this ends — hasn't said","Something follows them — for years","The secret isn't theirs — protecting someone"];
+
+const NAMES = {
+  male: ["Aldric","Brennan","Caelum","Draveth","Evander","Faeron","Gaius","Harkon","Ioreth","Jareth","Kael","Lysander","Maren","Nox","Oryn","Phelan","Quillon","Raeth","Soren","Thalion","Ulric","Varen","Wulfric","Xavius","Yael","Zephyrin","Aldous","Bastian","Corvin","Draven","Emrys","Finnegan","Gideon","Hadwin","Idris","Jorah","Kasimir","Lazaro","Malachai","Niall","Osric","Perrin","Riordan","Stellan","Tobias","Umberto","Vesper","Warrick","Yorick"],
+  female: ["Aelindra","Brynn","Caelith","Devara","Elowen","Faelith","Gwyneth","Hariel","Isadora","Jessamine","Kira","Lysa","Morrigan","Niamh","Orenda","Phaedra","Quenara","Riven","Sable","Thalia","Ursula","Vexara","Wren","Xanthe","Ysolde","Zara","Aelith","Briar","Corinna","Daeva","Elara","Fenna","Galena","Hestia","Isolde","Jael","Kassia","Lyric","Maevis","Nira","Ondine","Petra","Rowena","Seren","Tessa","Umbriel","Vesna","Willow","Ysabel"],
+  neutral: ["Aelin","Braith","Caer","Dax","Ember","Flint","Grey","Haze","Ink","Jax","Kestrel","Lark","Mist","Nael","Onyx","Pike","Quill","Riven","Sage","Thorn","Vex","Wren","Ash","Bay","Cedar","Drake","Echo","Fern","Gale","Hex","Iven","Jet","Kit","Lune","Mare","Nox","Orin","Pyre","Rue","Skye","Talon","Vale","Wisp"]
+};
+
+const SURNAMES = ["Ashveil","Blackthorn","Coldmere","Darksong","Embervale","Frostwhisper","Greymantle","Hollowbrook","Ironveil","Jadewarden","Kindlemark","Lorekeep","Moonwhisper","Nightfall","Oathkeeper","Pyreborn","Quicksilver","Ravenmoor","Shadowend","Thornwall","Undying","Voidmarch","Winterborn","Ironwood","Stonewall","Goldenveil","Darkwater","Brightwall","Ashwood","Coldfire","Silvermark","Starfall","Dawnbreak","Evenfall","Midwinter","Longstride","Farwalker","Deepstone","Highcrest","Lowmere"];
+
+function roll4d6() {
+  const rolls = [1,2,3,4].map(() => Math.ceil(Math.random() * 6));
+  rolls.sort((a,b) => a-b);
+  return rolls.slice(1).reduce((a,b) => a+b, 0);
+}
+
+function getMod(score) {
+  const mod = Math.floor((score - 10) / 2);
+  return mod >= 0 ? `+${mod}` : `${mod}`;
+}
+
+function generateStats(cls) {
+  const stats = [roll4d6(), roll4d6(), roll4d6(), roll4d6(), roll4d6(), roll4d6()];
+  stats.sort((a,b) => b-a);
+  
+  const statMap = {
+    "Barbarian": ["STR","CON","DEX","WIS","CHA","INT"],
+    "Bard": ["CHA","DEX","CON","INT","WIS","STR"],
+    "Cleric": ["WIS","CON","STR","CHA","INT","DEX"],
+    "Druid": ["WIS","CON","INT","DEX","CHA","STR"],
+    "Fighter": ["STR","CON","DEX","WIS","CHA","INT"],
+    "Monk": ["DEX","WIS","CON","STR","CHA","INT"],
+    "Paladin": ["STR","CHA","CON","WIS","DEX","INT"],
+    "Ranger": ["DEX","WIS","CON","STR","INT","CHA"],
+    "Rogue": ["DEX","CHA","INT","CON","WIS","STR"],
+    "Sorcerer": ["CHA","CON","DEX","WIS","INT","STR"],
+    "Warlock": ["CHA","CON","DEX","INT","WIS","STR"],
+    "Wizard": ["INT","CON","DEX","WIS","CHA","STR"],
+    "Artificer": ["INT","CON","DEX","WIS","CHA","STR"],
+    "Blood Hunter": ["STR","CON","DEX","WIS","CHA","INT"]
+  };
+
+  const order = statMap[cls] || ["STR","DEX","CON","INT","WIS","CHA"];
+  const result = {};
+  order.forEach((stat, i) => { result[stat] = stats[i]; });
+  return result;
+}
+
+function getGenderCategory(gender) {
+  if (gender.includes("Male") || gender.includes("masculine")) return "male";
+  if (gender.includes("Female") || gender.includes("feminine")) return "female";
+  return "neutral";
+}
+
+function generateName(gender) {
+  const cat = getGenderCategory(gender);
+  const first = pick(NAMES[cat] || NAMES.neutral);
+  const last = pick(SURNAMES);
+  return `${first} ${last}`;
+}
+
+function generateFlavor(data) {
+  const openers = [
+    `The first thing people notice about ${data.name.split(' ')[0]} is`,
+    `${data.name.split(' ')[0]} enters a room and`,
+    `There is something about ${data.name.split(' ')[0]} that`,
+    `People who meet ${data.name.split(' ')[0]} for the first time often note`,
+    `${data.name.split(' ')[0]} carries themselves as though`
+  ];
+
+  const middles = [
+    `the ${data.eyes.split('—')[0].trim().toLowerCase()} eyes that seem to be calculating something`,
+    `the quiet confidence of someone who has survived worse than this`,
+    `a quality of complete attention — when they look at you, nothing else exists`,
+    `the weight of something unfinished that they carry without acknowledgment`,
+    `an ease with discomfort that suggests extensive practice`,
+    `the particular stillness of someone accustomed to danger`,
+    `something guarded behind a deliberately open expression`
+  ];
+
+  const ends = [
+    `It is not immediately clear whether this is an invitation or a warning.`,
+    `The ${data.motivation.split('—')[0].trim().toLowerCase()} behind their eyes is easy to read, if you know what you're looking for.`,
+    `They are, without question, exactly what they appear to be. Probably.`,
+    `Whatever they are searching for, they have not found it yet.`,
+    `The ${data.flaw.split('—')[0].trim().toLowerCase()} surfaces later. It always does.`,
+    `There is a story here. They are not telling it yet.`
+  ];
+
+  return `${pick(openers)} ${pick(middles)}. ${pick(ends)}`;
+}
+
+function rollCharacter() {
+  const btn = document.querySelector('.roll-btn');
+  btn.style.transform = 'translateY(3px)';
+  setTimeout(() => { btn.style.transform = ''; }, 150);
+
+  const race = pick(RACES);
+  const cls = pick(CLASS_LIST);
+  const subclass = pick(CLASSES[cls]);
+  const gender = pick(GENDERS);
+  const name = generateName(gender);
+  const age = pick(AGES);
+  const build = pick(BUILDS);
+  const skin = pick(SKINS);
+  const hair = pick(HAIRS);
+  const eyes = pick(EYES);
+  const face = pick(FACES);
+  const alignment = pick(ALIGNMENTS);
+  const background = pick(BACKGROUNDS);
+  const personality = pick(PERSONALITIES);
+  const motivation = pick(MOTIVATIONS);
+  const flaw = pick(FLAWS);
+  const voice = pick(VOICES);
+  const secret = pick(SECRETS);
+  const stats = generateStats(cls);
+
+  const data = { name, race, cls, subclass, gender, age, build, skin, hair, eyes, face, alignment, background, personality, motivation, flaw, voice, secret };
+
+  document.getElementById('out-name').textContent = name;
+  document.getElementById('out-class-line').textContent = `${race} · ${cls} (${subclass}) · ${background}`;
+  document.getElementById('out-race').textContent = race;
+  document.getElementById('out-class').textContent = cls;
+  document.getElementById('out-subclass').textContent = subclass;
+  document.getElementById('out-background').textContent = background.split('—')[0].trim();
+  document.getElementById('out-alignment').textContent = alignment;
+  document.getElementById('out-gender').textContent = gender;
+  document.getElementById('out-age').textContent = age;
+  document.getElementById('out-build').textContent = build;
+  document.getElementById('out-skin').textContent = skin;
+  document.getElementById('out-hair').textContent = hair;
+  document.getElementById('out-eyes').textContent = eyes;
+  document.getElementById('out-face').textContent = face;
+  document.getElementById('out-personality').textContent = personality;
+  document.getElementById('out-motivation').textContent = motivation;
+  document.getElementById('out-flaw').textContent = flaw;
+  document.getElementById('out-voice').textContent = voice;
+  document.getElementById('out-secret').textContent = secret;
+
+  const statOrder = ["STR","DEX","CON","INT","WIS","CHA"];
+  const statContainer = document.getElementById('out-stats');
+  statContainer.innerHTML = '';
+  statOrder.forEach(stat => {
+    const val = stats[stat];
+    const box = document.createElement('div');
+    box.className = 'stat-box';
+    box.innerHTML = `<span class="stat-name">${stat}</span><span class="stat-score">${val}</span><span class="stat-mod">${getMod(val)}</span>`;
+    statContainer.appendChild(box);
+  });
+
+  document.getElementById('out-flavor-text').textContent = generateFlavor(data);
+
+  const wrapper = document.getElementById('sheet-wrapper');
+  wrapper.classList.remove('visible');
+  void wrapper.offsetWidth;
+  wrapper.classList.add('visible');
+
+  wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>

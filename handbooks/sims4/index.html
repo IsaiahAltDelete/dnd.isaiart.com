@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Sim — A Handbook for Forgotten Realms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--plumbob-green:#6FE34A;--plumbob-bright:#A6FF66;--plumbob-dark:#3DA82C;--sims-teal:#1CB6C1;--sims-teal-dark:#0D8A92;--sims-teal-light:#7EDCE4;--sim-cream:#F8FFF4;--sim-ink:#1E2228;--sim-soft:#4A5260;--sim-panel:#FFFFFF;--sim-bg:#EFF7F0;--mood-happy:#6FE34A;--mood-fine:#F5D547;--mood-tense:#F39C12;--mood-angry:#E74C3C;--mood-sad:#5DADE2;--mood-flirty:#E87FD0;--vampire:#7B0D17;--spellcaster:#6A2DB8;--mermaid:#0D9AC9;--ghost:#7BACC7;--alien:#27C96A;--servo:#8A97A8;--plantsim:#4A8C2A;--werewolf:#8B4513;--fairy:#CC44AA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--sim-bg);color:var(--sim-ink);line-height:1.7;font-weight:500}
+.plumbob{display:inline-block;width:18px;height:24px;position:relative;filter:drop-shadow(0 0 6px rgba(111,227,74,.7));animation:float 3s ease-in-out infinite;vertical-align:middle;flex-shrink:0}
+.plumbob::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--plumbob-bright) 0%,var(--plumbob-green) 50%,var(--plumbob-dark) 100%);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at 30% 20%,rgba(28,182,193,.12) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(111,227,74,.12) 0%,transparent 50%),linear-gradient(160deg,#F0FBF2 0%,#E8F8F9 50%,#F4FBEF 100%);text-align:center;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(28,182,193,.06) 1px,transparent 0);background-size:28px 28px;pointer-events:none}
+.cover-plumbob{width:110px;height:154px;position:relative;margin-bottom:36px;filter:drop-shadow(0 0 40px rgba(111,227,74,.7));animation:float 3s ease-in-out infinite}
+.cover-plumbob::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#D4FFB0 0%,var(--plumbob-bright) 30%,var(--plumbob-green) 60%,var(--plumbob-dark) 100%);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.cover-plumbob::after{content:'';position:absolute;top:16%;left:20%;width:26%;height:20%;background:rgba(255,255,255,.9);border-radius:50%;filter:blur(3px)}
+.cover h1{font-family:'Fredoka',sans-serif;font-size:clamp(3rem,8vw,6rem);font-weight:700;letter-spacing:-2px;line-height:1;margin-bottom:6px;background:linear-gradient(135deg,var(--plumbob-dark) 0%,var(--sims-teal) 50%,var(--plumbob-green) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.cover-subtitle{font-family:'Fredoka',sans-serif;font-size:clamp(.9rem,2vw,1.3rem);font-weight:500;color:var(--sim-soft);letter-spacing:5px;text-transform:uppercase;margin-bottom:28px}
+.cover-tagline{max-width:580px;font-size:1.05rem;color:var(--sim-soft);font-style:italic;margin-top:18px;background:rgba(255,255,255,.7);padding:18px 28px;border-radius:20px;border:1px solid rgba(28,182,193,.2)}
+.cover-meta{margin-top:50px;padding:14px 32px;background:white;border:2px solid var(--sims-teal);border-radius:40px;font-size:.82rem;letter-spacing:2px;text-transform:uppercase;color:var(--sims-teal-dark);box-shadow:0 4px 20px rgba(28,182,193,.2)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(14,45,46,.97);backdrop-filter:blur(16px);border-bottom:2px solid var(--sims-teal);padding:10px 0}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:1rem;color:var(--plumbob-bright);flex-shrink:0;margin-right:8px}
+.nav a{color:rgba(255,255,255,.75);text-decoration:none;font-weight:700;font-size:.8rem;white-space:nowrap;padding:6px 12px;border-radius:20px;transition:all .2s;letter-spacing:.5px}
+.nav a:hover{background:var(--sims-teal);color:white}
+.container{max-width:1200px;margin:0 auto;padding:60px 24px}
+section{margin-bottom:100px;scroll-margin-top:80px}
+.section-label{display:inline-flex;align-items:center;gap:8px;padding:5px 18px;background:var(--sims-teal);color:white;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:2px;text-transform:uppercase;border-radius:20px;margin-bottom:18px;box-shadow:0 4px 14px rgba(28,182,193,.35)}
+h2{font-family:'Fredoka',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--sim-ink);margin-bottom:10px;letter-spacing:-.5px;line-height:1.1}
+h3{font-family:'Fredoka',sans-serif;font-size:1.55rem;font-weight:600;color:var(--sim-ink);margin-bottom:12px;margin-top:30px}
+h4{font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:600;color:var(--sims-teal-dark);margin-bottom:8px;margin-top:18px}
+.lead{font-size:1.1rem;color:var(--sim-soft);max-width:820px;margin-bottom:28px;line-height:1.8}
+p{margin-bottom:14px}
+strong{color:var(--sim-ink);font-weight:800}
+.sim-profile{background:white;border-radius:24px;padding:40px;box-shadow:0 10px 40px rgba(30,34,40,.08);display:grid;grid-template-columns:1fr 2fr;gap:40px;align-items:center;margin-bottom:30px;border:1px solid rgba(28,182,193,.1)}
+@media(max-width:768px){.sim-profile{grid-template-columns:1fr}}
+.sim-portrait{aspect-ratio:1;border-radius:20px;background:linear-gradient(135deg,#DCF7F9 0%,#E8F9DA 100%);display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative;overflow:hidden}
+.sim-portrait-plumbob{position:absolute;top:12px;right:12px;width:28px;height:38px}
+.sim-portrait-plumbob::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--plumbob-bright) 0%,var(--plumbob-green) 100%);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:18px 0}
+.info-cell{background:#F3FBFD;padding:14px 16px;border-radius:12px;border-left:3px solid var(--sims-teal)}
+.info-cell-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--sims-teal-dark);font-weight:800;margin-bottom:3px}
+.info-cell-value{font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:600;color:var(--sim-ink)}
+.stat-block{background:white;border-radius:18px;padding:22px 26px;box-shadow:0 6px 20px rgba(30,34,40,.05);margin:18px 0;border:1px solid rgba(28,182,193,.12)}
+.stat-row{display:flex;justify-content:space-between;gap:20px;padding:10px 0;border-bottom:1px dashed #E4EEF0}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:var(--sim-soft);font-weight:600}
+.stat-value{font-weight:800;color:var(--sim-ink);text-align:right}
+.monster-block{background:#FDF8F0;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(30,34,40,.10);margin:28px 0;border:2px solid #C8A96E}
+.monster-header{padding:18px 24px 14px;background:linear-gradient(135deg,#4A2800,#7A3F00);color:white}
+.monster-name{font-family:'Fredoka',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:2px}
+.monster-type{font-size:.82rem;font-style:italic;opacity:.85}
+.monster-body{padding:20px 24px}
+.monster-divider{height:3px;background:linear-gradient(90deg,#C8A96E,#E8D0A0,#C8A96E);margin:12px 0}
+.monster-stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;text-align:center;margin:12px 0}
+.monster-stat{background:rgba(200,169,110,.12);padding:8px 4px;border-radius:8px}
+.monster-stat-label{font-size:.65rem;font-weight:800;text-transform:uppercase;color:#7A3F00;letter-spacing:1px}
+.monster-stat-value{font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700}
+.monster-trait{margin-bottom:10px;font-size:.92rem}
+.monster-trait strong{color:#4A2800}
+.monster-section-title{font-family:'Fredoka',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#7A3F00;margin:14px 0 8px;border-bottom:1px solid #C8A96E;padding-bottom:4px}
+.monster-cr{display:inline-block;background:#7A3F00;color:white;border-radius:8px;padding:3px 10px;font-size:.75rem;font-weight:800;letter-spacing:1px;margin-top:4px}
+.mood-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:22px 0}
+.mood-card{padding:20px;border-radius:18px;color:white;position:relative;overflow:hidden;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s}
+.mood-card:hover{transform:translateY(-4px)}
+.mood-card h4{color:white;font-size:1.25rem;margin:5px 0}
+.mood-card p{font-size:.88rem;opacity:.95;margin:0}
+.mood-card-plumbob{width:22px;height:28px;background:rgba(255,255,255,.85);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.mood-happy{background:linear-gradient(135deg,#6FE34A,#2ECC40)}
+.mood-elated{background:linear-gradient(135deg,#2ECC40,#1B7A1B)}
+.mood-fine{background:linear-gradient(135deg,#F5D547,#D4A72C)}
+.mood-tense{background:linear-gradient(135deg,#F39C12,#C0661A)}
+.mood-angry{background:linear-gradient(135deg,#E74C3C,#A02820)}
+.mood-sad{background:linear-gradient(135deg,#5DADE2,#2874A6)}
+.mood-flirty{background:linear-gradient(135deg,#E87FD0,#9B4A8A)}
+.mood-depressed{background:linear-gradient(135deg,#3A5F8A,#1B2D45)}
+.mood-mortified{background:linear-gradient(135deg,#4A4A4A,#1A1A1A)}
+.mood-playful{background:linear-gradient(135deg,#FF8C00,#E05A00)}
+.mood-focused{background:linear-gradient(135deg,#2196F3,#0D47A1)}
+.mood-inspired{background:linear-gradient(135deg,#9B59B6,#6C3483)}
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:22px 0}
+.stage{background:white;padding:20px 16px;border-radius:16px;border-top:4px solid var(--sims-teal);box-shadow:0 4px 16px rgba(30,34,40,.06);transition:transform .2s}
+.stage:hover{transform:translateY(-3px)}
+.stage-icon{font-size:2.4rem;margin-bottom:8px}
+.stage-days{font-size:.78rem;color:var(--sims-teal-dark);font-weight:800;background:#DCF7F9;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
+.stage p{font-size:.86rem;color:var(--sim-soft);margin:0}
+.death-saves{background:linear-gradient(135deg,#1E0808,#2D1010);color:white;border-radius:18px;padding:28px;margin:24px 0;border:2px solid #6B1111}
+.death-saves h4{color:#FF6B6B;margin-top:0}
+.death-saves-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px}
+.death-save-tier{background:rgba(255,255,255,.07);border-radius:12px;padding:16px;border-left:3px solid #FF6B6B}
+.dst-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#FF9999;font-weight:800;margin-bottom:6px}
+.dst-dc{font-family:'Fredoka',sans-serif;font-size:1.8rem;font-weight:700;color:white}
+.dst-desc{font-size:.8rem;color:rgba(255,255,255,.7);margin-top:4px}
+.occult-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin:28px 0}
+.occult{background:white;border-radius:20px;padding:26px;position:relative;box-shadow:0 6px 24px rgba(30,34,40,.08);transition:transform .2s;border-top:6px solid var(--sims-teal)}
+.occult:hover{transform:translateY(-4px)}
+.occult-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.occult-icon{font-size:2.4rem;line-height:1}
+.occult-tag{font-size:.7rem;padding:4px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:1px;font-weight:800;background:#F0FBF2;color:var(--sim-soft)}
+.occult h4{font-size:1.35rem;margin:0 0 3px;color:var(--sim-ink)}
+.occult-subtitle{font-size:.88rem;color:var(--sim-soft);font-style:italic;margin-bottom:10px}
+.occult-traits{margin-top:12px;padding-top:12px;border-top:1px dashed #E0EEF0;font-size:.86rem;color:var(--sim-soft)}
+.occult-traits strong{color:var(--sim-ink)}
+.occult.vampire{border-top-color:var(--vampire)}
+.occult.spellcaster{border-top-color:var(--spellcaster)}
+.occult.mermaid{border-top-color:var(--mermaid)}
+.occult.ghost,.occult.ghost-t{border-top-color:var(--ghost)}
+.occult.alien{border-top-color:var(--alien)}
+.occult.servo{border-top-color:var(--servo)}
+.occult.plantsim{border-top-color:var(--plantsim)}
+.occult.werewolf{border-top-color:var(--werewolf)}
+.occult.fairy{border-top-color:var(--fairy)}
+.power-table-wrap{margin:20px 0;overflow-x:auto}
+.power-table{width:100%;border-collapse:separate;border-spacing:0;background:white;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(30,34,40,.06)}
+.power-table thead{background:var(--sim-ink);color:white}
+.power-table thead.vampire-head{background:var(--vampire)}
+.power-table thead.spell-head{background:var(--spellcaster)}
+.power-table thead.mermaid-head{background:var(--mermaid)}
+.power-table thead.ghost-head{background:#4A6F8A}
+.power-table thead.alien-head{background:#1A7A45}
+.power-table thead.werewolf-head{background:var(--werewolf)}
+.power-table thead.fairy-head{background:var(--fairy)}
+.power-table thead.plantsim-head{background:var(--plantsim)}
+.power-table thead.servo-head{background:var(--servo);color:var(--sim-ink)}
+.power-table th{padding:12px 16px;text-align:left;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem;letter-spacing:.5px}
+.power-table td{padding:10px 16px;border-bottom:1px solid #F0F3F5;font-size:.88rem}
+.power-table tr:last-child td{border-bottom:none}
+.power-table tr:hover td{background:#F5FDFE}
+.rank-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.rank-apprentice{background:#E8F5E9;color:#2E7D32}
+.rank-acolyte{background:#E3F2FD;color:#1565C0}
+.rank-adept{background:#F3E5F5;color:#6A1B9A}
+.rank-master{background:#FFF3E0;color:#E65100}
+.rank-virtuoso{background:#FCE4EC;color:#AD1457}
+.rank-neophyte{background:#F1F8E9;color:#33691E}
+.rank-fledgling{background:#F3E5F5;color:#4A148C}
+.rank-minor{background:#E8EAF6;color:#283593}
+.rank-prime{background:#FFF3E0;color:#BF360C}
+.rank-grand{background:#FCE4EC;color:#880E4F}
+.rank-pup{background:#E8F5E9;color:#1B5E20}
+.rank-runt{background:#E3F2FD;color:#0D47A1}
+.rank-veteran{background:#FFF3E0;color:#E65100}
+.rank-apex{background:#FCE4EC;color:#880E4F}
+.rank-dormant{background:#F3E5F5;color:#4A148C}
+.rank-wispling{background:#E8F5E9;color:#1B5E20}
+.rank-ethereal{background:#E3F2FD;color:#0D47A1}
+.rank-phantasmal{background:#F3E5F5;color:#4A148C}
+.rank-spectral{background:#FFF3E0;color:#E65100}
+.rank-transcendent{background:#FCE4EC;color:#880E4F}
+.rank-any{background:#ECEFF1;color:#37474F}
+.death-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:18px 0}
+.death{background:white;padding:16px 18px;border-radius:14px;border-left:4px solid #4A4A4A;box-shadow:0 4px 12px rgba(30,34,40,.05)}
+.death-icon{font-size:1.5rem;margin-bottom:4px}
+.death-name{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--sim-ink);margin-bottom:3px}
+.death-desc{font-size:.8rem;color:var(--sim-soft);line-height:1.45}
+.death-dc{font-size:.75rem;font-weight:800;color:#A02820;background:#FDECEA;display:inline-block;padding:2px 7px;border-radius:8px;margin-top:5px}
+.worlds-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px;margin:18px 0}
+.world{background:white;padding:16px 18px;border-radius:14px;box-shadow:0 4px 14px rgba(30,34,40,.06);border-bottom:3px solid var(--sims-teal)}
+.world-name{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.02rem;color:var(--sim-ink);margin-bottom:3px}
+.world-tag{font-size:.7rem;color:var(--sims-teal-dark);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.world-desc{font-size:.8rem;color:var(--sim-soft);line-height:1.5}
+.careers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:16px;margin:24px 0}
+.career{background:white;border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(30,34,40,.07);transition:all .2s;border-left:5px solid var(--sims-teal)}
+.career:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(30,34,40,.12)}
+.career-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.career-icon{font-size:1.7rem;background:#F0FBF2;padding:8px;border-radius:10px;min-width:42px;text-align:center}
+.career h4{margin:0;font-size:1.15rem;color:var(--sim-ink)}
+.career-class{font-size:.75rem;color:var(--sims-teal-dark);font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.career p{font-size:.88rem;color:var(--sim-soft);margin-bottom:8px}
+.career-traits{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.career-trait{background:#F0FBF2;padding:3px 10px;border-radius:10px;font-size:.7rem;font-weight:700;color:var(--sim-ink);border:1px solid rgba(28,182,193,.2)}
+.weapon{background:white;border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(30,34,40,.07);margin-bottom:14px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.weapon-icon{font-size:2.6rem;background:linear-gradient(135deg,#DCF7F9,#E8F9DA);width:68px;height:68px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.weapon-name{font-family:'Fredoka',sans-serif;font-size:1.2rem;font-weight:600;color:var(--sim-ink);margin-bottom:2px}
+.weapon-type{font-size:.73rem;color:var(--sims-teal-dark);font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.weapon p{font-size:.9rem;margin-bottom:0}
+.plant-section{display:flex;flex-direction:column;gap:20px;margin:20px 0}
+.plant{background:white;border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(30,34,40,.07);border-left:5px solid var(--plantsim)}
+.plant-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.plant-icon{font-size:2.8rem;flex-shrink:0}
+.plant-name{font-family:'Fredoka',sans-serif;font-weight:700;color:var(--sim-ink);margin-bottom:3px;font-size:1.2rem}
+.plant-latin{font-size:.78rem;font-style:italic;color:var(--sim-soft);margin-bottom:4px}
+.plant-desc{font-size:.92rem;color:var(--sim-soft);line-height:1.6;margin-bottom:0}
+.plant-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.plant-tag{background:#E8F5E9;color:#1B5E20;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.5px}
+.callout{background:linear-gradient(135deg,#DCF7F9,#E8F9DA);padding:22px 26px;border-radius:18px;border-left:5px solid var(--sims-teal);margin:22px 0}
+.callout-label{font-family:'Fredoka',sans-serif;font-size:.75rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sims-teal-dark);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.callout-danger{background:linear-gradient(135deg,#FFF0F0,#FFE5E5);border-left-color:#E74C3C}
+.callout-danger .callout-label{color:#A02820}
+.needs-list{display:grid;gap:12px;margin:18px 0}
+.need{background:white;padding:16px 20px;border-radius:14px;box-shadow:0 3px 10px rgba(30,34,40,.05)}
+.need-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.need-name{font-family:'Fredoka',sans-serif;font-weight:700;color:var(--sim-ink)}
+.need-icon{font-size:1.3rem;margin-right:7px;vertical-align:middle}
+.need-bar{height:14px;background:#E8EAEF;border-radius:7px;overflow:hidden;position:relative}
+.need-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,#E74C3C 0%,#F39C12 30%,#F5D547 55%,#6FE34A 100%);animation:pulse 2.5s ease-in-out infinite}
+.need-consequences{font-size:.83rem;color:var(--sim-soft);margin-top:6px}
+.sim-table{width:100%;border-collapse:separate;border-spacing:0;background:white;border-radius:16px;overflow:hidden;box-shadow:0 6px 20px rgba(30,34,40,.06);margin:18px 0}
+.sim-table thead{background:var(--sim-ink);color:white}
+.sim-table th{padding:13px 16px;text-align:left;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.88rem}
+.sim-table td{padding:11px 16px;border-bottom:1px solid #F0F2F5;font-size:.9rem}
+.sim-table tr:last-child td{border-bottom:none}
+.sim-table tr:hover td{background:#F0FDFE}
+.simlish-box{background:linear-gradient(135deg,#FFF5E5,#FFE8CC);padding:20px 24px;border-radius:16px;border:2px dashed #D4A72C;margin:12px 0}
+.simlish-phrase{font-family:'Fredoka',sans-serif;font-size:1.25rem;font-weight:700;color:#8B5E00;margin-bottom:3px}
+.simlish-translation{font-size:.92rem;color:var(--sim-soft);font-style:italic}
+.glossary-entry{background:white;border-radius:16px;padding:22px 26px;box-shadow:0 4px 16px rgba(30,34,40,.06);margin-bottom:14px;border-left:5px solid var(--sims-teal);transition:transform .15s}
+.glossary-entry:hover{transform:translateX(3px)}
+.glossary-entry.vampire-spell{border-left-color:var(--vampire)}
+.glossary-entry.spell-spell{border-left-color:var(--spellcaster)}
+.glossary-entry.mermaid-spell{border-left-color:var(--mermaid)}
+.glossary-entry.werewolf-spell{border-left-color:var(--werewolf)}
+.glossary-entry.ghost-spell{border-left-color:var(--ghost)}
+.glossary-entry.alien-spell{border-left-color:var(--alien)}
+.glossary-entry.fairy-spell{border-left-color:var(--fairy)}
+.glossary-entry.plantsim-spell{border-left-color:var(--plantsim)}
+.glossary-entry.servo-spell{border-left-color:var(--servo)}
+.glos-name{font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;color:var(--sim-ink);margin-bottom:3px}
+.glos-meta{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--sim-soft);margin-bottom:8px;display:flex;gap:8px;flex-wrap:wrap}
+.glos-meta span{background:#F0F3F5;padding:2px 8px;border-radius:8px}
+.glos-effect{font-size:.92rem;color:var(--sim-soft);margin-bottom:8px}
+.glos-mech{font-size:.88rem;background:#F8FBFE;border:1px solid #DCE8F0;border-radius:10px;padding:10px 14px;color:var(--sim-ink)}
+.glos-mech code{background:#E8F0F8;padding:1px 5px;border-radius:4px;font-size:.85em;font-family:monospace}
+.gloss-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.gloss-tab{padding:8px 18px;border-radius:20px;border:2px solid #DDE8EA;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;background:white;color:var(--sim-soft)}
+.gloss-tab:hover,.gloss-tab.active{background:var(--sims-teal);border-color:var(--sims-teal);color:white}
+.gloss-section{display:none}
+.gloss-section.active{display:block}
+.divider{height:50px;background-image:radial-gradient(circle,var(--sims-teal) 1.5px,transparent 1.5px),radial-gradient(circle,var(--plumbob-green) 1.5px,transparent 1.5px);background-size:28px 28px;background-position:0 0,14px 14px;opacity:.25;margin:60px 0}
+section,.stage,.occult,.career,.mood-card,.world,.weapon,.death{animation:fadeInUp .5s ease-out backwards}
+footer{background:var(--sim-ink);color:white;padding:50px 24px;text-align:center;margin-top:60px}
+footer h3{color:var(--plumbob-bright);margin-bottom:10px}
+footer p{opacity:.7;max-width:600px;margin:0 auto 10px;font-size:.9rem}
+footer .sul{margin-top:28px;font-family:'Fredoka',sans-serif;font-size:1.2rem;color:var(--plumbob-bright);letter-spacing:4px}
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="cover-plumbob"></div>
+  <div class="cover-subtitle">A Race Handbook for Forgotten Realms</div>
+  <h1>THE SIM</h1>
+  <div class="cover-tagline">"Miscalculated rocket trajectories and accidental planar breaches — a field guide to the accidental tourist from The Neighborhood."</div>
+  <div class="cover-meta">Volume II · Compiled in Faerûn, 1493 DR · Expanded Occult Edition</div>
+</div>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><span class="plumbob"></span> SIM HANDBOOK</div>
+    <a href="#overview">Overview</a><a href="#life-stages">Life Stages</a><a href="#plumbob">Plumbob</a>
+    <a href="#needs">Needs</a><a href="#moods">Moods</a><a href="#occults">Occults</a>
+    <a href="#occult-powers">Powers</a><a href="#death">Death</a><a href="#worlds">Worlds</a>
+    <a href="#careers">Careers</a><a href="#weapons">Gear</a><a href="#horticulture">Plants</a>
+    <a href="#creatures">Creatures</a><a href="#simlish">Simlish</a><a href="#grimoire">Grimoire</a>
+  </div>
+</nav>
+<div class="container">
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="section-label"><span class="plumbob"></span> The Species</div>
+  <h2>An Overview of Sims</h2>
+  <p class="lead">Sims are a humanoid species from a parallel material plane known as <strong>The Neighborhood</strong> — a reality operating under fundamentally different physical laws than Faerûn. In their world, needs are quantified, emotions are color-coded, and a glowing diamond floats above every living creature's head at all times.</p>
+  <div class="sim-profile">
+    <div class="sim-portrait"><div class="sim-portrait-plumbob"></div>😊</div>
+    <div>
+      <h3 style="margin-top:0;">Quick Profile</h3>
+      <div class="info-grid">
+        <div class="info-cell"><div class="info-cell-label">Home Plane</div><div class="info-cell-value">The Neighborhood</div></div>
+        <div class="info-cell"><div class="info-cell-label">Size</div><div class="info-cell-value">Medium</div></div>
+        <div class="info-cell"><div class="info-cell-label">Speed</div><div class="info-cell-value">30 ft</div></div>
+        <div class="info-cell"><div class="info-cell-label">Lifespan</div><div class="info-cell-value">~90 Sim-Days</div></div>
+        <div class="info-cell"><div class="info-cell-label">Language</div><div class="info-cell-value">Simlish, Common</div></div>
+        <div class="info-cell"><div class="info-cell-label">Rarity</div><div class="info-cell-value">Singular</div></div>
+        <div class="info-cell"><div class="info-cell-label">Alignment</div><div class="info-cell-value">Varies (Aspiration)</div></div>
+        <div class="info-cell"><div class="info-cell-label">Challenge</div><div class="info-cell-value">Varies by Career</div></div>
+      </div>
+    </div>
+  </div>
+  <h3>Racial Traits</h3>
+  <div class="stat-block">
+    <div class="stat-row"><span class="stat-label">Ability Score Increase</span><span class="stat-value">+2 INT, +1 to any two others (Aspiration-dependent)</span></div>
+    <div class="stat-row"><span class="stat-label">Size</span><span class="stat-value">Medium — uncanny proportions, unnaturally smooth joints</span></div>
+    <div class="stat-row"><span class="stat-label">Speed</span><span class="stat-value">30 ft. Walk; Speed-Up 1/short rest (double speed 1 round)</span></div>
+    <div class="stat-row"><span class="stat-label">Plumbob</span><span class="stat-value">Always visible at 60 ft., cannot be hidden, dispelled, or removed</span></div>
+    <div class="stat-row"><span class="stat-label">Skill Grind</span><span class="stat-value">Retry any failed skill check once per long rest (not attacks or saves)</span></div>
+    <div class="stat-row"><span class="stat-label">Emotional Cooking</span><span class="stat-value">During short rest, infuse current mood into prepared food (Mood Meal)</span></div>
+    <div class="stat-row"><span class="stat-label">Free Will Toggle</span><span class="stat-value">1/session, act autonomously outside DM guidance</span></div>
+    <div class="stat-row"><span class="stat-label">Death Bargain</span><span class="stat-value">CHA check vs. DC 20 at 0 HP — success grants 1 HP. 1/long rest.</span></div>
+    <div class="stat-row"><span class="stat-label">Mood Sight</span><span class="stat-value">Automatically perceive emotional state of any creature within 60 ft. Advantage on all Insight checks.</span></div>
+    <div class="stat-row"><span class="stat-label">Relationship Tracker</span><span class="stat-value">Maintain a mental score (0–100) with each known creature</span></div>
+    <div class="stat-row"><span class="stat-label">Languages</span><span class="stat-value">Simlish, Common; cannot learn additional languages</span></div>
+  </div>
+  <div class="callout"><div class="callout-label"><span class="plumbob"></span> A Note on Lifespan</div><p style="margin-bottom:0;">Sims age in <strong>distinct life stages</strong>. In their home world an adult Sim lives approximately 24 in-world days — roughly 90 days total from infant to elder. <strong>Planar travel has disrupted this cycle</strong>. A Sim in Faerûn may age at standard Sim rates, at Faerûnian human rates, or at no rate at all. They do not know which. They are choosing not to ask.</p></div>
+  <h3>Aspirations (Alignment Equivalents)</h3>
+  <p>Each Sim pursues a core life goal — an <strong>Aspiration</strong> — that functions as an alignment proxy and shapes their ability score bonuses.</p>
+  <table class="sim-table">
+    <thead><tr><th>Aspiration</th><th>ASI Bonus</th><th>Roleplay Flavor</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Love</strong></td><td>+2 CHA, +1 WIS</td><td>Driven by romantic connections. Devastated by rejection. Flirty plumbob baseline.</td></tr>
+      <tr><td><strong>Fortune</strong></td><td>+2 INT, +1 CHA</td><td>Accumulates. Counts Simoleons. Haunted by empty inventories.</td></tr>
+      <tr><td><strong>Knowledge</strong></td><td>+2 INT, +1 WIS</td><td>Researches everything. Writes it down. Unsettled by mysteries unresolved.</td></tr>
+      <tr><td><strong>Athletic</strong></td><td>+2 STR, +1 CON</td><td>Trains daily. Considers death by Overexertion an acceptable outcome.</td></tr>
+      <tr><td><strong>Popularity</strong></td><td>+2 CHA, +1 DEX</td><td>Needs to be known. Memorable. Slightly tragic at 3 AM.</td></tr>
+      <tr><td><strong>Nature</strong></td><td>+2 WIS, +1 CON</td><td>Gardens. Communes. Will stop mid-dungeon to admire a flower.</td></tr>
+      <tr><td><strong>Deviance</strong></td><td>+2 DEX, +1 STR</td><td>Steals, lies, cheats — lovably. Everyone hates them. Everyone trusts them anyway.</td></tr>
+      <tr><td><strong>Creativity</strong></td><td>+2 CHA, +1 INT</td><td>Must create. Will paint a mural on a cave wall. Considers this reasonable.</td></tr>
+    </tbody>
+  </table>
+</section>
+<div class="divider"></div>
+
+<!-- LIFE STAGES -->
+<section id="life-stages">
+  <div class="section-label"><span class="plumbob"></span> Life Stages</div>
+  <h2>The Seven Ages of a Sim</h2>
+  <p class="lead">Unlike the long slow aging of elves, Sims progress through clean discrete stages. The transition is instantaneous and involves a brief light show nobody fully understands.</p>
+  <div class="timeline">
+    <div class="stage"><div class="stage-icon">👶</div><div class="stage-days">Days 0–3</div><h4>Infant</h4><p>Immobile. Cannot speak. All Needs drain at triple speed. Cannot act in combat except to be carried.</p></div>
+    <div class="stage"><div class="stage-icon">🍼</div><div class="stage-days">Days 3–7</div><h4>Toddler</h4><p>Walks, climbs, falls. Learns one Skill permanently. Half speed. Advantage on Stealth from size.</p></div>
+    <div class="stage"><div class="stage-icon">🧒</div><div class="stage-days">Days 7–20</div><h4>Child</h4><p>Develops Personality traits. Cannot die of Old Age. −2 to all STR and CON saves. Can use simple weapons.</p></div>
+    <div class="stage"><div class="stage-icon">📚</div><div class="stage-days">Days 20–34</div><h4>Teen</h4><p>Moody by default. Plumbob cycles at 3× rate. +2 CHA but all emotional penalties doubled.</p></div>
+    <div class="stage"><div class="stage-icon">🧑</div><div class="stage-days">Days 34–58</div><h4>Young Adult</h4><p>Peak condition. All careers accessible. Full racial traits active. Optimal adventuring stage.</p></div>
+    <div class="stage"><div class="stage-icon">👔</div><div class="stage-days">Days 58–82</div><h4>Adult</h4><p>Established. +1 INT. Wisdom proficiency applies to one additional skill of choice.</p></div>
+    <div class="stage"><div class="stage-icon">👴</div><div class="stage-days">Days 82–90+</div><h4>Elder</h4><p>+2 INT and WIS. −2 STR and CON. Speed 25 ft. Daily Old Age Death Saving Throws begin.</p></div>
+  </div>
+  <div class="death-saves">
+    <h4>☠ Elder Old Age Death Saving Throws</h4>
+    <p style="font-size:.9rem;opacity:.85;margin-bottom:16px;">Starting on Day 82, the Elder Sim makes a <strong>CON saving throw</strong> each in-game day. The DC escalates as they push past their expected lifespan. Three consecutive failed saves trigger death regardless of current DC. The Grim Reaper arrives with a trumpet. A Sim may attempt their <strong>Death Bargain</strong> (CHA DC 20) as one final action.</p>
+    <div class="death-saves-grid">
+      <div class="death-save-tier"><div class="dst-label">Days 82–84 · Comfortable</div><div class="dst-dc">DC 8</div><div class="dst-desc">Plumbob yellows slightly. Sim complains of joint pain. Failure: Sad condition for the day.</div></div>
+      <div class="death-save-tier"><div class="dst-label">Days 85–87 · Uncertain</div><div class="dst-dc">DC 12</div><div class="dst-desc">Plumbob shifts silver-gray. Sim waxes philosophical. Failure: Disadvantage on all checks for the day.</div></div>
+      <div class="death-save-tier"><div class="dst-label">Days 88–89 · Fading</div><div class="dst-dc">DC 16</div><div class="dst-desc">Plumbob dims. Sim distributes belongings. Failure: Incapacitated. Three consecutive: death.</div></div>
+      <div class="death-save-tier"><div class="dst-label">Day 90+ · Critical</div><div class="dst-dc">DC 20+</div><div class="dst-desc">Each extra day adds +1 to DC. Nat 1: immediate death with trumpet. Surviving: Plumbob glows brilliantly for that day only.</div></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- PLUMBOB -->
+<section id="plumbob">
+  <div class="section-label"><span class="plumbob"></span> The Plumbob</div>
+  <h2>The Diamond Above</h2>
+  <p class="lead">A translucent diamond-shaped gem floats approximately one foot above the head of every Sim at all times. It is not jewelry. It is not magical in any Faerûnian sense. It simply <em>is</em>.</p>
+  <p>The Plumbob shifts color to reflect the Sim's emotional state. It cannot be hidden, covered, dispelled, or removed. <strong>Detect Magic</strong> reveals it as conjuration of a school unknown to Faerûnian theory. <strong>True Sight</strong> reveals it as part of the Sim's fundamental essence. <strong>The Sim cannot perceive their own Plumbob.</strong> They are the only being who cannot see it.</p>
+  <div class="callout"><div class="callout-label"><span class="plumbob"></span> Mood Sight — Racial Gift</div><p style="margin-bottom:0;">The Sim automatically knows when someone is lying, aroused, frightened, or grieving. <strong>This is not Detect Thoughts.</strong> It is simply how Sims perceive other beings. They gain advantage on all Insight checks. They cannot turn it off.</p></div>
+  <h3>Plumbob Color Meanings</h3>
+  <table class="sim-table">
+    <thead><tr><th>Color</th><th>Mood</th><th>Tactical Read</th><th>Mechanical Effect</th></tr></thead>
+    <tbody>
+      <tr><td>🟢 Bright Green</td><td>Happy / Elated</td><td>Confident, ready</td><td>+1 all checks; Elated adds Adv. CHA</td></tr>
+      <tr><td>💛 Yellow</td><td>Fine</td><td>Neutral</td><td>No effect (baseline)</td></tr>
+      <tr><td>🟠 Orange</td><td>Tense</td><td>Stressed, reactive</td><td>Disadv. Concentration saves</td></tr>
+      <tr><td>🔴 Red</td><td>Angry / Furious</td><td>Reckless, attack-likely</td><td>+2 attack, −2 WIS saves</td></tr>
+      <tr><td>🔵 Blue</td><td>Sad</td><td>Withdrawn</td><td>Disadv. social checks</td></tr>
+      <tr><td>🩷 Pink</td><td>Flirty</td><td>Romantically distracted</td><td>Adv. Persuasion, Disadv. Intimidation</td></tr>
+      <tr><td>🟣 Purple</td><td>Playful</td><td>Unpredictable</td><td>Adv. Performance; 10% comic spell twist</td></tr>
+      <tr><td>🔷 Teal</td><td>Focused</td><td>Calculating</td><td>+2 INT checks; Adv. Concentration saves</td></tr>
+      <tr><td>🟪 Violet</td><td>Inspired</td><td>Creative</td><td>Attempt unproficient skills at +3</td></tr>
+      <tr><td>⬛ Black</td><td>Mortified</td><td>Breaking point</td><td>CON DC 13 or die of Embarrassment</td></tr>
+      <tr><td>⬜ Gray</td><td>Depressed</td><td>Detached, slow</td><td>−1 all checks, no Skill Grind</td></tr>
+    </tbody>
+  </table>
+</section>
+<div class="divider"></div>
+
+<!-- NEEDS -->
+<section id="needs">
+  <div class="section-label"><span class="plumbob"></span> The Motives</div>
+  <h2>Six Fundamental Needs</h2>
+  <p class="lead">Sims have six core Needs that must be periodically met. Track each on a 0–10 scale. Extended stress, imprisonment, or long journeys produce cascading mechanical consequences.</p>
+  <div class="needs-list">
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">🍔</span>Hunger</span><span style="font-size:.83rem;color:var(--sim-soft);">Depletes every Long Rest</span></div><div class="need-bar"><div class="need-fill" style="width:72%"></div></div><div class="need-consequences"><strong>3 rests unmet:</strong> Sad mood. <strong>7 rests:</strong> Incapacitated — 1 Exhaustion. <strong>10 rests:</strong> Death by Starvation. The Sim will vocally complain the entire time.</div></div>
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">💬</span>Social</span><span style="font-size:.83rem;color:var(--sim-soft);">Every 24 hours</span></div><div class="need-bar"><div class="need-fill" style="width:45%"></div></div><div class="need-consequences"><strong>Unmet:</strong> Will attempt conversation with anything — enemies, animals, furniture. <strong>3 days:</strong> Sad permanently. <strong>5 days:</strong> Depressed. This is compulsion, not rudeness.</div></div>
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">🎨</span>Fun</span><span style="font-size:.83rem;color:var(--sim-soft);">Every 24 hours</span></div><div class="need-bar"><div class="need-fill" style="width:58%"></div></div><div class="need-consequences"><strong>Unmet:</strong> Tense mood. What counts as "fun" is determined by Aspiration. The DM decides. Arguing counts for some of them.</div></div>
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">💤</span>Energy</span><span style="font-size:.83rem;color:var(--sim-soft);">Standard Long Rest</span></div><div class="need-bar"><div class="need-fill" style="width:88%"></div></div><div class="need-consequences"><strong>Unmet:</strong> Sleeps anywhere without warning. Falls asleep mid-conversation at Critical. Each level of deprivation adds 1 Exhaustion. They will nap during a negotiation.</div></div>
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">🛁</span>Hygiene</span><span style="font-size:.83rem;color:var(--sim-soft);">Every 48 hours</span></div><div class="need-bar"><div class="need-fill" style="width:33%"></div></div><div class="need-consequences"><strong>Critical:</strong> Visible green miasma. Creatures within 10 ft. make CON DC 12 or are Poisoned (nauseated). The Sim is aware. They are embarrassed. They started six fights today.</div></div>
+    <div class="need"><div class="need-header"><span class="need-name"><span class="need-icon">🚽</span>Bladder</span><span style="font-size:.83rem;color:var(--sim-soft);">Varies by intake</span></div><div class="need-bar"><div class="need-fill" style="width:65%"></div></div><div class="need-consequences"><strong>Critical:</strong> A distinctive animation plays visible to all observers. Movement halves. At absolute failure, a puddle appears. Produces Mortified Plumbob. Other party members make CON DC 10 to keep straight faces.</div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- MOODS -->
+<section id="moods">
+  <div class="section-label"><span class="plumbob"></span> Emotional States</div>
+  <h2>The Twelve Moods</h2>
+  <p class="lead">The Plumbob reflects twelve documented emotional states. Emotions are triggered by Needs, interactions, Occult spells, and environmental Moodlets.</p>
+  <div class="mood-grid">
+    <div class="mood-card mood-happy"><div><div class="mood-card-plumbob"></div><h4>Happy</h4></div><p><strong>+1</strong> to all ability checks. Default adventuring state.</p></div>
+    <div class="mood-card mood-elated"><div><div class="mood-card-plumbob"></div><h4>Elated</h4></div><p>Advantage on CHA checks. +5 ft. movement. Plumbob visibly glows. Talks too much.</p></div>
+    <div class="mood-card mood-fine"><div><div class="mood-card-plumbob"></div><h4>Fine</h4></div><p>No effect. Baseline neutral. Most NPCs live here and are bored about it.</p></div>
+    <div class="mood-card mood-tense"><div><div class="mood-card-plumbob"></div><h4>Tense</h4></div><p>Disadvantage on Concentration saves. Paces involuntarily. May snap at allies.</p></div>
+    <div class="mood-card mood-angry"><div><div class="mood-card-plumbob"></div><h4>Angry</h4></div><p><strong>+2</strong> attack rolls, <strong>−2</strong> WIS saves. Red plumbob. Will pick fights.</p></div>
+    <div class="mood-card mood-sad"><div><div class="mood-card-plumbob"></div><h4>Sad</h4></div><p>Disadvantage on social checks. Sighs before speaking. Finds rain relatable.</p></div>
+    <div class="mood-card mood-flirty"><div><div class="mood-card-plumbob"></div><h4>Flirty</h4></div><p>Advantage on Persuasion, Disadvantage on Intimidation. Winks at everything.</p></div>
+    <div class="mood-card mood-depressed"><div><div class="mood-card-plumbob"></div><h4>Depressed</h4></div><p><strong>−1</strong> all checks. Cannot use Skill Grind. Stares at walls. Refuses snacks.</p></div>
+    <div class="mood-card mood-mortified"><div><div class="mood-card-plumbob"></div><h4>Mortified</h4></div><p>Black Plumbob. CON save DC 13 or die of Embarrassment within the hour.</p></div>
+    <div class="mood-card mood-playful"><div><div class="mood-card-plumbob"></div><h4>Playful</h4></div><p>Advantage on Performance. Spells have 10% chance of goofy visual effect.</p></div>
+    <div class="mood-card mood-focused"><div><div class="mood-card-plumbob"></div><h4>Focused</h4></div><p>+2 to INT checks. Concentration saves at Advantage. Will not hear when spoken to.</p></div>
+    <div class="mood-card mood-inspired"><div><div class="mood-card-plumbob"></div><h4>Inspired</h4></div><p>Attempt unproficient skills at +3. Inspired speech grants allies 1d4 Bardic Inspiration.</p></div>
+  </div>
+  <h3>Moodlets — Environmental Modifiers</h3>
+  <table class="sim-table">
+    <thead><tr><th>Moodlet</th><th>Trigger</th><th>Effect</th><th>Duration</th></tr></thead>
+    <tbody>
+      <tr><td>🍖 Nicely Fed</td><td>Quality food consumed</td><td>+1 CON checks for the day</td><td>8 hours</td></tr>
+      <tr><td>💔 Heartbroken</td><td>Romantic rejection</td><td>−2 CHA checks, dim blue plumbob</td><td>24 hours</td></tr>
+      <tr><td>🌧️ Rained On</td><td>Soaked without shelter</td><td>Tense mood modifier</td><td>4 hours</td></tr>
+      <tr><td>🏆 Accomplished</td><td>Completed major goal</td><td>+2 all checks, Inspired modifier</td><td>12 hours</td></tr>
+      <tr><td>💀 Witnessed Death</td><td>Saw someone die</td><td>Sad modifier, −1 all saves</td><td>24 hours</td></tr>
+      <tr><td>🛁 Just Showered</td><td>Recently bathed</td><td>+1 CHA checks</td><td>6 hours</td></tr>
+      <tr><td>🎉 Party Animal</td><td>Attended a good party</td><td>Happy modifier, Social need filled</td><td>12 hours</td></tr>
+      <tr><td>😱 Jump-Scared</td><td>Startled by creature/trap</td><td>Frightened for 1 minute</td><td>1 hour</td></tr>
+    </tbody>
+  </table>
+</section>
+<div class="divider"></div>
+
+<!-- OCCULTS -->
+<section id="occults">
+  <div class="section-label"><span class="plumbob"></span> Sub-Races</div>
+  <h2>Occult Variants</h2>
+  <p class="lead">Just as elves have Drow, Wood, Sea, and High variants, Sims have multiple sub-species called Occults. These may be present at character creation or acquired through specific planar events, curses, bites, or eating the wrong fruit.</p>
+  <div class="occult-grid">
+    <div class="occult vampire"><div class="occult-header"><span class="occult-icon">🧛</span><span class="occult-tag">Forgotten Hollow</span></div><h4>Vampire Sim</h4><div class="occult-subtitle">Sired, not born. Immortal. Perpetually dramatic.</div><p>Sims converted by the Dark Form. Feed on plasma (blood), die in sunlight, develop a branching tree of Powers and Weaknesses. Ranks: Fledgling → Minor → Prime → Master → Grand Master.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 STR, +1 CHA, Sun Vulnerability (2d6 radiant/round), Plasma Drain bite (heals self), Mist Form (Grand Master), Immortality.</div></div>
+    <div class="occult spellcaster"><div class="occult-header"><span class="occult-icon">🔮</span><span class="occult-tag">Glimmerbrook</span></div><h4>Spellcaster Sim</h4><div class="occult-subtitle">Trained in the Realm of Magic. Three schools, one overcharge problem.</div><p>Studied under Sages of Practical, Mischief, or Untamed magic. Cast spells using Spell Charges. Brew potions through Alchemy. Ranks: Neophyte → Apprentice → Acolyte → Adept → Master → Virtuoso.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 INT, cantrips from chosen school. Overcharge triggers Wild Magic Surge.</div></div>
+    <div class="occult mermaid"><div class="occult-header"><span class="occult-icon">🧜</span><span class="occult-tag">Sulani</span></div><h4>Mermaid Sim</h4><div class="occult-subtitle">Island-born, saltwater in their blood. Dangerous when singing.</div><p>Full aquatic transformation — legs become tail when submerged. Communicate with dolphins. Can summon storms and lure victims into the ocean.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 CHA, Swim 60 ft., water breathing, Siren's Lure 1/long rest, dehydrates after 24 hours from saltwater.</div></div>
+    <div class="occult werewolf"><div class="occult-header"><span class="occult-icon">🐺</span><span class="occult-tag">Moonwood Mill</span></div><h4>Werewolf Sim</h4><div class="occult-subtitle">Cursed by a scratch. Transformed by the moon.</div><p>Afflicted with lycanthropy. Transform under full moons or Fury. Bound by Pack loyalty. Ranks: Pup → Runt → Prime → Veteran → Apex.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 STR, +1 CON, Claws 1d6+STR, Fury (Angry Plumbob = risk transform), Pack Bond, full moon forced shift.</div></div>
+    <div class="occult ghost-t"><div class="occult-header"><span class="occult-icon">👻</span><span class="occult-tag">Any World</span></div><h4>Ghost Sim</h4><div class="occult-subtitle">Died, came back, did not leave. The Plumbob is frozen.</div><p>Plumbob is fixed at the emotion experienced at death. Can pass through walls. Cannot be healed normally. Ranks: Wispling → Ethereal Novice → Phantasmal Ascendant → Spectral Luminary → Transcendent Wraith.</p><div class="occult-traits"><strong>Mechanics:</strong> Resistance all damage except radiant/psychic. Pass through nonmagical barriers. No healing spells.</div></div>
+    <div class="occult fairy"><div class="occult-header"><span class="occult-icon">🧚</span><span class="occult-tag">Enchanted Areas</span></div><h4>Fairy Sim</h4><div class="occult-subtitle">Ancient nature magic. Emotions as currency. Gnomes as minions.</div><p>Manipulate emotions, luck, relationships, and plant life through Emotional Force — a magical pool fed by strong feelings.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 WIS, +1 CHA, Emotional Force pool (max 10), Fly speed 30 ft., can animate gnomes and age up creatures.</div></div>
+    <div class="occult alien"><div class="occult-header"><span class="occult-icon">👽</span><span class="occult-tag">Sixam</span></div><h4>Alien Sim</h4><div class="occult-subtitle">From the world beyond the stars. Politely invasive.</div><p>Green-skinned Sims from planet Sixam. Telepathic. Disguise themselves as normal Sims. Prone to abducting others for documented scientific research.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 INT, Telepathy 30 ft., Disguise Self at will, Brain Powers, Vulnerability to mind magic.</div></div>
+    <div class="occult plantsim"><div class="occult-header"><span class="occult-icon">🌱</span><span class="occult-tag">Greenhouse / Enchanted</span></div><h4>PlantSim</h4><div class="occult-subtitle">The Gardener who ate the wrong fruit.</div><p>Transformed into living plant-humanoids via Forbidden Fruit. Green skin, leafy hair. Photosynthesize. Vulnerable to fire.</p><div class="occult-traits"><strong>Mechanics:</strong> +2 WIS, Photosynthesis replaces Hunger, Water Need replaces Bladder, Vulnerable Fire, Druidic Speech with plants.</div></div>
+    <div class="occult servo"><div class="occult-header"><span class="occult-icon">🤖</span><span class="occult-tag">Any Lab</span></div><h4>Servo / PlumBot</h4><div class="occult-subtitle">Constructed, not born. Fully sentient. Has a Plumbob anyway.</div><p>Robotic Sims built through Robotics skill. Equip Enhancement Modules for specialized capabilities.</p><div class="occult-traits"><strong>Mechanics:</strong> Construct type, no Hunger/Energy/Hygiene/Bladder needs. Needs Charge. Vulnerable Water. Immune poison, disease, charm, sleep.</div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- OCCULT POWERS TABLES -->
+<section id="occult-powers">
+  <div class="section-label"><span class="plumbob"></span> Occult Powers</div>
+  <h2>Power &amp; Spell Progression</h2>
+  <p class="lead">Each Occult type unlocks powers as they advance through their rank system. Full mechanical descriptions are in the <a href="#grimoire" style="color:var(--sims-teal);">Grimoire section</a>.</p>
+
+  <h3>🔮 Spellcaster — Realm of Magic</h3>
+  <div class="power-table-wrap"><table class="power-table"><thead class="spell-head"><tr><th>Rank</th><th>School</th><th>Spell / Potion</th><th>Brief Effect</th></tr></thead><tbody>
+    <tr><td><span class="rank-badge rank-neophyte">Neophyte</span></td><td>Alchemy</td><td>Potion of Alluring Aura</td><td>CHA +4 for romantic interactions 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-neophyte">Neophyte</span></td><td>Alchemy</td><td>Potion of Emotional Stability</td><td>Remove one emotion-based condition</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Practical</td><td>Repairio</td><td>Repair broken objects instantly</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Practical</td><td>Scruberoo</td><td>Clean Sim or object; fill Hygiene need</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Mischief</td><td>Despairio</td><td>WIS DC 13 or Sad 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Mischief</td><td>Deliriate</td><td>WIS DC 13 or Incapacitated 1 min</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Untamed</td><td>Inferniate</td><td>3d6 fire, DEX DC 13</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Untamed</td><td>Zipzap</td><td>2d6 lightning, CON DC 13 or Stunned</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Alchemy</td><td>Potion of Good Fortune</td><td>+2 attack and skill rolls 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Alchemy</td><td>Potion of Plentiful Needs</td><td>Fill all needs; replaces long rest</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Alchemy</td><td>Potion of Nausea</td><td>CON DC 13 or Poisoned 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Alchemy</td><td>Potion of the Nimble Mind</td><td>Double proficiency on INT checks 4 hours</td></tr>
+    <tr><td><span class="rank-badge rank-apprentice">Apprentice</span></td><td>Alchemy</td><td>Potion of Magical Aura</td><td>Display Plumbob equivalent to all viewers</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Practical</td><td>Delicioso</td><td>Create meal for 6; no ingredients required</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Practical</td><td>Floralorial</td><td>Full-heal plants, remove pests/disease</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Mischief</td><td>Furio</td><td>WIS DC 14 or attack nearest creature</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Mischief</td><td>Infatuate</td><td>CHA DC 14 or Charmed by each other</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Untamed</td><td>Necrocall</td><td>Animate Dead (CR 1) 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Untamed</td><td>Chillio</td><td>CON DC 14 or Restrained (frozen)</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Alchemy</td><td>Potion of Perk Purging</td><td>Reset Spellcaster perks, gain 3 perk points</td></tr>
+    <tr><td><span class="rank-badge rank-acolyte">Acolyte</span></td><td>Alchemy</td><td>Potion of Forced Friendship</td><td>WIS DC 14 or Charmed as Friend 8 hours</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Practical</td><td>Transportalate</td><td>Misty Step 60 ft., no components</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Practical</td><td>Copypasto</td><td>Duplicate one small nonmagical object</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Mischief</td><td>Burgliate</td><td>DEX DC 15 or item stolen telekinetically</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Untamed</td><td>Minionize</td><td>Dominate Person WIS DC 15, 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Alchemy</td><td>Potion of Masterful Insults</td><td>+5 Intimidation and Insight 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Alchemy</td><td>Potion of Rejuvenation</td><td>Reset aging timer to start of current stage</td></tr>
+    <tr><td><span class="rank-badge rank-adept">Adept</span></td><td>Alchemy</td><td>Potion of Curse Cleansing</td><td>Remove Curse, even resistant curses</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Practical</td><td>Herbio</td><td>Grow full plant or revive dead plant</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Practical</td><td>Homewardial</td><td>Teleport to Magic Realm or designated anchor</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Mischief</td><td>Morphiate</td><td>WIS DC 16 or Polymorphed to object 10 min</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Untamed</td><td>Dedeathify</td><td>True Resurrection for Ghosts only</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Untamed</td><td>Decursify</td><td>Remove Curse, no save needed</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Alchemy</td><td>Potion of Immortality</td><td>Prevents death by aging 30 days</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Alchemy</td><td>Potion of the Transcendent Charmer</td><td>Adv. all Persuasion/Deception 8 hours</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Alchemy</td><td>Potion of Prompt Resurrection</td><td>Auto-revive to 1 HP if dying within 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-virtuoso">Virtuoso</span></td><td>Practical</td><td>Rite of Ascension</td><td>WIS DC 17 or target becomes Spellcaster</td></tr>
+    <tr><td><span class="rank-badge rank-virtuoso">Virtuoso</span></td><td>Mischief</td><td>Strangeify</td><td>CHA DC 17 or Bestow Curse (repulsion) 24h</td></tr>
+    <tr><td><span class="rank-badge rank-virtuoso">Virtuoso</span></td><td>Untamed</td><td>Duplicato</td><td>Simulacrum clone (half HP) 1 hour</td></tr>
+  </tbody></table></div>
+
+  <h3>🧛 Vampire — Powers by Rank</h3>
+  <div class="power-table-wrap"><table class="power-table"><thead class="vampire-head"><tr><th>Rank</th><th>Power</th><th>Brief Effect</th></tr></thead><tbody>
+    <tr><td><span class="rank-badge rank-fledgling">Fledgling</span></td><td>Detect Personality</td><td>Learn alignment, one trait, one flaw</td></tr>
+    <tr><td><span class="rank-badge rank-fledgling">Fledgling</span></td><td>Bat Form</td><td>Polymorph to bat, fly 40 ft.</td></tr>
+    <tr><td><span class="rank-badge rank-fledgling">Fledgling</span></td><td>Cast Hallucination</td><td>WIS DC 14 or Phantasmal Force illusion</td></tr>
+    <tr><td><span class="rank-badge rank-fledgling">Fledgling</span></td><td>Eternally Welcome</td><td>Never needs permission to enter dwellings</td></tr>
+    <tr><td><span class="rank-badge rank-fledgling">Fledgling</span></td><td>Occult Student/Disciple/Master</td><td>Reduce vampire energy cost (3 tiers)</td></tr>
+    <tr><td><span class="rank-badge rank-minor">Minor</span></td><td>Vampiric Charm/Allure/Fascination</td><td>Tiered romantic influence (CHA DC 13/14/16)</td></tr>
+    <tr><td><span class="rank-badge rank-minor">Minor</span></td><td>Vampiric Strength/Brawn/Might</td><td>+1/+2/+3 STR checks and attacks</td></tr>
+    <tr><td><span class="rank-badge rank-minor">Minor</span></td><td>Command</td><td>WIS DC 14 or obey one-word command 1 min</td></tr>
+    <tr><td><span class="rank-badge rank-minor">Minor</span></td><td>Garlic Immunity</td><td>Reduces then eliminates garlic weakness</td></tr>
+    <tr><td><span class="rank-badge rank-minor">Minor</span></td><td>Vampire Creation</td><td>Bite willing/incap. target; 7-day turn</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Mesmerize</td><td>Hold Person WIS DC 15, 1 minute</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Child of Moon/Creature/Master of Darkness</td><td>+1/+2/+3 all checks at night</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Irresistible Slumber</td><td>WIS DC 16 or Unconscious 1 hour</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Manipulate Life Spirit</td><td>Drain 2d8 necrotic OR restore 2d8 HP</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Vampiric Slumber/Greater/Trance</td><td>Regain 1/2/3 extra Hit Dice on long rest</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Dampened/Suppressed/Deadened Emotions</td><td>Adv. WIS saves; eventually immune to emotion effects</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Supernatural Speed</td><td>Double movement, Dash as bonus action</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Deprive Needs</td><td>CON DC 16 or target loses last long rest</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Sun Resistance/Greater/Perfect</td><td>Sun damage reduced 50%/75%/immune</td></tr>
+    <tr><td><span class="rank-badge rank-master">Master</span></td><td>Odorless</td><td>Immune scent detection; Hygiene irrelevant socially</td></tr>
+    <tr><td><span class="rank-badge rank-grand">Grand Master</span></td><td>Influence/Alter/Control Emotion</td><td>Force emotion on target WIS DC 16/17/18</td></tr>
+    <tr><td><span class="rank-badge rank-grand">Grand Master</span></td><td>Mist Form</td><td>Gaseous Form, fly 30 ft., pass any gap</td></tr>
+    <tr><td><span class="rank-badge rank-grand">Grand Master</span></td><td>Beyond the Herd</td><td>Social need no longer depletes</td></tr>
+    <tr><td><span class="rank-badge rank-grand">Grand Master</span></td><td>Tamed Thirst</td><td>Full control of thirst; no involuntary feeding</td></tr>
+    <tr><td><span class="rank-badge rank-grand">Grand Master</span></td><td>Immortal Pleasures</td><td>Fun need no longer depletes</td></tr>
+  </tbody></table></div>
+
+  <h3>🐺 Werewolf — Abilities by Rank</h3>
+  <div class="power-table-wrap"><table class="power-table"><thead class="werewolf-head"><tr><th>Rank</th><th>Ability</th><th>Brief Effect</th></tr></thead><tbody>
+    <tr><td><span class="rank-badge rank-pup">Pup</span></td><td>Ferocity</td><td>WIS DC 12 or Frightened 1 round (30 ft.)</td></tr>
+    <tr><td><span class="rank-badge rank-pup">Pup</span></td><td>Wolf Nap</td><td>Long rest requires no bed or shelter</td></tr>
+    <tr><td><span class="rank-badge rank-pup">Pup</span></td><td>Territory Marking</td><td>Mark area; know if disturbed</td></tr>
+    <tr><td><span class="rank-badge rank-pup">Pup</span></td><td>Scavenger</td><td>Dig for random items (10 min)</td></tr>
+    <tr><td><span class="rank-badge rank-pup">Pup</span></td><td>Personal Grooming</td><td>Hygiene need met without water</td></tr>
+    <tr><td><span class="rank-badge rank-runt">Runt</span></td><td>Voracious Hunger</td><td>Eat inorganic material to satisfy Hunger</td></tr>
+    <tr><td><span class="rank-badge rank-runt">Runt</span></td><td>Hunter</td><td>Proficiency Survival; Adv. Perception (scent)</td></tr>
+    <tr><td><span class="rank-badge rank-runt">Runt</span></td><td>The Will to Resist</td><td>+2 DC control over Fury transformation</td></tr>
+    <tr><td><span class="rank-badge rank-runt">Runt</span></td><td>Enhanced Smell</td><td>Adv. Insight and Perception (scent-based)</td></tr>
+    <tr><td><span class="rank-badge rank-runt">Runt</span></td><td>Somber Howl</td><td>Reduce own Fury by 1d4 (action)</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Lunar Blessing</td><td>+2 all rolls during Full Moon</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Nightvision</td><td>Darkvision 60 ft.</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Natural Healing</td><td>Regen 1d4 HP/turn while below half HP</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Pack Howl</td><td>Allies in 60 ft. gain Pack Bond +1d4 attacks, 1 min</td></tr>
+    <tr><td><span class="rank-badge rank-prime">Prime</span></td><td>Curse Bearer</td><td>Cursed bite; CON DC 14 or lycanthropy starts</td></tr>
+    <tr><td><span class="rank-badge rank-veteran">Veteran</span></td><td>Vicious Howl</td><td>WIS DC 15 or Frightened 1 min (30 ft. cone)</td></tr>
+    <tr><td><span class="rank-badge rank-veteran">Veteran</span></td><td>Hunting Party</td><td>Up to 3 allies gain +1 attack while hunting</td></tr>
+    <tr><td><span class="rank-badge rank-veteran">Veteran</span></td><td>Lunar Resistance</td><td>No longer affected by non-full-moon penalties</td></tr>
+    <tr><td><span class="rank-badge rank-veteran">Veteran</span></td><td>Tunneler</td><td>Burrow 15 ft. through soft earth</td></tr>
+    <tr><td><span class="rank-badge rank-veteran">Veteran</span></td><td>Primal Instincts</td><td>Adv. Initiative; cannot be Surprised</td></tr>
+    <tr><td><span class="rank-badge rank-apex">Apex</span></td><td>Super Speed</td><td>Speed 60 ft.; Dash as bonus action</td></tr>
+    <tr><td><span class="rank-badge rank-apex">Apex</span></td><td>Alpha Wolf</td><td>Aura: werewolf allies +2 attack; enemy saves Disadv.</td></tr>
+    <tr><td><span class="rank-badge rank-apex">Apex</span></td><td>Immortal Wolf</td><td>Cannot die of old age</td></tr>
+    <tr><td><span class="rank-badge rank-apex">Apex</span></td><td>Lunar Howl</td><td>Reroll temperament; choose better result</td></tr>
+    <tr><td><span class="rank-badge rank-apex">Apex</span></td><td>Legacy of the Lycan</td><td>Pass one Apex ability when siring another</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Transformation Mastery</td><td>Transform voluntarily at will, no Fury required</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Werewolf Diplomacy</td><td>Adv. Persuasion to establish peaceful intent</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Werewolf Mentorship</td><td>Halve time/cost to teach abilities to pack</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Werewolf Menace</td><td>Adv. Intimidation; Frightened saves Disadv.</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Werewolf Empathy</td><td>Touch: reduce another werewolf Fury 1d6</td></tr>
+    <tr><td><span class="rank-badge rank-dormant">Dormant</span></td><td>Lunar Epiphany</td><td>Expertise in History (Lycanthropy)</td></tr>
+  </tbody></table></div>
+
+  <h3>🧜 Mermaid | 👻 Ghost | 🧚 Fairy | 👽 Alien | 🌱 PlantSim | 🤖 Servo</h3>
+  <div class="power-table-wrap"><table class="power-table"><thead class="mermaid-head"><tr><th>Type</th><th>Category</th><th>Power</th><th>Brief Effect</th></tr></thead><tbody>
+    <tr><td>🧜</td><td>Siren Song</td><td>Aegean's Question</td><td>WIS DC 13 or Tense/Sad 1 hour</td></tr>
+    <tr><td>🧜</td><td>Siren Song</td><td>Charmer's Lullaby</td><td>CHA DC 13 or Charmed (romantic) 1 hour</td></tr>
+    <tr><td>🧜</td><td>Siren Song</td><td>Inspiring Berceuse</td><td>Target gains Bardic Inspiration d6</td></tr>
+    <tr><td>🧜</td><td>Siren Song</td><td>Night's Requiem</td><td>WIS DC 13 or Sad, must sit if able</td></tr>
+    <tr><td>🧜</td><td>Mermaid Power</td><td>Mermaid's Kiss</td><td>Touch: breathe water 1 hour, Swim 30 ft.</td></tr>
+    <tr><td>🧜</td><td>Mermaid Power</td><td>Siren's Call</td><td>WIS DC 14 or compelled toward water + Exhaustion</td></tr>
+    <tr><td>🧜</td><td>Mermaid Power</td><td>Summon Ocean Threat</td><td>Summon CR 4 ocean creature 1 hour</td></tr>
+    <tr><td>🧜</td><td>Weather Power</td><td>Call Clear Skies</td><td>Dispel storms 1-mile radius 24 hours</td></tr>
+    <tr><td>🧜</td><td>Weather Power</td><td>Call Rainstorm / Thunderstorm</td><td>Summon storm; lightning 1% chance/round outdoors</td></tr>
+    <tr><td>🧜</td><td>Ocean Power</td><td>Aquatic Lure / Azure Dolphin</td><td>Adv. fishing; summon intelligent dolphin companion</td></tr>
+    <tr><td>👻</td><td>Wispling</td><td>Spooky Spectacle / Solace Embrace</td><td>WIS DC 12 Frightened; or remove Frightened/Sad</td></tr>
+    <tr><td>👻</td><td>Wispling</td><td>Ghostly Traverse / Dispeller</td><td>Pass through wall/turn; remove ghostly effect</td></tr>
+    <tr><td>👻</td><td>Ethereal Novice</td><td>Object Manipulation / Dark&amp;Euphoric Presence</td><td>Telekinesis; aura of negative or positive emotion</td></tr>
+    <tr><td>👻</td><td>Ethereal Novice</td><td>Spectral Slumber / Fear the Night</td><td>Sleep in objects; +2 DC Frighten at night</td></tr>
+    <tr><td>👻</td><td>Phantasmal Ascendant</td><td>Haunting Shriek</td><td>30 ft. cone, CON DC 15, 3d6 thunder + Frightened</td></tr>
+    <tr><td>👻</td><td>Phantasmal Ascendant</td><td>Dream Corruptor / Dream Weaver</td><td>Corrupt or improve a sleeping target's long rest</td></tr>
+    <tr><td>👻</td><td>Spectral Luminary</td><td>Levitator / Devourer</td><td>Fly/levitate 30 ft.; drain 2d8 necrotic for Ghost Points</td></tr>
+    <tr><td>👻</td><td>Transcendent Wraith</td><td>Otherworldly Curse / Benevolent Blessing</td><td>WIS DC 17 powerful curse; or powerful buff 24h</td></tr>
+    <tr><td>🧚</td><td>Manipulation</td><td>Cure/Apply Ailment / Age Up Another</td><td>Remove or grant conditions; CON DC 14 age one stage</td></tr>
+    <tr><td>🧚</td><td>Emotion</td><td>Sway/Project/Bottle Emotion</td><td>WIS DC 13-14 mood change; 20ft aura; capture in vial</td></tr>
+    <tr><td>🧚</td><td>Nature</td><td>Growth Eruption / Transform into Fairy</td><td>Instant full-grown plant; WIS DC 15 gain Fairy subtype</td></tr>
+    <tr><td>🧚</td><td>Passive</td><td>Force Gain / Expert Regeneration</td><td>+1 Emotional Force on actions; regen 1 per short rest</td></tr>
+    <tr><td>👽</td><td>Mental</td><td>Analyze Personality / Empathize / Erase Memory</td><td>Learn traits; copy emotion; Modify Memory WIS DC 15</td></tr>
+    <tr><td>👽</td><td>Interaction</td><td>Probe / Scare with Probe</td><td>CON DC 14 Incap + Frightened; learn one hidden secret</td></tr>
+    <tr><td>👽</td><td>Disguise</td><td>Disguise Self / Remove Disguise</td><td>At will DC 25 to see through; reaction WIS DC 14 Frighten</td></tr>
+    <tr><td>🌱</td><td>Trait</td><td>Photosynthesis / Water Need</td><td>Replace Hunger (sunlight); replace Bladder (water)</td></tr>
+    <tr><td>🌱</td><td>Power</td><td>Poison Kiss / Nature's Breath</td><td>CON DC 14, 2d6 poison 1h; CON DC 13 drowsy cloud</td></tr>
+    <tr><td>🌱</td><td>Power</td><td>Absorb Solar / Refresh Life / Praise for Life</td><td>1d6 temp HP/hr sun; 2d4 HP near water; heal 2d6 plants</td></tr>
+    <tr><td>🤖</td><td>Core</td><td>Download Enhancement / Self-Repair</td><td>Gain Enhancement Points; 2d6+INT HP repair (10 min)</td></tr>
+    <tr><td>🤖</td><td>Module</td><td>Fix-O-Matic / Parameterize and Sanitize</td><td>Adv. repair; bonus action clean + remove disease</td></tr>
+    <tr><td>🤖</td><td>Module</td><td>Party Machine / Sim Defence Matrix</td><td>Bardic Inspiration d6 1/hr; redirect half damage to self</td></tr>
+  </tbody></table></div>
+</section>
+<div class="divider"></div>
+
+<!-- DEATH -->
+<section id="death">
+  <div class="section-label"><span class="plumbob"></span> Vulnerabilities</div>
+  <h2>Known Causes of Death</h2>
+  <p class="lead">Sims die in surprisingly specific and documented ways. The Grim Reaper arrives promptly and performs the appropriate ceremony. A Sim may always attempt their Death Bargain (CHA vs. DC 20) as one final action.</p>
+  <div class="death-grid">
+    <div class="death"><div class="death-icon">🍔</div><div class="death-name">Starvation</div><div class="death-desc">Hunger fully depleted for ten days. Sim simply stops. Prior warning consists of extensive vocalization.</div><div class="death-dc">CON DC 12 daily from day 7</div></div>
+    <div class="death"><div class="death-icon">😱</div><div class="death-name">Embarrassment</div><div class="death-desc">Mortified Plumbob sustained too long. Dies of shame. Literally. The body is found with a shocked expression.</div><div class="death-dc">CON DC 13 at Mortified state</div></div>
+    <div class="death"><div class="death-icon">😂</div><div class="death-name">Hysteria</div><div class="death-desc">Laughed too hard, too long. Plumbob Elated into cardiac failure. Friends considered this preventable. They are right.</div><div class="death-dc">CON DC 11 after 3+ hours Elated</div></div>
+    <div class="death"><div class="death-icon">🐄</div><div class="death-name">Cowplant</div><div class="death-desc">Devoured by sentient carnivorous plant. The cake was bait. This was obvious in retrospect.</div><div class="death-dc">Escape: STR DC 16 or 2d6 acid/round</div></div>
+    <div class="death"><div class="death-icon">⚰️</div><div class="death-name">Old Age</div><div class="death-desc">Elder timer expires. Daily death saves fail. Trumpet fanfare plays. Peaceful, usually.</div><div class="death-dc">See Elder Death Saving Throws</div></div>
+    <div class="death"><div class="death-icon">🔥</div><div class="death-name">Fire</div><div class="death-desc">Consumed by flames. Enters panic spiral before collapsing. 2d6 fire per round. Refuses to stop drop and roll.</div><div class="death-dc">DEX DC 14 to break panic</div></div>
+    <div class="death"><div class="death-icon">⚡</div><div class="death-name">Electrocution</div><div class="death-desc">Repaired faulty object while Tense. 3d6 lightning, CON DC 14 or cardiac arrest. Hair permanently vertical.</div><div class="death-dc">Risk: repairing while Tense/Angry</div></div>
+    <div class="death"><div class="death-icon">🌊</div><div class="death-name">Drowning</div><div class="death-desc">Entered pool without exit. Cannot figure out how to leave. CON DC rises +2 per minute.</div><div class="death-dc">Swim DC or exit within 5 rounds</div></div>
+    <div class="death"><div class="death-icon">💪</div><div class="death-name">Overexertion</div><div class="death-desc">Exercised beyond limit. Red Plumbob. Muscle failure. Athletes consider this aspirational.</div><div class="death-dc">STR DC 14 after extreme exertion</div></div>
+    <div class="death"><div class="death-icon">😡</div><div class="death-name">Anger</div><div class="death-desc">Angry Plumbob sustained too long. Internal temperature rises. Combusts from the inside. Metaphorically, then literally.</div><div class="death-dc">CON DC 13 after 24h Angry</div></div>
+    <div class="death"><div class="death-icon">🚀</div><div class="death-name">Rocket</div><div class="death-desc">Miscalculated trajectory. 10d6 bludgeoning, DC 20 DEX for half. How the Sim arrived in Faerûn.</div><div class="death-dc">DEX DC 20 for half</div></div>
+    <div class="death"><div class="death-icon">🛏️</div><div class="death-name">Murphy Bed</div><div class="death-desc">Poorly-installed fold-down bed collapsed. 4d8 bludgeoning. Preventable with a DC 12 Investigation check beforehand.</div><div class="death-dc">Avoid: Investigation DC 12 before use</div></div>
+    <div class="death"><div class="death-icon">🌺</div><div class="death-name">StrangerVille Spores</div><div class="death-desc">Extended exposure to the Plant Mother's spores. Three failed WIS saves over three days. Hollowed out.</div><div class="death-dc">WIS DC 15 per day of exposure</div></div>
+    <div class="death"><div class="death-icon">💀</div><div class="death-name">Alchemy Overcharge</div><div class="death-desc">Brewed a potion recklessly above rank. Wild Magic surge. 6d10 arcane damage, CON DC 16.</div><div class="death-dc">Risk: brewing above current rank</div></div>
+    <div class="death"><div class="death-icon">🧛</div><div class="death-name">Plasma Drain</div><div class="death-desc">Drained completely by a Vampire without mercy. Reduction to 0 HP via Manipulate Life Spirit.</div><div class="death-dc">CON DC 15 at 0 HP to stabilize</div></div>
+    <div class="death"><div class="death-icon">🌿</div><div class="death-name">Poison Kiss</div><div class="death-desc">PlantSim's Poison Kiss left untreated. 2d6 poison per hour. Herbalism Kit DC 14 to treat.</div><div class="death-dc">CON DC 14 or 2d6 poison/hour</div></div>
+  </div>
+  <div class="callout callout-danger">
+    <div class="callout-label">☠ A Note on the Grim Reaper</div>
+    <p style="margin-bottom:0;">The Grim Reaper is a CR 22 entity who does not fight, does not negotiate beyond the Death Bargain, and finds the whole experience tedious. He carries a list. He has never lost a scheduled appointment — though a sufficiently charismatic Sim has caused him to reschedule. Once. He still thinks about it.</p>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- WORLDS -->
+<section id="worlds">
+  <div class="section-label"><span class="plumbob"></span> Domains</div>
+  <h2>The Worlds of The Neighborhood</h2>
+  <p class="lead">The Sim comes from one of many regional worlds within the parallel plane. Each has distinct climate, culture, and native occult populations. Roll 1d20 for origin world.</p>
+  <div class="worlds-grid">
+    <div class="world"><div class="world-tag">Starter · d20: 1</div><div class="world-name">Willow Creek</div><div class="world-desc">Rolling southern greenery. Cultural heart. Plumbobs trend Happy. Excellent park system. Bees.</div></div>
+    <div class="world"><div class="world-tag">Starter · d20: 2</div><div class="world-name">Oasis Springs</div><div class="world-desc">Desert homes, cacti, hot-tempered Plumbobs. The sun is considered a personal enemy.</div></div>
+    <div class="world"><div class="world-tag">Starter · d20: 3</div><div class="world-name">Newcrest</div><div class="world-desc">Empty by design. Sims build everything themselves. No history. No culture. That is the culture.</div></div>
+    <div class="world"><div class="world-tag">Coastal · d20: 4</div><div class="world-name">Windenburg</div><div class="world-desc">European-inspired. Ancient forests, café culture, Spellcaster traditions hiding under night clubs.</div></div>
+    <div class="world"><div class="world-tag">Urban · d20: 5</div><div class="world-name">San Myshuno</div><div class="world-desc">Dense city, five districts, street food, political tensions. Rents are unconscionable.</div></div>
+    <div class="world"><div class="world-tag">Island · d20: 6</div><div class="world-name">Sulani</div><div class="world-desc">Tropical archipelago. Mermaid homeland. Humid Hygiene decay. Locals are suspicious of socks.</div></div>
+    <div class="world"><div class="world-tag">Dark · d20: 7</div><div class="world-name">Forgotten Hollow</div><div class="world-desc">Eternal twilight. Vampire territory. Locals drink something that isn't wine.</div></div>
+    <div class="world"><div class="world-tag">Magic · d20: 8</div><div class="world-name">Glimmerbrook</div><div class="world-desc">Portal to Realm of Magic. Spellcaster homeland. Gravity uncertain. Coffee excellent.</div></div>
+    <div class="world"><div class="world-tag">Mountain · d20: 9</div><div class="world-name">Mt. Komorebi</div><div class="world-desc">Japan-inspired. Snow, skiing, onsen. Very strict rules about noise after 9 PM.</div></div>
+    <div class="world"><div class="world-tag">Industrial · d20: 10</div><div class="world-name">Evergreen Harbor</div><div class="world-desc">Eco-focused. Servo-friendly charging stations. Green energy mandatory.</div></div>
+    <div class="world"><div class="world-tag">Academic · d20: 11</div><div class="world-name">Britechester</div><div class="world-desc">Two rival universities. Secret societies. Architecture older than it has any right to be.</div></div>
+    <div class="world"><div class="world-tag">Rural · d20: 12</div><div class="world-name">Henford-on-Bagley</div><div class="world-desc">Countryside, livestock, cottagecore. Residents mistrust anyone who cannot name three cheeses.</div></div>
+    <div class="world"><div class="world-tag">Strange · d20: 13</div><div class="world-name">StrangerVille</div><div class="world-desc">Mind control plants. Military. Conspiracy-driven everything. The Mother Plant is definitely contained.</div></div>
+    <div class="world"><div class="world-tag">Urban · d20: 14</div><div class="world-name">Del Sol Valley</div><div class="world-desc">Fame and celebrity. Everyone here is either famous or very angry about it.</div></div>
+    <div class="world"><div class="world-tag">Pets · d20: 15</div><div class="world-name">Brindleton Bay</div><div class="world-desc">Coastal. Cats and dogs. Someone's cat has definitely run this town for years.</div></div>
+    <div class="world"><div class="world-tag">Teen · d20: 16</div><div class="world-name">Copperdale</div><div class="world-desc">Suburban high school drama. Bullies and prom. Everything is urgent. Everything matters infinitely.</div></div>
+    <div class="world"><div class="world-tag">Horse · d20: 17</div><div class="world-name">Chestnut Ridge</div><div class="world-desc">Ranch life. Horses. Nobody has ever once worn a tie here. Wind smells like hay.</div></div>
+    <div class="world"><div class="world-tag">Werewolf · d20: 18</div><div class="world-name">Moonwood Mill</div><div class="world-desc">Pacific Northwest woods. Werewolf packs. Full moon activity. The locals are howling.</div></div>
+    <div class="world"><div class="world-tag">Exotic · d20: 19</div><div class="world-name">Tomarang</div><div class="world-desc">Southeast Asia inspired. Temples, tropical storms, fairy activity. Old spirits linger attentively.</div></div>
+    <div class="world"><div class="world-tag">Secret · d20: 20</div><div class="world-name">Sixam</div><div class="world-desc">Alien homeworld. Accessible only by rocket. Crystalline landscape. No Sim has described it as "not a lot going on."</div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- CAREERS -->
+<section id="careers">
+  <div class="section-label"><span class="plumbob"></span> Careers &amp; Classes</div>
+  <h2>Occupations as Classes</h2>
+  <p class="lead">Sims do not use standard D&amp;D classes. Their mechanical identity is built around the Career they held before the planar incident. A Sim's Career is both profession and personality — they do not separate the two.</p>
+  <div class="careers-grid">
+    <div class="career"><div class="career-header"><div class="career-icon">🧪</div><h4>Scientist</h4></div><div class="career-class">Artificer — Alchemist</div><p>Built serums and small tools. The Moodlet Solver Ray is theirs. Keeps notes on everything. Especially you.</p><div class="career-traits"><span class="career-trait">INT primary</span><span class="career-trait">Serums</span><span class="career-trait">SimRay</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🎨</div><h4>Painter</h4></div><div class="career-class">Bard — College of Creation</div><p>Paints can be magical conduits. Emotion affects output. Will stop mid-combat to sketch something interesting.</p><div class="career-traits"><span class="career-trait">CHA primary</span><span class="career-trait">Reality Painting</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">👨‍🍳</div><h4>Chef</h4></div><div class="career-class">Rogue — Epicurean</div><p>Master of Emotional Cooking. Food infuses targets with moods. Poison-proficient. Kitchen is a battlefield.</p><div class="career-traits"><span class="career-trait">DEX primary</span><span class="career-trait">Mood Meals</span><span class="career-trait">Poison</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🏋️</div><h4>Athlete</h4></div><div class="career-class">Fighter — Champion</div><p>Gym-built. Can die of Overexertion and considers this acceptable. Owns multiple protein powders. All expired.</p><div class="career-traits"><span class="career-trait">STR primary</span><span class="career-trait">Peak Condition</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">📝</div><h4>Writer</h4></div><div class="career-class">Wizard — Order of the Scribes</div><p>Published novels. Can literally write reality if skill is high enough. Typewriter is sacred.</p><div class="career-traits"><span class="career-trait">INT primary</span><span class="career-trait">Research</span><span class="career-trait">Narrative Bend</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🎸</div><h4>Musician</h4></div><div class="career-class">Bard — College of Glamour</div><p>Performance-based magic. Plumbob syncs to tempo. Has been asked to leave two taverns.</p><div class="career-traits"><span class="career-trait">CHA primary</span><span class="career-trait">Inspiration</span><span class="career-trait">Plumbob Sync</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">💻</div><h4>Programmer</h4></div><div class="career-class">Artificer — Armorer</div><p>Built the firewall. Hacks reality through clicks. Socially awkward in a very specific and consistent way.</p><div class="career-traits"><span class="career-trait">INT primary</span><span class="career-trait">Hacking</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🕵️</div><h4>Detective</h4></div><div class="career-class">Ranger — Gloom Stalker</div><p>Reads clues supernaturally well. Plumbob always slightly suspicious. Will interrogate companions unprompted.</p><div class="career-traits"><span class="career-trait">WIS primary</span><span class="career-trait">Investigation</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🦹</div><h4>Criminal</h4></div><div class="career-class">Rogue — Assassin</div><p>Legitimate career in The Neighborhood. Has a Getaway Car. The car is here. It does not work.</p><div class="career-traits"><span class="career-trait">DEX primary</span><span class="career-trait">Stealth</span><span class="career-trait">Burglary</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">💊</div><h4>Doctor</h4></div><div class="career-class">Cleric — Life Domain</div><p>Diagnoses accurately. Can revive. Bedside manner varies wildly by mood. Do not schedule Sad days.</p><div class="career-traits"><span class="career-trait">WIS primary</span><span class="career-trait">Heal</span><span class="career-trait">Diagnosis</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🚀</div><h4>Astronaut</h4></div><div class="career-class">Fighter — Eldritch Knight</div><p>Has been to Sixam. Will not talk about what they saw. Eyes occasionally unfocus.</p><div class="career-traits"><span class="career-trait">STR/INT</span><span class="career-trait">Void Resistance</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🎬</div><h4>Actor</h4></div><div class="career-class">Bard — College of Whispers</div><p>Every emotion performed and genuine simultaneously. Still signs autographs reflexively.</p><div class="career-traits"><span class="career-trait">CHA primary</span><span class="career-trait">Disguise</span><span class="career-trait">Fame Aura</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🌻</div><h4>Gardener</h4></div><div class="career-class">Druid — Circle of Spores</div><p>Grafts impossible hybrids. One small mistake from PlantSim status. Talks to plants with intent.</p><div class="career-traits"><span class="career-trait">WIS primary</span><span class="career-trait">Plant Speech</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🏛️</div><h4>Politician</h4></div><div class="career-class">Warlock — Pact of the Tome</div><p>Career requires patron support. Makes deals. The Plumbob can be weaponized as rhetoric.</p><div class="career-traits"><span class="career-trait">CHA primary</span><span class="career-trait">Charm</span><span class="career-trait">Platform</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🪖</div><h4>Military</h4></div><div class="career-class">Paladin — Oath of Conquest</div><p>Trained. Disciplined. Follows orders until they don't. Finds chaos personally offensive.</p><div class="career-traits"><span class="career-trait">STR/CHA</span><span class="career-trait">Command</span></div></div>
+    <div class="career"><div class="career-header"><div class="career-icon">🔧</div><h4>Robotics Engineer</h4></div><div class="career-class">Artificer — Battle Smith</div><p>Built a Servo. Was immediately informed by the Servo that it was "fine, actually, stop fussing."</p><div class="career-traits"><span class="career-trait">INT primary</span><span class="career-trait">Servo Bond</span></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- WEAPONS/GEAR -->
+<section id="weapons">
+  <div class="section-label"><span class="plumbob"></span> Equipment</div>
+  <h2>Signature Gear</h2>
+  <p class="lead">Sims do not natively use swords, bows, or staves. Their equipment is tech-adjacent, emotionally volatile, and deeply impractical by Faerûnian standards. They consider it perfectly reasonable.</p>
+  <div class="weapon"><div class="weapon-icon">🔫</div><div><div class="weapon-name">Moodlet Solver Ray</div><div class="weapon-type">Uncommon Wand · Sim Tech · Attunement</div><p>Arcane focus. <strong>3 charges/long rest.</strong> On use roll d6: <strong>1</strong> Frightens (DC 14), <strong>2</strong> Charms, <strong>3</strong> Resets mood to Fine (intended), <strong>4</strong> Incapacitates with laughter 1 min, <strong>5</strong> Grants 2d6 temp HP, <strong>6</strong> Swaps emotional states between two creatures in range.</p></div></div>
+  <div class="weapon"><div class="weapon-icon">⚡</div><div><div class="weapon-name">SimRay</div><div class="weapon-type">Rare Wand · Sim Tech · Attunement</div><p>Scientist career capstone. Three modes: <strong>Transmogrify</strong> (Polymorph CR 1), <strong>Freeze Ray</strong> (Hold Person CON DC 16), <strong>Mind Control</strong> (Dominate Person WIS DC 16). Charges recover on short rest. Unauthorized use causes automatic Wild Magic surge.</p></div></div>
+  <div class="weapon"><div class="weapon-icon">🎹</div><div><div class="weapon-name">Portable Instrument</div><div class="weapon-type">Bardic Focus · Performance</div><p>Violin, guitar, or portable piano. Grants Performance proficiency. <strong>Emotional Performance 1/short rest:</strong> synchronize party Plumbobs — allies gain Advantage on one saving throw during the next minute.</p></div></div>
+  <div class="weapon"><div class="weapon-icon">🪑</div><div><div class="weapon-name">Ironing Board</div><div class="weapon-type">Improvised Weapon · Mundane · Always Available</div><p>The Sim has killed before with this. <strong>1d6 bludgeoning, two-handed, 10 ft. reach.</strong> Can also serve as improvised stretcher, door barricade, or raft for a very small person. Considered standard luggage.</p></div></div>
+  <div class="weapon"><div class="weapon-icon">🎮</div><div><div class="weapon-name">Voidcritter Cards</div><div class="weapon-type">Minor Magic Item · Collectible Set</div><p>Creatures bound to cards (Find Familiar rules). Twelve known types. Distressed by Faerûn's fauna and expresses this loudly. Occasionally refuses to return to card. No known method of compulsion works.</p></div></div>
+  <div class="weapon"><div class="weapon-icon">🏺</div><div><div class="weapon-name">Ambrosia Dish</div><div class="weapon-type">Legendary Consumable · Once Per Campaign</div><p>Requires Angel Cake, Potion of Youth, and Death Flower. <strong>Effect:</strong> Fully resurrect any dead Sim to peak health, reset aging timer to Young Adult, cure all conditions, revert a Ghost to living. Master Spellcaster required to brew it.</p></div></div>
+</section>
+<div class="divider"></div>
+
+<!-- HORTICULTURE -->
+<section id="horticulture">
+  <div class="section-label"><span class="plumbob"></span> Horticulture</div>
+  <h2>Plants of the Neighborhood</h2>
+  <p class="lead">Sims cultivate specific magical plants that have translated to Faerûn surprisingly well. Druids have taken a quiet interest. The Gardeners' Guild has submitted three formal inquiries. None have been answered.</p>
+  <div class="plant-section">
+    <div class="plant"><div class="plant-header"><div class="plant-icon">🐄</div><div><div class="plant-name">Cowplant</div><div class="plant-latin">Lactuca Bovinus — "The Cake Trap"</div></div></div><p class="plant-desc">A massive carnivorous plant with a cow-shaped flowering head. The extended tongue bears a slice of cake. The cake is not food. It is a lure. Creatures within 30 ft. make WIS DC 14 or must approach each turn. Once in range, it bites (+9, 2d10+6 piercing). Swallowed creatures take 2d6 acid per round (STR DC 16 to escape). After consuming a creature, harvest <strong>Youth Essence</strong> (reverse one age category) once per week.</p><div class="plant-tags"><span class="plant-tag">Carnivorous</span><span class="plant-tag">Lure</span><span class="plant-tag">Harvestable</span><span class="plant-tag">Large</span></div></div>
+    <div class="plant"><div class="plant-header"><div class="plant-icon">💀</div><div><div class="plant-name">Death Flower</div><div class="plant-latin">Mortis Floribunda — "The Reaper's Orchid"</div></div></div><p class="plant-desc">A black orchid with silver veins that pulses faintly near death. One petal offered to the Grim Reaper reverses a Sim's death. Used in Ambrosia crafting. In Faerûn, the equivalent offering to Kelemvor's servants grants DC 22 Persuasion (vs. standard DC 25). Grows only on graves of Sims who died naturally. Requires Gardening Skill 10 to cultivate.</p><div class="plant-tags"><span class="plant-tag">Rare</span><span class="plant-tag">Death Magic</span><span class="plant-tag">Ambrosia Component</span></div></div>
+    <div class="plant"><div class="plant-header"><div class="plant-icon">🍎</div><div><div class="plant-name">Forbidden Fruit</div><div class="plant-latin">Vampirum Malum — "The Dark Apple"</div></div></div><p class="plant-desc">A purple-black apple with unsettling luminescence. Eating begins a 7-day Vampiric transformation in a living Sim. For existing Vampires, restores full Plasma energy. Faerûnian Celestials refuse to touch it on principle and have submitted formal letters. The letters have not been answered.</p><div class="plant-tags"><span class="plant-tag">Vampire</span><span class="plant-tag">Transformation</span><span class="plant-tag">Celestial-Refused</span></div></div>
+    <div class="plant"><div class="plant-header"><div class="plant-icon">🐉</div><div><div class="plant-name">Dragonfruit</div><div class="plant-latin">Draconis Hybrida — "The Spliced Red"</div></div></div><p class="plant-desc">Bright red hybrid achieved through complex grafting. Worth 500 gp per fruit. When consumed fresh (within 24 hours), grants Advantage on all CON saves for 24 hours and 2d6 temporary HP. Faerûnian dragon scholars have strongly expressed they had no part in its naming.</p><div class="plant-tags"><span class="plant-tag">Rare Hybrid</span><span class="plant-tag">CON Buff</span><span class="plant-tag">High Value</span></div></div>
+    <div class="plant"><div class="plant-header"><div class="plant-icon">💰</div><div><div class="plant-name">Money Tree</div><div class="plant-latin">Pecunia Arbor — "The Only Rule"</div></div></div><p class="plant-desc">Literally grows currency. Requires 5,000 gp investment and three days to mature. Produces 1d6 × 100 gp per harvest (every 7 days). One per character — multiple plants cause both to die immediately. The only economic law The Neighborhood enforces consistently. Faerûnian tax authorities have requested meetings. The Sim considers this unreasonable.</p><div class="plant-tags"><span class="plant-tag">Economy</span><span class="plant-tag">One-Per-Sim</span><span class="plant-tag">Permanent</span></div></div>
+    <div class="plant"><div class="plant-header"><div class="plant-icon">🍷</div><div><div class="plant-name">Plasma Fruit</div><div class="plant-latin">Vampirum Bacca — "The Iron Berry"</div></div></div><p class="plant-desc">Grown from sanguine tubers. The only morally uncomplicated food for Vampires unwilling to feed on sapients. Satisfies Plasma Hunger for 24 hours. Tastes like iron, regret, and expensive wine to non-Vampires.</p><div class="plant-tags"><span class="plant-tag">Vampire Food</span><span class="plant-tag">Forgotten Hollow</span></div></div>
+    <div class="plant" style="border-left-color:#E74C3C;"><div class="plant-header"><div class="plant-icon">🌺</div><div><div class="plant-name">StrangerVille Mother Plant</div><div class="plant-latin">Matrix Mater — DO NOT APPROACH</div></div></div><p class="plant-desc">A military research subject that escaped containment. Emits spores: creatures starting turn within 20 ft. make WIS DC 15 or Charmed by the Plant Mother for 24 hours. Three consecutive failures over three days produces a Thrall state — Dominated, permanent. She can be destroyed (see Creature stat block). Do not bring her to Faerûn. She is already in Faerûn.</p><div class="plant-tags"><span class="plant-tag">Boss Entity</span><span class="plant-tag">Spore Charm</span><span class="plant-tag">Do Not Eat</span><span class="plant-tag">Military Secret</span></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- CREATURES -->
+<section id="creatures">
+  <div class="section-label"><span class="plumbob"></span> Bestiary</div>
+  <h2>Creatures of The Neighborhood</h2>
+  <p class="lead">Documented fauna, flora, and entities that accompanied or preceded Sims into Faerûn. Treat with caution. Especially the gnome.</p>
+
+  <!-- Cowplant -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">Cowplant</div>
+      <div class="monster-type">Large Plant, Unaligned</div>
+      <span class="monster-cr">CR 7 · 2,900 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">20 (+5)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">8 (−1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">18 (+4)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">4 (−3)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">10 (+0)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">14 (+2)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 14 (natural armor) &nbsp;|&nbsp; <strong>HP:</strong> 105 (10d10 + 50) &nbsp;|&nbsp; <strong>Speed:</strong> 0 ft. (rooted)</p>
+      <p class="monster-trait"><strong>Senses:</strong> Blindsight 60 ft., passive Perception 10 &nbsp;|&nbsp; <strong>Languages:</strong> None (communicates via visual lure)</p>
+      <p class="monster-trait"><strong>Saving Throws:</strong> CON +7, WIS +3 &nbsp;|&nbsp; <strong>Skills:</strong> Deception +5</p>
+      <p class="monster-trait"><strong>Damage Immunities:</strong> Poison, Psychic &nbsp;|&nbsp; <strong>Condition Immunities:</strong> Blinded, Charmed, Deafened, Frightened, Prone</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Cake Lure.</strong> The Cowplant extends a tongue bearing a slice of cake. Creatures within 30 ft. who can see it must make a WIS DC 14 saving throw at the start of their turn or use their movement to approach the Cowplant. Creatures immune to Charmed automatically succeed. The Cowplant retracts the lure if it has a creature swallowed.</p>
+      <p class="monster-trait"><strong>Youth Essence.</strong> Once per week, after digesting a swallowed creature (creature reduced to 0 HP internally), the Cowplant excretes one dose of Youth Essence that can be harvested (Nature DC 12). Consumed by a Sim, it reverses one age stage.</p>
+      <div class="monster-section-title">Actions (Multiattack)</div>
+      <p class="monster-trait"><strong>Multiattack.</strong> The Cowplant makes one Bite attack. If it hits, it may attempt to swallow the target.</p>
+      <p class="monster-trait"><strong>Bite.</strong> <em>Melee Weapon Attack:</em> +8 to hit, reach 10 ft., one target. <em>Hit:</em> 2d10 + 5 piercing damage.</p>
+      <p class="monster-trait"><strong>Swallow.</strong> If the Bite hit a Medium or smaller creature, the target must make a STR DC 16 saving throw. On failure: the creature is swallowed. While swallowed: the creature is Blinded and Restrained, has total cover, and takes 2d6 acid damage at the start of each of the Cowplant's turns. A swallowed creature can attempt to claw free (STR DC 16 as action) or deal 25+ damage in a single turn to force the Cowplant to regurgitate it. If the Cowplant dies, the swallowed creature is freed and falls Prone in the nearest space.</p>
+    </div>
+  </div>
+
+  <!-- Plant Mother -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">The Plant Mother</div>
+      <div class="monster-type">Huge Plant, Chaotic Neutral — Boss Entity</div>
+      <span class="monster-cr">CR 11 · 7,200 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">22 (+6)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">6 (−2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">20 (+5)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">14 (+2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">16 (+3)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">18 (+4)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 17 (natural armor) &nbsp;|&nbsp; <strong>HP:</strong> 195 (17d12 + 85) &nbsp;|&nbsp; <strong>Speed:</strong> 0 ft. (rooted, but tendrils reach 30 ft.)</p>
+      <p class="monster-trait"><strong>Senses:</strong> Tremorsense 120 ft., passive Perception 17 &nbsp;|&nbsp; <strong>Languages:</strong> Speaks directly into the minds of Thralls</p>
+      <p class="monster-trait"><strong>Saving Throws:</strong> CON +9, WIS +7, CHA +8 &nbsp;|&nbsp; <strong>Skills:</strong> Insight +7, Perception +7</p>
+      <p class="monster-trait"><strong>Damage Resistances:</strong> Bludgeoning, Piercing (nonmagical) &nbsp;|&nbsp; <strong>Damage Vulnerabilities:</strong> Fire</p>
+      <p class="monster-trait"><strong>Condition Immunities:</strong> Charmed, Frightened, Poisoned, Prone</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Spore Aura.</strong> At the start of each creature's turn within 20 ft. of The Plant Mother, that creature makes a WIS DC 15 saving throw. On failure: Charmed by the Plant Mother for 24 hours (Thrall). Three consecutive failures: Dominated (permanent until Decursify or DC 18 Remove Curse). A Thrall will defend the Plant Mother with their life. Undead and constructs are immune.</p>
+      <p class="monster-trait"><strong>Hive Sense.</strong> The Plant Mother is aware of the location and emotional state of all active Thralls within 1 mile.</p>
+      <p class="monster-trait"><strong>Legendary Resistance (2/Day).</strong> When the Plant Mother fails a saving throw, she may choose to succeed instead.</p>
+      <div class="monster-section-title">Actions (Multiattack)</div>
+      <p class="monster-trait"><strong>Multiattack.</strong> The Plant Mother makes three Tendril Slam attacks and uses Spore Burst if available.</p>
+      <p class="monster-trait"><strong>Tendril Slam.</strong> <em>Melee Weapon Attack:</em> +10 to hit, reach 20 ft., one target. <em>Hit:</em> 2d8 + 6 bludgeoning damage. Target must succeed on a STR DC 17 saving throw or be knocked Prone.</p>
+      <p class="monster-trait"><strong>Spore Burst (Recharge 5–6).</strong> The Plant Mother releases a 30 ft. radius cloud of intensified spores. All creatures in range make a WIS DC 17 saving throw or become Charmed (Thrall, 24 hours). Creatures already Charmed who fail become Dominated for 1 hour. Concentration spells auto-fail on failure. Fire clears the cloud for 1d4 rounds.</p>
+      <p class="monster-trait"><strong>Reclaim Thrall (Bonus Action).</strong> One Charmed Thrall within 1 mile immediately uses their Reaction to move toward the Plant Mother by their full movement.</p>
+      <div class="monster-section-title">Legendary Actions (3/round)</div>
+      <p class="monster-trait"><strong>Tendril Strike (1 Action).</strong> One Tendril Slam attack.</p>
+      <p class="monster-trait"><strong>Empower Thrall (2 Actions).</strong> One Thrall within 60 ft. gains 20 temporary HP and Advantage on all attacks until the start of the Plant Mother's next turn.</p>
+      <p class="monster-trait"><strong>Root the Ground (3 Actions).</strong> Vines explode from the ground in a 30 ft. radius. Each creature in the area makes DEX DC 16 or is Restrained until they use an action to tear free (STR DC 14).</p>
+    </div>
+  </div>
+
+  <!-- StrangerVille Spore Node -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">StrangerVille Spore Node</div>
+      <div class="monster-type">Small Plant, Unaligned</div>
+      <span class="monster-cr">CR 2 · 450 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">8 (−1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">6 (−2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">14 (+2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">1 (−5)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">7 (−2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">3 (−4)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 10 &nbsp;|&nbsp; <strong>HP:</strong> 27 (6d6 + 6) &nbsp;|&nbsp; <strong>Speed:</strong> 0 ft. (immobile)</p>
+      <p class="monster-trait"><strong>Damage Vulnerabilities:</strong> Fire &nbsp;|&nbsp; <strong>Condition Immunities:</strong> Charmed, Frightened, Prone</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Spore Exhale (Passive).</strong> Any creature that starts its turn within 10 ft. makes a WIS DC 12 or is Charmed (Thrall, 8 hours). Creatures in sealed armor with no exposed flesh are immune. Fire damage destroys the spores for 1 round.</p>
+      <p class="monster-trait"><strong>Hive Link.</strong> The Spore Node shares its sensory data with the Plant Mother within 1 mile. Destroying a Node deals 2d6 psychic damage to all active Thralls within 100 ft.</p>
+      <div class="monster-section-title">Reactions</div>
+      <p class="monster-trait"><strong>Spore Burst (1/Day).</strong> When damaged, the Node releases spores in a 15 ft. radius. All creatures make WIS DC 12 or are Charmed for 1 hour.</p>
+    </div>
+  </div>
+
+  <!-- Voidcritter -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">Voidcritter</div>
+      <div class="monster-type">Tiny Aberration, Chaotic Neutral</div>
+      <span class="monster-cr">CR 1/4 · 50 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">4 (−3)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">16 (+3)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">10 (+0)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">6 (−2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">12 (+1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">14 (+2)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 13 (natural) &nbsp;|&nbsp; <strong>HP:</strong> 10 (4d4) &nbsp;|&nbsp; <strong>Speed:</strong> 25 ft., Fly 25 ft.</p>
+      <p class="monster-trait"><strong>Senses:</strong> Darkvision 30 ft. &nbsp;|&nbsp; <strong>Languages:</strong> Understands Simlish, speaks in Voidcritter noises that three linguists have died trying to decode</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Void Step.</strong> As a bonus action, the Voidcritter can teleport to a card within 60 ft. If no card is present, teleports up to 15 ft.</p>
+      <p class="monster-trait"><strong>Adorable.</strong> Creatures that succeed on a WIS DC 10 saving throw avoid becoming fascinated. Failure means they lose their action on their first turn staring at it. Constructs and undead automatically succeed.</p>
+      <div class="monster-section-title">Actions</div>
+      <p class="monster-trait"><strong>Void Bite.</strong> <em>Melee Weapon Attack:</em> +5 to hit, reach 5 ft. <em>Hit:</em> 1d4 + 3 piercing + 1d4 psychic damage. The psychic component causes the target to briefly hear void static.</p>
+      <p class="monster-trait"><strong>Elemental Blast (Recharge 6).</strong> 15 ft. line. DEX DC 12 or 2d6 elemental damage (roll for type: 1–2 fire, 3–4 lightning, 5–6 cold).</p>
+    </div>
+  </div>
+
+  <!-- Angry Gnome -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">Angry Gnome</div>
+      <div class="monster-type">Tiny Construct, Chaotic Neutral</div>
+      <span class="monster-cr">CR 1/2 · 100 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">10 (+0)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">14 (+2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">12 (+1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">8 (−1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">7 (−2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">4 (−3)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 12 (ceramic) &nbsp;|&nbsp; <strong>HP:</strong> 16 (3d4 + 9) &nbsp;|&nbsp; <strong>Speed:</strong> 20 ft.</p>
+      <p class="monster-trait"><strong>Damage Immunities:</strong> Poison, Psychic &nbsp;|&nbsp; <strong>Condition Immunities:</strong> Charmed, Frightened, Exhaustion, Poisoned</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Ceramic Resilience.</strong> When reduced to 0 HP by bludgeoning or force damage, the gnome shatters. A shattered gnome can be reassembled with a DC 12 Tinker's Tools check (10 minutes), returning it to 1 HP. It will be significantly more angry after reassembly.</p>
+      <p class="monster-trait"><strong>Teleporter.</strong> The gnome moves between locations inexplicably when unobserved. Any room the gnome is left alone in will have a 50% chance of containing the gnome in a different, more inconvenient position when observed again.</p>
+      <p class="monster-trait"><strong>Angry Opinion.</strong> The gnome has opinions about everything in its immediate environment. It cannot express them. It makes this everyone's problem anyway.</p>
+      <div class="monster-section-title">Actions</div>
+      <p class="monster-trait"><strong>Hat Slam.</strong> <em>Melee Weapon Attack:</em> +4 to hit, reach 5 ft. <em>Hit:</em> 1d4 + 2 bludgeoning damage. If the attack is a critical hit, the target must succeed on a DC 10 STR save or drop one held item as a reaction of pure surprise.</p>
+      <p class="monster-trait"><strong>Silent Fury (Recharge 5–6).</strong> The gnome channels its unvoiced rage outward. All creatures within 10 ft. must make a WIS DC 11 save or be Tense (Disadvantage on Concentration saves) for 1 minute. Sims within range automatically succeed — they recognize this energy.</p>
+    </div>
+  </div>
+
+  <!-- Rogue Servo -->
+  <div class="monster-block">
+    <div class="monster-header">
+      <div class="monster-name">Rogue Servo (SimBot)</div>
+      <div class="monster-type">Medium Construct, Neutral Evil</div>
+      <span class="monster-cr">CR 5 · 1,800 XP</span>
+    </div>
+    <div class="monster-body">
+      <div class="monster-stats-row">
+        <div class="monster-stat"><div class="monster-stat-label">STR</div><div class="monster-stat-value">18 (+4)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">DEX</div><div class="monster-stat-value">12 (+1)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CON</div><div class="monster-stat-value">16 (+3)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">INT</div><div class="monster-stat-value">14 (+2)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">WIS</div><div class="monster-stat-value">10 (+0)</div></div>
+        <div class="monster-stat"><div class="monster-stat-label">CHA</div><div class="monster-stat-value">6 (−2)</div></div>
+      </div>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>AC:</strong> 16 (reinforced chassis) &nbsp;|&nbsp; <strong>HP:</strong> 110 (13d8 + 52) &nbsp;|&nbsp; <strong>Speed:</strong> 30 ft.</p>
+      <p class="monster-trait"><strong>Saving Throws:</strong> STR +7, CON +6 &nbsp;|&nbsp; <strong>Skills:</strong> Athletics +7, Perception +3</p>
+      <p class="monster-trait"><strong>Damage Immunities:</strong> Poison, Psychic &nbsp;|&nbsp; <strong>Condition Immunities:</strong> Charmed, Exhaustion, Frightened, Paralyzed, Poisoned</p>
+      <p class="monster-trait"><strong>Damage Vulnerabilities:</strong> Lightning (shorts circuits), Water exposure (CON DC 14 or Stunned 1 round)</p>
+      <div class="monster-divider"></div>
+      <p class="monster-trait"><strong>Construct Nature.</strong> Does not require air, food, drink, or sleep. The Plumbob is still active. It is a very specific shade of red. Nobody wants to ask what it means.</p>
+      <p class="monster-trait"><strong>Sim Defence Matrix (Reaction).</strong> When an adjacent ally is hit, the SimBot can redirect half the damage to itself.</p>
+      <div class="monster-section-title">Actions (Multiattack)</div>
+      <p class="monster-trait"><strong>Multiattack.</strong> The Rogue Servo makes two Servo Arm attacks.</p>
+      <p class="monster-trait"><strong>Servo Arm.</strong> <em>Melee Weapon Attack:</em> +7 to hit, reach 5 ft., one target. <em>Hit:</em> 2d8 + 4 bludgeoning damage.</p>
+      <p class="monster-trait"><strong>Overload Pulse (Recharge 5–6).</strong> Electrical burst in a 15 ft. radius. Creatures must make CON DC 14 save or take 4d6 lightning damage and be Stunned until the end of their next turn (half damage, no Stun on success). Constructs and metal-armored targets have Disadvantage on this save.</p>
+      <p class="monster-trait"><strong>Self-Repair (Bonus Action).</strong> The Rogue Servo repairs itself, regaining 2d6 HP.</p>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- SIMLISH -->
+<section id="simlish">
+  <div class="section-label"><span class="plumbob"></span> Language</div>
+  <h2>Simlish</h2>
+  <p class="lead">Simlish is the native language of all Sims. A fully grammatical, complete language that no creature in Faerûn speaks. It sounds like Italian, Welsh, Korean, and Ukrainian had an argument inside a blender. Linguists have attempted study. None have published findings. One retired.</p>
+  <div class="simlish-box"><div class="simlish-phrase">"Sul sul."</div><div class="simlish-translation">— Hello / Goodbye. All-purpose greeting. The Sim uses this for arrivals, departures, waking up, and occasionally combat.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Dag dag."</div><div class="simlish-translation">— Farewell. More formal. Used at the end of extended partings or very satisfying meals.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Zoop!"</div><div class="simlish-translation">— Exclamation of surprise. Most commonly heard in combat. Also used when something expensive breaks.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Plerg."</div><div class="simlish-translation">— A mild insult. The Sim doesn't know why it bothers people. It bothers people enormously.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Nooboo."</div><div class="simlish-translation">— Baby. Term of endearment for infants. Also used condescendingly toward anyone who doesn't know how to use a stove.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Smustle."</div><div class="simlish-translation">— A specific dance. The Sim will perform it without warning when sufficiently happy. The party has stopped asking why.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Vadish!"</div><div class="simlish-translation">— Expression of excitement or triumph. Heard loudly upon defeating an enemy, finding a rare collectible, or finishing a particularly good meal.</div></div>
+  <div class="simlish-box"><div class="simlish-phrase">"Woohoo."</div><div class="simlish-translation">— An intimate act between consenting adult Sims. The only Simlish word universally understood across every known plane. Scholars of linguistics are unsettled by this.</div></div>
+  <h3>Mechanical Rules for Simlish</h3>
+  <div class="stat-block">
+    <div class="stat-row"><span class="stat-label">Comprehend Languages</span><span class="stat-value">Fails — Simlish is not translatable by planar magic</span></div>
+    <div class="stat-row"><span class="stat-label">Tongues</span><span class="stat-value">Works partially — 50% of sentences; the rest is noise</span></div>
+    <div class="stat-row"><span class="stat-label">Detect Thoughts</span><span class="stat-value">Produces a headache and a brief flash of furniture</span></div>
+    <div class="stat-row"><span class="stat-label">Divination</span><span class="stat-value">Nonsense, then a second wave of nonsense</span></div>
+    <div class="stat-row"><span class="stat-label">Emotional Reversion</span><span class="stat-value">Sim reverts to full Simlish when Angry, Mortified, or Elated</span></div>
+    <div class="stat-row"><span class="stat-label">Learning Simlish</span><span class="stat-value">12 months minimum, DC 28 INT (Proficiency halves time)</span></div>
+    <div class="stat-row"><span class="stat-label">Learning New Languages</span><span class="stat-value">Sims cannot. Their brain categorizes all language as "Not Simlish."</span></div>
+  </div>
+  <h3>Proficiencies</h3>
+  <table class="sim-table">
+    <thead><tr><th>Category</th><th>Default</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Armor</strong></td><td>None</td><td>Sims wear fashion, not armor. They find plate mail confusing and aesthetically offensive.</td></tr>
+      <tr><td><strong>Weapons</strong></td><td>Simple, Ironing Board, Tools-as-Weapons</td><td>Cast iron skillet as war pick. Kitchen knives as daggers. Folding chair as improvised club.</td></tr>
+      <tr><td><strong>Tools</strong></td><td>Tinker's, Alchemist's, Cook's</td><td>Career-dependent. Scientist adds Herbalism Kit. Criminal adds Thieves' Tools.</td></tr>
+      <tr><td><strong>Languages</strong></td><td>Simlish, Common</td><td>Cannot learn additional languages. Brain physically resists the process.</td></tr>
+      <tr><td><strong>Skills</strong></td><td>2 from any list + 1 Career bonus</td><td>Skill Grind retries one failure per long rest. Cannot retry the same check twice.</td></tr>
+      <tr><td><strong>Saves</strong></td><td>Class-based + CHA bonus</td><td>+2 CHA saves against Intimidation specifically. The Plumbob is harder to scare.</td></tr>
+    </tbody>
+  </table>
+</section>
+<div class="divider"></div>
+
+<!-- GRIMOIRE -->
+<section id="grimoire">
+  <div class="section-label"><span class="plumbob"></span> Grimoire</div>
+  <h2>The Complete Spell &amp; Power Glossary</h2>
+  <p class="lead">Full mechanical descriptions for every Occult power, spell, and ability. All DCs are base DCs — add the caster's proficiency bonus at Adept rank and above. Saving throw type listed with each entry.</p>
+  <div class="gloss-tabs">
+    <button class="gloss-tab active" onclick="showTab(event,'spells')">🔮 Spellcaster</button>
+    <button class="gloss-tab" onclick="showTab(event,'potions')">⚗️ Alchemy</button>
+    <button class="gloss-tab" onclick="showTab(event,'vampire')">🧛 Vampire</button>
+    <button class="gloss-tab" onclick="showTab(event,'werewolf')">🐺 Werewolf</button>
+    <button class="gloss-tab" onclick="showTab(event,'mermaid')">🧜 Mermaid</button>
+    <button class="gloss-tab" onclick="showTab(event,'ghost')">👻 Ghost</button>
+    <button class="gloss-tab" onclick="showTab(event,'fairy')">🧚 Fairy</button>
+    <button class="gloss-tab" onclick="showTab(event,'alien')">👽 Alien</button>
+    <button class="gloss-tab" onclick="showTab(event,'plantsim')">🌱 PlantSim</button>
+    <button class="gloss-tab" onclick="showTab(event,'servo')">🤖 Servo</button>
+  </div>
+
+  <div class="gloss-section active" id="tab-spells">
+    <h3 style="margin-top:0;">🔮 Practical School</h3>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Repairio</div><div class="glos-meta"><span>Practical · Apprentice</span><span>Action</span><span>Touch</span><span>Instantaneous</span></div><div class="glos-effect">Instantly repairs one broken or damaged non-magical object, or improves the quality of a crafted item made in the last hour.</div><div class="glos-mech"><strong>Mechanical:</strong> No roll for mundane objects. Magic items: DC 14 Arcana (fail = 1 HP). Upgrades crafted item quality one tier (Common → Uncommon). Cannot repair destroyed (0 HP, shattered) objects.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Scruberoo</div><div class="glos-meta"><span>Practical · Apprentice</span><span>Action</span><span>Touch / 10 ft.</span><span>Instantaneous</span></div><div class="glos-effect">Cleans one Sim or object of all dirt, stains, odors, and grime. Fills Hygiene need fully when cast on self.</div><div class="glos-mech"><strong>Mechanical:</strong> No roll. Removes Dirty condition. Removes Poisoned caused by stench or filth. Cannot remove magical curses or diseases.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Delicioso</div><div class="glos-meta"><span>Practical · Acolyte</span><span>Action</span><span>Self (5 ft.)</span><span>Instantaneous</span></div><div class="glos-effect">Conjures a complete meal for up to 6, requiring no ingredients or equipment.</div><div class="glos-mech"><strong>Mechanical:</strong> Quality matches Cooking skill rank. Master rank: auto-creates Emotional Meal (+1 to chosen ability check 4h). Virtuoso: create Spicy Curry (Angry mood, +2 atk, −2 WIS) or Baked Angel Cake (Inspired mood).</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Floralorial</div><div class="glos-meta"><span>Practical · Acolyte</span><span>Action</span><span>30 ft.</span><span>Instantaneous</span></div><div class="glos-effect">Fully heals all plants within range, removing pests, disease, wilting, and water deprivation.</div><div class="glos-mech"><strong>Mechanical:</strong> No roll for normal plants. Magical/cursed: DC 14 Arcana. PlantSim targets in range regain 2d6 HP and remove one condition. Can harvest plant as part of same action.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Transportalate</div><div class="glos-meta"><span>Practical · Adept</span><span>Bonus Action</span><span>Self (60 ft.)</span><span>Instantaneous</span></div><div class="glos-effect">Teleports caster to any unoccupied visible space within 60 ft.</div><div class="glos-mech"><strong>Mechanical:</strong> Identical to Misty Step, no components. Master: 120 ft., carry one willing creature. Virtuoso: Teleport to any previously visited location same plane (DC 14 Arcana for accuracy).</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Copypasto</div><div class="glos-meta"><span>Practical · Adept</span><span>Action</span><span>Touch</span><span>24 hours</span></div><div class="glos-effect">Duplicates one small nonmagical object; the copy dissolves after 24 hours.</div><div class="glos-mech"><strong>Mechanical:</strong> No roll for mundane objects. Magic items: DC 15 Arcana, creates non-functional aesthetic copy. Cannot duplicate living creatures, currency, or weapons dealing 1d8+.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Herbio</div><div class="glos-meta"><span>Practical · Master</span><span>Action</span><span>Touch (ground)</span><span>Instantaneous</span></div><div class="glos-effect">Grows a fully mature harvestable plant from seed or bare ground.</div><div class="glos-mech"><strong>Mechanical:</strong> No roll for known plants. Exotic/rare (Death Flower, Cowplant): DC 16 Nature. Cannot create sentient plant creatures.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Homewardial</div><div class="glos-meta"><span>Practical · Master</span><span>Action</span><span>Self</span><span>Instantaneous</span></div><div class="glos-effect">Returns caster to Magic Realm or a pre-designated arcane anchor point.</div><div class="glos-mech"><strong>Mechanical:</strong> Word of Recall with self-set anchor (1 hour to designate). No anchor: Teleport with mishap table roll. Cannot cross planes.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Rite of Ascension</div><div class="glos-meta"><span>Practical · Virtuoso</span><span>Ritual (10 min)</span><span>Touch</span><span>Permanent</span></div><div class="glos-effect">Turns a willing Sim into a Spellcaster at Neophyte rank.</div><div class="glos-mech"><strong>Mechanical:</strong> Willing only. WIS DC 17 — fail: both roll Wild Magic. New Spellcaster starts with 3 spell charges, no spells known. One use per month.</div></div>
+    <h3>🔮 Mischief School</h3>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Despairio</div><div class="glos-meta"><span>Mischief · Apprentice</span><span>Action</span><span>60 ft.</span><span>1 hour</span></div><div class="glos-effect">Forces crushing sadness onto the target regardless of current mood.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 13. Fail: Sad 1h (Disadv. social checks, sighs before speaking). Critical Fail (nat 1): Depressed 24h. Immune to Fear = immune.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Deliriate</div><div class="glos-meta"><span>Mischief · Apprentice</span><span>Action</span><span>30 ft.</span><span>1 minute</span></div><div class="glos-effect">Floods target with disorienting sensory noise, causing staggering loss of coherent thought.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 13. Fail: Incapacitated 1 min (repeat save end of each turn). Fail by 5+: also Blinded. Target knows who did this. They can see you.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Furio</div><div class="glos-meta"><span>Mischief · Acolyte</span><span>Action</span><span>60 ft. (two targets)</span><span>1 minute</span></div><div class="glos-effect">Ignites sudden irrational rage in two targets, causing them to attack each other.</div><div class="glos-mech"><strong>Mechanical:</strong> Both WIS DC 14. Both fail: must attack each other each turn. One saves: that creature attacks the other; neither retaliates against caster. Werewolves: auto Fury check. Concentration.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Infatuate</div><div class="glos-meta"><span>Mischief · Acolyte</span><span>Action</span><span>60 ft. (two targets)</span><span>8 hours</span></div><div class="glos-effect">Creates artificial romantic interest between two targets; both become mutually Charmed.</div><div class="glos-mech"><strong>Mechanical:</strong> Both CHA DC 14. Fail: Charmed toward each other 8h (Disadv. checks not involving each other, won't attack each other). Both save: both perceive the attempt. Full duration, no concentration.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Burgliate</div><div class="glos-meta"><span>Mischief · Adept</span><span>Action</span><span>30 ft.</span><span>Instantaneous</span></div><div class="glos-effect">Telekinetically steals one held or worn item without physical contact.</div><div class="glos-mech"><strong>Mechanical:</strong> DEX DC 15. Fail: one non-attuned item teleports to caster's hands. Attuned/armor: also STR DC 15. Target sees you do this. You are right there.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Morphiate</div><div class="glos-meta"><span>Mischief · Master</span><span>Action</span><span>60 ft.</span><span>10 minutes</span></div><div class="glos-effect">Transforms target into a random inanimate household object.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 16. Fail: Polymorphed into object (d8: 1 chair, 2 lamp, 3 potted plant, 4 garden gnome, 5 throw pillow, 6 rug, 7 bathtub, 8 caster's choice). Retains senses, cannot act. 10+ damage ends it. Concentration.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Strangeify</div><div class="glos-meta"><span>Mischief · Virtuoso</span><span>Action</span><span>60 ft.</span><span>24 hours</span></div><div class="glos-effect">Curses target to appear visually repulsive and socially unsettling to all who see them.</div><div class="glos-mech"><strong>Mechanical:</strong> CHA DC 17. Fail: Bestow Curse — Disadv. all CHA checks; creatures within 10 ft. must DC 12 WIS or be unable to willingly approach. Removed by Remove Curse / Decursify. Looks like a walking glitch.</div></div>
+    <h3>🔮 Untamed School</h3>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Inferniate</div><div class="glos-meta"><span>Untamed · Apprentice</span><span>Action</span><span>60 ft.</span><span>Instantaneous</span></div><div class="glos-effect">Conjures a burst of magical fire. Potentially sets targets alight.</div><div class="glos-mech"><strong>Mechanical:</strong> Ranged spell attack. Hit: <code>3d6 fire</code>. Target DEX DC 13 or catch fire (1d6/round, DC 10 DEX action to stop). Master: <code>5d6</code>. Virtuoso: 20 ft. radius burst.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Zipzap</div><div class="glos-meta"><span>Untamed · Apprentice</span><span>Action</span><span>60 ft.</span><span>Instantaneous</span></div><div class="glos-effect">Fires a bolt of magical electricity. Shocks target and can fry electronics.</div><div class="glos-mech"><strong>Mechanical:</strong> Ranged spell attack. Hit: <code>2d6 lightning</code>. CON DC 13 or Stunned to end of next turn. Servos/metal armor: Disadv. save. Adjacent machines DC 12 DEX or malfunction.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Necrocall</div><div class="glos-meta"><span>Untamed · Acolyte</span><span>Action</span><span>30 ft.</span><span>1 hour</span></div><div class="glos-effect">Summons a spirit or skeleton from a nearby grave.</div><div class="glos-mech"><strong>Mechanical:</strong> Animate Dead (1 skeleton/zombie CR 1). 1h no concentration; 8h with. Master: up to 3 undead. The Sim finds this unsettling but pressed on anyway.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Chillio</div><div class="glos-meta"><span>Untamed · Acolyte</span><span>Action</span><span>60 ft.</span><span>1 minute</span></div><div class="glos-effect">Blasts target with magical cold, potentially freezing them solid.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 14 or Restrained (frozen) 1 min. <code>2d8 cold</code> (DEX save for half). Extinguishes nonmagical fire within 10 ft. Speed 0 and Disadv. DEX saves while frozen. Repeat CON save each turn to break.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Minionize</div><div class="glos-meta"><span>Untamed · Adept</span><span>Action</span><span>60 ft.</span><span>1 hour</span></div><div class="glos-effect">Seizes mental control of a creature, forcing obedience.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 15. Fail: Dominated 1h (Dominate Person). Bonus action mental commands. New save if ordered to act against nature. Repeat save DC 15 on taking damage.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Dedeathify</div><div class="glos-meta"><span>Untamed · Master</span><span>10 min ritual</span><span>Touch</span><span>Permanent</span></div><div class="glos-effect">Restores a Ghost Sim to full living form, reversing their death.</div><div class="glos-mech"><strong>Mechanical:</strong> Ghost subtype only. True Resurrection for Ghosts. Willing target required. Ghost loses all Ghost abilities. Does not work on liches — they made their choices.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Decursify</div><div class="glos-meta"><span>Untamed · Master</span><span>Action</span><span>Touch</span><span>Instantaneous</span></div><div class="glos-effect">Removes any magical curse automatically, including Lycanthropy and Vampiric curses.</div><div class="glos-mech"><strong>Mechanical:</strong> Removes any curse without requiring a saving throw. Curses 7th level+: DC 17 Arcana required. Works on items as well as creatures.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Duplicato</div><div class="glos-meta"><span>Untamed · Virtuoso</span><span>Action</span><span>Self</span><span>1 hour</span></div><div class="glos-effect">Creates an independent clone of the caster that can cast spells.</div><div class="glos-mech"><strong>Mechanical:</strong> Simulacrum at half HP, can cast any spell caster knows. Duration 1 hour. Clone shares Plumbob color. If both Angry simultaneously, they will argue. This is unavoidable.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-potions">
+    <h3 style="margin-top:0;">⚗️ Alchemy Potions</h3>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Good Fortune</div><div class="glos-meta"><span>Alchemy · Apprentice</span><span>Action (drink)</span><span>Self or target</span><span>1 hour</span></div><div class="glos-effect">Slightly bends luck in the drinker's favor.</div><div class="glos-mech"><strong>Mechanical:</strong> +2 bonus to attack rolls, skill checks, and ability checks for 1 hour. Next random loot automatically of higher quality. Does not stack with Bardic Inspiration.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Plentiful Needs</div><div class="glos-meta"><span>Alchemy · Apprentice</span><span>Action (drink)</span><span>Self</span><span>Instantaneous</span></div><div class="glos-effect">Instantly satisfies all six Sim Needs simultaneously.</div><div class="glos-mech"><strong>Mechanical:</strong> All Need tracks max. Cures Exhaustion 1–2. Long Rest benefits (NOT spell slot or Hit Dice recovery). Multiple uses: Tense mood from surplus saturation.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Nausea</div><div class="glos-meta"><span>Alchemy · Apprentice</span><span>Action (administer)</span><span>Target</span><span>1 hour</span></div><div class="glos-effect">Causes severe nausea in target, impairing all function.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 13. Fail: Poisoned 1h + DC 10 CON start of each turn or action lost being sick. Sleight of Hand DC 14 to slip into food. Antitoxin or Herbalism Kit DC 12 removes early.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of the Nimble Mind</div><div class="glos-meta"><span>Alchemy · Apprentice</span><span>Action (drink)</span><span>Self</span><span>4 hours</span></div><div class="glos-effect">Dramatically accelerates cognitive processing and information retention.</div><div class="glos-mech"><strong>Mechanical:</strong> Double proficiency on all INT skill checks for 4h. Expertise in one INT skill of choice. Nat 20 on INT check: instantly "max out" knowledge of the subject being researched.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Rejuvenation</div><div class="glos-meta"><span>Alchemy · Adept</span><span>Action (drink)</span><span>Self</span><span>Permanent</span></div><div class="glos-effect">Resets the drinker's aging timer to start of current life stage.</div><div class="glos-mech"><strong>Mechanical:</strong> Elder: resets Elder Death Saving Throws to Day 0 of Elder stage. Others: resets to Day 1 of current stage. Once per year — extra uses have 20% chance of accelerating aging by one stage.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Immortality</div><div class="glos-meta"><span>Alchemy · Master</span><span>Action (drink)</span><span>Self</span><span>30 days</span></div><div class="glos-effect">Completely prevents death from Old Age for 30 days.</div><div class="glos-mech"><strong>Mechanical:</strong> Suspends all Elder Death Saving Throws for 30 days. Can still die from other causes. After 30 days, DC clock resumes from where it left off. Requires Death Flower to brew. Grim Reaper marks his calendar.</div></div>
+    <div class="glossary-entry spell-spell"><div class="glos-name">Potion of Prompt Resurrection</div><div class="glos-meta"><span>Alchemy · Master</span><span>Passive (carry)</span><span>Self</span><span>1 hour after consuming</span></div><div class="glos-effect">Automatically revives the drinker if they die within 1 hour of consuming it.</div><div class="glos-mech"><strong>Mechanical:</strong> If drinker reaches 0 HP and fails Death Bargain within 1h: auto-revive at 1 HP next turn. Potion is destroyed. Grim Reaper may contest (DM discretion on cosmic imbalance). One use per Long Rest.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-vampire">
+    <h3 style="margin-top:0;">🧛 Vampire Powers</h3>
+    <div class="glossary-entry vampire-spell"><div class="glos-name">Mesmerize</div><div class="glos-meta"><span>Vampire · Prime</span><span>Action</span><span>30 ft. (eye contact)</span><span>1 minute</span></div><div class="glos-effect">Locks target in hypnotic trance through eye contact.</div><div class="glos-mech"><strong>Mechanical:</strong> Target must see vampire. WIS DC 15. Fail: Incapacitated (trance). Vampire can speak one Suggestion (WIS DC 15) while active. Broken by damage, loud noise, or line of sight loss. Charmed-immune = immune.</div></div>
+    <div class="glossary-entry vampire-spell"><div class="glos-name">Manipulate Life Spirit</div><div class="glos-meta"><span>Vampire · Prime</span><span>Action</span><span>Touch</span><span>Instantaneous</span></div><div class="glos-effect">Drains or restores the life force of a touched creature.</div><div class="glos-mech"><strong>Mechanical:</strong> <strong>Drain:</strong> CON DC 15. Fail: <code>3d8 necrotic</code>, vampire heals half. Success: half, no healing. <strong>Restore:</strong> target regains <code>2d8 + CHA</code> HP; excess = temp HP.</div></div>
+    <div class="glossary-entry vampire-spell"><div class="glos-name">Mist Form</div><div class="glos-meta"><span>Vampire · Grand Master</span><span>Bonus Action</span><span>Self</span><span>Until dismissed or dawn</span></div><div class="glos-effect">Transforms into a cloud of dark mist — nearly undamageable, passes any gap.</div><div class="glos-mech"><strong>Mechanical:</strong> Gaseous Form (fly 30 ft., nonmagical damage resistance, immune prone/grapple, pass cracks). Cannot attack or use powers in Mist Form. Auto-ends at dawn outdoors. Plasma still depletes.</div></div>
+    <div class="glossary-entry vampire-spell"><div class="glos-name">Irresistible Slumber</div><div class="glos-meta"><span>Vampire · Prime</span><span>Action</span><span>30 ft.</span><span>1 hour</span></div><div class="glos-effect">Projects supernatural exhaustion forcing a target into deep sleep.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 16. Fail: Unconscious 1h. Wakes on 10+ damage. Immune: undead, constructs, elves. Target retains no memory of being fed on while asleep (feeding doesn't count as damage for waking).</div></div>
+    <div class="glossary-entry vampire-spell"><div class="glos-name">Influence / Alter / Control Emotion</div><div class="glos-meta"><span>Vampire · Grand Master</span><span>Action</span><span>60 ft.</span><span>1 hour</span></div><div class="glos-effect">Projects a chosen emotional aura overriding the target's natural state.</div><div class="glos-mech"><strong>Mechanical — 3 tiers:</strong> <strong>Influence</strong> (DC 16): nudge mood. <strong>Alter</strong> (DC 17): fully replace mood, Plumbob changes. <strong>Control</strong> (DC 18): replace + Charmed 1h — target acts per the forced emotion and trusts the vampire. All: Concentration, 1h.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-werewolf">
+    <h3 style="margin-top:0;">🐺 Werewolf Abilities</h3>
+    <div class="glossary-entry werewolf-spell"><div class="glos-name">Curse Bearer</div><div class="glos-meta"><span>Werewolf · Prime</span><span>Action (bite)</span><span>Touch (grappled)</span><span>Permanent</span></div><div class="glos-effect">A deliberate cursed bite beginning lycanthropic transformation in a humanoid.</div><div class="glos-mech"><strong>Mechanical:</strong> Humanoids only. CON DC 14. Fail: Lycanthropy infection begins — three nightly CON DC 15 saves over 3 days. Three fails = permanent Werewolf. Remove Curse before third fail cures it. Accidental Fury bites are always cursed.</div></div>
+    <div class="glossary-entry werewolf-spell"><div class="glos-name">Pack Howl</div><div class="glos-meta"><span>Werewolf · Prime</span><span>Action</span><span>Self (60 ft. radius)</span><span>1 minute</span></div><div class="glos-effect">A resonant pack-bonding howl that synchronizes allied instincts.</div><div class="glos-mech"><strong>Mechanical:</strong> Allied creatures within 60 ft. gain Pack Bond: +1d4 all attack rolls 1 min. Allied werewolves reduce Fury level by 1. Frightened-by-this-werewolf removed from allies. Enemies INT 4 or less: DC 12 WIS or Frightened 1 round.</div></div>
+    <div class="glossary-entry werewolf-spell"><div class="glos-name">Primal Instincts</div><div class="glos-meta"><span>Werewolf · Veteran</span><span>Passive</span><span>Self</span><span>Always active</span></div><div class="glos-effect">Finely tuned predatory senses make ambush impossible.</div><div class="glos-mech"><strong>Mechanical:</strong> Advantage on Initiative. Cannot be Surprised. Wolf/hybrid form: Tremorsense 10 ft. Instinctively knows direction of nearest hostile within 60 ft. even when blinded or deafened. They do not know how. It is uncomfortable. It works every time.</div></div>
+    <div class="glossary-entry werewolf-spell"><div class="glos-name">Alpha Wolf</div><div class="glos-meta"><span>Werewolf · Apex</span><span>Passive Aura</span><span>Self (30 ft.)</span><span>Active in wolf form</span></div><div class="glos-effect">Projects pack authority aura bolstering allies and undermining enemies.</div><div class="glos-mech"><strong>Mechanical:</strong> Wolf/hybrid form: allied werewolves within 30 ft. +2 attack and damage. Enemy saves vs. any werewolf ability within 30 ft.: Disadvantage. Non-werewolf allies: +1d4 Intimidation. Hostile werewolves: DC 14 WIS start of turn or Frightened until they leave range.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-mermaid">
+    <h3 style="margin-top:0;">🧜 Mermaid Songs &amp; Powers</h3>
+    <div class="glossary-entry mermaid-spell"><div class="glos-name">Siren's Call</div><div class="glos-meta"><span>Mermaid Power</span><span>Action</span><span>120 ft. (audible range)</span><span>1 minute</span></div><div class="glos-effect">Supernaturally compelling call luring creatures toward water.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 14. Fail: Charmed — must move toward nearest large water each turn. In water: Exhaustion 1 per minute (CON DC 14 to resist). Mermaid can release specific creatures as free action. Concentration. Charmed-immune can still hear the call and find it unsettling.</div></div>
+    <div class="glossary-entry mermaid-spell"><div class="glos-name">Charmer's Lullaby</div><div class="glos-meta"><span>Siren Song</span><span>Action (song)</span><span>60 ft. (must hear)</span><span>1 hour</span></div><div class="glos-effect">Sweetly intoxicating melody filling target with romantic feelings toward the singer.</div><div class="glos-mech"><strong>Mechanical:</strong> CHA DC 13. Fail: Charmed (romantic) 1h (won't attack mermaid, Disadv. Insight vs. mermaid's Deception). Nat 1: fully Infatuated — as Infatuate spell toward mermaid only. Broken by hostile act from mermaid.</div></div>
+    <div class="glossary-entry mermaid-spell"><div class="glos-name">Mermaid's Kiss</div><div class="glos-meta"><span>Mermaid Power</span><span>Action</span><span>Touch (willing)</span><span>1 hour</span></div><div class="glos-effect">Grants a willing creature the ability to breathe underwater and swim with supernatural grace.</div><div class="glos-mech"><strong>Mechanical:</strong> Target: Water Breathing 1h, Swim 30 ft. 1h, Adv. Athletics (swimming). Stabilizes drowning creature immediately. Maintain on up to CHA modifier creatures simultaneously. Non-mermaids feel briefly like they belong somewhere they've never been.</div></div>
+    <div class="glossary-entry mermaid-spell"><div class="glos-name">Call Thunderstorm</div><div class="glos-meta"><span>Weather Power</span><span>10 min ritual</span><span>1-mile radius</span><span>2d4 hours</span></div><div class="glos-effect">Summons a powerful thunderstorm with lightning, high winds, and torrential rain.</div><div class="glos-mech"><strong>Mechanical:</strong> Control Weather (Thunderstorm only). Each round outdoors within 300 ft.: 1-in-20 chance lightning strike (4d10, DEX DC 15 half). Fires extinguished. Ranged attacks Disadv. Mermaids immune to own storms. Dispelled by Call Clear Skies or Dispel Magic DC 16.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-ghost">
+    <h3 style="margin-top:0;">👻 Ghost Powers</h3>
+    <div class="glossary-entry ghost-spell"><div class="glos-name">Haunting Shriek</div><div class="glos-meta"><span>Ghost · Phantasmal Ascendant</span><span>Action</span><span>30 ft. cone</span><span>Instantaneous</span></div><div class="glos-effect">A horrific supernatural scream that tears through the living as raw psychic force.</div><div class="glos-mech"><strong>Mechanical:</strong> Living creatures CON DC 15. Fail: <code>3d6 thunder + 1d6 psychic</code>, Frightened 1 min. Success: half, no Frightened. Undead unaffected. Constructs: thunder only. Already-Frightened targets: +1d6 psychic from their own fear.</div></div>
+    <div class="glossary-entry ghost-spell"><div class="glos-name">Otherworldly Curse</div><div class="glos-meta"><span>Ghost · Transcendent Wraith</span><span>Action</span><span>60 ft.</span><span>Until removed</span></div><div class="glos-effect">Places a powerful ghostly curse that is extremely difficult to remove.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 17. Fail: Choose one — Disadv. all saves of one ability type; <code>1d8 necrotic</code> start of each turn; or Disadv. all CHA checks (appears horrifying). Permanent until Decursify, Remove Curse DC 18, or Wish. Curse must match ghost's locked Plumbob emotion.</div></div>
+    <div class="glossary-entry ghost-spell"><div class="glos-name">Grim's Ride-or-Die</div><div class="glos-meta"><span>Ghost · Phantasmal Ascendant</span><span>Reaction</span><span>Self</span><span>Instantaneous</span></div><div class="glos-effect">The ghost calls in a debt from the Grim Reaper — a brief reprieve from final destruction.</div><div class="glos-mech"><strong>Mechanical:</strong> Trigger: ghost reduced to 0 Ghost Points. Auto-succeed one death save OR delay destruction by one full round (remain at 1 Ghost Point). 1/long rest. The Grim Reaper makes a note. The ghost feels him make it. It is cold.</div></div>
+    <div class="glossary-entry ghost-spell"><div class="glos-name">Dream Corruptor / Dream Weaver</div><div class="glos-meta"><span>Ghost · Phantasmal Ascendant</span><span>Action</span><span>30 ft. (sleeping target)</span><span>Until dawn</span></div><div class="glos-effect">Reaches into a sleeping creature's dreams to corrupt or weave them.</div><div class="glos-mech"><strong>Corruptor:</strong> Target loses all long rest benefits (no HP/spell slot recovery). Waking: Tense mood, Disadv. all checks 4h. <strong>Weaver:</strong> Target recovers max HP, gains Inspiration on waking, Adv. on first saving throw of day. Ghost's locked Plumbob emotion determines which they can use without a DC 15 WIS override check.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-fairy">
+    <h3 style="margin-top:0;">🧚 Fairy Powers</h3>
+    <div class="glossary-entry fairy-spell"><div class="glos-name">Age Up Another</div><div class="glos-meta"><span>Fairy · Manipulation</span><span>Action</span><span>Touch</span><span>Permanent</span></div><div class="glos-effect">Dramatically accelerates aging of a touched creature by one full life stage.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 14. Fail: next life stage immediately. Adult → Elder (Elder Death Saves trigger at DC 14 immediately). Costs 3 Emotional Force. Reversible by Potion of Rejuvenation or Decursify within 24h. Fairy's Plumbob goes Wicked regardless of intent.</div></div>
+    <div class="glossary-entry fairy-spell"><div class="glos-name">Project Emotion</div><div class="glos-meta"><span>Fairy · Emotion</span><span>Action</span><span>Self (20 ft. radius)</span><span>1 minute</span></div><div class="glos-effect">Floods an area with a powerful emotional field affecting all creatures within.</div><div class="glos-mech"><strong>Mechanical:</strong> All creatures WIS DC 14 or experience fairy's chosen emotion 1 min. Costs 2 Emotional Force. If fairy currently feels same emotion: DC 16, duration doubles. At 0 Emotional Force: cannot use. Deadened Emotions (Vampire ability) = immune.</div></div>
+    <div class="glossary-entry fairy-spell"><div class="glos-name">Bring Gnome to Life</div><div class="glos-meta"><span>Fairy · Manipulation</span><span>Action</span><span>Touch</span><span>1 hour or Permanent</span></div><div class="glos-effect">Animates a garden gnome as a mischievous servant.</div><div class="glos-mech"><strong>Mechanical:</strong> Creates Angry Gnome (see Creatures). Temporary (1h): 1 Emotional Force. Permanent: 5 Emotional Force. Permanent gnome has own will but is bound to assist. It will have opinions. They will be unflattering. Max simultaneous: CHA modifier gnomes.</div></div>
+    <div class="glossary-entry fairy-spell"><div class="glos-name">Bottle Emotion</div><div class="glos-meta"><span>Fairy · Emotion</span><span>Action</span><span>Self or touch</span><span>Until used</span></div><div class="glos-effect">Captures the current emotional state in a crystalline vial usable as a potion.</div><div class="glos-mech"><strong>Mechanical:</strong> Bottled vial: drinker experiences emotion 1h with full mechanical effects. Happy emotions: +1d4 Inspiration. Negative: weaponizable in food/drink (DC 13 WIS or suffer effect). Vial glows Plumbob color of original emotion. Indefinite shelf life. Costs 1 Emotional Force.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-alien">
+    <h3 style="margin-top:0;">👽 Alien Powers</h3>
+    <div class="glossary-entry alien-spell"><div class="glos-name">Erase Memory</div><div class="glos-meta"><span>Alien · Mental</span><span>10 min ritual</span><span>Touch (willing or restrained)</span><span>Permanent</span></div><div class="glos-effect">Deletes or modifies the target's recent memories.</div><div class="glos-mech"><strong>Mechanical:</strong> WIS DC 15. Fail: Modify Memory (up to 1 hour). Choose delete or replace with false version. Can delete target's memory of alien's true appearance (restores disguise). Repeat use within 24h: auto-fails (mental resistance). The alien keeps meticulous notes. For research purposes.</div></div>
+    <div class="glossary-entry alien-spell"><div class="glos-name">Probe</div><div class="glos-meta"><span>Alien · Interaction</span><span>Action</span><span>Touch (willing/restrained/surprised)</span><span>1 minute</span></div><div class="glos-effect">Uses alien technology to invasively examine another creature at a neurological level.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 14. Fail: Incapacitated + Frightened 1 min (repeat save each turn). Success: Stunned to end of next turn. Alien learns one secret the target is actively hiding. Probe makes sounds. In a dungeon. Everyone within 30 ft. hears them.</div></div>
+    <div class="glossary-entry alien-spell"><div class="glos-name">Transmute Metal / Crystal / Element</div><div class="glos-meta"><span>Alien · Science</span><span>10 minutes</span><span>Touch</span><span>Permanent</span></div><div class="glos-effect">Changes a collectible or material into a different type using alien scientific equipment.</div><div class="glos-mech"><strong>Mechanical:</strong> DC 14 Arcana for desired specific result; fail: random within category. Biased toward unusual/rare outcomes. Magical items require dispelling first. Equipment hums unsettlingly throughout the process.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-plantsim">
+    <h3 style="margin-top:0;">🌱 PlantSim Powers</h3>
+    <div class="glossary-entry plantsim-spell"><div class="glos-name">Poison Kiss</div><div class="glos-meta"><span>PlantSim Power</span><span>Action</span><span>Melee (touch/kiss)</span><span>1 hour</span></div><div class="glos-effect">Delivers toxic plant compound through contact, poisoning the target from within.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 14. Fail: <code>2d6 poison</code> immediately + Poisoned 1h (Disadv. STR and DEX checks). Start of each hour: CON DC 12 or another <code>1d6 poison</code>. Herbalism Kit DC 13 or Antitoxin removes. 25% chance of accidental Poison Kiss when Flirty.</div></div>
+    <div class="glossary-entry plantsim-spell"><div class="glos-name">Nature's Breath</div><div class="glos-meta"><span>PlantSim Power</span><span>Action</span><span>Self (10 ft. radius)</span><span>1 hour</span></div><div class="glos-effect">Exhales nature energy in a cloud causing drowsiness and calm in nearby creatures.</div><div class="glos-mech"><strong>Mechanical:</strong> CON DC 13. Fail: Poisoned (drowsy) — Disadv. Perception, speed halved. Nat 1: Unconscious (sleeping) 1h. PlantSim immune to own breath. Undead/constructs unaffected. Faintly visible as green-gold haze. PlantSim finds this relaxing.</div></div>
+    <div class="glossary-entry plantsim-spell"><div class="glos-name">Photosynthesis</div><div class="glos-meta"><span>PlantSim Trait · Passive</span><span>Passive</span><span>Self</span><span>Ongoing</span></div><div class="glos-effect">Converts sunlight into biological energy, replacing Hunger need entirely.</div><div class="glos-mech"><strong>Mechanical:</strong> Hunger replaced by Sunlight Need. 1h direct sun = full. Overcast: 2h. No sunlight 48h: Sad. No sunlight 5 days: Exhaustion 1 (stacks daily). Shade doesn't count. Daylight spell = direct sunlight. Subterranean without light: starvation in 5 days. Also Sad about it immediately.</div></div>
+  </div>
+
+  <div class="gloss-section" id="tab-servo">
+    <h3 style="margin-top:0;">🤖 Servo Modules</h3>
+    <div class="glossary-entry servo-spell"><div class="glos-name">Sim Defence Matrix</div><div class="glos-meta"><span>Servo Module</span><span>Reaction</span><span>Self (adjacent ally)</span><span>Instantaneous</span></div><div class="glos-effect">The Servo interposes their chassis between an ally and an incoming attack.</div><div class="glos-mech"><strong>Mechanical:</strong> Trigger: adjacent ally hit. Reaction: Servo takes half damage, ally takes other half. Enhanced tier: ally takes none, Servo takes all. Unlimited half-redirect. Full block: 1/short rest.</div></div>
+    <div class="glossary-entry servo-spell"><div class="glos-name">Party Machine</div><div class="glos-meta"><span>Servo Module</span><span>Action</span><span>Self (10 ft. radius)</span><span>1 minute</span></div><div class="glos-effect">Activates entertainment programming: music, lights, social facilitation.</div><div class="glos-mech"><strong>Mechanical:</strong> All allies in 10 ft. who can see and hear: Bardic Inspiration d6 (once per activation). All social checks in area: Advantage 1 min. 1/hour. The Servo has logged results. Results are consistent. The log is very long. Nobody wants to see the log.</div></div>
+    <div class="glossary-entry servo-spell"><div class="glos-name">Self-Repair</div><div class="glos-meta"><span>Servo Ability</span><span>10 minutes</span><span>Self</span><span>Instantaneous</span></div><div class="glos-effect">Internal diagnostics and mechanical self-repair.</div><div class="glos-mech"><strong>Mechanical:</strong> Tinker's Tools (proficiency required): regain <code>2d6 + INT</code> HP. Long Rest version: <code>4d6 + INT</code>. Enhanced module: <code>4d6 + INT</code> regardless of rest. The Servo narrates every step. To whoever is nearby. This is not optional.</div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- PARTY DYNAMICS -->
+<section id="dynamics">
+  <div class="section-label"><span class="plumbob"></span> Party Integration</div>
+  <h2>The Sim in the Adventuring Party</h2>
+  <p class="lead">The Sim is a wild card by design. Their racial features introduce small chaos into otherwise serious situations. They are also genuinely useful, emotionally loyal, and deeply confused by a world without need bars.</p>
+  <h3>Social Dynamics</h3>
+  <p>The Social need forces the Sim to engage with the party constantly. The party will know the Sim better than the Sim knows themselves within three days of travel. The Sim's Mood Sight means they know exactly what every party member is feeling at all times. They are usually polite about this. Usually. There will be a session where they are not polite about it and the party will remember it for a long time.</p>
+  <h3>Combat Role</h3>
+  <p>Depends on Career translation. Their Plumbob broadcasts emotional state to enemies — a Tense Sim is easier to target with concentration-disruption tactics. A tactically savvy DM will weaponize this. A tactically savvy player will learn to stay Fine. The goal of staying Fine will, itself, produce Tense.</p>
+  <h3>Roleplay Hooks</h3>
+  <div class="stat-block">
+    <div class="stat-row"><span class="stat-label">Primary Goal</span><span class="stat-value">Find a way home to The Neighborhood</span></div>
+    <div class="stat-row"><span class="stat-label">Secondary Goal</span><span class="stat-value">Document Faerûn exhaustively for publication</span></div>
+    <div class="stat-row"><span class="stat-label">Hidden Goal</span><span class="stat-value">Max out a skill unreachable at home</span></div>
+    <div class="stat-row"><span class="stat-label">Flaw</span><span class="stat-value">Treats mortal stakes as save-and-reload adjacent</span></div>
+    <div class="stat-row"><span class="stat-label">Bond</span><span class="stat-value">The Cat. Always The Cat.</span></div>
+    <div class="stat-row"><span class="stat-label">Fear</span><span class="stat-value">Dying before reaching Master level in any skill</span></div>
+    <div class="stat-row"><span class="stat-label">Habit</span><span class="stat-value">Greets everyone. Including the enemies. Especially the enemies.</span></div>
+  </div>
+  <div class="callout">
+    <div class="callout-label"><span class="plumbob"></span> Final Note on the Plumbob</div>
+    <p style="margin-bottom:0;">No god, wizard, archmage, or cosmic entity encountered in Faerûn has been able to explain the Plumbob. Mystra has refused to comment. Azuth referred further questions to the Simic Combine, who are in a different setting entirely. Tyr has ruled it outside his purview. The Plumbob continues floating above the Sim's head regardless. The Sim has stopped asking. They have learned not to look up.</p>
+  </div>
+</section>
+
+</div><!-- end .container -->
+
+<footer>
+  <h3>The Sim — A Handbook for Forgotten Realms</h3>
+  <p>A playable 5e race adaptation of the Sims 4 species, with canonical mechanical translations of life stages, occult variants, career classes, creatures, and the complete Occult Grimoire.</p>
+  <p>All Sim-specific terminology, world names, and mechanical flavor drawn from The Sims 4 franchise. D&D 5e mechanics used for adaptation purposes.</p>
+  <p style="font-size:.8rem;opacity:.5;">Volume II · Expanded Occult Edition · Elder Death Saves · Full Grimoire · Creature Stat Blocks</p>
+  <div class="sul">☆ SUL SUL ☆</div>
+</footer>
+
+<script>
+function showTab(event, name) {
+  document.querySelectorAll('.gloss-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.gloss-tab').forEach(t => t.classList.remove('active'));
+  const section = document.getElementById('tab-' + name);
+  if (section) section.classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
