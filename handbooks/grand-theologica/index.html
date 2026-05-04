@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Grand Theologica of Faerûn</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment-bg:#f4e4c1;--parchment-dark:#e8d5a3;--parchment-edge:#d4bc82;
+  --ink-black:#1a1207;--ink-brown:#3d2b1f;--ink-medium:#5c4033;
+  --gold-bright:#c9a84c;--gold-dark:#8b6914;--gold-light:#e8d48b;
+  --blood-red:#8b1a1a;--divine-blue:#1a3a5c;--shadow-purple:#2d1b4e;
+  --celestial-silver:#c0c0c0;--abyss-black:#0a0a0a;--astral-silver:#b8c6d4;
+  --ethereal-blue:#a3c4d4;--feywild-green:#2d6b3f;--shadowfell-grey:#2a2a2e;
+  --fire-orange:#c45a1a;--water-teal:#1a6b6b;
+  --elven-silver:#8fa8c8;--dwarven-bronze:#a0722a;--halfling-gold:#c4a035;--gnome-copper:#b87333;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--gold-dark) var(--parchment-dark)}
+body{background:#1a1207;font-family:'Crimson Text',Georgia,serif;color:var(--ink-brown);font-size:17px;line-height:1.75}
+
+/* === ORNAMENTS === */
+.ornament{text-align:center;font-family:'Cinzel Decorative',serif;color:var(--gold-dark);font-size:24px;letter-spacing:8px;margin:30px 0;position:relative}
+.ornament::before,.ornament::after{content:'';position:absolute;top:50%;width:30%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dark),transparent)}
+.ornament::before{left:0}.ornament::after{right:0}
+.ornament-small{text-align:center;color:var(--gold-dark);font-size:16px;letter-spacing:12px;margin:20px 0;opacity:0.6}
+
+.page-wrapper{max-width:960px;margin:0 auto;padding:20px}
+
+/* === COVER === */
+.cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at center,rgba(201,168,76,0.1) 0%,transparent 70%),linear-gradient(180deg,#1a1207 0%,#2a1f0f 30%,#1a1207 100%);padding:60px 40px;position:relative;border-bottom:3px double var(--gold-dark)}
+.cover::before{content:'';position:absolute;inset:20px;border:1px solid rgba(201,168,76,0.3);pointer-events:none}
+.cover::after{content:'';position:absolute;inset:25px;border:1px solid rgba(201,168,76,0.15);pointer-events:none}
+.cover-icon{font-size:80px;margin-bottom:30px;filter:drop-shadow(0 0 30px rgba(201,168,76,0.4));animation:pulse-glow 4s ease-in-out infinite}
+@keyframes pulse-glow{0%,100%{filter:drop-shadow(0 0 20px rgba(201,168,76,0.3))}50%{filter:drop-shadow(0 0 40px rgba(201,168,76,0.6))}}
+.cover h1{font-family:'Cinzel Decorative',serif;font-size:clamp(26px,5vw,50px);color:var(--gold-bright);letter-spacing:6px;text-transform:uppercase;text-shadow:0 0 40px rgba(201,168,76,0.3),0 2px 4px rgba(0,0,0,0.8);margin-bottom:10px;line-height:1.2}
+.cover h2{font-family:'Cinzel',serif;font-size:clamp(12px,2.2vw,18px);color:var(--gold-light);letter-spacing:8px;text-transform:uppercase;font-weight:400;margin-bottom:40px;opacity:0.8}
+.cover .subtitle{font-family:'Crimson Text',serif;font-style:italic;color:#b8a070;font-size:17px;max-width:650px;line-height:1.8}
+
+/* === CONTENT PAGES === */
+.content-page{background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(139,105,20,0.03) 28px,rgba(139,105,20,0.03) 29px),radial-gradient(ellipse at 20% 0%,rgba(201,168,76,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(201,168,76,0.04) 0%,transparent 50%),linear-gradient(180deg,var(--parchment-bg) 0%,var(--parchment-dark) 50%,var(--parchment-bg) 100%);padding:60px clamp(30px,6vw,80px);margin:10px 0;position:relative;border-left:3px double var(--parchment-edge);border-right:3px double var(--parchment-edge);box-shadow:inset 0 0 80px rgba(139,105,20,0.08),0 0 30px rgba(0,0,0,0.5)}
+.content-page::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,var(--gold-dark),transparent)}
+
+/* === HEADINGS === */
+h2.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3.5vw,34px);color:var(--ink-black);text-align:center;letter-spacing:4px;text-transform:uppercase;margin:50px 0 10px;padding-top:30px;border-top:2px solid var(--gold-dark);position:relative}
+h2.chapter-title::after{content:'';display:block;width:60px;height:2px;background:var(--gold-dark);margin:15px auto 0}
+h3.section-title{font-family:'Cinzel',serif;font-size:22px;color:var(--blood-red);letter-spacing:2px;margin:40px 0 15px;padding-bottom:8px;border-bottom:1px solid rgba(139,105,20,0.3)}
+h4.sub-title{font-family:'Cinzel',serif;font-size:17px;color:var(--gold-dark);letter-spacing:1px;margin:25px 0 10px}
+
+/* === DEITY CARDS === */
+.deity-card{background:linear-gradient(135deg,rgba(201,168,76,0.08) 0%,transparent 50%),rgba(244,228,193,0.5);border:1px solid var(--parchment-edge);border-left:4px solid var(--gold-dark);padding:25px 30px;margin:25px 0;position:relative}
+.deity-card::before{content:'';position:absolute;top:-1px;right:-1px;width:30px;height:30px;border-top:2px solid var(--gold-dark);border-right:2px solid var(--gold-dark)}
+.deity-card::after{content:'';position:absolute;bottom:-1px;left:-1px;width:30px;height:30px;border-bottom:2px solid var(--gold-dark);border-left:2px solid var(--gold-dark)}
+.deity-card.elven{border-left-color:var(--elven-silver)}.deity-card.dwarven{border-left-color:var(--dwarven-bronze)}.deity-card.halfling{border-left-color:var(--halfling-gold)}.deity-card.gnome{border-left-color:var(--gnome-copper)}.deity-card.mulhorandi{border-left-color:#c4a035}.deity-card.lost{border-left-color:var(--blood-red);opacity:0.92}
+.deity-name{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--ink-black);margin-bottom:2px}
+.deity-epithet{font-family:'Crimson Text',serif;font-style:italic;color:var(--ink-medium);font-size:16px;margin-bottom:12px}
+.deity-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px;margin:12px 0;font-size:15px}
+.deity-grid dt{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dark)}
+.deity-grid dd{margin-bottom:8px}
+.deity-lore{margin-top:12px;text-align:justify}
+
+/* === PLANE CARDS === */
+.plane-card{border:1px solid;padding:25px 30px;margin:25px 0}
+.plane-card.outer{border-color:var(--divine-blue);border-left-width:4px;background:rgba(26,58,92,0.04)}
+.plane-card.inner{border-color:var(--fire-orange);border-left-width:4px;background:rgba(196,90,26,0.04)}
+.plane-card.transitive{border-color:var(--astral-silver);border-left-width:4px;background:rgba(184,198,212,0.06)}
+.plane-card.aberrant{border-color:var(--shadow-purple);border-left-width:4px;background:rgba(45,27,78,0.06)}
+.plane-name{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--ink-black);margin-bottom:2px}
+.plane-type{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dark);margin-bottom:12px}
+
+/* === TABLES === */
+.info-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:15px}
+.info-table th{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dark);border-bottom:2px solid var(--gold-dark);padding:8px 12px;text-align:left}
+.info-table td{padding:8px 12px;border-bottom:1px solid rgba(139,105,20,0.15);vertical-align:top}
+.info-table tr:hover td{background:rgba(201,168,76,0.06)}
+
+/* === QUOTES === */
+.lore-quote{border-left:3px solid var(--gold-dark);padding:15px 25px;margin:20px 0;font-style:italic;color:var(--ink-medium);background:rgba(201,168,76,0.05)}
+.lore-quote .attribution{display:block;text-align:right;font-family:'Cinzel',serif;font-size:13px;color:var(--gold-dark);margin-top:8px;font-style:normal}
+
+/* === BADGES === */
+.align-badge{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:2px 10px;border:1px solid;margin-right:6px}
+.align-badge.lg{border-color:var(--gold-dark);color:var(--gold-dark)}.align-badge.ng{border-color:#2d6b3f;color:#2d6b3f}.align-badge.cg{border-color:#1a6b6b;color:#1a6b6b}.align-badge.ln{border-color:#5c5c5c;color:#5c5c5c}.align-badge.tn{border-color:#8b6914;color:#8b6914}.align-badge.cn{border-color:#6b3a8a;color:#6b3a8a}.align-badge.le{border-color:#8b1a1a;color:#8b1a1a}.align-badge.ne{border-color:#4a1a4a;color:#4a1a4a}.align-badge.ce{border-color:#1a1a1a;color:#1a1a1a}
+.dead-marker{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blood-red);border:1px solid var(--blood-red);padding:1px 8px;margin-left:8px;vertical-align:middle;opacity:0.8}
+.pantheon-badge{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:2px 10px;border:1px solid;margin-left:8px;vertical-align:middle}
+.pantheon-badge.seldarine{border-color:var(--elven-silver);color:var(--elven-silver);background:rgba(143,168,200,0.1)}
+.pantheon-badge.morndinsamman{border-color:var(--dwarven-bronze);color:var(--dwarven-bronze);background:rgba(160,114,42,0.1)}
+
+/* === TIMELINE === */
+.timeline{position:relative;padding-left:40px;margin:30px 0}
+.timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold-dark),var(--blood-red),var(--gold-dark))}
+.timeline-event{position:relative;margin:20px 0;padding:15px 20px;background:rgba(244,228,193,0.5);border:1px solid rgba(139,105,20,0.2)}
+.timeline-event::before{content:'';position:absolute;left:-34px;top:20px;width:12px;height:12px;background:var(--gold-dark);border:2px solid var(--parchment-bg);border-radius:50%}
+.timeline-date{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--blood-red);letter-spacing:1px}
+.timeline-title{font-family:'Cinzel',serif;font-size:16px;color:var(--ink-black);margin:4px 0}
+
+/* === RELATIONSHIP CARDS === */
+.rel-card{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:15px 0;padding:15px;background:rgba(201,168,76,0.04);border:1px solid rgba(139,105,20,0.15)}
+.rel-entity{font-family:'Cinzel',serif;font-size:15px;text-align:center}
+.rel-type{font-family:'Crimson Text',serif;font-style:italic;font-size:14px;color:var(--blood-red);text-align:center;padding:4px 12px;border:1px solid rgba(139,26,26,0.3);background:rgba(139,26,26,0.05);white-space:nowrap}
+.rel-type.ally{color:var(--feywild-green);border-color:rgba(45,107,63,0.3);background:rgba(45,107,63,0.05)}
+.rel-type.romance{color:#8b3a6b;border-color:rgba(139,58,107,0.3);background:rgba(139,58,107,0.05)}
+.rel-type.servant{color:var(--divine-blue);border-color:rgba(26,58,92,0.3);background:rgba(26,58,92,0.05)}
+
+/* === ARTIFACT CARDS === */
+.artifact-card{background:linear-gradient(135deg,rgba(139,26,26,0.04) 0%,transparent 50%),rgba(244,228,193,0.6);border:1px solid rgba(139,105,20,0.3);padding:20px 25px;margin:20px 0;border-top:3px solid var(--blood-red)}
+.artifact-name{font-family:'Cinzel Decorative',serif;font-size:19px;color:var(--blood-red)}
+.artifact-type{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dark);margin-bottom:10px}
+
+/* === TEMPLE CARDS === */
+.temple-card{background:linear-gradient(135deg,rgba(26,58,92,0.06) 0%,transparent 50%),rgba(244,228,193,0.5);border:1px solid rgba(26,58,92,0.2);border-left:4px solid var(--divine-blue);padding:20px 25px;margin:20px 0}
+.temple-name{font-family:'Cinzel',serif;font-size:18px;color:var(--divine-blue)}
+.temple-location{font-family:'Crimson Text',serif;font-style:italic;color:var(--ink-medium);font-size:15px}
+
+/* === ORDER CARDS === */
+.order-card{background:linear-gradient(135deg,rgba(45,27,78,0.05) 0%,transparent 50%),rgba(244,228,193,0.5);border:1px solid rgba(45,27,78,0.2);border-left:4px solid var(--shadow-purple);padding:20px 25px;margin:20px 0}
+.order-name{font-family:'Cinzel',serif;font-size:18px;color:var(--shadow-purple)}
+
+/* === BLOOD WAR STATS === */
+.bw-stat{display:inline-block;text-align:center;padding:15px 20px;margin:8px;background:rgba(139,26,26,0.05);border:1px solid rgba(139,26,26,0.2);min-width:120px}
+.bw-stat .num{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--blood-red);display:block}
+.bw-stat .label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dark)}
+
+/* === FACTION CARDS === */
+.faction-card{display:grid;grid-template-columns:60px 1fr;gap:15px;align-items:start;padding:15px;margin:12px 0;background:rgba(201,168,76,0.04);border:1px solid rgba(139,105,20,0.15)}
+.faction-sigil{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--gold-dark)}
+.faction-name{font-family:'Cinzel',serif;font-size:16px;color:var(--ink-black)}
+.faction-belief{font-family:'Crimson Text',serif;font-style:italic;color:var(--ink-medium);font-size:14px}
+
+/* === CHOSEN CARDS === */
+.chosen-card{display:grid;grid-template-columns:auto 1fr;gap:15px;padding:18px;margin:15px 0;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);align-items:start}
+.chosen-icon{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,var(--gold-bright),var(--gold-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-family:'Cinzel Decorative',serif}
+.chosen-name{font-family:'Cinzel',serif;font-size:16px;color:var(--ink-black)}
+.chosen-title{font-family:'Crimson Text',serif;font-style:italic;font-size:14px;color:var(--gold-dark)}
+
+/* === DOMAIN GRID === */
+.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px;margin:20px 0}
+.domain-cell{padding:15px;border:1px solid rgba(139,105,20,0.2);background:rgba(244,228,193,0.3)}
+.domain-cell-name{font-family:'Cinzel',serif;font-size:15px;color:var(--blood-red);letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(139,105,20,0.2)}
+
+/* === TRAVEL === */
+.travel-method{padding:15px 20px;margin:12px 0;border:1px solid rgba(139,105,20,0.2);background:rgba(244,228,193,0.3);display:grid;grid-template-columns:120px 1fr;gap:15px}
+.travel-name{font-family:'Cinzel',serif;font-size:14px;color:var(--blood-red);border-right:1px solid rgba(139,105,20,0.2);padding-right:15px}
+
+/* === DIAGRAM === */
+.diagram-container{margin:30px auto;text-align:center;overflow-x:auto}
+.diagram-container svg{max-width:100%;height:auto}
+.diagram-caption{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-dark);letter-spacing:2px;text-align:center;margin-top:15px;text-transform:uppercase}
+
+/* === TOC === */
+.toc{columns:2;column-gap:40px;margin:30px 0}
+.toc-entry{display:flex;align-items:baseline;gap:8px;margin:6px 0;break-inside:avoid;cursor:pointer;transition:color 0.2s}
+.toc-entry:hover{color:var(--blood-red)}
+.toc-entry .toc-num{font-family:'Cinzel',serif;font-weight:700;color:var(--gold-dark);font-size:14px;min-width:40px}
+.toc-entry .toc-title{font-family:'Cinzel',serif;font-size:14px;letter-spacing:1px}
+.toc-entry .toc-dots{flex:1;border-bottom:1px dotted var(--parchment-edge);min-width:20px;margin-bottom:4px}
+
+/* === NAV === */
+.nav-sidebar{position:fixed;left:0;top:0;bottom:0;width:300px;background:linear-gradient(180deg,#1a1207,#2a1f0f);border-right:2px solid var(--gold-dark);overflow-y:auto;padding:20px 15px;z-index:1000;transform:translateX(-100%);transition:transform 0.3s ease;scrollbar-width:thin;scrollbar-color:var(--gold-dark) transparent}
+.nav-sidebar.open{transform:translateX(0)}
+.nav-sidebar a{display:block;color:var(--gold-light);text-decoration:none;font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:0.5px;padding:4px 10px;border-left:2px solid transparent;transition:all 0.2s}
+.nav-sidebar a:hover{color:#fff;border-left-color:var(--gold-bright);background:rgba(201,168,76,0.1)}
+.nav-sidebar a.sub{padding-left:22px;font-family:'Crimson Text',serif;font-size:12.5px;opacity:0.8}
+.nav-sidebar .nav-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold-bright);letter-spacing:2px;text-align:center;padding:10px 0 15px;border-bottom:1px solid rgba(201,168,76,0.3);margin-bottom:12px}
+.nav-sidebar .nav-divider{border:none;border-top:1px solid rgba(201,168,76,0.12);margin:6px 0}
+.nav-sidebar .nav-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(201,168,76,0.4);text-transform:uppercase;padding:8px 10px 2px;display:block}
+.nav-toggle{position:fixed;left:15px;top:15px;z-index:1001;width:44px;height:44px;background:rgba(26,18,7,0.9);border:1px solid var(--gold-dark);color:var(--gold-bright);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.nav-toggle:hover{background:rgba(201,168,76,0.2)}
+.back-top{position:fixed;right:20px;bottom:20px;width:44px;height:44px;background:rgba(26,18,7,0.9);border:1px solid var(--gold-dark);color:var(--gold-bright);font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:999}
+.back-top.visible{display:flex}
+.back-top:hover{background:rgba(201,168,76,0.2)}
+
+@media(max-width:768px){.deity-grid{grid-template-columns:1fr}.toc{columns:1}.content-page{padding:40px 20px}.rel-card{grid-template-columns:1fr;text-align:center}.domain-grid{grid-template-columns:1fr}.travel-method{grid-template-columns:1fr}.chosen-card,.faction-card{grid-template-columns:1fr}}
+@media print{.nav-sidebar,.nav-toggle,.back-top{display:none!important}.cover{min-height:auto;page-break-after:always}body{background:white}.content-page{box-shadow:none;border:none}}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.nav-sidebar').classList.toggle('open')">☰</button>
+
+<nav class="nav-sidebar" id="sidebar">
+  <div class="nav-title">Grand Theologica</div>
+  <a href="#cover" onclick="cs()">Cover</a>
+  <a href="#toc-page" onclick="cs()">Table of Contents</a>
+  <span class="nav-label">Part I — The Gods</span>
+  <a href="#ch1" onclick="cs()">I. Ao the Overgod</a>
+  <a href="#ch2" onclick="cs()">II. The Greater Gods</a>
+  <a href="#ch3" onclick="cs()">III. Intermediate Deities</a>
+  <a href="#ch4" onclick="cs()">IV. Lesser Gods & Demigods</a>
+  <a href="#ch5" onclick="cs()">V. The Seldarine</a>
+  <a href="#ch6" onclick="cs()">VI. The Morndinsamman</a>
+  <a href="#ch7" onclick="cs()">VII. Halfling & Gnome Gods</a>
+  <a href="#ch8" onclick="cs()">VIII. Mulhorandi Pantheon</a>
+  <a href="#ch9" onclick="cs()">IX. The Dead Gods</a>
+  <a href="#ch10" onclick="cs()">X. Lost & Forbidden Gods</a>
+  <hr class="nav-divider">
+  <span class="nav-label">Part II — History & Lore</span>
+  <a href="#ch11" onclick="cs()">XI. Divine Timeline</a>
+  <a href="#ch12" onclick="cs()">XII. Divine Relationships</a>
+  <a href="#ch13" onclick="cs()">XIII. The Chosen</a>
+  <a href="#ch14" onclick="cs()">XIV. Sacred Artifacts</a>
+  <a href="#ch15" onclick="cs()">XV. Famous Temples</a>
+  <a href="#ch16" onclick="cs()">XVI. Holy Orders</a>
+  <a href="#ch17" onclick="cs()">XVII. Worship & Practice</a>
+  <a href="#ch18" onclick="cs()">XVIII. Divine Ranks</a>
+  <hr class="nav-divider">
+  <span class="nav-label">Part III — The Planes</span>
+  <a href="#ch19" onclick="cs()">XIX. The Great Wheel</a>
+  <a href="#ch20" onclick="cs()">XX. The Outer Planes</a>
+  <a href="#ch21" onclick="cs()">XXI. The Inner Planes</a>
+  <a href="#ch22" onclick="cs()">XXII. Transitive Planes</a>
+  <a href="#ch23" onclick="cs()">XXIII. The Far Realm</a>
+  <a href="#ch24" onclick="cs()">XXIV. Afterlife & the Dead</a>
+  <a href="#ch25" onclick="cs()">XXV. The Blood War</a>
+  <a href="#ch26" onclick="cs()">XXVI. Sigil & the Lady</a>
+  <a href="#ch27" onclick="cs()">XXVII. Planar Travel</a>
+  <hr class="nav-divider">
+  <span class="nav-label">Appendices</span>
+  <a href="#appA" onclick="cs()">A. Cosmology Diagram</a>
+  <a href="#appB" onclick="cs()">B. Alignment Chart</a>
+  <a href="#appC" onclick="cs()">C. Pantheon Table</a>
+  <a href="#appD" onclick="cs()">D. Domains & Deities</a>
+  <a href="#appE" onclick="cs()">E. Planar Creatures</a>
+</nav>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0})">▲</button>
+
+<div class="page-wrapper">
+
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<!-- COVER -->
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<section class="cover" id="cover">
+  <div class="cover-icon">⚜</div>
+  <h1>The Grand Theologica</h1>
+  <h2>Gods, Planes & Sacred Lore of Faerûn</h2>
+  <p class="subtitle">A Complete Compendium of the Deities, Pantheons, Cosmology, Divine History, Sacred Artifacts, Holy Orders, Planar Ecology, and Theological Practice of the Forgotten Realms — From the Overgod Ao to the Writhing Madness Beyond the Stars</p>
+  <div style="margin-top:50px;color:#b8a070;font-family:'Cinzel',serif;font-size:13px;letter-spacing:3px">COMPILED FROM THE ARCHIVES OF CANDLEKEEP</div>
+  <div style="margin-top:12px;color:#8b6914;font-family:'Crimson Text',serif;font-size:14px;font-style:italic;opacity:0.6">Being a work of twenty-seven chapters and five appendices</div>
+</section>
+
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<!-- TABLE OF CONTENTS -->
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<div class="content-page" id="toc-page">
+  <h2 class="chapter-title">Table of Contents</h2>
+  <div class="ornament-small">✦ ✦ ✦</div>
+  <div style="text-align:center;font-family:'Cinzel',serif;color:var(--blood-red);letter-spacing:2px;font-size:14px;margin-bottom:15px">PART I — THE GODS</div>
+  <div class="toc">
+    <div class="toc-entry" onclick="go('ch1')"><span class="toc-num">I</span><span class="toc-title">Ao the Overgod</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch2')"><span class="toc-num">II</span><span class="toc-title">The Greater Gods</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch3')"><span class="toc-num">III</span><span class="toc-title">Intermediate Deities</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch4')"><span class="toc-num">IV</span><span class="toc-title">Lesser Gods & Demigods</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch5')"><span class="toc-num">V</span><span class="toc-title">The Seldarine</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch6')"><span class="toc-num">VI</span><span class="toc-title">The Morndinsamman</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch7')"><span class="toc-num">VII</span><span class="toc-title">Halfling & Gnomish Gods</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch8')"><span class="toc-num">VIII</span><span class="toc-title">The Mulhorandi Pantheon</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch9')"><span class="toc-num">IX</span><span class="toc-title">The Dead Gods</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch10')"><span class="toc-num">X</span><span class="toc-title">Lost & Forbidden Gods</span><span class="toc-dots"></span></div>
+  </div>
+  <div style="text-align:center;font-family:'Cinzel',serif;color:var(--blood-red);letter-spacing:2px;font-size:14px;margin:20px 0 15px">PART II — HISTORY & LORE</div>
+  <div class="toc">
+    <div class="toc-entry" onclick="go('ch11')"><span class="toc-num">XI</span><span class="toc-title">A Divine Timeline</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch12')"><span class="toc-num">XII</span><span class="toc-title">Divine Relationships</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch13')"><span class="toc-num">XIII</span><span class="toc-title">The Chosen of the Gods</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch14')"><span class="toc-num">XIV</span><span class="toc-title">Sacred Artifacts & Relics</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch15')"><span class="toc-num">XV</span><span class="toc-title">Famous Temples & Holy Sites</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch16')"><span class="toc-num">XVI</span><span class="toc-title">Knightly Orders & Organizations</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch17')"><span class="toc-num">XVII</span><span class="toc-title">Worship & Religious Practice</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch18')"><span class="toc-num">XVIII</span><span class="toc-title">Divine Ranks & Power</span><span class="toc-dots"></span></div>
+  </div>
+  <div style="text-align:center;font-family:'Cinzel',serif;color:var(--blood-red);letter-spacing:2px;font-size:14px;margin:20px 0 15px">PART III — THE PLANES</div>
+  <div class="toc">
+    <div class="toc-entry" onclick="go('ch19')"><span class="toc-num">XIX</span><span class="toc-title">The Great Wheel Cosmology</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch20')"><span class="toc-num">XX</span><span class="toc-title">The Outer Planes</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch21')"><span class="toc-num">XXI</span><span class="toc-title">The Inner Planes</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch22')"><span class="toc-num">XXII</span><span class="toc-title">The Transitive Planes</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch23')"><span class="toc-num">XXIII</span><span class="toc-title">The Far Realm</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch24')"><span class="toc-num">XXIV</span><span class="toc-title">Afterlife & the Faithless</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch25')"><span class="toc-num">XXV</span><span class="toc-title">The Blood War</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch26')"><span class="toc-num">XXVI</span><span class="toc-title">Sigil & the Lady of Pain</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('ch27')"><span class="toc-num">XXVII</span><span class="toc-title">Methods of Planar Travel</span><span class="toc-dots"></span></div>
+  </div>
+  <div style="text-align:center;font-family:'Cinzel',serif;color:var(--blood-red);letter-spacing:2px;font-size:14px;margin:20px 0 15px">APPENDICES</div>
+  <div class="toc">
+    <div class="toc-entry" onclick="go('appA')"><span class="toc-num">A</span><span class="toc-title">Great Wheel Cosmology Diagram</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('appB')"><span class="toc-num">B</span><span class="toc-title">Deity Alignment Chart</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('appC')"><span class="toc-num">C</span><span class="toc-title">Master Pantheon Table</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('appD')"><span class="toc-num">D</span><span class="toc-title">Domains & Deities (5e)</span><span class="toc-dots"></span></div>
+    <div class="toc-entry" onclick="go('appE')"><span class="toc-num">E</span><span class="toc-title">Creatures of the Planes</span><span class="toc-dots"></span></div>
+  </div>
+</div>
+
+</div><!-- page-wrapper for cover/toc -->
+
+<div class="page-wrapper" id="main-content">
+<!-- The actual content will be injected here by script to keep source manageable -->
+</div>
+
+<script>
+// Navigation helpers
+function cs(){document.querySelector('.nav-sidebar').classList.remove('open')}
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});cs()}
+window.addEventListener('scroll',()=>{const b=document.getElementById('backTop');if(window.scrollY>600)b.classList.add('visible');else b.classList.remove('visible')});
+document.addEventListener('click',(e)=>{const s=document.querySelector('.nav-sidebar'),t=document.querySelector('.nav-toggle');if(s.classList.contains('open')&&!s.contains(e.target)&&!t.contains(e.target))s.classList.remove('open')});
+</script>
+
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<!-- ALL CHAPTER CONTENT BELOW — UNIFIED -->
+<!-- ████████████████████████████████████████████████████████████████████████ -->
+<div class="page-wrapper">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PART I: THE GODS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- CH I: AO -->
+<div class="content-page" id="ch1">
+<h2 class="chapter-title">Chapter I — Ao the Overgod</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"I am above the gods, beyond the gods. I am that which holds the balance. I do not require worship, for I am not sustained by it. I simply am."<span class="attribution">— Attributed to Ao, during the Time of Troubles</span></div>
+<p>Above all gods, beyond all pantheons, and utterly indifferent to mortal worship sits Ao — the Overgod of Realmspace. Ao is not a deity in any traditional sense. He does not answer prayers. He grants no spells. He holds no divine portfolio. No temple has ever been raised in his name that has received an answer, and no cleric has ever channeled his power, because Ao exists on a level of reality so far above the gods that even they are merely his stewards, tasked with maintaining the Balance of the cosmos.</p>
+<h3 class="section-title">The Nature of Ao</h3>
+<p>Ao's nature is fundamentally unknowable. He exists outside the Great Wheel cosmology entirely — he is not bound to any plane, any alignment, or any concept. The gods of Toril exist because Ao permits them to exist. Each deity holds a portfolio — a sphere of influence over some aspect of reality — and they hold that portfolio at Ao's sufferance. If a god fails in their duties, hoards power beyond their station, or allows their portfolio to fall into neglect, Ao can and will strip them of their divinity.</p>
+<p>Ao answers to a being or force even higher than himself — a luminous presence he has been observed reporting to, though no god or mortal has ever identified this entity. Some Candlekeep scholars speculate this may be the DM — the narrative force of the multiverse itself — but such musings are considered heretical and absurd in equal measure.</p>
+<p>Ao's primary concern is the Balance: the cosmic equilibrium between all forces — good and evil, law and chaos, life and death. The gods are the mechanisms by which this Balance is maintained. When the Tablets of Fate were stolen — the divine artifacts upon which every god's portfolio and duty were inscribed — Ao cast every single deity out of the heavens and forced them to walk Toril as mortals. This event, the Time of Troubles of 1358 DR, demonstrated Ao's absolute authority: gods died as mortals during this period, slain by adventurers and by each other.</p>
+<h3 class="section-title">The Tablets of Fate</h3>
+<p>The Tablets of Fate are a pair of stone artifacts upon which are inscribed the names, portfolios, and duties of every god in Realmspace. They are not merely a record — they are the mechanism of divine assignment itself. When the tablets were stolen by Bane and Myrkul (who sought to leverage them for greater power), the entire divine order of Faerûn was thrown into chaos. Ao's response was immediate and merciless: he stripped every god of their divine power and cast them into mortal forms upon Toril, declaring that none would return to the heavens until the tablets were recovered and returned.</p>
+<p>The Tablets also serve as a covenant. They define the rules of engagement between deities — which portfolios belong to whom, the boundaries of divine influence, and the duties each god owes to the mortal world. When Ao rewrote the tablets after the Time of Troubles, he added a new edict: all gods must have worshippers, and their power would henceforth be directly tied to the faith of mortals. This fundamentally changed the divine economy of Faerûn, making worship not merely gratifying but existentially necessary.</p>
+<h3 class="section-title">Ao's Relationship with Mortals</h3>
+<p>Ao does not care about mortals. This is not cruelty — it is simply the nature of his station. Ao cares about the cosmic order, and mortals are part of that order, but he has no personal investment in their prayers, their struggles, or their fates. Mortals who attempt to worship Ao receive nothing. No divine magic flows from his name. A handful of cults have formed around Ao over the centuries, but they are universally powerless — their rituals hollow, their prayers unanswered, their faith unrewarded. This is by design. Ao's relationship is with the gods, not with their subjects.</p>
+</div>
+
+<!-- CH II: GREATER GODS -->
+<div class="content-page" id="ch2">
+<h2 class="chapter-title">Chapter II — The Greater Gods of Faerûn</h2>
+<div class="ornament">⚜</div>
+<p>The Greater Gods are the most powerful deities of the Faerûnian pantheon, holding the broadest and most critical portfolios. Their influence shapes the very fabric of reality.</p>
+
+<div class="deity-card" id="mystra"><div class="deity-name">Mystra <span class="align-badge ng">NG</span></div><div class="deity-epithet">The Lady of Mysteries, the Mother of All Magic, Our Lady of Spells</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Magic, spells, the Weave</dd><dt>Rank</dt><dd>Greater Deity</dd><dt>Symbol</dt><dd>Circle of seven stars, or a red mist flowing from a pointed star; blue-white star</dd><dt>Colors</dt><dd>Blue, white, and purple</dd><dt>Domain</dt><dd>Arcana, Knowledge</dd><dt>Home Plane</dt><dd>Dweomerheart (within Elysium)</dd><dt>Favored Weapon</dt><dd>Shuriken (seven whirling stars)</dd><dt>Worshippers</dt><dd>Wizards, sorcerers, sages, artificers, anyone who uses the Art</dd></dl><div class="deity-lore"><p>Mystra is arguably the most important deity in the Forgotten Realms, for she is the keeper of the Weave — the fundamental fabric of magic that permeates all of Toril and allows both arcane and divine spellcasting to function. Without Mystra, the Weave unravels. When the Weave unravels, magic becomes wild, unpredictable, and catastrophic. This has happened twice in recorded history, and both times the consequences were apocalyptic.</p><p>The office of Mystra has been held by three distinct beings. The first was Mystryl, a being who existed since the creation of the Weave itself, who died absorbing the damage caused by the Netherese arcanist Karsus when he cast Karsus's Avatar — the only 12th-level spell ever successfully cast. Mystryl sacrificed herself to preserve the Weave, and was immediately reincarnated as the first Mystra, who rewrote the rules of magic, imposing a hard limit on spell levels (capping at 9th level) to prevent another Karsus event.</p><p>This first Mystra was slain during the Time of Troubles in 1358 DR by Helm, who was guarding the entrance to the Celestial Stairway under Ao's orders. After her death, the mortal wizard Midnight — who had been carrying a portion of Mystra's power — ascended to take the name Mystra, becoming the current incarnation of the goddess.</p><p>Mystra's church is one of the most widespread in Faerûn. Her clergy — known as the Servants of Mystery — believe that magic is a gift meant to be used, preserved, and spread. They oppose the hoarding of magical knowledge, the wanton destruction of magical items and sites, and the misuse of the Art. The most devout of her followers are the Chosen of Mystra — mortals imbued with a fragment of her divine power, including the famous Seven Sisters.</p></div></div>
+
+<div class="deity-card" id="selune"><div class="deity-name">Selûne <span class="align-badge cg">CG</span></div><div class="deity-epithet">Our Lady of Silver, the Moonmaiden, She Who Guides</div><dl class="deity-grid"><dt>Portfolio</dt><dd>The moon, stars, navigation, wanderers, questers, lycanthropes (good)</dd><dt>Symbol</dt><dd>Pair of eyes surrounded by seven silver stars</dd><dt>Colors</dt><dd>Silver, white, deep blue</dd><dt>Domain</dt><dd>Life, Light, Knowledge</dd><dt>Home Plane</dt><dd>Gates of the Moon (within Ysgard)</dd><dt>Worshippers</dt><dd>Navigators, sailors, those who travel by night, good-aligned lycanthropes</dd></dl><div class="deity-lore"><p>Selûne is one of the oldest deities in the Faerûnian pantheon, born from the primordial essence of Realmspace alongside her twin sister, Shar, before any other gods existed. The two sisters together created Chauntea — the embodiment of Toril itself — from the cosmic ether. But where Selûne poured light and warmth into creation, Shar sought to smother it in eternal darkness. Their conflict — the Eternal War — is one of the oldest and most fundamental struggles in the cosmology of the Forgotten Realms.</p><p>Selûne embodies light in darkness, hope in despair, and guidance for the lost. Her priestesses (the Silverstars) perform moonlit ceremonies, bless ships before voyages, and tend to those afflicted by unwanted lycanthropy. Good-aligned lycanthropes revere her as a protector.</p></div></div>
+
+<div class="deity-card" id="shar"><div class="deity-name">Shar <span class="align-badge ne">NE</span></div><div class="deity-epithet">Mistress of the Night, the Nightsinger, Lady of Loss, the Dark Lady</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Darkness, caverns, dungeons, night, loss, forgetfulness, secrets, the Shadow Weave</dd><dt>Symbol</dt><dd>Black disk with a deep purple border</dd><dt>Colors</dt><dd>Black, dark purple, deep amethyst</dd><dt>Domain</dt><dd>Death, Trickery</dd><dt>Home Plane</dt><dd>The Palace of Loss (within the Shadowfell)</dd><dt>Worshippers</dt><dd>Those who grieve, nihilists, the despairing, rogues, assassins, the Sharrans</dd></dl><div class="deity-lore"><p>Shar is the twin sister of Selûne and one of the most ancient beings in existence. She was born from the primordial darkness that existed before light — she <em>is</em> that darkness. While Selûne embraces creation and illumination, Shar embraces entropy, loss, and the eventual return of all things to the void.</p><p>Shar created the Shadow Weave — an alternative to Mystra's Weave that draws on the gaps and absences in the magical fabric. The Shadow Weave is darker, more subtle, and inherently corrupting. Her worshippers — the Sharrans — operate in secret cells called Dark Covens, infiltrating religions, governments, and organizations. Her church preys on the grieving, the heartbroken, and the desperate, offering the seductive comfort of forgetting. Her relationship with Shadowheart and the Dark Justiciars in Baldur's Gate 3 offered many modern players their first encounter with Shar's theology.</p></div></div>
+
+<div class="deity-card" id="tempus"><div class="deity-name">Tempus <span class="align-badge cn">CN</span></div><div class="deity-epithet">The Lord of Battles, the Foehammer</div><dl class="deity-grid"><dt>Portfolio</dt><dd>War, battle, warriors</dd><dt>Symbol</dt><dd>A blazing silver sword on a blood-red shield</dd><dt>Colors</dt><dd>Red, silver, steel grey</dd><dt>Domain</dt><dd>War</dd><dt>Home Plane</dt><dd>Warrior's Rest (within Limbo)</dd><dt>Worshippers</dt><dd>Warriors, soldiers, mercenaries, fighters, barbarians, strategists</dd></dl><div class="deity-lore"><p>Tempus is the god of war — all war, not merely righteous war or honorable war, but the full, ugly, beautiful, terrifying spectrum of armed conflict. He does not judge the cause for which one fights. He is chaotic neutral — he favors neither good nor evil in warfare. Nearly every soldier in Faerûn whispers a prayer to Tempus before battle. His church has only a few absolute commandments: never refuse a battle, never slay the wounded who yield, and never destroy a temple of any war god.</p></div></div>
+
+<div class="deity-card" id="kelemvor"><div class="deity-name">Kelemvor <span class="align-badge ln">LN</span></div><div class="deity-epithet">Lord of the Dead, Judge of the Damned</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Death, the dead, dying</dd><dt>Symbol</dt><dd>An upright skeletal arm holding balanced scales</dd><dt>Colors</dt><dd>Silver, grey, translucent white</dd><dt>Domain</dt><dd>Death, Grave</dd><dt>Home Plane</dt><dd>The Crystal Spire, within the Fugue Plane</dd><dt>Worshippers</dt><dd>The grieving, morticians, gravediggers, paladins who hunt undead</dd></dl><div class="deity-lore"><p>Kelemvor Lyonsbane is the current god of the dead — a position he inherited after the Time of Troubles. He is unique among death gods in that he is fundamentally fair. He does not revel in death. He is a judge, not a tyrant. In life, Kelemvor was a human mercenary cursed by his own bloodline — the Lyonsbane curse forced him to transform into a beast whenever he performed a selfless act. His ascension to godhood was a liberation.</p><p>Kelemvor's church is dedicated to three principles: comforting the dying, ensuring proper burial rites, and the absolute destruction of undead. His clergy — the Doomguides — are among the most feared opponents of necromancers in all Faerûn.</p></div></div>
+
+<div class="deity-card" id="tyr"><div class="deity-name">Tyr <span class="align-badge lg">LG</span></div><div class="deity-epithet">The Even-Handed, the Maimed God, the Just God</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Justice, law, righteousness</dd><dt>Symbol</dt><dd>Balanced scales resting on a warhammer</dd><dt>Colors</dt><dd>Blue, white, steel</dd><dt>Domain</dt><dd>Order, War</dd><dt>Home Plane</dt><dd>The Court (within Mount Celestia)</dd><dt>Worshippers</dt><dd>Paladins, judges, magistrates, lawyers, knights, the wronged</dd></dl><div class="deity-lore"><p>Tyr is the blind god of justice, and his blindness is not a weakness but a symbol: justice does not see station, wealth, or power. Tyr lost his right hand to the jaws of Kezef the Chaos Hound. He was part of the Triad — the alliance of Tyr, Ilmater, and Torm. Tyr was slain during the Spellplague era by Orcus but was restored during the Second Sundering.</p></div></div>
+
+<div class="deity-card" id="chauntea"><div class="deity-name">Chauntea <span class="align-badge ng">NG</span></div><div class="deity-epithet">The Great Mother, the Grain Goddess, Earthmother</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Agriculture, plants, farmers, gardeners, summer, the earth</dd><dt>Symbol</dt><dd>A blooming rose on a sunlit background; a sheaf of golden grain</dd><dt>Colors</dt><dd>Green, gold, brown, earth tones</dd><dt>Domain</dt><dd>Life, Nature</dd><dt>Home Plane</dt><dd>The Great Mother's Garden (within Elysium)</dd><dt>Worshippers</dt><dd>Farmers, gardeners, druids, rural communities</dd></dl><div class="deity-lore"><p>Chauntea is one of the oldest gods — she is, in a sense, Toril itself given divine consciousness. She was created by Selûne and Shar together, before their great war began. She is the most widely worshipped deity among common folk, for while a peasant farmer may never encounter a wizard's spell, they interact with Chauntea's gift every day when they tend their fields.</p></div></div>
+
+<div class="deity-card" id="lathander"><div class="deity-name">Lathander <span class="align-badge ng">NG</span></div><div class="deity-epithet">The Morninglord, Commander of Creativity, Inspiration's Dawn</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Dawn, renewal, creativity, youth, vitality, self-perfection, spring</dd><dt>Symbol</dt><dd>A road traveling into a rosy sunrise</dd><dt>Colors</dt><dd>Rose, gold, pink, yellow</dd><dt>Domain</dt><dd>Life, Light</dd><dt>Home Plane</dt><dd>Morninghall (within Mount Celestia)</dd><dt>Worshippers</dt><dd>Nobles, artists, merchants, athletes, the young, adventurers</dd></dl><div class="deity-lore"><p>Lathander is the god of the dawn — and by extension, of all beginnings, all new starts, all creative acts. There is a deep theological controversy: many scholars believe he is actually Amaunator — an ancient Netherese sun god — reborn. His temples face east, and dawn services are the most important rituals of his faith. The church despises undead as perversions of the natural cycle.</p></div></div>
+
+<div class="deity-card" id="helm"><div class="deity-name">Helm <span class="align-badge ln">LN</span></div><div class="deity-epithet">The Watcher, the Vigilant One, He of the Unsleeping Eyes</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Guardians, protectors, protection, watchfulness</dd><dt>Symbol</dt><dd>A staring eye on an upright left gauntlet</dd><dt>Colors</dt><dd>Steel grey, silver, deep rust red</dd><dt>Domain</dt><dd>Life, Light</dd><dt>Home Plane</dt><dd>The Watchful Eye (within Mechanus)</dd><dt>Worshippers</dt><dd>Guards, bodyguards, sentinels, paladins, those who protect others</dd></dl><div class="deity-lore"><p>Helm is duty incarnate. During the Time of Troubles, Helm alone kept his divine power — because someone had to guard the Celestial Stairway. When Mystra attempted to return, Helm struck her down. He wept as he did it. He loved her. But his duty was absolute. This act defined his church for a generation. Helm was killed by Tyr in a misunderstanding but restored during the Second Sundering.</p></div></div>
+
+<div class="deity-card" id="oghma"><div class="deity-name">Oghma <span class="align-badge tn">N</span></div><div class="deity-epithet">The Lord of Knowledge, Binder of What Is Known</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Knowledge, invention, inspiration, bards</dd><dt>Symbol</dt><dd>A blank scroll</dd><dt>Colors</dt><dd>White, grey, gold</dd><dt>Domain</dt><dd>Knowledge</dd><dt>Home Plane</dt><dd>House of Knowledge (within the Outlands)</dd><dt>Worshippers</dt><dd>Bards, scholars, sages, scribes, inventors, explorers</dd></dl><div class="deity-lore"><p>Oghma is true neutral, holding that knowledge itself is neither good nor evil. Candlekeep, the greatest library in Faerûn, is aligned with his worship. His faith teaches that all knowledge is sacred: suppressing or destroying knowledge is among the greatest sins in his doctrine.</p></div></div>
+
+<div class="deity-card" id="silvanus"><div class="deity-name">Silvanus <span class="align-badge tn">N</span></div><div class="deity-epithet">Oak Father, the Forest Father</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Wild nature, druids, forests, natural balance</dd><dt>Symbol</dt><dd>Green living oak leaf</dd><dt>Colors</dt><dd>Green, brown, deep forest tones</dd><dt>Domain</dt><dd>Nature</dd><dt>Home Plane</dt><dd>Deep Wilds (within the Beastlands)</dd><dt>Worshippers</dt><dd>Druids, rangers, wood elves, rural folk</dd></dl><div class="deity-lore"><p>Silvanus is the supreme god of wild nature — not the tamed fields of Chauntea, but the untamed, primordial wilderness. His druids serve as wardens of the wild places. His church teaches the absolute sanctity of the natural balance: predators must hunt, prey must flee, forests must grow, fires must burn, and all things return to the earth.</p></div></div>
+
+<div class="deity-card" id="talos"><div class="deity-name">Talos <span class="align-badge ce">CE</span></div><div class="deity-epithet">The Destroyer, the Storm Lord</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Storms, destruction, rebellion, earthquakes</dd><dt>Symbol</dt><dd>Three lightning bolts radiating from a central point</dd><dt>Colors</dt><dd>Black, electric blue, storm grey</dd><dt>Domain</dt><dd>Tempest</dd><dt>Home Plane</dt><dd>Fury's Heart (within Pandemonium)</dd><dt>Worshippers</dt><dd>Those who fear storms, barbarians, sailors (out of fear), raiders</dd></dl><div class="deity-lore"><p>Talos is raw, uncontrolled natural devastation given divine form, and he delights in it. He is worshipped primarily out of fear: sailors pray to Talos not out of devotion but out of desperate hope. His clergy — the Stormlords — revel in destruction, viewing themselves as agents of the natural entropy that Talos represents.</p></div></div>
+
+<div class="deity-card" id="bane"><div class="deity-name">Bane <span class="align-badge le">LE</span></div><div class="deity-epithet">The Black Lord, the Lord of Darkness, the Black Hand</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Tyranny, hatred, fear, oppression</dd><dt>Symbol</dt><dd>An upright black hand, palm forward</dd><dt>Colors</dt><dd>Black, dark red, green</dd><dt>Domain</dt><dd>War, Order</dd><dt>Home Plane</dt><dd>The Black Bastion (within Gehenna/Acheron)</dd><dt>Worshippers</dt><dd>Tyrants, conquerors, evil fighters, dictators, slavers</dd></dl><div class="deity-lore"><p>Bane is the god of tyranny — the divine embodiment of the will to dominate. He was one of the Dead Three who stole divinity from Jergal. Destroyed during the Time of Troubles by Torm, Bane returned by consuming his son Iyachtu Xvim. His church — the Dark Hand — operates as a military organization, establishing tyrannical regimes and corrupting governments.</p></div></div>
+
+<div class="deity-card" id="cyric"><div class="deity-name">Cyric <span class="align-badge ce">CE</span></div><div class="deity-epithet">The Prince of Lies, the Dark Sun, the Mad God</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Murder, lies, intrigue, deception, illusion</dd><dt>Symbol</dt><dd>A white jawless skull on a dark purple sunburst</dd><dt>Colors</dt><dd>Black, dark purple, white</dd><dt>Domain</dt><dd>Trickery</dd><dt>Home Plane</dt><dd>The Supreme Throne (shifting)</dd><dt>Worshippers</dt><dd>Assassins, liars, thieves, the power-hungry, the insane</dd></dl><div class="deity-lore"><p>Cyric is madness wearing a crown. He was a mortal thief who slew three gods during the Time of Troubles and ascended. He authored the Cyrinishad — a tome so potent that reading it (including Cyric himself) causes absolute conviction that Cyric is the most important being in the multiverse. Cyric read his own book and went permanently insane. His church is fractious and backstabbing by design.</p></div></div>
+</div>
+
+<!-- CH III: INTERMEDIATE -->
+<div class="content-page" id="ch3">
+<h2 class="chapter-title">Chapter III — The Intermediate Deities</h2>
+<div class="ornament">⚜</div>
+
+<div class="deity-card"><div class="deity-name">Ilmater <span class="align-badge lg">LG</span></div><div class="deity-epithet">The Crying God, the Broken God</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Endurance, suffering, martyrdom, perseverance</dd><dt>Symbol</dt><dd>Bound hands, palms upward, with red cord</dd><dt>Home Plane</dt><dd>The Martyrdom (Bytopia)</dd><dt>Worshippers</dt><dd>The oppressed, monks, healers, those who suffer</dd></dl><div class="deity-lore"><p>Ilmater takes the suffering of others upon himself. His church runs hospitals, orphanages, and shelters. His monks practice endurance disciplines, believing that by suffering willingly, they reduce the suffering of the world. A member of the Triad alongside Tyr and Torm.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Torm <span class="align-badge lg">LG</span></div><div class="deity-epithet">The True, the Loyal Fury</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Duty, loyalty, obedience, paladins</dd><dt>Symbol</dt><dd>A white right gauntlet</dd><dt>Home Plane</dt><dd>Trueheart (Mount Celestia)</dd><dt>Worshippers</dt><dd>Paladins, knights, guardians, loyal soldiers</dd></dl><div class="deity-lore"><p>Torm was a mortal paladin who ascended through sheer devotion. He died during the Time of Troubles destroying Bane, and was resurrected by Ao for his sacrifice. His Order of the Golden Lion and Order of the Companions are legendary knightly orders.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Sune <span class="align-badge cg">CG</span></div><div class="deity-epithet">Lady Firehair, the Lady of Love</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Beauty, love, passion</dd><dt>Symbol</dt><dd>The face of a beautiful red-haired woman</dd><dt>Home Plane</dt><dd>Brightwater (Arborea)</dd><dt>Worshippers</dt><dd>Lovers, artists, half-elves, beauticians</dd></dl><div class="deity-lore"><p>Sune is the goddess of beauty and love in all their forms. Her Heartwarders serve as matchmakers, counselors, and artists. She despises ugliness of spirit more than ugliness of form, and her church teaches that cruelty and spite are the true disfigurements.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Mielikki <span class="align-badge ng">NG</span></div><div class="deity-epithet">Our Lady of the Forest, the Forest Queen</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Forests, forest creatures, rangers, dryads</dd><dt>Symbol</dt><dd>Gold-horned unicorn head before a crescent moon</dd><dt>Home Plane</dt><dd>Grove of the Unicorns (Elysium)</dd><dt>Worshippers</dt><dd>Rangers, druids, hunters, woodsmen, elves</dd></dl><div class="deity-lore"><p>Mielikki is Silvanus's most loyal subordinate and the direct patron of rangers across Faerûn. Her rangers patrol the borders between settled lands and wilderness, protecting both from each other.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Corellon Larethian <span class="align-badge cg">CG</span></div><div class="deity-epithet">Creator of the Elves, First of the Seldarine</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Elves, magic, music, arts, crafts, war, poetry</dd><dt>Symbol</dt><dd>Crescent moon</dd><dt>Home Plane</dt><dd>Arvandor (Arborea)</dd><dt>Worshippers</dt><dd>Elves, half-elves, bards, arcane spellcasters</dd></dl><div class="deity-lore"><p>Corellon's form is famously fluid. In the mythic past, Corellon's battle with Gruumsh cost the orc god his eye. Corellon's blood, spilled in that battle, is said to have given birth to the first elves.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Moradin <span class="align-badge lg">LG</span></div><div class="deity-epithet">The Soul Forger, Dwarffather</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Dwarves, creation, smithing, engineering, war</dd><dt>Symbol</dt><dd>A hammer and anvil</dd><dt>Home Plane</dt><dd>Erackinor, the Soul Forge (Mount Celestia)</dd><dt>Worshippers</dt><dd>Dwarves, smiths, engineers, miners</dd></dl><div class="deity-lore"><p>Moradin literally forged the first dwarves from iron and mithral on his cosmic anvil. His temples are always forges, and his clergy are always master craftsmen. Every perfectly forged blade is a prayer.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Lolth <span class="align-badge ce">CE</span></div><div class="deity-epithet">The Spider Queen, Queen of the Demonweb Pits</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Drow, spiders, evil, darkness, chaos</dd><dt>Symbol</dt><dd>Black spider with the head of a female drow</dd><dt>Home Plane</dt><dd>The Demonweb Pits (66th layer of the Abyss)</dd><dt>Worshippers</dt><dd>Drow (especially females), assassins, schemers</dd></dl><div class="deity-lore"><p>Once an elven goddess named Araushnee, she betrayed the Seldarine and was cast into the Abyss, where she remade herself as the Spider Queen. She rules the drow through absolute cruelty: the strong dominate the weak, treachery is encouraged as natural selection.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Gruumsh <span class="align-badge ce">CE</span></div><div class="deity-epithet">One-Eye, He Who Watches, the Ruiner</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Orcs, conquest, strength, survival</dd><dt>Symbol</dt><dd>An unblinking eye</dd><dt>Home Plane</dt><dd>Nishrek (Acheron)</dd><dt>Worshippers</dt><dd>Orcs, half-orcs, barbarians, raiders</dd></dl><div class="deity-lore"><p>Gruumsh teaches that the orcs were cheated by the other creator gods, who divided the world among their races and left the orcs with nothing. What was not given must be taken by force.</p></div></div>
+</div>
+
+<!-- CH IV: LESSER GODS -->
+<div class="content-page" id="ch4">
+<h2 class="chapter-title">Chapter IV — Lesser Gods & Demigods</h2>
+<div class="ornament">⚜</div>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Portfolio</th><th>Symbol</th><th>Worshippers</th></tr></thead><tbody>
+<tr><td>Eldath</td><td>NG</td><td>Peace, quiet places, springs, stillness</td><td>Waterfall into still pool</td><td>Pacifists, druids</td></tr>
+<tr><td>Talona</td><td>CE</td><td>Disease, poison, plague</td><td>Three teardrops in triangle</td><td>Assassins, plague-bringers</td></tr>
+<tr><td>Umberlee</td><td>CE</td><td>Oceans, waves, sea winds</td><td>Blue-green curling wave</td><td>Sailors (by fear)</td></tr>
+<tr><td>Malar</td><td>CE</td><td>Hunting, bloodlust, evil lycanthropes</td><td>Clawed paw</td><td>Evil hunters, werewolves</td></tr>
+<tr><td>Auril</td><td>NE</td><td>Cold, winter, frost</td><td>White snowflake on grey diamond</td><td>Northern barbarians</td></tr>
+<tr><td>Mask</td><td>NE</td><td>Shadows, thievery</td><td>Black velvet mask</td><td>Thieves, rogues, spies</td></tr>
+<tr><td>Loviatar</td><td>LE</td><td>Pain, agony, torment, torture</td><td>Nine-tailed barbed scourge</td><td>Torturers, sadists</td></tr>
+<tr><td>Bhaal</td><td>NE</td><td>Murder, assassination</td><td>Skull in ring of blooddrops</td><td>Assassins, Bhaalspawn</td></tr>
+<tr><td>Waukeen</td><td>N</td><td>Trade, money, wealth</td><td>Gold coin with profile</td><td>Merchants, traders</td></tr>
+<tr><td>Lliira</td><td>CG</td><td>Joy, happiness, dance, festivals</td><td>Three six-pointed stars</td><td>Dancers, entertainers</td></tr>
+<tr><td>Tymora</td><td>CG</td><td>Good fortune, skill, adventurers</td><td>Silver coin, face up</td><td>Adventurers, gamblers</td></tr>
+<tr><td>Beshaba</td><td>CE</td><td>Misfortune, bad luck</td><td>Black antlers on red field</td><td>The unlucky (by fear)</td></tr>
+<tr><td>Gond</td><td>N</td><td>Artifice, craft, construction</td><td>Toothed cog with four spokes</td><td>Artificers, tinkers, gnomes</td></tr>
+<tr><td>Deneir</td><td>NG</td><td>Glyphs, literature, scribes</td><td>Lit candle above open eye</td><td>Scribes, scholars, writers</td></tr>
+<tr><td>Milil</td><td>NG</td><td>Poetry, song, eloquence</td><td>Five-stringed silver harp</td><td>Bards, poets, musicians</td></tr>
+<tr><td>Savras</td><td>LN</td><td>Divination, fate, truth</td><td>Crystal ball with many eyes</td><td>Diviners, truth-seekers</td></tr>
+<tr><td>Valkur</td><td>CG</td><td>Sailors, ships, favorable winds</td><td>Cloud with three lightning bolts</td><td>Sailors, marines</td></tr>
+<tr><td>Jergal</td><td>LN</td><td>Fatalism, proper burial, tomb guardian</td><td>Jawless skull on scroll</td><td>Monks, gravekeepers</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH V: SELDARINE -->
+<div class="content-page" id="ch5">
+<h2 class="chapter-title">Chapter V — The Seldarine: The Elven Pantheon</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"We were the first song. Before dwarves hammered stone, before humans drew breath, there was Arvandor — and the Seldarine danced."<span class="attribution">— High Mage Alustriel Silverhand</span></div>
+
+<div class="deity-card elven"><div class="deity-name">Sehanine Moonbow <span class="align-badge cg">CG</span> <span class="pantheon-badge seldarine">Seldarine</span></div><div class="deity-epithet">The Luminous Cloud, Lady of Dreams, Daughter of the Night Skies</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Mysticism, dreams, death (elven), the moon, transcendence</dd><dt>Symbol</dt><dd>Misty crescent moon</dd><dt>Colors</dt><dd>Moonstone white, pale silver, misty blue</dd></dl><div class="deity-lore"><p>Sehanine is the elven goddess of moonlight, dreams, and the Transcendence — the elven journey to Arvandor after death. She is Corellon's consort in many traditions and the psychopomp of the elven people. Her connection to the moon aligns her with Selûne.</p></div></div>
+
+<div class="deity-card elven"><div class="deity-name">Hanali Celanil <span class="align-badge cg">CG</span></div><div class="deity-epithet">The Heart of Gold, the Winsome Rose</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Love, romance, beauty, fine art</dd><dt>Symbol</dt><dd>A golden heart</dd></dl><div class="deity-lore"><p>Hanali is the elven Sune — goddess of beauty and romance. Her temples are salons and galleries, her rites are dances and feasts. She is closely allied with Sune, and their churches often collaborate.</p></div></div>
+
+<table class="info-table"><thead><tr><th>Seldarine Deity</th><th>Align.</th><th>Portfolio</th><th>Symbol</th></tr></thead><tbody>
+<tr><td>Labelas Enoreth</td><td>CG</td><td>Time, longevity, history</td><td>Setting sun</td></tr>
+<tr><td>Rillifane Rallathil</td><td>CG</td><td>Woodlands, wild elves, druids</td><td>Oak tree</td></tr>
+<tr><td>Erevan Ilesere</td><td>CN</td><td>Mischief, change, rogues</td><td>Asymmetric starburst</td></tr>
+<tr><td>Aerdrie Faenya</td><td>CG</td><td>Air, weather, avians</td><td>Cloud with bird silhouette</td></tr>
+<tr><td>Deep Sashelas</td><td>CG</td><td>Oceans, sea elves, creation</td><td>Dolphin</td></tr>
+<tr><td>Solonor Thelandira</td><td>CG</td><td>Archery, hunting, survival</td><td>Silver arrow</td></tr>
+<tr><td>Fenmarel Mestarine</td><td>CN</td><td>Outcasts, isolation</td><td>Eyes in darkness</td></tr>
+<tr><td>Shevarash</td><td>CN</td><td>Hatred of drow, vengeance</td><td>Broken arrow over tear</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH VI: MORNDINSAMMAN -->
+<div class="content-page" id="ch6">
+<h2 class="chapter-title">Chapter VI — The Morndinsamman: The Dwarven Pantheon</h2>
+<div class="ornament">⚜</div>
+<div class="deity-card dwarven"><div class="deity-name">Berronar Truesilver <span class="align-badge lg">LG</span> <span class="pantheon-badge morndinsamman">Morndinsamman</span></div><div class="deity-epithet">The Revered Mother, Matron of Home and Hearth</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Safety, honesty, home, healing, marriage, oaths</dd><dt>Symbol</dt><dd>Two silver rings interlocked</dd></dl><div class="deity-lore"><p>Berronar is Moradin's wife and the mother-figure of the dwarven race. She shapes communities, families, and traditions. Breaking an oath sworn in Berronar's name is among the worst sins in dwarven culture.</p></div></div>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Portfolio</th><th>Symbol</th></tr></thead><tbody>
+<tr><td>Clangeddin Silverbeard</td><td>LG</td><td>Battle, valor, honor in battle</td><td>Crossed battleaxes</td></tr>
+<tr><td>Dumathoin</td><td>N</td><td>Mining, buried gems, guardian of the dead</td><td>Gem inside mountain</td></tr>
+<tr><td>Vergadain</td><td>N</td><td>Wealth, luck, trickery, negotiation</td><td>Gold coin</td></tr>
+<tr><td>Abbathor</td><td>NE</td><td>Greed, treasure hoarding</td><td>Jeweled dagger</td></tr>
+<tr><td>Sharindlar</td><td>CG</td><td>Healing, romantic love, fertility</td><td>Burning needle</td></tr>
+<tr><td>Marthammor Duin</td><td>NG</td><td>Wanderers, travelers</td><td>Mace before boot</td></tr>
+<tr><td>Dugmaren Brightmantle</td><td>CG</td><td>Scholarship, invention</td><td>Open book</td></tr>
+<tr><td>Deep Duerra</td><td>LE</td><td>Duergar, psionics, conquest</td><td>Shattered skull</td></tr>
+<tr><td>Laduguer</td><td>LE</td><td>Duergar, magic weapons</td><td>Broken arrow</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH VII: HALFLING & GNOME -->
+<div class="content-page" id="ch7">
+<h2 class="chapter-title">Chapter VII — Halfling & Gnomish Pantheons</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">Yondalla's Children</h3>
+<div class="deity-card halfling"><div class="deity-name">Yondalla <span class="align-badge lg">LG</span></div><div class="deity-epithet">The Protector, the Provider, the Nurturing Matriarch</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Protection, bounty, halflings, children, security, family</dd><dt>Symbol</dt><dd>Cornucopia on a shield</dd></dl><div class="deity-lore"><p>Yondalla is fierce in defense of her children — a quiet, smiling goddess who will destroy anything that threatens her people with the implacable determination of a mother defending her young. Her church centers around shared meals and community gatherings.</p></div></div>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Portfolio</th></tr></thead><tbody>
+<tr><td>Brandobaris</td><td>N</td><td>Stealth, thievery, adventuring</td></tr>
+<tr><td>Cyrrollalee</td><td>LG</td><td>Friendship, trust, home, hospitality</td></tr>
+<tr><td>Sheela Peryroyl</td><td>N</td><td>Nature, agriculture, weather, song</td></tr>
+<tr><td>Arvoreen</td><td>LG</td><td>Defense, war, vigilance</td></tr>
+<tr><td>Urogalan</td><td>LN</td><td>Earth, death, protection of the dead</td></tr>
+</tbody></table>
+<h3 class="section-title">The Lords of the Golden Hills</h3>
+<div class="deity-card gnome"><div class="deity-name">Garl Glittergold <span class="align-badge lg">LG</span></div><div class="deity-epithet">The Joker, the Watchful Protector, the Sparkling Wit</div><dl class="deity-grid"><dt>Portfolio</dt><dd>Gnomes, humor, trickery, gem cutting, protection</dd><dt>Symbol</dt><dd>Gold nugget</dd></dl><div class="deity-lore"><p>Garl's legendary pranks include collapsing Kurtulmak's cavern on top of him, beginning the eternal gnome-kobold feud. His church values inventiveness, practical jokes that harm no one, and the defense of gnomish communities.</p></div></div>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Portfolio</th></tr></thead><tbody>
+<tr><td>Baravar Cloakshadow</td><td>NG</td><td>Illusions, deception, traps</td></tr>
+<tr><td>Baervan Wildwanderer</td><td>NG</td><td>Forests, nature, travel</td></tr>
+<tr><td>Flandal Steelskin</td><td>NG</td><td>Mining, smithing, metalworking</td></tr>
+<tr><td>Urdlen</td><td>CE</td><td>Greed, bloodlust, evil</td></tr>
+<tr><td>Callarduran Smoothhands</td><td>N</td><td>Stone, svirfneblin, Underdark</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH VIII: MULHORANDI -->
+<div class="content-page" id="ch8">
+<h2 class="chapter-title">Chapter VIII — The Mulhorandi Pantheon</h2>
+<div class="ornament">⚜</div>
+<p>The Mulhorandi pantheon is unique: these are real-world Egyptian deities brought to Toril through an ancient portal. They walked among the Mulhorandi as physical rulers — divine pharaohs who governed directly for millennia.</p>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Portfolio</th><th>Symbol</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Horus-Re</td><td>LG</td><td>Sun, vengeance, rulership, kings</td><td>Solar disk flanked by ankhs</td><td>Supreme god of Mulhorand</td></tr>
+<tr><td>Isis</td><td>NG</td><td>Weather, rivers, agriculture, love, magic</td><td>Ankh and star</td><td>Most beloved; patron of women</td></tr>
+<tr><td>Osiris</td><td>LG</td><td>Vegetation, death, earth, harvest</td><td>White crown with feathers</td><td>Judge of the Mulhorandi dead</td></tr>
+<tr><td>Thoth</td><td>N</td><td>Magic, knowledge, scribes, invention</td><td>Ibis head</td><td>Aligned with Oghma</td></tr>
+<tr><td>Nephthys</td><td>CG</td><td>Wealth, trade, protection of children</td><td>Horns around lunar disk</td><td>Guardian of tombs</td></tr>
+<tr><td>Set</td><td>LE</td><td>Evil, desert, destruction, night</td><td>Coiled cobra</td><td>Chief antagonist</td></tr>
+<tr><td>Anhur</td><td>CG</td><td>War, thunder, rain</td><td>Falcon-headed figure</td><td>General of the Gods</td></tr>
+<tr><td>Sebek</td><td>NE</td><td>Crocodiles, rivers, ambush</td><td>Crocodile head</td><td>Feared along waterways</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH IX: DEAD GODS -->
+<div class="content-page" id="ch9">
+<h2 class="chapter-title">Chapter IX — The Dead Gods</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"Gods do not die quietly. When a god falls, the cosmos shudders, and the echoes of their passing reshape reality for centuries."<span class="attribution">— Elminster Aumar</span></div>
+
+<div class="deity-card"><div class="deity-name">Myrkul <span class="dead-marker">Dead / Returned</span></div><div class="deity-epithet">The Lord of Bones, the Old Lord of the Dead</div><div class="deity-lore"><p>One of the Dead Three, Myrkul ruled as a tyrant over souls. Destroyed in 1358 DR by Midnight; his essence bound into the Crown of Horns. His consciousness persisted, and in BG3, his lingering influence drove the Dead Three's conspiracy.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Bhaal <span class="dead-marker">Dead / Returned</span></div><div class="deity-epithet">The Lord of Murder</div><div class="deity-lore"><p>Bhaal foresaw his death and sired hundreds of Bhaalspawn. Slain by Cyric during the Time of Troubles, his scattered essence drove the plot of Baldur's Gate I and II. By BG3, Bhaal is fully restored, with Orin the Red as his Chosen.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Mystryl <span class="dead-marker">Dead — Permanently</span></div><div class="deity-epithet">The Lady of Mysteries (Original)</div><div class="deity-lore"><p>The original goddess of magic, destroyed in −339 DR when Karsus cast the only 12th-level spell ever achieved. She sacrificed herself to save reality, reincarnating as the first Mystra who imposed the 9th-level cap.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Leira <span class="dead-marker">Dead</span></div><div class="deity-epithet">The Lady of the Mists, Mother of Illusions</div><div class="deity-lore"><p>Goddess of deception and illusion, slain by Cyric with Godsbane during the Time of Troubles. Her portfolio was absorbed by Cyric.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Amaunator <span class="dead-marker">Dead / Returned as Lathander</span></div><div class="deity-epithet">The Keeper of the Eternal Sun</div><div class="deity-lore"><p>Netherese sun god who faded when his worship collapsed after Netheril fell. Widely believed to have been reborn as Lathander. The theological debate continues.</p></div></div>
+
+<div class="deity-card"><div class="deity-name">Azuth <span class="dead-marker">Consumed / Restored</span></div><div class="deity-epithet">The High One, Patron of Wizards</div><div class="deity-lore"><p>Consumed by Asmodeus during the Spellplague to fuel the archdevil's ascension to true godhood. Later freed during the Second Sundering and restored to diminished divinity.</p></div></div>
+</div>
+
+<!-- CH X: LOST GODS -->
+<div class="content-page" id="ch10">
+<h2 class="chapter-title">Chapter X — Lost & Forbidden Gods</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"There are worse fates than death for a god. To be forgotten — truly, utterly forgotten — that is the final death."<span class="attribution">— Sage Alaundo</span></div>
+
+<div class="deity-card lost"><div class="deity-name">Moander <span class="dead-marker">Destroyed</span></div><div class="deity-epithet">The Darkbringer, the Rotting God</div><div class="deity-lore"><p>A deity of rot, corruption, and parasitic infestation. Destroyed by the mortal bard Finder Wyvernspur, who absorbed enough power to ascend and replace Moander with a benevolent portfolio.</p></div></div>
+
+<div class="deity-card lost"><div class="deity-name">Ibrandul <span class="dead-marker">Murdered by Shar</span></div><div class="deity-epithet">The Skulking God, Lord of the Dry Depths</div><div class="deity-lore"><p>A minor deity of the Underdark. Shar murdered him quietly and assumed his identity, answering his worshippers' prayers as if she were Ibrandul. His followers didn't know their god was dead for generations.</p></div></div>
+
+<h3 class="section-title">Tharizdun — The Chained God</h3>
+<p>Tharizdun is not dead — he is imprisoned. He sought to dissolve reality back into primordial nothingness. Every god in every pantheon united to imprison him, because his victory would mean the annihilation of everything. He is sealed in divine chains, but his cults persist, working to free him. Some scholars link Tharizdun to the Far Realm.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PART II: HISTORY & LORE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- CH XI: TIMELINE -->
+<div class="content-page" id="ch11">
+<h2 class="chapter-title">Chapter XI — A Divine Timeline of Faerûn</h2>
+<div class="ornament">⚜</div>
+<div class="timeline">
+<div class="timeline-event"><div class="timeline-date">Before Time</div><div class="timeline-title">The Birth of Realmspace</div><p>Ao creates Realmspace. Selûne and Shar emerge — the first gods. Together they create Chauntea (Toril). Their disagreement ignites the Eternal War.</p></div>
+<div class="timeline-event"><div class="timeline-date">Before Time</div><div class="timeline-title">Birth of Mystryl and the Weave</div><p>Magical energy from the Selûne-Shar war coalesces into Mystryl and the Weave. Other gods emerge: Corellon, Moradin, Gruumsh.</p></div>
+<div class="timeline-event"><div class="timeline-date">c. −35,000 DR</div><div class="timeline-title">The Days of Thunder</div><p>The Creator Races — sarrukh, batrachi, aearee — dominate Toril. Current mortal gods are young.</p></div>
+<div class="timeline-event"><div class="timeline-date">c. −30,000 DR</div><div class="timeline-title">The Sundering of the Elves</div><p>Corellon establishes elves on Toril. Lolth's followers are driven underground, creating the drow.</p></div>
+<div class="timeline-event"><div class="timeline-date">c. −3859 DR</div><div class="timeline-title">The Founding of Netheril</div><p>The Netherese discover the Nether Scrolls and begin their ascent to the greatest magical civilization Toril has ever known.</p></div>
+<div class="timeline-event"><div class="timeline-date">−339 DR</div><div class="timeline-title">Karsus's Folly — The Fall of Netheril</div><p>Karsus casts the only 12th-level spell. Mystryl dies saving reality. Netheril falls. The first Mystra imposes the 9th-level cap.</p></div>
+<div class="timeline-event"><div class="timeline-date">c. −700 to −350 DR</div><div class="timeline-title">The Rise of the Dead Three</div><p>Bane, Bhaal, and Myrkul confront Jergal, who surrenders his portfolios willingly. The Dead Three ascend.</p></div>
+<div class="timeline-event"><div class="timeline-date">1358 DR</div><div class="timeline-title">The Time of Troubles</div><p>Bane and Myrkul steal the Tablets of Fate. Ao casts all gods to Toril. Mystra slain by Helm. Bane destroyed by Torm. Bhaal slain by Cyric. Midnight ascends as new Mystra. Cyric ascends. Kelemvor wrests death portfolio from Cyric. Ao rewrites the Tablets: worship now sustains divinity.</p></div>
+<div class="timeline-event"><div class="timeline-date">1368–1369 DR</div><div class="timeline-title">The Bhaalspawn Crisis</div><p>Events of Baldur's Gate I and II. The children of Bhaal are hunted as divine essence reconsolidates.</p></div>
+<div class="timeline-event"><div class="timeline-date">1385 DR</div><div class="timeline-title">The Spellplague</div><p>Cyric and Shar murder Mystra. The Weave collapses. Blue fire ravages Toril. Azuth consumed by Asmodeus. Helm slain by Tyr. The planes shift and merge.</p></div>
+<div class="timeline-event"><div class="timeline-date">1482–1487 DR</div><div class="timeline-title">The Second Sundering</div><p>Ao separates Abeir and Toril. The Weave is restored. Dead gods return: Mystra, Helm, Tyr, Bhaal, Myrkul. The Tablets are rewritten.</p></div>
+<div class="timeline-event"><div class="timeline-date">1492 DR</div><div class="timeline-title">The Absolute Crisis (Baldur's Gate 3)</div><p>The Dead Three conspire through the Chosen of the Absolute — using an Elder Brain, illithid tadpoles, and the Netherstones to dominate the Sword Coast.</p></div>
+</div>
+</div>
+
+<!-- CH XII: RELATIONSHIPS -->
+<div class="content-page" id="ch12">
+<h2 class="chapter-title">Chapter XII — The Web of Divine Relationships</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">The Great Enmities</h3>
+<div class="rel-card"><div class="rel-entity">Selûne</div><div class="rel-type">ETERNAL WAR</div><div class="rel-entity">Shar</div></div>
+<p>Twin sisters locked in unending war between light and darkness since before all other gods existed.</p>
+<div class="rel-card"><div class="rel-entity">Corellon</div><div class="rel-type">BLOOD FEUD</div><div class="rel-entity">Gruumsh</div></div>
+<p>Corellon took Gruumsh's eye. The orcs were left with nothing. Every orc raid on an elven settlement echoes this divine grudge.</p>
+<div class="rel-card"><div class="rel-entity">Corellon</div><div class="rel-type">BETRAYAL</div><div class="rel-entity">Lolth</div></div>
+<p>Lolth was Corellon's lover Araushnee. She betrayed the Seldarine and was cast into the Abyss.</p>
+<div class="rel-card"><div class="rel-entity">Bane</div><div class="rel-type">RIVALRY</div><div class="rel-entity">Cyric</div></div>
+<p>Cyric stole Bane's portfolios. When Bane returned, war between their churches became permanent.</p>
+<div class="rel-card"><div class="rel-entity">Garl Glittergold</div><div class="rel-type">PRANK WAR</div><div class="rel-entity">Kurtulmak</div></div>
+<p>Garl collapsed Kurtulmak's cavern as a joke, beginning the gnome-kobold feud.</p>
+<h3 class="section-title">The Great Alliances</h3>
+<div class="rel-card"><div class="rel-entity">Tyr</div><div class="rel-type ally">THE TRIAD</div><div class="rel-entity">Ilmater + Torm</div></div>
+<p>Justice (Tyr), endurance (Ilmater), duty (Torm). The backbone of lawful good civilization.</p>
+<div class="rel-card"><div class="rel-entity">Mystra</div><div class="rel-type ally">PATRONAGE</div><div class="rel-entity">Azuth + Savras</div></div>
+<div class="rel-card"><div class="rel-entity">Silvanus</div><div class="rel-type ally">NATURE ALLIANCE</div><div class="rel-entity">Mielikki + Chauntea + Eldath</div></div>
+<h3 class="section-title">Romances & Tragedies</h3>
+<div class="rel-card"><div class="rel-entity">Helm</div><div class="rel-type romance">TRAGIC LOVE</div><div class="rel-entity">Mystra (I)</div></div>
+<p>Helm loved Mystra. He killed her under Ao's orders. The most heartbreaking moment in divine history.</p>
+<div class="rel-card"><div class="rel-entity">Kelemvor</div><div class="rel-type romance">MORTAL LOVE</div><div class="rel-entity">Mystra (II)</div></div>
+<p>They loved each other as mortals. Now two gods bound by cosmic responsibilities that pull them apart.</p>
+<div class="rel-card"><div class="rel-entity">Tyr</div><div class="rel-type">KILLED IN ERROR</div><div class="rel-entity">Helm</div></div>
+<p>Tyr killed Helm — the blind god striking down the guardian god over a misunderstanding. Both later restored.</p>
+</div>
+
+<!-- CH XIII: THE CHOSEN -->
+<div class="content-page" id="ch13">
+<h2 class="chapter-title">Chapter XIII — The Chosen of the Gods</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">The Seven Sisters — Chosen of Mystra</h3>
+<div class="chosen-card"><div class="chosen-icon">A</div><div><div class="chosen-name">Alustriel Silverhand</div><div class="chosen-title">High Lady of Silverymoon — the most politically powerful of the Seven.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">D</div><div><div class="chosen-name">Dove Falconhand</div><div class="chosen-title">Ranger and Harper agent — practical adventurer who prefers forest to court.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">L</div><div><div class="chosen-name">Laeral Silverhand</div><div class="chosen-title">Open Lord of Waterdeep — governs the greatest city in Faerûn.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">Q</div><div><div class="chosen-name">Qilué Veladorn</div><div class="chosen-title">Drow priestess of Mystra and Eilistraee — bridge between surface and Underdark. Tragically killed.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">S</div><div><div class="chosen-name">Storm Silverhand</div><div class="chosen-title">Bard, Harper, warrior — the most openly adventurous of the sisters.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">Σ</div><div><div class="chosen-name">The Simbul</div><div class="chosen-title">Witch-Queen of Aglarond — the most magically powerful of the Seven. Held Thay at bay for decades.</div></div></div>
+<div class="chosen-card"><div class="chosen-icon">Sy</div><div><div class="chosen-name">Syluné Silverhand</div><div class="chosen-title">The ghost sister — persists as a benevolent spirit, advising her sisters from beyond death.</div></div></div>
+
+<h3 class="section-title">Elminster Aumar</h3>
+<p>The most famous Chosen of Mystra — a wizard over a thousand years old, the Gandalf of the Forgotten Realms. He carries silver fire, has survived Mystra's death twice, and is her lover, confidant, and most trusted operative.</p>
+
+<h3 class="section-title">Other Notable Chosen</h3>
+<table class="info-table"><thead><tr><th>Chosen</th><th>Deity</th><th>Role</th></tr></thead><tbody>
+<tr><td>Cadderly Bonaduce</td><td>Deneir</td><td>Scholar-priest, built the Spirit Soaring cathedral</td></tr>
+<tr><td>Sarevok Anchev</td><td>Bhaal</td><td>Bhaalspawn who sought to become the new god of murder</td></tr>
+<tr><td>Orin the Red</td><td>Bhaal</td><td>Shapeshifting serial killer, Chosen during the Absolute crisis</td></tr>
+<tr><td>Gortash</td><td>Bane</td><td>Chosen of Bane, tyrant of Baldur's Gate during BG3</td></tr>
+<tr><td>Ketheric Thorm</td><td>Myrkul</td><td>Undying general of the Absolute's army</td></tr>
+<tr><td>Fzoul Chembryl</td><td>Bane</td><td>High Priest; leader of the Zhentarim under Bane</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH XIV: ARTIFACTS -->
+<div class="content-page" id="ch14">
+<h2 class="chapter-title">Chapter XIV — Sacred Artifacts & Divine Relics</h2>
+<div class="ornament">⚜</div>
+<div class="artifact-card"><div class="artifact-name">The Tablets of Fate</div><div class="artifact-type">Divine Artifact — Overgod Ao</div><p>Twin stone tablets inscribed with every god's name, portfolio, and duty. The mechanism of divine order itself.</p></div>
+<div class="artifact-card"><div class="artifact-name">The Cyrinishad</div><div class="artifact-type">Divine Artifact — Cyric</div><p>A book so potent that reading it causes absolute conviction that Cyric is the supreme being. Cyric read his own book and went permanently insane.</p></div>
+<div class="artifact-card"><div class="artifact-name">The Nether Scrolls</div><div class="artifact-type">Primordial Artifact — Unknown Origin</div><p>Fifty golden scrolls containing the fundamental principles of magic itself. Foundation of Netherese civilization.</p></div>
+<div class="artifact-card"><div class="artifact-name">The Crown of Horns</div><div class="artifact-type">Divine Artifact — Myrkul</div><p>Contains Myrkul's lingering consciousness. Grants immense necromantic power but corrupts every bearer.</p></div>
+<div class="artifact-card"><div class="artifact-name">Godsbane</div><div class="artifact-type">Divine Artifact — Mask</div><p>A sentient vorpal sword that was actually the god Mask in disguise. Cyric used it to slay Bhaal without realizing Mask was absorbing divine power.</p></div>
+<div class="artifact-card"><div class="artifact-name">The Netherstones</div><div class="artifact-type">Ancient Artifact — Netherese</div><p>Three stones central to the Dead Three's scheme in BG3. Used to control an Elder Brain and the tadpole-infected thralls of the Absolute.</p></div>
+<h3 class="section-title">Holy Texts</h3>
+<table class="info-table"><thead><tr><th>Text</th><th>Deity</th><th>Description</th></tr></thead><tbody>
+<tr><td>The Dogma of the True</td><td>Torm</td><td>Foundational text of Tormish knighthood</td></tr>
+<tr><td>The Charge of the Vigilant</td><td>Helm</td><td>Liturgical manual for guardians</td></tr>
+<tr><td>The Book of Keeping</td><td>Oghma</td><td>Ever-expanding encyclopedia of all knowledge</td></tr>
+<tr><td>The Dark Sermon</td><td>Shar</td><td>Memorized, never written — Shar destroys, not preserves</td></tr>
+<tr><td>The Black Grimoire</td><td>Bane</td><td>Doctrine of tyranny and domination</td></tr>
+</tbody></table>
+</div>
+
+<!-- CH XV: TEMPLES -->
+<div class="content-page" id="ch15">
+<h2 class="chapter-title">Chapter XV — Famous Temples & Holy Sites</h2>
+<div class="ornament">⚜</div>
+<div class="temple-card"><div class="temple-name">The Spires of the Morning</div><div class="temple-location">Waterdeep — Temple of Lathander</div><p>A soaring cathedral of rose-gold stone with crystalline spires that catch the dawn light and scatter rainbows across the Castle Ward.</p></div>
+<div class="temple-card"><div class="temple-name">The House of the Moon</div><div class="temple-location">Waterdeep — Temple of Selûne</div><p>Open-air temple where moonlight pools in a sacred silver basin. The Border Ethereal is thin here.</p></div>
+<div class="temple-card"><div class="temple-name">Candlekeep</div><div class="temple-location">Sword Coast — Library-Fortress of Oghma/Deneir</div><p>The greatest library in Faerûn. Entrance requires donation of a book not already in the collection.</p></div>
+<div class="temple-card"><div class="temple-name">The Spirit Soaring</div><div class="temple-location">Snowflake Mountains — Cathedral of Deneir</div><p>Built by the Chosen Cadderly Bonaduce. A vast cathedral floating among mountain peaks.</p></div>
+<div class="temple-card"><div class="temple-name">Elminster's Tower of Twilight</div><div class="temple-location">Shadowdale — Associated with Mystra</div><p>The most powerful concentration of magical energy in a single structure outside Candlekeep.</p></div>
+</div>
+
+<!-- CH XVI: ORDERS -->
+<div class="content-page" id="ch16">
+<h2 class="chapter-title">Chapter XVI — Knightly Orders & Religious Organizations</h2>
+<div class="ornament">⚜</div>
+<div class="order-card"><div class="order-name">The Order of the Gauntlet</div><p><strong>Patron Deities:</strong> Tyr, Helm, Torm | Smites evil, upholds justice, protects the innocent through organized military action.</p></div>
+<div class="order-card"><div class="order-name">The Harpers</div><p><strong>Patron Deities:</strong> Mystra, Oghma, Selûne | Preserves knowledge, maintains balance, protects freedom. Secretive bards, rangers, and rogues.</p></div>
+<div class="order-card"><div class="order-name">The Dark Justiciars</div><p><strong>Patron Deity:</strong> Shar | Elite warrior-priests who embrace personal loss — abandoning name, memory, and connection. Players of BG3 encounter them through Shadowheart's storyline.</p></div>
+<div class="order-card"><div class="order-name">The Doomguides</div><p><strong>Patron Deity:</strong> Kelemvor | Maintain graveyards, perform funeral rites, and hunt undead. The most feared enemies of necromancers.</p></div>
+<div class="order-card"><div class="order-name">The Zhentarim</div><p><strong>Patron Deity:</strong> Bane (historically) | Mercenary/trade organization with roots in Banite tyranny. Morally grey in 5e, thoroughly corrupt at its core.</p></div>
+<div class="order-card"><div class="order-name">Order of the Golden Lion / Order of the Companions</div><p><strong>Patron Deity:</strong> Torm | Elite paladins bound by sacred oaths. The heart of the knightly tradition in Faerûn.</p></div>
+</div>
+
+<!-- CH XVII: WORSHIP -->
+<div class="content-page" id="ch17">
+<h2 class="chapter-title">Chapter XVII — Worship & Religious Practice</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">The Nature of Worship</h3>
+<p>Worship in Faerûn is not faith in the philosophical sense — no one doubts the gods exist. The question is "which god do I serve?" After Ao's edict, worship became existentially necessary for gods: more worshippers equals more power.</p>
+<h3 class="section-title">Polytheistic Practice</h3>
+<p>Most common folk are practical polytheists who pray to whichever god is relevant to their current need. A farmer prays to Chauntea for harvest, Talos to spare storms, Lathander for dawn, and Kelemvor when a loved one dies. Only the most devout dedicate themselves to a single god.</p>
+<h3 class="section-title">Holy Days</h3>
+<p>Major holy days are tied to the Harptos calendar. Midsummer is sacred to Sune and Lathander. The Feast of the Moon belongs to Kelemvor and Mystra. Highharvestide to Chauntea. Shieldmeet (every four years) is when divine magic is especially potent and great convocations are held.</p>
+</div>
+
+<!-- CH XVIII: DIVINE RANKS -->
+<div class="content-page" id="ch18">
+<h2 class="chapter-title">Chapter XVIII — Divine Ranks & the Mechanics of Godhood</h2>
+<div class="ornament">⚜</div>
+<table class="info-table"><thead><tr><th>Rank</th><th>Title</th><th>Capabilities</th></tr></thead><tbody>
+<tr><td>0</td><td>Quasi-Deity</td><td>Immortal, some divine abilities, no portfolio. (Archfey, demon lords)</td></tr>
+<tr><td>1–5</td><td>Demigod</td><td>Limited divine power, small followings, narrow portfolios.</td></tr>
+<tr><td>6–10</td><td>Lesser Deity</td><td>Full divine power within portfolio, established churches.</td></tr>
+<tr><td>11–15</td><td>Intermediate Deity</td><td>Broad influence, large followings, powerful avatars.</td></tr>
+<tr><td>16–20</td><td>Greater Deity</td><td>Supreme power, vast portfolios, cosmic-scale influence.</td></tr>
+<tr><td>Above 20</td><td>Overgod</td><td>Transcends the system. Only Ao. Not sustained by worship.</td></tr>
+</tbody></table>
+<h3 class="section-title">Ascending to Godhood</h3>
+<p>Methods include: inheriting a dead god's portfolio (Midnight → Mystra), elevation by Ao (Torm), consuming another deity's essence (Asmodeus → Azuth), or accumulating worship through extraordinary acts. The Dead Three achieved it by confronting Jergal directly.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PART III: THE PLANES -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- CH XIX: GREAT WHEEL -->
+<div class="content-page" id="ch19">
+<h2 class="chapter-title">Chapter XIX — The Great Wheel Cosmology</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"Imagine a wheel. At the hub is the Material Plane. The Inner Planes form a ring of elemental fury. The Outer Planes encircle everything — a wheel of ideology made manifest, where belief shapes reality."<span class="attribution">— A primer from Sigil's Hall of Speakers</span></div>
+<p>At the center sits the Material Plane. Surrounding it are the Transitive Planes — the Astral, the Ethereal, and the Shadowfell — as conduits between other planes. The Inner Planes form a ring of elemental energy: Fire, Water, Earth, Air, and the Positive and Negative Energy Planes. The Outer Planes form the outermost ring, arranged by alignment, where gods dwell and souls are judged after death.</p>
+<h3 class="section-title">The Outlands & Sigil</h3>
+<p>At the conceptual center of the Outer Planes lies the Outlands — a plane of true neutrality. At its center rises an infinitely tall spire, atop which floats Sigil, the City of Doors — ruled by the Lady of Pain, who bars deities from entering.</p>
+</div>
+
+<!-- CH XX: OUTER PLANES -->
+<div class="content-page" id="ch20">
+<h2 class="chapter-title">Chapter XX — The Outer Planes</h2>
+<div class="ornament">⚜</div>
+<p>The Outer Planes are where ideology becomes geography. Each embodies a particular alignment, and the gods who share that alignment make their realms within.</p>
+
+<div class="plane-card outer"><div class="plane-name">Mount Celestia</div><div class="plane-type">Lawful Good — The Seven Mounting Heavens</div><p>A single, impossibly vast mountain rising from a Silver Sea with seven ascending layers. Tyr, Torm, Moradin, and Lathander dwell here. Inhabitants include archons — lantern, hound, trumpet, and solar archons.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Elysium</div><div class="plane-type">Neutral Good — The Blessed Fields</div><p>Pure goodness dominated by the River Oceanus. Four layers of meadows, mountains, marshes, and sea. Mystra and Chauntea dwell here. Home to guardinals.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Arborea</div><div class="plane-type">Chaotic Good — Olympian Glades</div><p>Passion and freedom made manifest. Arvandor — home of the Seldarine — is here. Sune and Corellon dwell here. Home to celestial eladrin.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Ysgard</div><div class="plane-type">Chaotic Good / CN — The Heroic Domains</div><p>Vast earthbergs floating in infinite sky. Those who die in battle rise again at dawn. Selûne's Gates of the Moon are here.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Limbo</div><div class="plane-type">Chaotic Neutral — The Ever-Changing Chaos</div><p>Pure chaos — a roiling maelstrom where nothing is fixed. Tempus's Warrior's Rest is here. Home to the slaadi.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Pandemonium</div><div class="plane-type">CN / CE — The Windswept Depths</div><p>Infinite tunnels with eternally screaming winds that erode sanity. Talos's Fury's Heart is here.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">The Abyss</div><div class="plane-type">Chaotic Evil — The Infinite Layers</div><p>Infinite layers of unique hellscapes. Lolth's Demonweb Pits (Layer 66). Spawns demons spontaneously. The most terrifying plane. One front of the Blood War.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Hades (The Grey Waste)</div><div class="plane-type">Neutral Evil — The Three Glooms</div><p>Despair manifest — colorless, hopeless. Drains emotion and will from visitors. Staging ground for the Blood War. Home to night hags.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">The Nine Hells (Baator)</div><div class="plane-type">Lawful Evil — The Infernal Realm</div><p>Nine descending layers: Avernus (Zariel), Dis (Dispater), Minauros (Mammon), Phlegethos (Fierna/Belial), Stygia (Levistus), Malbolge (Glasya), Maladomini (Baalzebul), Cania (Mephistopheles), Nessus (Asmodeus). Runs on contracts. Devils seek to damn mortal souls. Soul coins are currency in Avernus.</p></div>
+
+<div class="plane-card outer"><div class="plane-name">Mechanus</div><div class="plane-type">Lawful Neutral — The Clockwork Nirvana</div><p>Infinite interlocking gears turning with perfect precision. Home to the modrons — geometric beings of pure law.</p></div>
+
+<p>Additional Outer Planes include Bytopia (NG/LG — honest work), the Beastlands (NG/CG — primordial wilderness), Carceri (NE/CE — the prison plane), Gehenna (NE/LE — volcanic slopes of selfishness), Acheron (LN/LE — purposeless war on iron cubes), and Arcadia (LN/LG — ordered goodness).</p>
+</div>
+
+<!-- CH XXI: INNER PLANES -->
+<div class="content-page" id="ch21">
+<h2 class="chapter-title">Chapter XXI — The Inner Planes</h2>
+<div class="ornament">⚜</div>
+<div class="plane-card inner"><div class="plane-name">Elemental Plane of Fire</div><div class="plane-type">Inner Plane</div><p>Infinite flame and magma. The City of Brass — capital of the efreeti — floats above a sea of fire. Salamanders and azers dwell here.</p></div>
+<div class="plane-card inner"><div class="plane-name">Elemental Plane of Water</div><div class="plane-type">Inner Plane</div><p>Infinite ocean with no surface. Marids rule underwater palaces. Pockets of breathable air contain coral cities.</p></div>
+<div class="plane-card inner"><div class="plane-name">Elemental Plane of Earth</div><div class="plane-type">Inner Plane</div><p>Infinite solid stone riddled with tunnels. The dao mine with enslaved armies, hoarding gems. Xorn "swim" through solid rock.</p></div>
+<div class="plane-card inner"><div class="plane-name">Elemental Plane of Air</div><div class="plane-type">Inner Plane</div><p>Infinite sky — no ground. Djinn build palaces on the densest clouds. Most hospitable elemental plane (with flight).</p></div>
+<div class="plane-card inner"><div class="plane-name">Positive Energy Plane</div><div class="plane-type">Energy Plane</div><p>Source of all life energy. Blinding white light. Too much exposure causes you to literally explode from excess vitality.</p></div>
+<div class="plane-card inner"><div class="plane-name">Negative Energy Plane</div><div class="plane-type">Energy Plane</div><p>Source of entropy and undeath. Absolute darkness. Drains life from everything. Spawns nightshades — undead of immense power.</p></div>
+<h3 class="section-title">Para- & Quasi-Elemental Planes</h3>
+<p>Where elements border each other: Ice (Water/Air), Ooze (Water/Earth), Magma (Earth/Fire), Smoke (Fire/Air). Where elements border energy planes: Radiance, Lightning, Minerals, Steam (positive), and Ash, Dust, Salt, Vacuum (negative).</p>
+</div>
+
+<!-- CH XXII: TRANSITIVE -->
+<div class="content-page" id="ch22">
+<h2 class="chapter-title">Chapter XXII — The Transitive Planes</h2>
+<div class="ornament">⚜</div>
+<div class="plane-card transitive"><div class="plane-name">The Astral Plane</div><div class="plane-type">The Silver Void</div><p>Silvery, weightless void connecting the Material Plane to the Outer Planes. You do not age here. The corpses of dead gods float here — continent-sized petrified bodies. The githyanki have built their empire here, using god-corpses as cities. Color pools serve as portals to the Outer Planes. The silver cord of astral projectors, if severed, means instant death.</p></div>
+<div class="plane-card transitive"><div class="plane-name">The Ethereal Plane</div><div class="plane-type">The Misty Border</div><p>Ghostly border between Material and Inner Planes. The Border Ethereal overlaps the material world (ghosts exist here). The Deep Ethereal connects to Inner Planes and demiplanes — pocket dimensions like Ravenloft.</p></div>
+<div class="plane-card transitive"><div class="plane-name">The Shadowfell</div><div class="plane-type">The Dark Mirror</div><p>Dark, twisted reflection of the Material Plane — dimmer, greyer, colder. Shar's Palace of Loss is here. Home to shadar-kai, shadow dragons, and sorrowsworn. The Domains of Dread (including Barovia) exist within it.</p></div>
+<div class="plane-card transitive"><div class="plane-name">The Feywild</div><div class="plane-type">The Echo of Wonder</div><p>Bright mirror of the Shadowfell — oversaturated colors, stronger emotions, wilder nature. Time flows unpredictably. Ruled by archfey: Titania (Summer Court) and the Queen of Air and Darkness (Winter Court). Home to eladrin, satyrs, pixies, and dryads.</p></div>
+<div class="plane-card transitive"><div class="plane-name">The Fugue Plane</div><div class="plane-type">Forgotten Realms Specific</div><p>Waystation of the dead. Every mortal soul goes here after death. Kelemvor judges them in the Crystal Spire. The faithful are claimed by their god's servants. The Faithless form the Wall of the Faithless.</p></div>
+</div>
+
+<!-- CH XXIII: FAR REALM -->
+<div class="content-page" id="ch23">
+<h2 class="chapter-title">Chapter XXIII — The Far Realm</h2>
+<div class="ornament">⚜</div>
+<div class="plane-card aberrant"><div class="plane-name">The Far Realm</div><div class="plane-type">Beyond the Cosmology — The Outside</div><p>The Far Realm is not part of the Great Wheel. It exists <em>outside</em> the cosmology entirely. Physics, magic, time, space, identity, causality — none apply there. Looking at the Far Realm <em>rewrites</em> your mind. Its entities are the aberrations: mind flayers, aboleths, beholders. The Elder Evils — Hadar, Acamar, Gibbeth — dwell here. They are not gods in the Faerûnian sense. They are <em>outside</em>, and they want <em>in</em>.</p><p>The difference between the Far Realm and other planes cannot be overstated. The Abyss is evil but comprehensible. The Far Realm follows no rules. It is the antithesis of ordered reality, and its incursion into the multiverse is the one threat all gods — good, evil, lawful, chaotic — agree must be opposed.</p></div>
+</div>
+
+<!-- CH XXIV: AFTERLIFE -->
+<div class="content-page" id="ch24">
+<h2 class="chapter-title">Chapter XXIV — The Afterlife, the Faithless & the False</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">The Journey of a Soul</h3>
+<p>When a mortal dies, their soul departs for the Fugue Plane. Faithful worshippers are claimed by their deity's servants and escorted to the appropriate Outer Plane. Over centuries, petitioners are absorbed into the plane itself.</p>
+<h3 class="section-title">The Faithless</h3>
+<p>Those who worshipped no god are condemned to the Wall of the Faithless — a horrific barrier around the Crystal Spire made from writhing souls. They dissolve over millennia. The Wall is one of the most morally controversial elements of Realms cosmology.</p>
+<h3 class="section-title">The False</h3>
+<p>Those who betrayed their pledged god. Cast into the City of Judgment to be tormented. Many are traded to fiends who value souls as currency.</p>
+<h3 class="section-title">Soul Trade & Soul Coins</h3>
+<p>Mortal souls are commodities in the Lower Planes. Devils make bargains for souls, which become lemures in Hell. Soul coins — literal coins containing a trapped, suffering mortal — are the currency of Avernus.</p>
+<h3 class="section-title">Resurrection</h3>
+<p>Resurrection magic pulls a soul back from its afterlife. It requires the soul's willingness — a soul at peace can refuse. The process is traumatic. Kelemvor's church views it as acceptable but solemn.</p>
+</div>
+
+<!-- CH XXV: BLOOD WAR -->
+<div class="content-page" id="ch25">
+<h2 class="chapter-title">Chapter XXV — The Blood War</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"An infinity of demons against an infinity of devils, fighting forever. The most destructive, pointless conflict in existence — and it may be the only thing keeping the multiverse alive."<span class="attribution">— A'kin the Friendly Fiend</span></div>
+<div style="text-align:center;margin:25px 0">
+<div class="bw-stat"><span class="num">∞</span><span class="label">Duration</span></div>
+<div class="bw-stat"><span class="num">∞</span><span class="label">Casualties</span></div>
+<div class="bw-stat"><span class="num">3</span><span class="label">Fronts</span></div>
+</div>
+<p>Demons have infinite numbers but no discipline. Devils have discipline but finite numbers. Permanent stalemate. Key fronts: Avernus (Zariel's defense), the Grey Waste (neutral staging ground), and the River Styx (naval warfare on memory-erasing waters).</p>
+<p><strong>Zariel</strong> — a fallen solar angel who commands Hell's defense. <strong>Demogorgon</strong> — two-headed Prince of Demons. <strong>Orcus</strong> — Prince of Undeath who seeks to end it by ending all life.</p>
+<h3 class="section-title">The Yugoloth Conspiracy</h3>
+<p>Theory holds that yugoloths started the Blood War as a deliberate strategy — keeping both sides focused on each other to prevent either from achieving total dominion. The most successful con in the history of evil.</p>
+<h3 class="section-title">Why Good Gods Allow It</h3>
+<p>As long as evil fights itself, it's not united against good. If the Blood War ended, the winning faction would turn its full attention to the multiverse. The war is a containment strategy.</p>
+</div>
+
+<!-- CH XXVI: SIGIL -->
+<div class="content-page" id="ch26">
+<h2 class="chapter-title">Chapter XXVI — Sigil, the City of Doors</h2>
+<div class="ornament">⚜</div>
+<div class="lore-quote">"Rule one: the Lady doesn't answer prayers. Rule two: if you see her shadow, run."<span class="attribution">— Planar survival guide, author presumed mazed</span></div>
+<p>Sigil is shaped like a torus with buildings on the inside. The Lady of Pain rules — she is not a goddess but something stranger. She kills or "mazes" (traps in pocket dimensions) anyone who causes problems. She bars all gods from entering Sigil.</p>
+<h3 class="section-title">The Factions</h3>
+<div class="faction-card"><div class="faction-sigil" style="color:#8b1a1a">☠</div><div><div class="faction-name">The Dustmen</div><div class="faction-belief">Everyone is already dead. True Death is the only release.</div></div></div>
+<div class="faction-card"><div class="faction-sigil" style="color:#c9a84c">✦</div><div><div class="faction-name">The Godsmen</div><div class="faction-belief">Every being can ascend to godhood through self-improvement.</div></div></div>
+<div class="faction-card"><div class="faction-sigil" style="color:#2d6b3f">⊘</div><div><div class="faction-name">The Athar</div><div class="faction-belief">The gods are frauds — powerful but not worthy of worship.</div></div></div>
+<div class="faction-card"><div class="faction-sigil" style="color:#6b3a8a">❋</div><div><div class="faction-name">The Sensates</div><div class="faction-belief">Experience everything. Truth lies in direct sensation.</div></div></div>
+<div class="faction-card"><div class="faction-sigil" style="color:#1a3a5c">⚖</div><div><div class="faction-name">The Harmonium</div><div class="faction-belief">Peace through law. One way for everyone, everywhere, forever.</div></div></div>
+<div class="faction-card"><div class="faction-sigil" style="color:#5c4033">∅</div><div><div class="faction-name">The Bleak Cabal</div><div class="faction-belief">There is no meaning. The only honest response is to accept this.</div></div></div>
+</div>
+
+<!-- CH XXVII: PLANAR TRAVEL -->
+<div class="content-page" id="ch27">
+<h2 class="chapter-title">Chapter XXVII — Methods of Planar Travel</h2>
+<div class="ornament">⚜</div>
+<div class="travel-method"><div class="travel-name">Plane Shift</div><div>7th-level spell. Requires attuned tuning fork. Imprecise destination. Available to Clerics, Sorcerers, Warlocks, Druids.</div></div>
+<div class="travel-method"><div class="travel-name">Gate</div><div>9th-level spell. Precise destination anywhere. Opens a portal anyone can walk through. Can summon extraplanar creatures.</div></div>
+<div class="travel-method"><div class="travel-name">Astral Projection</div><div>9th-level. Physical body stays behind, connected by silver cord. If cord is severed, you die.</div></div>
+<div class="travel-method"><div class="travel-name">Natural Portals</div><div>No spell needed. Fairy rings → Feywild. Shadow pools → Shadowfell. Volcanic vents → Plane of Fire. Often well-known to locals.</div></div>
+<div class="travel-method"><div class="travel-name">Sigil's Portals</div><div>Every doorframe in Sigil is potentially a portal. Each requires a specific "key" — a word, flower, emotion, or song.</div></div>
+<div class="travel-method"><div class="travel-name">The River Styx</div><div>Flows through all Lower Planes. Erases memory on contact. Merrenoloth boatmen are the only reliable navigators.</div></div>
+<div class="travel-method"><div class="travel-name">Color Pools</div><div>Found in the Astral Plane. Gold = Celestia. Red = Nine Hells. Black = Abyss. Silver = Material Plane.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- APPENDICES -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- APP A: COSMOLOGY DIAGRAM -->
+<div class="content-page" id="appA">
+<h2 class="chapter-title">Appendix A — Great Wheel Cosmology Diagram</h2>
+<div class="ornament">⚜</div>
+<div class="diagram-container">
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+<defs><radialGradient id="cg"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/></radialGradient><filter id="gl"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="800" height="800" fill="#f4e4c1" rx="4"/>
+<circle cx="400" cy="400" r="350" fill="none" stroke="#8b6914" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+<circle cx="400" cy="400" r="250" fill="none" stroke="#8b6914" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+<circle cx="400" cy="400" r="140" fill="none" stroke="#8b6914" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+<circle cx="400" cy="400" r="120" fill="url(#cg)"/>
+<circle cx="400" cy="400" r="45" fill="#3d2b1f" opacity="0.9"/><circle cx="400" cy="400" r="45" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<text x="400" y="396" text-anchor="middle" font-family="Cinzel,serif" font-size="10" fill="#c9a84c" letter-spacing="1">MATERIAL</text>
+<text x="400" y="410" text-anchor="middle" font-family="Cinzel,serif" font-size="10" fill="#c9a84c" letter-spacing="1">PLANE</text>
+<text x="400" y="310" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#8b6914" opacity="0.6" letter-spacing="2">TRANSITIVE</text>
+<text x="400" y="225" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#8b6914" opacity="0.6" letter-spacing="2">INNER PLANES</text>
+<g transform="translate(400,400)">
+<g transform="rotate(0) translate(0,-190)"><rect x="-22" y="-12" width="44" height="24" rx="3" fill="#c45a1a" opacity="0.2" stroke="#c45a1a"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="10" fill="#8b1a1a" font-weight="600">Fire</text></g>
+<g transform="rotate(90) translate(0,-190)"><rect x="-25" y="-12" width="50" height="24" rx="3" fill="#1a6b6b" opacity="0.2" stroke="#1a6b6b"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="10" fill="#1a4b4b" font-weight="600">Water</text></g>
+<g transform="rotate(180) translate(0,-190)"><rect x="-25" y="-12" width="50" height="24" rx="3" fill="#5c4033" opacity="0.2" stroke="#5c4033"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="10" fill="#3d2b1f" font-weight="600">Earth</text></g>
+<g transform="rotate(270) translate(0,-190)"><rect x="-16" y="-12" width="32" height="24" rx="3" fill="#a3c4d4" opacity="0.3" stroke="#6a9ab0"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="10" fill="#1a3a5c" font-weight="600">Air</text></g>
+<g transform="rotate(45) translate(0,-185)"><rect x="-17" y="-10" width="34" height="20" rx="3" fill="#fffbe6" stroke="#c9a84c"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="9" fill="#8b6914">Pos+</text></g>
+<g transform="rotate(225) translate(0,-185)"><rect x="-17" y="-10" width="34" height="20" rx="3" fill="#1a1a1a" stroke="#555"/><text x="0" y="3" text-anchor="middle" font-family="Crimson Text,serif" font-size="9" fill="#ccc">Neg−</text></g>
+</g>
+<g filter="url(#gl)"><g transform="translate(400,400)">
+<g transform="rotate(0) translate(0,-330)"><rect x="-48" y="-14" width="96" height="28" rx="4" fill="#1a3a5c" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Mt. Celestia</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">LG</text></g>
+<g transform="rotate(22.5) translate(0,-330)"><rect x="-35" y="-14" width="70" height="28" rx="4" fill="#2d6b3f" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Bytopia</text></g>
+<g transform="rotate(45) translate(0,-330)"><rect x="-38" y="-14" width="76" height="28" rx="4" fill="#2d6b3f" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Elysium</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">NG</text></g>
+<g transform="rotate(67.5) translate(0,-330)"><rect x="-42" y="-14" width="84" height="28" rx="4" fill="#4a7a2e" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Beastlands</text></g>
+<g transform="rotate(90) translate(0,-330)"><rect x="-38" y="-14" width="76" height="28" rx="4" fill="#1a6b6b" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Arborea</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">CG</text></g>
+<g transform="rotate(112.5) translate(0,-330)"><rect x="-32" y="-14" width="64" height="28" rx="4" fill="#6b3a8a" opacity="0.6"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Ysgard</text></g>
+<g transform="rotate(135) translate(0,-330)"><rect x="-32" y="-14" width="64" height="28" rx="4" fill="#6b3a8a" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Limbo</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">CN</text></g>
+<g transform="rotate(157.5) translate(0,-330)"><rect x="-48" y="-14" width="96" height="28" rx="4" fill="#3d1a3d" opacity="0.6"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="8.5" fill="#e8d48b">Pandemonium</text></g>
+<g transform="rotate(180) translate(0,-330)"><rect x="-38" y="-14" width="76" height="28" rx="4" fill="#1a1a1a" opacity="0.9"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#c45a1a">The Abyss</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">CE</text></g>
+<g transform="rotate(202.5) translate(0,-330)"><rect x="-35" y="-14" width="70" height="28" rx="4" fill="#2a1a1a" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Carceri</text></g>
+<g transform="rotate(225) translate(0,-330)"><rect x="-32" y="-14" width="64" height="28" rx="4" fill="#2a2a2e" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Hades</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">NE</text></g>
+<g transform="rotate(247.5) translate(0,-330)"><rect x="-38" y="-14" width="76" height="28" rx="4" fill="#4a1a0a" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Gehenna</text></g>
+<g transform="rotate(270) translate(0,-330)"><rect x="-42" y="-14" width="84" height="28" rx="4" fill="#8b1a1a" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Nine Hells</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">LE</text></g>
+<g transform="rotate(292.5) translate(0,-330)"><rect x="-38" y="-14" width="76" height="28" rx="4" fill="#4a4a4a" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Acheron</text></g>
+<g transform="rotate(315) translate(0,-330)"><rect x="-42" y="-14" width="84" height="28" rx="4" fill="#5c5c5c" opacity="0.85"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Mechanus</text><text x="0" y="-20" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#8b6914" opacity="0.7">LN</text></g>
+<g transform="rotate(337.5) translate(0,-330)"><rect x="-35" y="-14" width="70" height="28" rx="4" fill="#2a4a5c" opacity="0.7"/><text x="0" y="4" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#e8d48b">Arcadia</text></g>
+</g></g>
+<text x="400" y="35" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" letter-spacing="3">GOOD</text>
+<text x="400" y="785" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" letter-spacing="3">EVIL</text>
+<text x="25" y="405" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" letter-spacing="3" transform="rotate(-90,25,405)">LAWFUL</text>
+<text x="778" y="405" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" letter-spacing="3" transform="rotate(90,778,405)">CHAOTIC</text>
+<text x="400" y="460" text-anchor="middle" font-family="Cinzel,serif" font-size="9" fill="#8b6914" opacity="0.5">THE OUTLANDS</text>
+<circle cx="400" cy="475" r="12" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-dasharray="2,2"/>
+<text x="400" y="479" text-anchor="middle" font-family="Cinzel,serif" font-size="7" fill="#c9a84c">SIGIL</text>
+<text x="400" y="22" text-anchor="middle" font-family="Cinzel Decorative,serif" font-size="14" fill="#3d2b1f" letter-spacing="4">THE GREAT WHEEL COSMOLOGY</text>
+</svg>
+<div class="diagram-caption">The planes arranged along the axes of Good–Evil and Law–Chaos</div>
+</div>
+</div>
+
+<!-- APP B: ALIGNMENT CHART -->
+<div class="content-page" id="appB">
+<h2 class="chapter-title">Appendix B — Deity Alignment Chart</h2>
+<div class="ornament">⚜</div>
+<div class="diagram-container">
+<svg viewBox="0 0 780 520" xmlns="http://www.w3.org/2000/svg" style="max-width:780px">
+<rect width="780" height="520" fill="#f4e4c1" rx="4"/>
+<line x1="60" y1="60" x2="60" y2="480" stroke="#8b6914" stroke-width="1.5"/><line x1="60" y1="60" x2="750" y2="60" stroke="#8b6914" stroke-width="1.5"/><line x1="60" y1="200" x2="750" y2="200" stroke="#8b6914" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/><line x1="60" y1="340" x2="750" y2="340" stroke="#8b6914" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/><line x1="60" y1="480" x2="750" y2="480" stroke="#8b6914" stroke-width="1.5"/><line x1="290" y1="60" x2="290" y2="480" stroke="#8b6914" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/><line x1="520" y1="60" x2="520" y2="480" stroke="#8b6914" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.5"/><line x1="750" y1="60" x2="750" y2="480" stroke="#8b6914" stroke-width="1.5"/>
+<rect x="61" y="61" width="229" height="139" fill="#1a3a5c" opacity="0.06"/><rect x="291" y="61" width="229" height="139" fill="#2d6b3f" opacity="0.06"/><rect x="521" y="61" width="229" height="139" fill="#1a6b6b" opacity="0.06"/><rect x="61" y="341" width="229" height="139" fill="#8b1a1a" opacity="0.06"/><rect x="291" y="341" width="229" height="139" fill="#2d1b4e" opacity="0.06"/><rect x="521" y="341" width="229" height="139" fill="#1a1a1a" opacity="0.06"/>
+<text x="175" y="50" text-anchor="middle" font-family="Cinzel,serif" font-size="12" fill="#8b6914" letter-spacing="2">LAWFUL</text><text x="405" y="50" text-anchor="middle" font-family="Cinzel,serif" font-size="12" fill="#8b6914" letter-spacing="2">NEUTRAL</text><text x="635" y="50" text-anchor="middle" font-family="Cinzel,serif" font-size="12" fill="#8b6914" letter-spacing="2">CHAOTIC</text>
+<text x="50" y="130" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" transform="rotate(-90,50,130)">GOOD</text><text x="50" y="270" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" transform="rotate(-90,50,270)">NEUTRAL</text><text x="50" y="410" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="#8b6914" transform="rotate(-90,50,410)">EVIL</text>
+<text x="175" y="90" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#1a3a5c">Tyr, Torm, Ilmater</text><text x="175" y="112" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#1a3a5c">Moradin, Yondalla</text>
+<text x="405" y="90" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#2d6b3f">Mystra, Chauntea</text><text x="405" y="112" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#2d6b3f">Lathander, Mielikki</text><text x="405" y="134" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#2d6b3f">Deneir, Eldath, Lliira</text>
+<text x="635" y="90" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#1a6b6b">Selûne, Sune</text><text x="635" y="112" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#1a6b6b">Corellon, Tymora</text>
+<text x="175" y="232" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#5c4033">Helm, Kelemvor</text><text x="175" y="254" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#5c4033">Savras, Jergal</text>
+<text x="405" y="232" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#5c4033">Oghma, Silvanus</text><text x="405" y="254" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#5c4033">Gond, Waukeen</text>
+<text x="635" y="240" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#6b3a8a">Tempus</text>
+<text x="175" y="372" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#8b1a1a">Bane, Loviatar</text><text x="175" y="394" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#8b1a1a">Asmodeus</text>
+<text x="405" y="372" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#4a1a4a">Shar, Bhaal, Myrkul</text><text x="405" y="394" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#4a1a4a">Mask, Auril</text>
+<text x="635" y="372" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#3d2b1f">Cyric, Talos, Lolth</text><text x="635" y="394" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#3d2b1f">Gruumsh, Talona</text><text x="635" y="416" text-anchor="middle" font-family="Crimson Text,serif" font-size="13" fill="#3d2b1f">Umberlee, Malar</text>
+<text x="405" y="505" text-anchor="middle" font-family="Cinzel,serif" font-size="12" fill="#8b6914" letter-spacing="3">FAERÛNIAN DEITIES BY ALIGNMENT</text>
+</svg>
+</div>
+</div>
+
+<!-- APP C: PANTHEON TABLE -->
+<div class="content-page" id="appC">
+<h2 class="chapter-title">Appendix C — Master Pantheon Table</h2>
+<div class="ornament">⚜</div>
+<table class="info-table"><thead><tr><th>Deity</th><th>Align.</th><th>Rank</th><th>Portfolio</th><th>Symbol</th><th>Colors</th></tr></thead><tbody>
+<tr><td>Ao</td><td>N/A</td><td>Overgod</td><td>Cosmic balance</td><td>None</td><td>None</td></tr>
+<tr><td>Mystra</td><td>NG</td><td>Greater</td><td>Magic, the Weave</td><td>Seven stars</td><td>Blue, white, purple</td></tr>
+<tr><td>Selûne</td><td>CG</td><td>Greater</td><td>Moon, navigation</td><td>Eyes amid seven stars</td><td>Silver, white, blue</td></tr>
+<tr><td>Shar</td><td>NE</td><td>Greater</td><td>Darkness, loss, secrets</td><td>Black disk</td><td>Black, purple</td></tr>
+<tr><td>Tempus</td><td>CN</td><td>Greater</td><td>War, battle</td><td>Sword on red shield</td><td>Red, silver</td></tr>
+<tr><td>Kelemvor</td><td>LN</td><td>Greater</td><td>Death, the dead</td><td>Arm with scales</td><td>Silver, grey</td></tr>
+<tr><td>Tyr</td><td>LG</td><td>Greater</td><td>Justice, law</td><td>Scales on warhammer</td><td>Blue, white</td></tr>
+<tr><td>Chauntea</td><td>NG</td><td>Greater</td><td>Agriculture, earth</td><td>Rose / Golden grain</td><td>Green, gold</td></tr>
+<tr><td>Lathander</td><td>NG</td><td>Greater</td><td>Dawn, renewal</td><td>Road into sunrise</td><td>Rose, gold</td></tr>
+<tr><td>Helm</td><td>LN</td><td>Greater</td><td>Protection</td><td>Eye on gauntlet</td><td>Steel, silver</td></tr>
+<tr><td>Oghma</td><td>N</td><td>Greater</td><td>Knowledge, bards</td><td>Blank scroll</td><td>White, gold</td></tr>
+<tr><td>Silvanus</td><td>N</td><td>Greater</td><td>Wild nature</td><td>Green oak leaf</td><td>Green, brown</td></tr>
+<tr><td>Talos</td><td>CE</td><td>Greater</td><td>Storms, destruction</td><td>Three lightning bolts</td><td>Black, blue</td></tr>
+<tr><td>Bane</td><td>LE</td><td>Greater</td><td>Tyranny, fear</td><td>Black hand</td><td>Black, red</td></tr>
+<tr><td>Cyric</td><td>CE</td><td>Greater</td><td>Murder, lies</td><td>Skull on sunburst</td><td>Black, purple</td></tr>
+<tr><td>Ilmater</td><td>LG</td><td>Inter.</td><td>Suffering, endurance</td><td>Bound hands</td><td>Grey, white, red</td></tr>
+<tr><td>Torm</td><td>LG</td><td>Inter.</td><td>Duty, loyalty</td><td>White gauntlet</td><td>White, gold</td></tr>
+<tr><td>Sune</td><td>CG</td><td>Inter.</td><td>Beauty, love</td><td>Woman's face</td><td>Crimson, scarlet</td></tr>
+<tr><td>Lolth</td><td>CE</td><td>Inter.</td><td>Drow, spiders</td><td>Spider w/ drow head</td><td>Black, purple</td></tr>
+<tr><td>Corellon</td><td>CG</td><td>Inter.</td><td>Elves, magic, arts</td><td>Crescent moon</td><td>Silver, blue</td></tr>
+<tr><td>Moradin</td><td>LG</td><td>Inter.</td><td>Dwarves, smithing</td><td>Hammer and anvil</td><td>Iron, bronze</td></tr>
+<tr><td>Gruumsh</td><td>CE</td><td>Inter.</td><td>Orcs, conquest</td><td>Unblinking eye</td><td>Red, bone</td></tr>
+</tbody></table>
+</div>
+
+<!-- APP D: DOMAINS -->
+<div class="content-page" id="appD">
+<h2 class="chapter-title">Appendix D — Domains & Deities (5e Reference)</h2>
+<div class="ornament">⚜</div>
+<div class="domain-grid">
+<div class="domain-cell"><div class="domain-cell-name">Arcana</div><p>Mystra, Azuth, Corellon, Savras</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Death</div><p>Myrkul, Bhaal, Shar, Talona</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Forge</div><p>Moradin, Gond, Flandal Steelskin</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Grave</div><p>Kelemvor, Jergal, Osiris</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Knowledge</div><p>Oghma, Deneir, Thoth, Azuth, Savras</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Life</div><p>Lathander, Chauntea, Ilmater, Sune, Helm, Selûne</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Light</div><p>Lathander, Selûne, Horus-Re</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Nature</div><p>Silvanus, Chauntea, Mielikki, Eldath</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Order</div><p>Bane, Tyr, Helm, Torm</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Peace</div><p>Eldath, Berronar Truesilver</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Tempest</div><p>Talos, Umberlee, Anhur, Valkur</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Trickery</div><p>Mask, Shar, Cyric, Lolth, Garl Glittergold</p></div>
+<div class="domain-cell"><div class="domain-cell-name">Twilight</div><p>Selûne, Helm, Ilmater</p></div>
+<div class="domain-cell"><div class="domain-cell-name">War</div><p>Tempus, Tyr, Torm, Bane, Gruumsh</p></div>
+</div>
+<h3 class="section-title">Warlock Patrons</h3>
+<table class="info-table"><thead><tr><th>Patron</th><th>Possible Patrons</th></tr></thead><tbody>
+<tr><td>Archfey</td><td>Titania, Queen of Air and Darkness, Oberon, Hyrsam</td></tr>
+<tr><td>Fiend</td><td>Asmodeus, Zariel, Mephistopheles, Demogorgon, Orcus</td></tr>
+<tr><td>Great Old One</td><td>Hadar, Acamar, Ghaunadaur, Dendar</td></tr>
+<tr><td>Undying</td><td>Vecna, powerful liches</td></tr>
+<tr><td>Celestial</td><td>Solars, Empyreans, Ki-rin</td></tr>
+</tbody></table>
+</div>
+
+<!-- APP E: PLANAR CREATURES -->
+<div class="content-page" id="appE">
+<h2 class="chapter-title">Appendix E — Creatures of the Planes</h2>
+<div class="ornament">⚜</div>
+<h3 class="section-title">Celestials</h3>
+<p><strong>Angels:</strong> Devas (messengers), planetars (warriors with emerald skin), solars (the mightiest — blinding radiance, can slay lesser fiends with a glance).</p>
+<p><strong>Archons:</strong> Mount Celestia natives. Lantern → hound → warden → trumpet → throne archons.</p>
+<p><strong>Guardinals:</strong> Elysium natives. Lupinal (wolf), equinal (horse), cervidal (deer), ursinal (bear), leonal (lion).</p>
+<p><strong>Eladrin (Celestial):</strong> Arborea natives. Coure (sprites), bralani (wind-warriors), firre (flame-haired artists), ghaele (whose gaze destroys evil).</p>
+
+<h3 class="section-title">Fiends</h3>
+<p><strong>Devils (Baatezu):</strong> Lemures → imps → bearded → barbed → chain → bone → erinyes → horned → ice → pit fiends. Above them: archdevils.</p>
+<p><strong>Demons (Tanar'ri):</strong> Dretch → quasit → hezrou → vrock → glabrezu → nalfeshnee → marilith → balor. Above them: demon lords (Demogorgon, Orcus, Graz'zt, Yeenoghu, Baphomet, Zuggtmoy, Juiblex).</p>
+<p><strong>Yugoloths:</strong> Mezzoloth (soldiers) → nycaloth (enforcers) → arcanaloth (diplomats) → ultroloth (leaders). Mercenary fiends who sell to both sides of the Blood War.</p>
+
+<h3 class="section-title">Elementals & Genies</h3>
+<p><strong>Djinn</strong> (Air, CG — friendliest). <strong>Efreeti</strong> (Fire, LE — slave-keeping tyrants). <strong>Marid</strong> (Water, CN — vain, capricious). <strong>Dao</strong> (Earth, NE — avaricious slavers). Mephits are small, mischievous elemental pests across all environments.</p>
+
+<h3 class="section-title">Aberrations</h3>
+<p><strong>Mind Flayers:</strong> Psionic brain-eaters with tentacled faces. Reproduce via ceremorphosis (tadpole implantation). Led by Elder Brains.</p>
+<p><strong>Beholders:</strong> Floating paranoid spheres with antimagic central eye and ten magical eyestalks. Every beholder considers all others flawed abominations.</p>
+<p><strong>Aboleths:</strong> Ancient fish-beings who predate the gods. Perfect racial memory stretching to the dawn of time. They resent the divine order.</p>
+
+<h3 class="section-title">Undead</h3>
+<p>From mindless (skeletons, zombies) to sapient (ghosts, wraiths, vampires, liches). All draw from the Negative Energy Plane. All are abominations to Kelemvor — souls denied their rightful afterlife.</p>
+</div>
+
+<!-- COLOPHON -->
+<div class="content-page">
+<div class="ornament-small">✦ ✦ ✦</div>
+<p style="text-align:center;font-family:'Cinzel Decorative',serif;color:var(--gold-dark);letter-spacing:3px;font-size:16px;margin:30px 0 10px">FINIS</p>
+<p style="text-align:center;font-style:italic;color:var(--ink-medium);max-width:500px;margin:0 auto;line-height:1.8">Thus concludes the Grand Theologica of Faerûn. The gods watch. The planes endure. The Wheel turns. May Oghma's light illuminate your path through these pages, and may Kelemvor judge you fairly when your own story ends.</p>
+<p style="text-align:center;font-family:'Cinzel',serif;font-size:12px;color:var(--gold-dark);letter-spacing:2px;margin-top:30px">TWENTY-SEVEN CHAPTERS • FIVE APPENDICES</p>
+<p style="text-align:center;font-family:'Cinzel',serif;font-size:11px;color:var(--parchment-edge);letter-spacing:1px;margin-top:8px">COMPILED FOR THE ARCHIVES OF CANDLEKEEP</p>
+<div class="ornament-small">⚜</div>
+</div>
+
+</div><!-- end page-wrapper -->
+
+</body>
+</html>

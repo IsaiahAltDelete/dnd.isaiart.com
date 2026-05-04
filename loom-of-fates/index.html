@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Loom of Fates — Complete Character Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral+SC:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--m:#58180D;--ml:#7A3021;--g:#C9AD6A;--gd:#B89956;--p:#EDE5CE;--pl:#F7F2E5;--pd:#E0D5B8;--sb:#F8F1E0;--t:#1A1A1A;--td:#6B6B5E;--r:#9C2B1B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--p);color:var(--t);font-family:'Libre Baskerville',Georgia,serif;font-size:14px;line-height:1.65;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.004) 2px,rgba(0,0,0,0.004) 4px),radial-gradient(ellipse at 15% 10%,rgba(160,120,60,0.06) 0%,transparent 50%),radial-gradient(ellipse at 85% 90%,rgba(140,100,50,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+.header{text-align:center;padding:50px 20px 24px;border-bottom:4px solid var(--m)}
+.header::after{content:'';display:block;width:180px;height:2px;background:var(--g);margin:14px auto 0}
+.header h1{font-family:'Spectral SC',serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:800;color:var(--m);letter-spacing:3px;text-transform:uppercase}
+.header .sub{font-family:'Spectral',serif;font-style:italic;font-size:.9rem;color:var(--td);margin-top:6px}
+.gen-area{max-width:800px;margin:30px auto;padding:0 20px;position:relative;z-index:1;text-align:center}
+.gen-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:20px}
+.gen-controls label{font-family:'Spectral SC',serif;font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m)}
+.gen-controls select,.gen-controls input{font-family:'Libre Baskerville',serif;font-size:.8rem;padding:6px 12px;background:var(--pl);color:var(--t);border:1.5px solid var(--pd);cursor:pointer}
+.gen-controls select:focus,.gen-controls input:focus{outline:none;border-color:var(--m)}
+.gen-btn{font-family:'Spectral SC',serif;font-size:1rem;font-weight:700;color:var(--p);background:var(--m);border:3px solid var(--g);padding:14px 40px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .25s;box-shadow:0 2px 8px rgba(88,24,13,.2)}
+.gen-btn:hover{background:var(--ml);box-shadow:0 4px 14px rgba(88,24,13,.3);transform:translateY(-1px)}
+/* CHARACTER SHEET */
+.sheet{max-width:900px;margin:0 auto 60px;padding:0 20px;display:none;position:relative;z-index:1}
+.sheet.visible{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sheet-page{background:var(--pl);border:2px solid var(--pd);box-shadow:0 2px 12px rgba(0,0,0,.08);padding:30px;margin-bottom:24px;position:relative}
+.sheet-page::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--m),var(--r),var(--m))}
+/* Sheet header */
+.sh-top{display:grid;grid-template-columns:1fr auto;gap:16px;padding-bottom:16px;border-bottom:3px solid var(--m);margin-bottom:20px}
+.sh-name{font-family:'Spectral SC',serif;font-size:1.8rem;font-weight:800;color:var(--m);line-height:1.2}
+.sh-title{font-family:'Spectral',serif;font-style:italic;font-size:.95rem;color:var(--td);margin-top:2px}
+.sh-level-badge{font-family:'Spectral SC',serif;font-size:.7rem;font-weight:700;color:var(--p);background:var(--m);padding:6px 14px;letter-spacing:1.5px;text-transform:uppercase;align-self:start;text-align:center;line-height:1.4}
+.sh-level-badge .lvl{font-size:1.6rem;display:block;margin-top:2px}
+/* Info bar */
+.info-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.info-chip{font-family:'Spectral SC',serif;font-size:.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;background:var(--sb);border:1px solid var(--g);color:var(--m)}
+/* Stats grid */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+.stat-box{text-align:center;border:2px solid var(--m);padding:8px 4px;background:var(--pl);position:relative}
+.stat-box .stat-name{font-family:'Spectral SC',serif;font-size:.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:2px}
+.stat-box .stat-score{font-family:'Spectral SC',serif;font-size:1.5rem;font-weight:800;color:var(--t)}
+.stat-box .stat-mod{font-family:'Spectral',serif;font-size:.8rem;color:var(--ml);font-weight:600}
+/* Combat stats */
+.combat-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.combat-stat{flex:1;min-width:80px;text-align:center;padding:8px;background:var(--sb);border-top:2px solid var(--r);border-bottom:2px solid var(--r)}
+.combat-stat .cs-label{font-family:'Spectral SC',serif;font-size:.45rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m)}
+.combat-stat .cs-val{font-family:'Spectral SC',serif;font-size:1.2rem;font-weight:800;color:var(--t)}
+/* Section headers */
+.sec-h{font-family:'Spectral SC',serif;font-size:.9rem;font-weight:700;color:var(--m);letter-spacing:1.5px;text-transform:uppercase;border-bottom:2px solid var(--g);padding-bottom:4px;margin:20px 0 12px}
+.sec-h:first-child{margin-top:0}
+/* Flavor text blocks */
+.flav{font-family:'Libre Baskerville',serif;font-size:.82rem;color:var(--t);line-height:1.7;margin-bottom:10px}
+.flav strong{color:var(--m);font-family:'Spectral SC',serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.flav em{color:var(--ml)}
+.flav-block{background:var(--sb);border-top:2px solid var(--r);border-bottom:2px solid var(--r);padding:12px 16px;margin:12px 0;font-size:.82rem;line-height:1.7}
+.flav-block .fb-title{font-family:'Spectral SC',serif;font-size:.7rem;font-weight:700;color:var(--m);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+/* Spell list */
+.spell-level-h{font-family:'Spectral SC',serif;font-size:.65rem;font-weight:700;color:var(--m);letter-spacing:1.5px;text-transform:uppercase;margin:10px 0 4px;padding-bottom:2px;border-bottom:1px solid var(--g)}
+.spell-list{font-family:'Libre Baskerville',serif;font-size:.78rem;color:var(--t);line-height:1.6;margin-bottom:8px;padding-left:16px}
+.spell-list em{color:var(--ml);font-size:.72rem}
+/* Feature list */
+.feat-list{list-style:none;padding:0}
+.feat-list li{padding:4px 0 4px 14px;border-left:3px solid var(--g);margin-bottom:6px;font-size:.82rem;line-height:1.5}
+.feat-list li strong{font-family:'Spectral SC',serif;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--m)}
+/* Two column layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+/* Equipment grid */
+.equip-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.equip-card{background:rgba(255,255,255,.3);border:1px solid var(--pd);padding:10px 12px}
+.equip-card .ec-label{font-family:'Spectral SC',serif;font-size:.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:3px}
+.equip-card .ec-name{font-family:'Spectral',serif;font-size:.9rem;font-weight:600;color:var(--t)}
+.equip-card .ec-desc{font-size:.75rem;color:var(--td);margin-top:3px;line-height:1.5;font-style:italic}
+/* Personality grid */
+.pers-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pers-box{padding:10px 12px;border-left:3px solid var(--g);background:rgba(255,255,255,.2)}
+.pers-box .pb-label{font-family:'Spectral SC',serif;font-size:.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:3px}
+.pers-box .pb-text{font-size:.8rem;line-height:1.5}
+/* Backstory */
+.backstory{font-family:'Libre Baskerville',serif;font-size:.82rem;line-height:1.8;color:var(--t);text-align:justify}
+.backstory::first-letter{font-family:'Spectral SC',serif;font-size:2.2rem;font-weight:800;color:var(--m);float:left;line-height:.8;margin:4px 6px 0 0}
+/* Footer */
+.foot{text-align:center;padding:20px;color:var(--td);font-style:italic;font-size:.8rem;border-top:2px solid var(--g);max-width:900px;margin:0 auto}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr)}.two-col,.equip-grid,.pers-grid{grid-template-columns:1fr}.sh-top{grid-template-columns:1fr}.gen-controls{flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="header">
+<h1>The Loom of Fates</h1>
+<div class="sub">Complete Character Forge — Every Subclass, Every Spell, Every Detail</div>
+</header>
+
+<div class="gen-area">
+<div class="gen-controls">
+<div><label>Level</label><br><select id="inLevel"><option value="random">Random</option>
+<option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option></select></div>
+<div><label>Class</label><br><select id="inClass"><option value="random">Random</option></select></div>
+<div><label>Race</label><br><select id="inRace"><option value="random">Random</option></select></div>
+</div>
+<button class="gen-btn" onclick="generate()">◆ Forge a Character ◆</button>
+</div>
+
+<div class="sheet" id="sheet"></div>
+<div class="foot"><em>The Loom of Fates — may the dice favor the bold.</em></div>
+
+<script>
+// === UTILITY ===
+const R=(a)=>a[Math.floor(Math.random()*a.length)];
+const D=(n,s)=>{let t=0;for(let i=0;i<n;i++)t+=Math.floor(Math.random()*s)+1;return t};
+const roll4d6=()=>{let d=[D(1,6),D(1,6),D(1,6),D(1,6)];d.sort((a,b)=>a-b);return d[1]+d[2]+d[3]};
+const mod=(s)=>{let m=Math.floor((s-10)/2);return m>=0?'+'+m:''+m};
+const profBonus=(l)=>Math.floor((l-1)/4)+2;
+
+// === RACES (expanded) ===
+const RACES=[
+"Human","High Elf","Wood Elf","Drow","Hill Dwarf","Mountain Dwarf","Duergar",
+"Lightfoot Halfling","Stout Halfling","Half-Elf","Half-Orc","Tiefling",
+"Dragonborn (Red)","Dragonborn (Gold)","Dragonborn (Silver)","Dragonborn (Blue)","Dragonborn (Green)",
+"Forest Gnome","Rock Gnome","Deep Gnome","Goliath","Aasimar (Protector)","Aasimar (Scourge)","Aasimar (Fallen)",
+"Fire Genasi","Water Genasi","Earth Genasi","Air Genasi","Tabaxi","Kenku","Tortle","Firbolg",
+"Bugbear","Goblin","Hobgoblin","Kobold","Lizardfolk","Orc","Yuan-Ti Pureblood",
+"Changeling","Kalashtar","Shifter","Warforged","Githyanki","Githzerai",
+"Satyr","Fairy","Harengon","Owlin","Autognome","Plasmoid","Hadozee","Thri-kreen"
+];
+
+// === CLASSES & SUBCLASSES (ALL BOOKS) ===
+const CLASSES={
+"Barbarian":{hd:12,primary:"STR",saves:["STR","CON"],armor:"medium",
+  subclasses:[
+    {name:"Path of the Berserker",src:"PHB",desc:"Enters a frenzy that pushes beyond mortal limits, trading exhaustion for devastating power"},
+    {name:"Path of the Totem Warrior",src:"PHB",desc:"Channels the spirit of a totem animal — Bear, Eagle, Elk, Tiger, or Wolf — gaining primal gifts"},
+    {name:"Path of the Ancestral Guardian",src:"XGE",desc:"Calls upon the spirits of honored ancestors to shield allies and punish foes"},
+    {name:"Path of the Storm Herald",src:"XGE",desc:"Radiates an aura of elemental fury — desert heat, freezing tundra, or crackling sea storms"},
+    {name:"Path of the Zealot",src:"XGE",desc:"A divine warrior fueled by righteous fury, nearly impossible to kill permanently"},
+    {name:"Path of the Beast",src:"TCE",desc:"Transforms in rage — growing claws, fangs, or a lashing tail from something primal within"},
+    {name:"Path of Wild Magic",src:"TCE",desc:"Rage triggers unpredictable surges of raw arcane chaos from the Feywild or beyond"},
+    {name:"Path of the Battlerager",src:"SCAG",desc:"A dwarven tradition of fighting in spiked armor, using their own body as a weapon"},
+    {name:"Path of the Giant",src:"BGG",desc:"Channels the elemental might of giants, growing in size and hurling enemies aside"},
+    {name:"Path of the World Tree",src:"BGG",desc:"Connected to Yggdrasil, opening portals and drawing on the power of the World Tree"},
+    {name:"Wildheart",src:"BG3",desc:"Speaks with animals and bonds deeply with nature, choosing a bestial aspect in rage"}
+  ],
+  rageReasons:["Seeing the weak preyed upon by the strong","The sound of a specific war drum rhythm from their homeland","Remembering the village that burned","The smell of blood — theirs or anyone else's","Being told they cannot do something","Protecting someone who reminds them of a lost sibling","A prayer to their ancestors that becomes a battle cry","The sheer joy of combat — they were born for this","Flashbacks to captivity — they will never be caged again","The memory of a broken promise","When their allies fall — every wound on a friend is fuel","A cold, calculating fury — not hot anger, but an ice-clear killing focus"]
+},
+"Bard":{hd:8,primary:"CHA",saves:["DEX","CHA"],armor:"light",
+  subclasses:[
+    {name:"College of Lore",src:"PHB",desc:"A scholar-entertainer who collects knowledge and secrets from every tradition"},
+    {name:"College of Valor",src:"PHB",desc:"An inspiring war-poet who fights alongside warriors, weaving magic into martial prowess"},
+    {name:"College of Glamour",src:"XGE",desc:"Trained by fey, radiates supernatural beauty and commanding presence"},
+    {name:"College of Swords",src:"XGE",desc:"A blade-dancer who channels magic through weapon flourishes"},
+    {name:"College of Whispers",src:"XGE",desc:"A shadow-bard who weaponizes secrets, fear, and stolen identities"},
+    {name:"College of Creation",src:"TCE",desc:"Taps into the Song of Creation itself, conjuring objects from pure performance"},
+    {name:"College of Eloquence",src:"TCE",desc:"The ultimate orator — their words are supernaturally persuasive and cutting"},
+    {name:"College of Spirits",src:"VRGtR",desc:"Channels tales of the dead through seances, granting spectral boons"}
+  ]
+},
+"Cleric":{hd:8,primary:"WIS",saves:["WIS","CHA"],armor:"medium",
+  subclasses:[
+    {name:"Knowledge Domain",src:"PHB",desc:"Serves gods of learning — Oghma, Ioun, Aureon — unlocking secrets through divine insight"},
+    {name:"Life Domain",src:"PHB",desc:"The quintessential healer, empowered by gods of mercy and vitality like Lathander or Ilmater"},
+    {name:"Light Domain",src:"PHB",desc:"Wields holy fire and radiance in service to gods of sun and dawn"},
+    {name:"Nature Domain",src:"PHB",desc:"A divine steward of the natural world, bridging druidic and divine traditions"},
+    {name:"Tempest Domain",src:"PHB",desc:"Commands thunder and lightning in service to storm gods like Talos or Kord"},
+    {name:"Trickery Domain",src:"PHB",desc:"Serves gods of mischief — Mask, the Traveler — specializing in deception and illusions"},
+    {name:"War Domain",src:"PHB",desc:"A holy warrior empowered by gods of battle — Tempus, Bane, or Heironeous"},
+    {name:"Forge Domain",src:"XGE",desc:"Blessed by gods of the forge — Moradin, Onatar — creating and enchanting arms and armor"},
+    {name:"Grave Domain",src:"XGE",desc:"Guards the line between life and death, empowered by Kelemvor or the Raven Queen"},
+    {name:"Arcana Domain",src:"SCAG",desc:"Serves gods of magic — Mystra, Boccob — wielding arcane spells through divine faith"},
+    {name:"Order Domain",src:"TCE",desc:"Enforces divine law, compelling obedience and smiting the chaotic"},
+    {name:"Peace Domain",src:"TCE",desc:"Forges supernatural bonds between allies, sharing strength and protection"},
+    {name:"Twilight Domain",src:"TCE",desc:"Guards against the terrors of the night, providing comfort in darkness"}
+  ]
+},
+"Druid":{hd:8,primary:"WIS",saves:["INT","WIS"],armor:"medium (no metal)",
+  subclasses:[
+    {name:"Circle of the Land",src:"PHB",desc:"Draws power from a specific biome — arctic, coast, desert, forest, grassland, mountain, swamp, or Underdark"},
+    {name:"Circle of the Moon",src:"PHB",desc:"Master shapeshifter who transforms into increasingly powerful beasts"},
+    {name:"Circle of Dreams",src:"XGE",desc:"Connected to the Feywild, offering healing, teleportation, and dreamwalking"},
+    {name:"Circle of the Shepherd",src:"XGE",desc:"Summons and empowers nature spirits, commanding beasts and fey"},
+    {name:"Circle of Spores",src:"TCE",desc:"Embraces the cycle of decay, wielding fungal necrotic power"},
+    {name:"Circle of Stars",src:"TCE",desc:"Reads the cosmic map of the heavens, channeling starlight into power"},
+    {name:"Circle of Wildfire",src:"TCE",desc:"Understands that fire is renewal — bonded to a wildfire spirit"},
+    {name:"Circle of the Land (Underdark)",src:"PHB",desc:"Draws upon the alien magic of the lightless depths below the world"}
+  ]
+},
+"Fighter":{hd:10,primary:"STR",saves:["STR","CON"],armor:"heavy",
+  subclasses:[
+    {name:"Champion",src:"PHB",desc:"The purest martial warrior — devastating critical hits and unmatched physical prowess"},
+    {name:"Battle Master",src:"PHB",desc:"A tactical genius who employs maneuvers like Riposte, Trip Attack, and Precision Attack"},
+    {name:"Eldritch Knight",src:"PHB",desc:"Blends martial skill with abjuration and evocation magic, a sword-and-spell hybrid"},
+    {name:"Arcane Archer",src:"XGE",desc:"Infuses arrows with arcane energy — Banishing, Grasping, Shadow, or Seeking arrows"},
+    {name:"Cavalier",src:"XGE",desc:"A mounted warrior and protector, excelling at controlling the battlefield"},
+    {name:"Samurai",src:"XGE",desc:"Possesses an unshakeable fighting spirit, gaining advantage through sheer determination"},
+    {name:"Echo Knight",src:"EBR",desc:"Calls forth echoes of themselves from other timelines to fight alongside them"},
+    {name:"Psi Warrior",src:"TCE",desc:"Augments combat with telekinetic force — shielding allies and hurling foes"},
+    {name:"Rune Knight",src:"TCE",desc:"Inscribes giant runes onto equipment, gaining size and elemental power"},
+    {name:"Purple Dragon Knight",src:"SCAG",desc:"A Cormyrean knight-commander who inspires and heals allies through leadership"},
+    {name:"Banneret",src:"SCAG",desc:"A rallying battlefield presence, turning the tide through sheer force of personality"},
+    {name:"Champion (BG3)",src:"BG3",desc:"Remarkable athlete with expanded critical range and superior physical conditioning"}
+  ],
+  fightingStyles:["Defense — +1 AC while wearing armor, the patient guardian","Dueling — +2 damage with a one-handed weapon, precise and lethal","Great Weapon Fighting — rerolls low damage dice with two-handed weapons, crushing blows","Protection — uses shield to impose disadvantage on attacks against allies","Archery — +2 to ranged attack rolls, the deadshot","Two-Weapon Fighting — adds ability modifier to off-hand damage, a whirlwind of steel","Blind Fighting — 10ft blindsight, fights in total darkness without disadvantage","Interception — reduces damage to allies using a reaction, the bodyguard","Superior Technique — learns one Battle Master maneuver, a taste of tactical genius","Thrown Weapon Fighting — +2 damage with thrown weapons and draws them as part of an attack","Unarmed Fighting — 1d6+STR with fists, grappling deals automatic damage"]
+},
+"Monk":{hd:8,primary:"DEX",saves:["STR","DEX"],armor:"none",
+  subclasses:[
+    {name:"Way of the Open Hand",src:"PHB",desc:"The quintessential martial artist — Flurry of Blows that knocks prone, pushes, or stuns"},
+    {name:"Way of Shadow",src:"PHB",desc:"A ninja-monk who teleports through darkness and strikes from impossible angles"},
+    {name:"Way of the Four Elements",src:"PHB",desc:"Channels ki into elemental disciplines — flame, water, earth, and wind"},
+    {name:"Way of the Drunken Master",src:"XGE",desc:"Fights with the unpredictable grace of a drunken brawler, redirecting missed attacks"},
+    {name:"Way of the Kensei",src:"XGE",desc:"Bonds with chosen weapons, treating them as extensions of their monastic discipline"},
+    {name:"Way of the Sun Soul",src:"XGE",desc:"Projects ki as radiant bolts and searing sunbursts, a living weapon of light"},
+    {name:"Way of the Astral Self",src:"TCE",desc:"Manifests spectral arms and a visage of their inner self for devastating combat"},
+    {name:"Way of Mercy",src:"TCE",desc:"A masked healer who balances the power to mend with the power to kill"},
+    {name:"Way of the Long Death",src:"SCAG",desc:"Studies death itself, gaining vitality from the dying and resisting their own end"},
+    {name:"Way of the Ascendant Dragon",src:"FToD",desc:"Channels draconic power through ki — elemental breath, spectral wings, and frightful presence"}
+  ]
+},
+"Paladin":{hd:10,primary:"STR",saves:["WIS","CHA"],armor:"heavy",
+  subclasses:[
+    {name:"Oath of Devotion",src:"PHB",desc:"The classic holy knight — honesty, courage, compassion, honor, and duty above all"},
+    {name:"Oath of the Ancients",src:"PHB",desc:"A green knight sworn to protect the light and beauty of the natural world"},
+    {name:"Oath of Vengeance",src:"PHB",desc:"Relentless hunters of evil, willing to sacrifice anything to punish the wicked"},
+    {name:"Oath of Conquest",src:"XGE",desc:"Rules through fear and domination, crushing chaos under an iron boot"},
+    {name:"Oath of Redemption",src:"XGE",desc:"Believes even the most wicked can be saved, absorbing harm meant for others"},
+    {name:"Oath of Glory",src:"TCE",desc:"Aspires to legendary deeds, pushing physical limits in pursuit of immortal fame"},
+    {name:"Oath of the Watchers",src:"TCE",desc:"Vigilant against extraplanar threats — fiends, aberrations, and fey incursions"},
+    {name:"Oath of the Crown",src:"SCAG",desc:"Sworn to civilization, law, and the sovereign — the shield of the realm"},
+    {name:"Oathbreaker",src:"DMG/BG3",desc:"Forsook their sacred oath, now channeling dark power and commanding undead"}
+  ]
+},
+"Ranger":{hd:10,primary:"DEX",saves:["STR","DEX"],armor:"medium",
+  subclasses:[
+    {name:"Hunter",src:"PHB",desc:"Specialized in taking down specific prey — hordes, single targets, or massive creatures"},
+    {name:"Beast Master",src:"PHB",desc:"Bonds with a loyal animal companion who fights, scouts, and protects alongside them"},
+    {name:"Gloom Stalker",src:"XGE",desc:"Hunts in the darkest places — Underdark, shadow, and night — invisible to darkvision"},
+    {name:"Horizon Walker",src:"XGE",desc:"Guards against planar threats, teleporting mid-combat and dealing force damage"},
+    {name:"Monster Slayer",src:"XGE",desc:"Studies supernatural quarry, countering their magic and exploiting their weaknesses"},
+    {name:"Fey Wanderer",src:"TCE",desc:"Touched by the Feywild, radiating fey charm and psychic power alongside martial skill"},
+    {name:"Swarmkeeper",src:"TCE",desc:"Commands a swarm of nature spirits (insects, birds, pixies) that augments every strike"},
+    {name:"Drakewarden",src:"FToD",desc:"Bonded to a growing drake companion that evolves into a rideable dragon"}
+  ]
+},
+"Rogue":{hd:8,primary:"DEX",saves:["DEX","INT"],armor:"light",
+  subclasses:[
+    {name:"Thief",src:"PHB",desc:"The quintessential burglar — faster hands, supreme climbing, and magical item abuse"},
+    {name:"Assassin",src:"PHB",desc:"Master of disguise and the lethal first strike — devastating against surprised foes"},
+    {name:"Arcane Trickster",src:"PHB",desc:"Blends roguish skill with illusion and enchantment magic, an invisible hand"},
+    {name:"Inquisitive",src:"XGE",desc:"A detective who reads lies, spots hidden foes, and delivers Sneak Attack through insight"},
+    {name:"Mastermind",src:"XGE",desc:"A manipulator and spy, helping allies from the shadows with tactical genius"},
+    {name:"Scout",src:"XGE",desc:"A wilderness expert and skirmisher, faster and more survivable than any ranger"},
+    {name:"Swashbuckler",src:"XGE",desc:"A dashing duelist who dances in and out of melee, Sneak Attacking solo"},
+    {name:"Phantom",src:"TCE",desc:"Walks between life and death, gaining skills from the deceased and dealing necrotic damage"},
+    {name:"Soulknife",src:"TCE",desc:"Manifests psychic blades from pure willpower, communicating telepathically"}
+  ]
+},
+"Sorcerer":{hd:6,primary:"CHA",saves:["CON","CHA"],armor:"none",
+  subclasses:[
+    {name:"Draconic Bloodline",src:"PHB",desc:"Descended from dragons, their body manifests scales, wings, and elemental affinity"},
+    {name:"Wild Magic",src:"PHB",desc:"Their power is untamed chaos — every spell risks triggering a surge of random magic"},
+    {name:"Divine Soul",src:"XGE",desc:"Blessed by a divine source, they access the entire cleric spell list through sorcery"},
+    {name:"Shadow Magic",src:"XGE",desc:"Born of the Shadowfell, they summon darkness, a hound of shadow, and defy death"},
+    {name:"Storm Sorcery",src:"XGE",desc:"Infused with elemental air and storm, flying on gusts and hurling lightning"},
+    {name:"Aberrant Mind",src:"TCE",desc:"Touched by the Far Realm — psionic powers, telepathy, and alien transformation"},
+    {name:"Clockwork Soul",src:"TCE",desc:"Connected to Mechanus, restoring order and balance through perfectly calibrated magic"},
+    {name:"Lunar Sorcery",src:"DSotDQ",desc:"Draws power from the phases of the moon — full, new, and crescent — each granting different magic"},
+    {name:"Spellfire Sorcery",src:"Homebrew/BG3",desc:"Channels raw Weave energy as spellfire — absorbing magic and releasing it as devastating silver flame"}
+  ]
+},
+"Warlock":{hd:8,primary:"CHA",saves:["WIS","CHA"],armor:"light",
+  subclasses:[
+    {name:"The Archfey",src:"PHB",desc:"Pact with a lord of the Feywild — Titania, Oberon, the Queen of Air and Darkness"},
+    {name:"The Fiend",src:"PHB",desc:"Bound to a devil or demon lord — Asmodeus, Mephistopheles, Zariel, or a demon prince"},
+    {name:"The Great Old One",src:"PHB",desc:"Connected to an alien entity beyond comprehension — Dendar, Ghaunadaur, Tharizdun"},
+    {name:"The Celestial",src:"XGE",desc:"Pact with a being of the Upper Planes — a solar, ki-rin, empyrean, or unicorn lord"},
+    {name:"The Hexblade",src:"XGE",desc:"Bound to a sentient weapon forged in the Shadowfell, channeling its curse and power"},
+    {name:"The Fathomless",src:"TCE",desc:"Pact with an entity of the deep — a kraken, aboleth, or primordial sea leviathan"},
+    {name:"The Genie",src:"TCE",desc:"Bound to a noble genie — dao, djinni, efreeti, or marid — with a vessel home"},
+    {name:"The Undead",src:"VRGtR",desc:"Pact with an undead being of terrible power — a lich, death knight, or vampire lord"},
+    {name:"The Undying",src:"SCAG",desc:"Serves one who has conquered death — Vecna, Acererak, or a deathless entity"}
+  ]
+},
+"Wizard":{hd:6,primary:"INT",saves:["INT","WIS"],armor:"none",
+  subclasses:[
+    {name:"School of Abjuration",src:"PHB",desc:"Master of protective magic — wards, shields, banishment, and counterspells"},
+    {name:"School of Conjuration",src:"PHB",desc:"Summons creatures and objects, teleports, and creates matter from nothing"},
+    {name:"School of Divination",src:"PHB",desc:"Sees the future, the past, and the hidden — portent dice that rewrite fate itself"},
+    {name:"School of Enchantment",src:"PHB",desc:"Bends minds and wills, charming, commanding, and rewriting memories"},
+    {name:"School of Evocation",src:"PHB",desc:"Raw destructive power — fireball, lightning bolt, and the ability to sculpt spells around allies"},
+    {name:"School of Illusion",src:"PHB",desc:"Creates convincing false realities that become temporarily real at high levels"},
+    {name:"School of Necromancy",src:"PHB",desc:"Commands the forces of death — raising undead, draining life, and defying mortality"},
+    {name:"School of Transmutation",src:"PHB",desc:"Transforms matter and energy — polymorphing, hasting, and the Transmuter's Stone"},
+    {name:"Bladesinger",src:"SCAG/TCE",desc:"An elven tradition blending swordplay and wizardry in a deadly arcane dance"},
+    {name:"War Magic",src:"XGE",desc:"Combines offense and defense, using arcane deflection and power surges in combat"},
+    {name:"Chronurgy Magic",src:"EBR",desc:"Manipulates time — freezing moments, accelerating allies, and trapping spells in beads of time"},
+    {name:"Graviturgy Magic",src:"EBR",desc:"Controls gravity — crushing foes, launching allies, and warping the pull of the earth"},
+    {name:"Order of Scribes",src:"TCE",desc:"Their spellbook is alive — an awakened mind that can change spell damage types and manifest as a specter"}
+  ]
+},
+"Artificer":{hd:8,primary:"INT",saves:["CON","INT"],armor:"medium",
+  subclasses:[
+    {name:"Alchemist",src:"TCE/EBR",desc:"Brews experimental elixirs that heal, transform, empower, or explode"},
+    {name:"Artillerist",src:"TCE/EBR",desc:"Constructs arcane cannons — flamethrower, force ballista, or protector turret"},
+    {name:"Battle Smith",src:"TCE/EBR",desc:"Fights alongside a Steel Defender construct, using INT for weapon attacks"},
+    {name:"Armorer",src:"TCE",desc:"Infuses armor with magic — Guardian mode (tank) or Infiltrator mode (stealth striker)"}
+  ]
+}
+};
+
+// === SPELL LISTS BY CLASS ===
+const SPELLS={
+cantrips:{
+  "Wizard":["Fire Bolt","Ray of Frost","Shocking Grasp","Mage Hand","Prestidigitation","Minor Illusion","Light","Chill Touch","Acid Splash","Toll the Dead","Mending","Message","Blade Ward","Dancing Lights","Friends","Encode Thoughts","Shape Water","Mold Earth","Gust","Control Flames","Booming Blade","Green-Flame Blade","Sword Burst","Lightning Lure","Mind Sliver","Frostbite"],
+  "Sorcerer":["Fire Bolt","Ray of Frost","Shocking Grasp","Mage Hand","Prestidigitation","Minor Illusion","Light","Chill Touch","Acid Splash","Toll the Dead","Dancing Lights","Friends","Shape Water","Mold Earth","Gust","Control Flames","Booming Blade","Green-Flame Blade","Sword Burst","Lightning Lure","Mind Sliver","Frostbite","Thunderclap","Infestation"],
+  "Warlock":["Eldritch Blast","Chill Touch","Mage Hand","Minor Illusion","Prestidigitation","Toll the Dead","Blade Ward","Friends","Booming Blade","Green-Flame Blade","Lightning Lure","Sword Burst","Magic Stone","Thunderclap","Mind Sliver","Frostbite","Create Bonfire"],
+  "Bard":["Vicious Mockery","Minor Illusion","Prestidigitation","Mage Hand","Light","Dancing Lights","Friends","Mending","Message","Blade Ward","Thunderclap","True Strike"],
+  "Cleric":["Sacred Flame","Toll the Dead","Guidance","Light","Mending","Resistance","Spare the Dying","Thaumaturgy","Word of Radiance"],
+  "Druid":["Druidcraft","Guidance","Mending","Poison Spray","Produce Flame","Resistance","Shillelagh","Thorn Whip","Frostbite","Thunderclap","Infestation","Shape Water","Mold Earth","Gust","Control Flames"],
+  "Artificer":["Mending","Fire Bolt","Acid Splash","Light","Prestidigitation","Shocking Grasp","Thorn Whip","Ray of Frost","Mage Hand","Spare the Dying","Dancing Lights","Magic Stone","Booming Blade","Green-Flame Blade","Sword Burst","Lightning Lure","Create Bonfire","Frostbite"]
+},
+// Spells by level (representative iconic spells per class)
+L1:{
+  "Wizard":["Shield","Magic Missile","Mage Armor","Find Familiar","Detect Magic","Sleep","Thunderwave","Burning Hands","Chromatic Orb","Grease","Identify","Feather Fall","Fog Cloud","Charm Person","Disguise Self","Comprehend Languages","Tasha's Hideous Laughter","Witch Bolt","Absorb Elements","Ice Knife","Catapult","Cause Fear","Snare","Earth Tremor","Jim's Magic Missile"],
+  "Sorcerer":["Shield","Magic Missile","Mage Armor","Burning Hands","Chromatic Orb","Thunderwave","Sleep","Charm Person","Disguise Self","Fog Cloud","Detect Magic","Feather Fall","Ice Knife","Absorb Elements","Catapult","Chaos Bolt","Earth Tremor","Witch Bolt"],
+  "Warlock":["Hex","Armor of Agathys","Hellish Rebuke","Charm Person","Comprehend Languages","Expeditious Retreat","Protection from Evil and Good","Unseen Servant","Witch Bolt","Arms of Hadar","Cause Fear","Dissonant Whispers"],
+  "Bard":["Healing Word","Thunderwave","Dissonant Whispers","Faerie Fire","Sleep","Charm Person","Detect Magic","Feather Fall","Disguise Self","Tasha's Hideous Laughter","Cure Wounds","Speak with Animals","Heroism","Bane","Silvery Barbs","Earth Tremor"],
+  "Cleric":["Healing Word","Cure Wounds","Guiding Bolt","Shield of Faith","Bless","Bane","Detect Magic","Inflict Wounds","Command","Sanctuary","Protection from Evil and Good","Ceremony","Create or Destroy Water"],
+  "Druid":["Healing Word","Entangle","Faerie Fire","Goodberry","Thunderwave","Fog Cloud","Cure Wounds","Detect Magic","Charm Person","Speak with Animals","Animal Friendship","Create or Destroy Water","Earth Tremor","Ice Knife","Absorb Elements"],
+  "Ranger":["Hunter's Mark","Cure Wounds","Goodberry","Ensnaring Strike","Hail of Thorns","Absorb Elements","Fog Cloud","Detect Magic","Longstrider","Speak with Animals","Animal Friendship","Zephyr Strike"],
+  "Paladin":["Divine Favor","Shield of Faith","Cure Wounds","Bless","Command","Detect Magic","Detect Evil and Good","Protection from Evil and Good","Thunderous Smite","Searing Smite","Wrathful Smite","Compelled Duel","Heroism"],
+  "Artificer":["Cure Wounds","Faerie Fire","Grease","Tasha's Caustic Brew","Sanctuary","Detect Magic","Disguise Self","Expeditious Retreat","False Life","Feather Fall","Absorb Elements","Catapult"]
+},
+L2:{
+  "Wizard":["Misty Step","Mirror Image","Invisibility","Web","Scorching Ray","Shatter","Hold Person","Suggestion","Darkness","Blur","Levitate","Flaming Sphere","Dragon's Breath","Shadow Blade","Mind Spike","Enlarge/Reduce","Knock","See Invisibility","Phantasmal Force","Arcane Lock","Tasha's Mind Whip"],
+  "Sorcerer":["Misty Step","Mirror Image","Invisibility","Scorching Ray","Shatter","Hold Person","Suggestion","Darkness","Blur","Levitate","Enlarge/Reduce","Dragon's Breath","Shadow Blade","Mind Spike","Web","Tasha's Mind Whip"],
+  "Warlock":["Misty Step","Mirror Image","Invisibility","Hold Person","Suggestion","Darkness","Shatter","Spider Climb","Cloud of Daggers","Crown of Madness","Enthrall","Mind Spike","Shadow Blade"],
+  "Bard":["Heat Metal","Shatter","Hold Person","Suggestion","Invisibility","Silence","Knock","Blindness/Deafness","Calm Emotions","Lesser Restoration","Enhance Ability","Phantasmal Force","Cloud of Daggers","Enthrall","Crown of Madness"],
+  "Cleric":["Spiritual Weapon","Hold Person","Silence","Lesser Restoration","Prayer of Healing","Aid","Augury","Blindness/Deafness","Calm Emotions","Enhance Ability","Warding Bond","Zone of Truth","Gentle Repose"],
+  "Druid":["Moonbeam","Heat Metal","Hold Person","Spike Growth","Barkskin","Lesser Restoration","Pass Without Trace","Gust of Wind","Summon Beast","Warding Wind","Dust Devil","Enlarge/Reduce"],
+  "Ranger":["Pass Without Trace","Spike Growth","Silence","Lesser Restoration","Cordon of Arrows","Summon Beast","Misty Step","Enhance Ability","Find Traps","Healing Spirit"],
+  "Paladin":["Find Steed","Aid","Branding Smite","Lesser Restoration","Magic Weapon","Protection from Poison","Zone of Truth","Warding Bond","Gentle Repose"],
+  "Artificer":["Heat Metal","Web","Blur","Invisibility","Lesser Restoration","Aid","Enlarge/Reduce","Continual Flame","Pyrotechnics","Rope Trick","See Invisibility","Spider Climb"]
+},
+L3:{
+  "Wizard":["Fireball","Lightning Bolt","Counterspell","Dispel Magic","Fly","Haste","Slow","Hypnotic Pattern","Fear","Major Image","Animate Dead","Bestow Curse","Clairvoyance","Sending","Tongues","Summon Fey","Spirit Shroud","Thunder Step","Intellect Fortress","Tiny Servant","Phantom Steed"],
+  "Sorcerer":["Fireball","Lightning Bolt","Counterspell","Dispel Magic","Fly","Haste","Slow","Hypnotic Pattern","Fear","Major Image","Thunder Step","Tongues","Summon Fey","Spirit Shroud"],
+  "Warlock":["Counterspell","Dispel Magic","Fly","Hypnotic Pattern","Fear","Hunger of Hadar","Summon Fey","Spirit Shroud","Thunder Step","Vampiric Touch","Tongues","Gaseous Form","Major Image"],
+  "Bard":["Hypnotic Pattern","Fear","Dispel Magic","Major Image","Bestow Curse","Tongues","Sending","Leomund's Tiny Hut","Glyph of Warding","Plant Growth","Speak with Dead","Spirit Guardians"],
+  "Cleric":["Spirit Guardians","Revivify","Dispel Magic","Bestow Curse","Beacon of Hope","Glyph of Warding","Mass Healing Word","Sending","Tongues","Remove Curse","Speak with Dead","Daylight","Aura of Vitality"],
+  "Druid":["Call Lightning","Conjure Animals","Dispel Magic","Plant Growth","Sleet Storm","Wind Wall","Water Breathing","Speak with Plants","Summon Fey","Tidal Wave","Erupting Earth","Revivify"],
+  "Ranger":["Conjure Animals","Lightning Arrow","Wind Wall","Plant Growth","Revivify","Speak with Plants","Summon Fey","Flame Arrows"],
+  "Paladin":["Revivify","Dispel Magic","Aura of Vitality","Crusader's Mantle","Blinding Smite","Elemental Weapon","Remove Curse","Spirit Shroud","Daylight"],
+  "Artificer":["Dispel Magic","Revivify","Haste","Fly","Tiny Servant","Intellect Fortress","Water Breathing","Glyph of Warding"]
+},
+L4:{
+  "Wizard":["Greater Invisibility","Dimension Door","Polymorph","Banishment","Wall of Fire","Ice Storm","Arcane Eye","Fire Shield","Summon Aberration","Sickening Radiance","Storm Sphere","Vitriolic Sphere","Phantasmal Killer","Evard's Black Tentacles","Fabricate","Otiluke's Resilient Sphere","Conjure Minor Elementals"],
+  "Sorcerer":["Greater Invisibility","Dimension Door","Polymorph","Banishment","Wall of Fire","Ice Storm","Storm Sphere","Vitriolic Sphere","Sickening Radiance","Fire Shield"],
+  "Warlock":["Banishment","Dimension Door","Summon Aberration","Sickening Radiance","Shadow of Moil","Elemental Bane"],
+  "Bard":["Greater Invisibility","Dimension Door","Polymorph","Compulsion","Freedom of Movement","Charm Monster"],
+  "Cleric":["Banishment","Guardian of Faith","Death Ward","Freedom of Movement","Divination","Stone Shape"],
+  "Druid":["Polymorph","Conjure Woodland Beings","Ice Storm","Wall of Fire","Blight","Giant Insect","Summon Elemental","Guardian of Nature","Grasping Vine","Stone Shape","Stoneskin"],
+  "Ranger":["Guardian of Nature","Freedom of Movement","Grasping Vine","Conjure Woodland Beings","Stoneskin","Summon Elemental"],
+  "Paladin":["Banishment","Death Ward","Find Greater Steed","Aura of Life","Aura of Purity","Staggering Smite"],
+  "Artificer":["Arcane Eye","Freedom of Movement","Fabricate","Summon Construct","Otiluke's Resilient Sphere","Stone Shape","Stoneskin"]
+},
+L5:{
+  "Wizard":["Wall of Force","Animate Objects","Cone of Cold","Telekinesis","Hold Monster","Bigby's Hand","Synaptic Static","Scrying","Teleportation Circle","Dominate Person","Summon Draconic Spirit","Steel Wind Strike","Dawn","Mislead","Modify Memory","Cloudkill","Dream","Geas","Legend Lore","Passwall","Seeming","Creation"],
+  "Sorcerer":["Cone of Cold","Hold Monster","Synaptic Static","Telekinesis","Wall of Force","Animate Objects","Dominate Person","Summon Draconic Spirit","Cloudkill","Seeming"],
+  "Warlock":["Hold Monster","Synaptic Static","Scrying","Dream","Danse Macabre","Enervation","Far Step","Infernal Calling","Teleportation Circle"],
+  "Bard":["Hold Monster","Synaptic Static","Animate Objects","Dominate Person","Greater Restoration","Mass Cure Wounds","Modify Memory","Scrying","Seeming","Dream","Teleportation Circle","Legend Lore"],
+  "Cleric":["Greater Restoration","Mass Cure Wounds","Flame Strike","Raise Dead","Scrying","Commune","Dawn","Dispel Evil and Good","Geas","Hallow","Summon Celestial","Holy Weapon","Contagion"],
+  "Druid":["Conjure Elemental","Greater Restoration","Reincarnate","Wall of Stone","Awaken","Commune with Nature","Maelstrom","Summon Draconic Spirit","Wrath of Nature"],
+  "Ranger":["Conjure Volley","Swift Quiver","Steel Wind Strike","Greater Restoration","Wrath of Nature"],
+  "Paladin":["Destructive Wave","Holy Weapon","Banishing Smite","Dispel Evil and Good","Raise Dead","Circle of Power","Geas","Summon Celestial"],
+  "Artificer":["Animate Objects","Wall of Force","Bigby's Hand","Greater Restoration","Creation"]
+},
+L6:{"Wizard":["Disintegrate","Chain Lightning","Mass Suggestion","Globe of Invulnerability","Contingency","True Seeing","Sunbeam","Mental Prison","Tenser's Transformation","Flesh to Stone","Scatter"],"Sorcerer":["Disintegrate","Chain Lightning","Mass Suggestion","Globe of Invulnerability","Sunbeam","Mental Prison","Tenser's Transformation"],"Warlock":["Mass Suggestion","Circle of Death","Create Undead","Soul Cage","Mental Prison","Scatter"],"Bard":["Mass Suggestion","Otto's Irresistible Dance","Eyebite","True Seeing","Heroes' Feast","Programmed Illusion"],"Cleric":["Heal","Harm","Blade Barrier","Word of Recall","True Seeing","Heroes' Feast","Planar Ally","Sunbeam"],"Druid":["Heal","Sunbeam","Wall of Thorns","Transport via Plants","Conjure Fey","Move Earth","Wind Walk"]},
+L7:{"Wizard":["Teleport","Plane Shift","Forcecage","Simulacrum","Finger of Death","Crown of Stars","Reverse Gravity","Prismatic Spray","Mordenkainen's Magnificent Mansion"],"Sorcerer":["Teleport","Plane Shift","Finger of Death","Crown of Stars","Reverse Gravity","Prismatic Spray","Fire Storm"],"Warlock":["Finger of Death","Plane Shift","Forcecage","Crown of Stars"],"Bard":["Teleport","Forcecage","Regenerate","Resurrection","Prismatic Spray","Symbol","Mordenkainen's Magnificent Mansion"],"Cleric":["Resurrection","Regenerate","Divine Word","Plane Shift","Fire Storm","Conjure Celestial","Symbol","Temple of the Gods"],"Druid":["Plane Shift","Regenerate","Fire Storm","Reverse Gravity","Whirlwind"]},
+L8:{"Wizard":["Maze","Mind Blank","Clone","Dominate Monster","Power Word Stun","Feeblemind","Antipathy/Sympathy","Sunburst","Demiplane","Illusory Dragon"],"Sorcerer":["Dominate Monster","Power Word Stun","Sunburst","Earthquake","Demiplane","Incendiary Cloud"],"Warlock":["Dominate Monster","Power Word Stun","Feeblemind","Demiplane","Glibness","Maddening Darkness"],"Bard":["Dominate Monster","Power Word Stun","Feeblemind","Glibness","Mind Blank","Antipathy/Sympathy"],"Cleric":["Holy Aura","Antimagic Field","Earthquake","Sunburst"],"Druid":["Animal Shapes","Earthquake","Sunburst","Tsunami","Feeblemind"]},
+L9:{"Wizard":["Wish","Meteor Swarm","Time Stop","Power Word Kill","True Polymorph","Gate","Prismatic Wall","Foresight","Shapechange","Imprisonment"],"Sorcerer":["Wish","Meteor Swarm","Time Stop","Power Word Kill","Psychic Scream"],"Warlock":["Power Word Kill","True Polymorph","Foresight","Imprisonment","Psychic Scream","Astral Projection"],"Bard":["Power Word Kill","True Polymorph","Foresight","Psychic Scream","Mass Polymorph"],"Cleric":["Mass Heal","True Resurrection","Gate","Astral Projection"],"Druid":["Shapechange","Storm of Vengeance","True Resurrection","Foresight"]}
+};
+
+// === BACKGROUNDS (expanded to 40) ===
+const BACKGROUNDS=["Acolyte","Charlatan","Criminal","Entertainer","Folk Hero","Guild Artisan","Hermit","Noble","Outlander","Sage","Sailor","Soldier","Urchin","Haunted One","Far Traveler","Clan Crafter","Courtier","Faction Agent","Knight","Pirate","Gladiator","Failed Merchant","Ruined","Rewarded","Refugee","Archaeologist","City Watch","Mercenary Veteran","Inheritor","Witchlight Hand","Anthropologist","Athlete","Celebrity Adventurer","Feylost","Investigator","Marine","Smuggler","Spy","Shipwright","Astral Drifter"];
+
+// === EXPANDED APPEARANCE DATA ===
+const SKIN=["Alabaster pale, almost luminous","Fair with rosy undertones","Light olive, sun-kissed","Warm bronze, like polished copper","Deep olive with golden undertones","Rich umber brown","Dark mahogany with reddish tones","Deep ebony, near-black","Ash grey with violet undertones","Pale blue-grey, almost translucent","Golden-amber, metallic sheen","Ruddy red-brown, wind-weathered","Tawny and freckle-dusted","Sallow with a greenish cast","Copper-red, as if lit from within","Deep indigo-purple","Faintly scaled, iridescent","Stone-grey with mineral flecks","Bark-brown with mossy patches","Obsidian black with silver undertones","Sunburnt umber, peeling at the nose","Mottled — two distinct skin tones","Warm sienna with vitiligo patterns","Midnight blue, almost black in shadow","Burnished gold, reflecting firelight","Dusty terracotta, cracked and weathered","Porcelain white with a web of blue veins","Deep plum, smooth and unblemished","Olive-green, hinting at fey blood","Pearl-grey, faintly luminescent at the temples"];
+const BUILDS=["Tall and gaunt — all sharp angles","Short and barrel-chested","Lean and wiry, built for speed","Broad-shouldered and imposing","Willowy and graceful","Stocky and solid as a stump","Lanky with disproportionately long limbs","Athletic and well-proportioned","Heavy-set with surprising agility","Petite but densely muscled","Towering — a head above most crowds","Compact and low to the ground","Scarecrow-thin with knobby joints","Powerfully built, neck like a tree trunk","Lithe with a dancer's poise","Rounded and soft-bodied","Corded with visible tendons and veins","Average in every dimension — forgettable","Asymmetric — one shoulder higher","Hunched with a perpetual stoop","Broad-hipped with thick limbs","Thin but sinewy — stronger than they look","Top-heavy, all shoulders and chest","Long-limbed with oversized hands","Compact and coiled like a spring"];
+const HAIR=["Raven black, straight and severe","Fiery copper-red, wild and untamed","Silver-white in a single long braid","Chestnut brown, thick and wavy","Honey blonde, cropped military-short","Steel grey, slicked back tight","Jet black with a shocking white streak","Auburn curls, shoulder-length","Shaved on one side, long on the other","Pure white, wispy and thin","Deep burgundy in elaborate braids","Sandy blonde, perpetually windblown","Blue-black with an oily sheen","Straw-yellow, brittle and sun-bleached","Bald with intricate scalp tattoos","Mossy green, fey-touched","Matted dreadlocks with bone beads","Closely cropped salt-and-pepper","Flame-orange, short and spiky","Midnight blue, impossibly smooth","Platinum blonde to the waist","Brown with premature grey at temples","Dark coils kept tight and close","Tousled dirty blonde, roguish","Ink-black top knot, sides shaved","Stark bald — by choice or curse","Long silver dreadlocks with rings","Bright red afro, glorious","Ash blonde undercut, sharp","Ghostly white mohawk","Rust-red and coarse, wolf-like","Lavender-tinted white, ethereal","Chocolate brown with copper highlights","Crow-black with a blue sheen in sunlight","Strawberry blonde, fine as silk"];
+const EYES=["Steel grey — cold and appraising","Warm brown — kind, with crow's feet","Vivid emerald green — unsettling","Pale ice-blue — almost colorless","Deep amber — wolf-like","Dark brown, nearly black — unreadable","Heterochromatic: blue and brown","Bright violet — sorcerous blood","Burnished gold — draconic","Milky and sightless in one eye","Copper-flecked hazel","Sea-green with grey flecks","Blood-red — infernal heritage","Pale lavender — otherworldly","Jet black, no visible iris — abyssal","Bright yellow — feral","Honey-brown, perpetually half-lidded","Teal, deep as ocean trenches","Silver, reflecting like a cat's","Storm-grey, darkening when angry","Opalescent — shifting colors","Faded green — weary beyond years","Bright cerulean — wide and innocent","Deep obsidian with gold starbursts","Warm chestnut with laugh lines"];
+const MARKS=["Jagged scar across the left cheek","Ritual scarification on both forearms","Brand mark on the shoulder","Dense freckles across nose and cheeks","Missing earlobe, cleanly cut","Elaborate facial clan tattoo","Burn scar covering one hand","Three parallel claw-marks on chest","Beauty mark on the upper lip","Deep crow's feet and laugh lines","Bite scar on the neck","Calloused, ink-stained fingers","Thin scar bisecting one eyebrow","Vitiligo patches on hands and face","Ears notched from frostbite","Faded holy symbol tattoo","Missing ring finger tip","Pockmark scars from plague","Keloid scar jaw to collarbone","Arcane sigil birthmark on palm","Teeth filed to points","Burn-scarred lips","White knuckle scars","Massive back tattoo of a dragon","Cauliflower ear — lifetime of fighting","Dimple on only one cheek","War paint that never washes off","Perfectly round scar over the heart","Rope-burn scars on both wrists","Crow's feet that deepen when casting"];
+const CLOTHING=["Worn leather over threadbare linens — road-stained and lived-in","Flowing robes in deep jewel tones — velvet, dramatic, impractical","Mismatched scavenged gear — nothing matches, all functional","Immaculate noble attire under a travel cloak","Simple homespun cloth — rough-woven, undyed","Head-to-toe black — leather, wool, and shadow","Bright scarves and sashes, layer upon layer","Military uniform, insignia filed off","Furs and hides stitched with sinew","Priestly vestments with visible holy symbol","Sailor's garb — loose shirt, wide belt, salt-crusted","Desert wrappings — light fabric covering everything","Aristocratic but decades out of fashion","One distinctive piece over plain clothing — a legendary coat","Performer's costume — sequins, feathers, too theatrical","All earth tones — designed to vanish into forest","Artisan's apron with leather tool belt","Bandages and rags concealing something","Fine chainmail under a scholarly robe","Barefoot with elaborate upper garments","Uniform from an order that no longer exists","Layered cloaks from different life chapters","Street clothes — urban, practical, pockets everywhere","Ceremonial armor too ornate for combat"];
+const FABRICS=["rough-spun wool","supple doeskin leather","threadbare cotton","oiled canvas","aged velvet","moth-eaten silk","quilted linen","boiled leather","fur-lined hide","bleached muslin","brocade with gold thread","felted wool dyed with berries","lizard-scale leather","spider-silk blend","raw undyed hemp","waxed cotton","salvaged military broadcloth","fey-touched gossamer","dwarven-forged chainweave","dragon-scale reinforced panels"];
+
+// === EXPANDED ORIGINS ===
+const ORIGINS=[
+{w:"Forgotten Realms",l:"Waterdeep, the City of Splendors"},{w:"Forgotten Realms",l:"Baldur's Gate, rough port on the Sword Coast"},{w:"Forgotten Realms",l:"Neverwinter, Jewel of the North"},{w:"Forgotten Realms",l:"Menzoberranzan, drow city of the Underdark"},{w:"Forgotten Realms",l:"Calimport, desert metropolis of Calimshan"},{w:"Forgotten Realms",l:"Silverymoon, city of learning and magic"},{w:"Forgotten Realms",l:"Luskan, pirate city of the Sword Coast"},{w:"Forgotten Realms",l:"Ten-Towns of Icewind Dale"},{w:"Forgotten Realms",l:"Athkatla, merchant capital of Amn"},{w:"Forgotten Realms",l:"Port Nyanzaru, Chult's gateway city"},{w:"Forgotten Realms",l:"Elturgard, under the Companion's light"},{w:"Forgotten Realms",l:"Suzail, royal capital of Cormyr"},{w:"Forgotten Realms",l:"Thay, under the Red Wizards"},{w:"Forgotten Realms",l:"Candlekeep, fortress-library on the coast"},{w:"Forgotten Realms",l:"Mithral Hall, dwarven stronghold"},{w:"Forgotten Realms",l:"Skullport, black market beneath Waterdeep"},{w:"Forgotten Realms",l:"Elturel, city of the Hellriders"},{w:"Forgotten Realms",l:"Daggerford, small trade town on the river"},{w:"Forgotten Realms",l:"Zhentil Keep, stronghold of the Black Network"},
+{w:"Eberron",l:"Sharn, the City of Towers"},{w:"Eberron",l:"The Mournland, blasted wastes of Cyre"},{w:"Eberron",l:"Stormreach, frontier city of Xen'drik"},{w:"Eberron",l:"Karrnath, nation of undead legions"},{w:"Eberron",l:"Aerenal, elven island of the Undying Court"},{w:"Eberron",l:"Droaam, nation of monsters"},{w:"Eberron",l:"Thronehold, neutral island of diplomacy"},
+{w:"Greyhawk",l:"Free City of Greyhawk"},{w:"Greyhawk",l:"The Wild Coast"},{w:"Greyhawk",l:"Veluna, pious theocracy"},{w:"Greyhawk",l:"Verbobonc, crossroads of the Flanaess"},
+{w:"Dragonlance",l:"Solace, treetop village of Abanasinia"},{w:"Dragonlance",l:"Palanthas, jewel of Solamnia"},{w:"Dragonlance",l:"Neraka, seat of the Dark Queen"},
+{w:"Exandria",l:"Emon, capital of Tal'Dorei"},{w:"Exandria",l:"Rexxentrum, Dwendalian capital"},{w:"Exandria",l:"Rosohna, city of perpetual night"},{w:"Exandria",l:"Ank'Harel, jewel of Marquet"},{w:"Exandria",l:"Whitestone, mountain stronghold"},{w:"Exandria",l:"Jrusar, city of spires in Marquet"},
+{w:"Ravenloft",l:"Barovia, under Strahd's shadow"},{w:"Ravenloft",l:"Darkon, domain of Azalin Rex"},{w:"Ravenloft",l:"Lamordia, domain of mad science"},
+{w:"Dark Sun",l:"Tyr, the Free City of Athas"},{w:"Dark Sun",l:"Nibenay, shadow city-state"},
+{w:"Spelljammer",l:"Rock of Bral, asteroid trade hub"},{w:"Spelljammer",l:"Aboard a spelljammer in the Astral Sea"},
+{w:"Planescape",l:"Sigil, the City of Doors"},{w:"Planescape",l:"The Outlands, neutral center"}
+];
+
+// === DEITIES ===
+const DEITIES=[
+{n:"Lathander",d:"Life/Light",t:"A golden sun disk on a purple field",w:"Forgotten Realms",desc:"Dawn-bringer, god of renewal, creativity, and new beginnings"},{n:"Mystra",d:"Magic",t:"A circle of seven stars or a single blue-white star",w:"Forgotten Realms",desc:"Mother of All Magic, keeper of the Weave"},{n:"Tempus",d:"War",t:"An upright flaming sword on a blood-red shield",w:"Forgotten Realms",desc:"The Lord of Battles — war itself, neither good nor evil"},{n:"Selune",d:"Moon",t:"A pair of eyes surrounded by seven silver stars",w:"Forgotten Realms",desc:"The Moonmaiden, protector of travelers and the lost"},{n:"Shar",d:"Darkness",t:"A black disk ringed with a purple border",w:"Forgotten Realms",desc:"Mistress of the Night, goddess of loss, secrets, and the Shadowfell"},{n:"Kelemvor",d:"Death",t:"An upright skeletal arm holding balanced scales",w:"Forgotten Realms",desc:"Lord of the Dead, impartial judge of souls, enemy of undeath"},{n:"Tyr",d:"Justice",t:"Balanced scales resting on a warhammer",w:"Forgotten Realms",desc:"The Maimed God, blinded symbol of justice and righteous law"},{n:"Sune",d:"Love",t:"The face of a beautiful red-haired woman",w:"Forgotten Realms",desc:"Firehair, goddess of beauty, love, and passion"},{n:"Mask",d:"Trickery",t:"A black velvet mask",w:"Forgotten Realms",desc:"Lord of Shadows, patron of thieves and those who walk in darkness"},{n:"Silvanus",d:"Nature",t:"A green oak leaf",w:"Forgotten Realms",desc:"The Oak Father, primal god of wild nature"},{n:"Bhaal",d:"Murder",t:"A skull surrounded by a ring of bloody droplets",w:"Forgotten Realms",desc:"Lord of Murder, feared god of violent death"},{n:"Talos",d:"Tempest",t:"Three lightning bolts radiating from a central point",w:"Forgotten Realms",desc:"The Destroyer, god of storms and uncontrolled fury"},{n:"Oghma",d:"Knowledge",t:"A blank scroll",w:"Forgotten Realms",desc:"Lord of Knowledge, patron of bards, scholars, and inventors"},{n:"Ilmater",d:"Life",t:"Hands bound at the wrist with a red cord",w:"Forgotten Realms",desc:"The Crying God, who endures suffering so others need not"},{n:"Moradin",d:"Forge",t:"Hammer and anvil",w:"Forgotten Realms",desc:"The All-Father of dwarves, god of creation and craftsmanship"},{n:"Corellon Larethian",d:"Light",t:"A crescent moon",w:"Forgotten Realms",desc:"Creator of elves, god of art, magic, and the fey"},
+{n:"The Silver Flame",d:"Light",t:"A silver arrowhead in a living flame",w:"Eberron",desc:"A force of divine fire imprisoning an ancient demon overlord"},{n:"The Traveler",d:"Trickery",t:"Four crossed bones forming an X",w:"Eberron",desc:"Trickster deity of change, cunning, and evolution"},{n:"Onatar",d:"Forge",t:"A crossed hammer and tongs",w:"Eberron",desc:"Lord of Fire and Forge, patron of artificers and smiths"},{n:"The Undying Court",d:"Life",t:"Varies by ancestor",w:"Eberron",desc:"Collective deathless ancestors of the Aereni elves"},
+{n:"Bahamut",d:"Justice",t:"A platinum dragon's head in profile",w:"Multiple",desc:"The Platinum Dragon, god of good dragons and noble sacrifice"},{n:"Tiamat",d:"War",t:"Five-headed dragon",w:"Multiple",desc:"The Chromatic Dragon, goddess of greed, envy, and draconic tyranny"},
+{n:"Ioun",d:"Knowledge",t:"A pair of open eyes crowned with a third eye",w:"Exandria",desc:"The Knowing Mentor, goddess of prophecy, knowledge, and skill"},{n:"The Raven Queen",d:"Death",t:"A white mask on black cloth",w:"Exandria",desc:"Goddess of fate, death, and the passage between worlds"},{n:"The Luxon",d:"Light",t:"A beacon of light",w:"Exandria",desc:"Pre-divine entity of creation, worshipped through the Luxon Beacons"},
+{n:"None (Agnostic)",d:"—",t:"—",w:"—",desc:"Acknowledges the gods but kneels to none"},{n:"None (Atheist)",d:"—",t:"—",w:"—",desc:"The gods are powerful beings, not worthy of worship"},{n:"Ancestor Spirits",d:"Life",t:"A personal totem or family crest",w:"—",desc:"Prays to the spirits of their bloodline"},{n:"The Primal Spirits",d:"Nature",t:"Seasonal or animal symbol",w:"—",desc:"Reveres the land, the beasts, the seasons themselves"},{n:"Patron (Warlock)",d:"Pact",t:"Patron's sigil",w:"—",desc:"Bound to a patron — archfey, fiend, Great Old One, or celestial"}
+];
+
+// === COLORS (expanded) ===
+const COLORS=["Midnight blue — a sky before dawn","Blood crimson — they won't say why","Forest green — deep and shadowed","Burnished gold — regal, not gaudy","Storm grey — inevitable","Pure white — no compromise","Obsidian black — unapologetic","Autumn amber — warm as hearthfire","Royal purple","Copper — honest work","Sea-foam teal — somewhere safe","Ochre — unpretentious","Silver — moonlight on water","Scarlet — impossible to ignore","Dusty rose — softer than expected","Emerald — vivid","Charcoal — present but quiet","Saffron — defiant optimism","Bone white — endurance","Deep burgundy — old-souled","Cerulean — a perfect day","Bronze — old victories","Lavender — secret tenderness","Rust — beauty in decay","Indigo — depth of night","Vermillion — volcanic intensity","Sage — the color of wisdom","Ivory — imperfect purity"];
+
+// === WEAPONS WITH FLAVOR ===
+const WEAPONS_DETAIL={
+"Barbarian":[{n:"Greataxe",d:"A massive double-bitted axe with a haft wrapped in wolf hide, the blade nicked and stained from countless kills"},{n:"Greatsword",d:"A brutal two-handed blade, slightly curved, with runes etched along the fuller that glow faintly in moonlight"},{n:"Maul",d:"A stone-headed warhammer the size of a halfling, bound with iron bands and decorated with carved totemic faces"},{n:"Paired Handaxes",d:"Twin throwing axes with mismatched handles — one bone, one iron-bound oak — each balanced for both melee and range"}],
+"Bard":[{n:"Rapier",d:"An elegant swept-hilt rapier with musical note engravings along the blade, the pommel shaped like a singing bird"},{n:"Shortsword",d:"A slim blade hidden in a walking cane, the handle disguised as an ornate flute mouthpiece"},{n:"Hand Crossbow",d:"A compact crossbow with a rosewood stock inlaid with silver theater masks — comedy and tragedy"}],
+"Cleric":[{n:"Mace",d:"A flanged mace with the head cast in the shape of their deity's holy symbol, consecrated in blessed oil"},{n:"Warhammer",d:"A heavy hammer with scripture engraved along the haft in tiny, precise lettering — prayers for every swing"},{n:"Shield + Flail",d:"A battered shield bearing their god's sigil and a chain flail that hums with residual divine energy"}],
+"Druid":[{n:"Quarterstaff",d:"A gnarled staff of living wood that still sprouts leaves each spring, topped with a naturally formed crystal"},{n:"Scimitar",d:"A crescent blade forged by a woodland smith, the steel folded with meteorite iron and etched with vine patterns"},{n:"Shillelagh Club",d:"A blackthorn club blessed by an archdruid, the wood impossibly dense and warm to the touch"}],
+"Fighter":[{n:"Longsword + Shield",d:"A bastard sword with a wire-wrapped grip and a kite shield bearing the sigil of a former company"},{n:"Halberd",d:"A polearm with a hook, spike, and axe head — the shaft scored with tally marks of battles survived"},{n:"Longbow",d:"A yew longbow standing nearly six feet tall, the grip worn smooth from years of use, the string of giant spider silk"},{n:"Paired Scimitars",d:"Twin curved blades from different smiths — one dark steel, one bright — that ring in harmony when struck together"}],
+"Monk":[{n:"Quarterstaff",d:"A simple ironwood staff, unadorned except for a single prayer strip wrapped around the center"},{n:"Shortsword",d:"A straight-bladed jian with a silk tassel, kept in a lacquered wooden scabbard"},{n:"Unarmed",d:"No weapon needed — their hands and feet are callused like leather, their strikes precise as any blade"}],
+"Paladin":[{n:"Longsword",d:"A holy avenger's blade — cruciform hilt wrapped in white leather, the fuller inscribed with their oath's tenets"},{n:"Warhammer",d:"A consecrated hammer that faintly glows when undead are near, the head stamped with a rising sun"},{n:"Greatsword",d:"A massive two-handed blade etched with radiant sigils that flare gold on a successful smite"}],
+"Ranger":[{n:"Longbow",d:"A recurve bow of horn and sinew, the grip carved from the antler of the first stag they ever tracked"},{n:"Paired Shortswords",d:"Twin hunting blades kept in a cross-back sheath, the pommels weighted differently for distinct fighting styles"},{n:"Hand Crossbow",d:"A compact repeating crossbow modified for one-handed use, bolts tipped with tranquilizer or broadhead"}],
+"Rogue":[{n:"Rapier",d:"A blackened-steel rapier with no crossguard — designed to be drawn from a hidden spine sheath in an instant"},{n:"Daggers (plural)",d:"At least six daggers of varying size — boot knives, wrist sheaths, a stiletto in the collar, and a throwing blade in the belt"},{n:"Hand Crossbow",d:"A spring-loaded wrist crossbow concealed under a bracer, loaded with bolts coated in sleep poison"}],
+"Sorcerer":[{n:"Dagger",d:"A crystalline dagger that changes color with the sorcerer's mood — red when angry, blue when calm, white when casting"},{n:"Arcane Focus (Crystal)",d:"A fist-sized crystal geode that pulses with their bloodline's element, warm to their touch and cold to everyone else's"},{n:"Quarterstaff",d:"A glass-smooth staff of petrified wood shot through with veins of their innate magical energy"}],
+"Warlock":[{n:"Pact Blade",d:"Manifests as a weapon of shadow and starlight — its form shifts subtly each time it's summoned, reflecting their patron's will"},{n:"Rod of the Pact Keeper",d:"A twisted iron rod wrapped in their patron's sigil, warm and faintly vibrating, as if something inside is breathing"},{n:"Eldritch Blast",d:"Not a weapon in the traditional sense — a beam of crackling force that tears reality at the seams, colored by their patron's domain"}],
+"Wizard":[{n:"Quarterstaff (Arcane)",d:"A staff of polished ash capped with a caged crystal that serves as their arcane focus, humming faintly with stored abjurations"},{n:"Wand",d:"A slender wand of rowan wood with a core of dragon heartstring, 11 inches, slightly flexible — an extension of their intellect"},{n:"Dagger (Ritual)",d:"A silver athame used for inscribing protective circles, the blade etched with mathematical formulae rather than runes"}],
+"Artificer":[{n:"Light Crossbow (Infused)",d:"A repeating crossbow with brass fittings, self-loading mechanism, and a scope made from a modified monocle of true seeing"},{n:"Warhammer (Tool)",d:"A smithing hammer modified for combat — one face flat for forging, one spiked for fighting, both enchanted with returning"},{n:"Shield + Returning Weapon",d:"A shield built from salvaged warforged plating and a boomerang-axe that returns to a magnetic gauntlet"}]
+};
+
+// === ARMOR DETAIL ===
+const ARMOR_DETAIL={
+heavy:[{n:"Chain Mail",d:"Interlocking steel rings over a padded gambeson, clinking softly with every step"},{n:"Splint Mail",d:"Vertical strips of tempered steel riveted to a leather backing, practical and formidable"},{n:"Plate Armor",d:"Full articulated steel plate, custom-fitted, with engravings at the pauldrons and a tabard over the breastplate"},{n:"Half Plate",d:"Breastplate and greaves of blackened steel, leaving the arms free for mobility"}],
+medium:[{n:"Scale Mail",d:"Overlapping metal scales sewn to a leather coat, rattling faintly like a dragon's hide"},{n:"Breastplate",d:"A fitted torso plate worn under a cloak, balancing protection with freedom of movement"},{n:"Half Plate",d:"Upper body encased in shaped steel, limbs protected by hardened leather bracers and greaves"},{n:"Hide Armor",d:"Cured beast hide — thick, stiff, and smelling faintly of smoke and animal musk"}],
+light:[{n:"Leather Armor",d:"Supple boiled leather shaped to the body, dyed dark for concealment, worn smooth at the elbows"},{n:"Studded Leather",d:"Tough leather reinforced with close-set rivets, offering protection without sacrificing stealth"},{n:"Padded Armor",d:"Quilted layers of cloth and cotton, surprisingly effective and dead silent"}],
+none:[{n:"Unarmored",d:"Wearing no armor at all — relies on speed, training, or magical protection"}]
+};
+
+// === SPELLBOOK DESCRIPTIONS ===
+const SPELLBOOKS=[
+{look:"A heavy tome bound in midnight-blue leather, the cover embossed with a silver eye. The pages are thin vellum, covered in precise geometric notation.",clasp:"Silver clasp shaped like a serpent eating its own tail",pages:"Obsessively organized by school, with color-coded tabs"},
+{look:"A battered journal held together with twine and wax seals. Dog-eared, coffee-stained, with marginalia arguing with itself.",clasp:"None — it falls open to the last spell studied",pages:"Chaotic — spells crammed in every direction, diagrams overlapping notes from three different inks"},
+{look:"A scroll case containing dozens of rolled sheets of papyrus, each one a single spell transcribed in golden ink on black paper.",clasp:"Brass cylinder with a combination lock",pages:"Individual scrolls, each one a work of calligraphic art"},
+{look:"A metal-bound grimoire of dwarven make, the covers beaten copper with inlaid mithral sigils. Nearly indestructible.",clasp:"Magnetic dwarven lock requiring a specific tuning fork frequency",pages:"Thin hammered metal sheets etched with acid — permanent and fireproof"},
+{look:"A living book — the cover is bark, the pages are pressed leaves, and new spells appear as natural patterns in the grain.",clasp:"Grows shut — must be coaxed open with a druidic word",pages:"Spells written in sap that glows faintly by moonlight"},
+{look:"An elegant leather folio the color of aged wine, tooled with arcane geometry. Smells of sandalwood and old magic.",clasp:"Hidden lock behind a decorative boss — only opens to their thumbprint",pages:"High-quality parchment with hand-ruled margins, spells in a beautiful copperplate hand"},
+{look:"A collection of flat wooden tablets strung together with silk cord, each tablet carved with spells in raised relief.",clasp:"Silk cord with a jade bead — slide the bead to lock",pages:"Carved tablets that can be felt as well as read — usable in darkness by touch"},
+{look:"A black leather journal that is slightly cold to the touch. The text seems to shift when viewed from the corner of one's eye.",clasp:"The book opens only in shadow — in bright light, the cover is sealed shut",pages:"Written in a silver ink visible only in dim light or darkness"},
+{look:"An oversized tome rebound at least three times — each section of the spine is a different leather, different century. Pages from a dozen different books.",clasp:"A brass padlock with a key worn around the wizard's neck",pages:"An archaeological record — ancient spells transcribed alongside their own research and corrections"}
+];
+
+// === PERSONALITY, VICES, FEARS, TRINKETS, VOICE ===
+const QUIRKS=["Talks to their weapon as if it were a person","Compulsively collects teeth","Refers to themselves in the third person","Cannot resist petting dangerous animals","Journals obsessively every night","Hums when nervous","Alphabetizes everything","Gives overly specific compliments","Refuses to sleep indoors","Laughs at inappropriate moments","Elaborate lucky ritual before fights","Quotes unknown philosophers","Volunteers first for danger","Pathologically honest","Nicknames everyone immediately","Stops at every bookshelf","Mimics accents unconsciously","Tallies every kill","Apologizes to defeated enemies","Territorial about cooking","Narrates their own actions","Fills every silence with chatter","Has an imaginary rival","Collects stones from everywhere","Reads omens into everything","Finishes sentences incorrectly","Cannot refuse a dare","Elaborately metaphorical","Sketches everyone they meet","Encyclopedic knowledge of one obscure topic"];
+const VICES=["Gambling","Drinking","Compulsive lying","Gold hoarding","Picking fights","Vanity","Grudge-holding","Petty theft","Laziness","Gluttony","Gossip","Jealousy","Recklessness","Cowardice","Manipulation","Overspending","Explosive wrath","Power-seeking","Substance addiction","Singular obsession","Self-sabotage","Stubborn pride","Casual cruelty","Excessive sentimentality"];
+const FEARS=["The open ocean","Being buried alive","Spiders","Total darkness","Being forgotten","Undead","Heights","Fire","Being alone","Crowds","The Underdark","Aberrations","Their own reflection","Dreams","Magic going wrong","Authority","Insects","The Feywild","Lycanthropy","Prophecy","Their own anger","Silence from the gods","Constructs","Returning home"];
+const TRINKETS=["A glass eye that watches something behind you","A locket with an unknown portrait","A wooden figure carved by a dead friend","A coin from a dead nation","A vial of sand from a lonely desert crossing","Their own tooth from a memorable fight","A love letter never sent","A key to a door not yet found","A shard of a broken holy symbol","An acorn that hums in moonlight","A wanted poster with their face","A compass pointing to one unknown place","A child's monster drawing that looks too real","A sealed envelope: 'Open when there is no other choice'","A ring too small for any finger","A pressed funeral flower","The Ace of Swords from a dead man's hand","A tuning fork that vibrates near planar rifts","A mirror showing a different reflection","A candle that never melts","Loaded dice that always roll ones","A badge from a rank they lost","A feather from an impossible bird","A journal — blank except the last page: RUN","A clockwork spider that twitches","A warm stone","Tea from a shop that burned down","A map scrap marked with a skull","A silent silver bell"];
+const VOICES=["Deep and gravelly","Soft and melodic","Clipped and precise","Booming and theatrical","Raspy whisper","Warm and sing-song","Flat monotone","High-pitched and fast","Slow and deliberate","Thick incomprehensible accent","Formal and archaic","Gruff with a stutter","Lilting questions","Low and smooth — a liar's voice","Loud, no indoor voice","Breathy and distant","Sharp staccato","Gentle but firm","Cracked and dry","Musical laugh mismatching their voice"];
+const SECRETS=["Killed someone outside of combat — unjustified","Living under a false identity","Carrying an undisclosed curse","Once served the evil they now oppose","Hears an obeyed voice no one else can","Fleeing an arranged marriage","Faking literacy","Died once and was brought back","Has an unknown child somewhere","Stole a living person's identity","Massive debt to a dangerous organization","Betrayed their closest friend","Dark artifact fragment in their body","Exiled for a crime they committed","Military deserter being hunted","Unfulfilled fiendish pact","Prophetic dreams coming true","Secret society member with conflicting goals","Caused mass innocent death accidentally","Being watched by an extraplanar entity"];
+const MOTIVATIONS=["Revenge","Redemption","Curiosity","Debt","Prophecy","Duty","Glory","Freedom","Lost love","Greed","Survivor's guilt","Exile","Knowledge","Faith","Fear of what's coming","Ambition","Family legacy","Wanderlust","Protecting someone specific","Atonement","Ancient discovery","Inner void","Complicated contract","Rebirth"];
+
+// === NAME DATA ===
+const NAMES={
+"Human":{m:["Aldric","Bran","Cael","Dorin","Evendur","Gareth","Harlan","Jorin","Kael","Lander","Morn","Peren","Rolen","Sten","Tomas","Varn","Wulf","Rashid","Samir","Tariq","Omar","Farid","Hakeem","Mehmed","Pavel","Viktor","Lars","Sergei"],f:["Alys","Brenna","Calia","Elara","Fiona","Gwynn","Halia","Jhessail","Kara","Liriel","Nessa","Roslyn","Talia","Vessa","Wren","Zara","Amira","Layla","Safiya","Yasmin","Petra","Hela","Miri","Sefris"],l:["Amblecrown","Brasswater","Crownsilver","Frostmantle","Greycastle","Hornraven","Irlingstar","Marsk","Obarskyr","Tallstag","Wyvernspur","al-Bassam","el-Haroud","al-Sadim","el-Tahir","Dundragon","Evenwood"]},
+"Elf":{m:["Adran","Berrian","Carric","Erevan","Galinndan","Hadarai","Ivellios","Laucian","Paelias","Riardon","Soveliss","Thamior","Varis","Aelar","Fenian","Immeral","Drizzt","Solaufein","Zaknafein","Jarlaxle"],f:["Adrie","Caelynn","Drusilia","Enna","Gaelira","Keyleth","Leshanna","Mialee","Naivara","Sariel","Thia","Vadania","Althaea","Viconia","Liriel","Quenthel"],l:["Amakiir","Galanodel","Ilphelkiir","Liadon","Nailo","Siannodel","Xiloscient","Autumnleaf","Moonshadow","Oakenheart","Starfall","Baenre","Do'Urden","Xorlarrin"]},
+"Dwarf":{m:["Adrik","Baern","Bruenor","Dain","Eberk","Fargrim","Harbek","Kildrak","Morgran","Orsik","Rurik","Thoradin","Tordek","Ulfgar","Vondal"],f:["Amber","Audhild","Dagnal","Diesa","Eldeth","Gunnloda","Helja","Kathra","Mardred","Riswynn","Torbera","Vistra"],l:["Balderk","Battlehammer","Fireforge","Frostbeard","Holderhek","Ironfist","Rumnaheim","Strakeln","Ungart"]},
+"Halfling":{m:["Alton","Cade","Corrin","Eldon","Finnan","Garret","Milo","Osborn","Perrin","Roscoe","Wellby"],f:["Andry","Bree","Callie","Cora","Kithri","Lidda","Merla","Portia","Seraphina","Vani"],l:["Brushgather","Goodbarrel","Greenbottle","Highhill","Leagallow","Nimblefingers","Tealeaf","Thorngage","Tosscobble"]},
+"Tiefling":{m:["Akmenos","Amnon","Barakas","Damakos","Iados","Kairon","Mordai","Morthos","Skamos","Therai"],f:["Akta","Bryseis","Damaia","Kallista","Nemeia","Orianna","Rieta","Sariel","Zhera"],l:["Creed","Torment","Sorrow","Hope","Ideal","Carrion","Poetry","Quest","Nowhere"]},
+"Dragonborn":{m:["Arjhan","Balasar","Bharash","Donaar","Ghesh","Heskan","Kriv","Medrash","Nadarr","Rhogar","Tarhun","Torinn"],f:["Akra","Biri","Farideh","Havilar","Jheri","Korinn","Mishann","Sora","Surina","Thava"],l:["Clethtinthiallor","Daardendrian","Delmirev","Kepeshkmolik","Kimbatuul","Norixius","Shestendeliath","Yarjerit"]},
+"Gnome":{m:["Alston","Boddynock","Dimble","Fonkin","Gimble","Glim","Namfoodle","Orryn","Seebo","Zook"],f:["Breena","Caramip","Donella","Ellyjobell","Nissa","Nyx","Roywyn","Tana","Waywocket","Zanna"],l:["Beren","Daergel","Nackle","Raulnor","Scheppen","Timbers"]},
+"Other":{m:["Aukan","Kavaki","Keothi","Uthal","Dench","Krusk","Thokk","Mhurren","Fenkenkabradon","Lo-Kag"],f:["Belarai","Kalla","Paavu","Engong","Vola","Shauta","Ownka","Gethara","Dagath"],l:[]}
+};
+
+// === ALIGNMENTS ===
+const ALIGNS=["Lawful Good","Neutral Good","Chaotic Good","Lawful Neutral","True Neutral","Chaotic Neutral","Lawful Evil","Neutral Evil","Chaotic Evil"];
+// AGES
+const AGES=["Young (barely old enough to adventure)","Young adult (proving themselves)","Established (experienced, reputation forming)","Prime (peak of their power)","Middle-aged (wiser, some regrets)","Veteran (body slowing, mind sharp)","Elder (every day borrowed time)","Unnaturally preserved (looks young, remembers empires)","Ageless (time is abstract)","Indeterminate (no one can tell)"];
+
+// === POPULATE DROPDOWNS ===
+document.addEventListener('DOMContentLoaded',function(){
+  var cs=document.getElementById('inClass');
+  Object.keys(CLASSES).forEach(function(c){cs.innerHTML+='<option value="'+c+'">'+c+'</option>';});
+  var rs=document.getElementById('inRace');
+  RACES.forEach(function(r){rs.innerHTML+='<option value="'+r+'">'+r+'</option>';});
+});
+
+// === MAX SPELL LEVEL BY CLASS LEVEL ===
+function maxSpellLevel(cls,lvl){
+  if(["Barbarian","Fighter","Monk","Rogue"].indexOf(cls)>=0){
+    if(cls==="Fighter"||cls==="Rogue")return lvl>=19?4:lvl>=13?3:lvl>=7?2:lvl>=3?1:0;
+    return 0;
+  }
+  if(["Paladin","Ranger","Artificer"].indexOf(cls)>=0)return lvl>=17?5:lvl>=13?4:lvl>=9?3:lvl>=5?2:lvl>=2?1:0;
+  return lvl>=17?9:lvl>=15?8:lvl>=13?7:lvl>=11?6:lvl>=9?5:lvl>=7?4:lvl>=5?3:lvl>=3?2:1;
+}
+function numCantrips(cls,lvl){
+  if(cls==="Wizard")return lvl>=10?5:lvl>=4?4:3;
+  if(cls==="Sorcerer")return lvl>=10?6:lvl>=4?5:4;
+  if(cls==="Warlock")return lvl>=10?4:lvl>=4?3:2;
+  if(cls==="Bard")return lvl>=10?4:lvl>=4?3:2;
+  if(cls==="Cleric"||cls==="Druid")return lvl>=10?5:lvl>=4?4:3;
+  if(cls==="Artificer")return lvl>=10?4:lvl>=1?2:0;
+  return 0;
+}
+function numSpellsKnown(cls,lvl){
+  var wis=3;
+  if(cls==="Wizard")return lvl*2+4;
+  if(cls==="Sorcerer")return Math.min(lvl+1,15);
+  if(cls==="Warlock")return Math.min(lvl+1,15);
+  if(cls==="Bard")return Math.min(lvl+3,22);
+  if(cls==="Ranger")return Math.min(Math.floor(lvl/2)+2,11);
+  if(cls==="Cleric"||cls==="Druid"||cls==="Paladin")return lvl+wis;
+  if(cls==="Artificer")return Math.floor(lvl/2)+3;
+  return 0;
+}
+
+// === STAT PRIORITY BY CLASS ===
+function assignStats(cls){
+  var rolls=[];for(var i=0;i<6;i++)rolls.push(roll4d6());
+  rolls.sort(function(a,b){return b-a;});
+  var order;
+  switch(cls){
+    case"Barbarian":order=["STR","CON","DEX","WIS","CHA","INT"];break;
+    case"Bard":order=["CHA","DEX","CON","WIS","INT","STR"];break;
+    case"Cleric":order=["WIS","CON","STR","CHA","DEX","INT"];break;
+    case"Druid":order=["WIS","CON","DEX","INT","CHA","STR"];break;
+    case"Fighter":order=["STR","CON","DEX","WIS","CHA","INT"];break;
+    case"Monk":order=["DEX","WIS","CON","STR","CHA","INT"];break;
+    case"Paladin":order=["STR","CHA","CON","WIS","DEX","INT"];break;
+    case"Ranger":order=["DEX","WIS","CON","STR","INT","CHA"];break;
+    case"Rogue":order=["DEX","INT","CON","CHA","WIS","STR"];break;
+    case"Sorcerer":order=["CHA","CON","DEX","WIS","INT","STR"];break;
+    case"Warlock":order=["CHA","CON","DEX","WIS","INT","STR"];break;
+    case"Wizard":order=["INT","CON","DEX","WIS","CHA","STR"];break;
+    case"Artificer":order=["INT","CON","DEX","WIS","CHA","STR"];break;
+    default:order=["STR","DEX","CON","INT","WIS","CHA"];
+  }
+  var stats={};
+  order.forEach(function(s,i){stats[s]=rolls[i];});
+  return stats;
+}
+
+// === HP CALCULATOR ===
+function calcHP(cls,lvl,conMod){
+  var hd=CLASSES[cls].hd;
+  var hp=hd+conMod;
+  for(var i=1;i<lvl;i++)hp+=Math.floor(hd/2)+1+conMod;
+  return Math.max(hp,lvl);
+}
+
+// === NAME GENERATOR ===
+function genName(race){
+  var key="Human";
+  if(race.indexOf("Elf")>=0||race.indexOf("Drow")>=0||race.indexOf("Half-Elf")>=0)key="Elf";
+  else if(race.indexOf("Dwarf")>=0||race.indexOf("Duergar")>=0)key="Dwarf";
+  else if(race.indexOf("Halfling")>=0)key="Halfling";
+  else if(race.indexOf("Tiefling")>=0)key="Tiefling";
+  else if(race.indexOf("Dragonborn")>=0)key="Dragonborn";
+  else if(race.indexOf("Gnome")>=0)key="Gnome";
+  else if(race.indexOf("Half-Orc")>=0||race.indexOf("Goliath")>=0||race.indexOf("Orc")>=0||race.indexOf("Bugbear")>=0||race.indexOf("Firbolg")>=0||race.indexOf("Goblin")>=0||race.indexOf("Hobgoblin")>=0||race.indexOf("Lizardfolk")>=0||race.indexOf("Tabaxi")>=0||race.indexOf("Kenku")>=0||race.indexOf("Tortle")>=0||race.indexOf("Warforged")>=0||race.indexOf("Kobold")>=0)key="Other";
+  else key="Human";
+  var d=NAMES[key];
+  var g=Math.random()>.5?"m":"f";
+  var first=R(d[g]);
+  var last=d.l&&d.l.length>0?" "+R(d.l):"";
+  return first+last;
+}
+
+// === GENERATE ===
+function generate(){
+  var lvlSel=document.getElementById('inLevel').value;
+  var clsSel=document.getElementById('inClass').value;
+  var raceSel=document.getElementById('inRace').value;
+  var level=lvlSel==='random'?Math.floor(Math.random()*20)+1:parseInt(lvlSel);
+  var cls=clsSel==='random'?R(Object.keys(CLASSES)):clsSel;
+  var race=raceSel==='random'?R(RACES):raceSel;
+  var cd=CLASSES[cls];
+  var sub=R(cd.subclasses);
+  var bg=R(BACKGROUNDS);
+  var align=R(ALIGNS);
+  var name=genName(race);
+  var stats=assignStats(cls);
+  var conMod=Math.floor((stats.CON-10)/2);
+  var dexMod=Math.floor((stats.DEX-10)/2);
+  var hp=calcHP(cls,level,conMod);
+  var pb=profBonus(level);
+  var ac=10;
+  var armorType=cd.armor==="heavy"?"heavy":cd.armor==="medium"?"medium":cd.armor==="light"?"light":"none";
+  var armorPick=R(ARMOR_DETAIL[armorType]);
+  if(armorType==="heavy")ac=R([14,16,17,18]);
+  else if(armorType==="medium")ac=R([13,14,15])+Math.min(dexMod,2);
+  else if(armorType==="light")ac=11+dexMod;
+  else{if(cls==="Monk")ac=10+dexMod+Math.floor((stats.WIS-10)/2);else if(cls==="Barbarian")ac=10+dexMod+conMod;else ac=10+dexMod;}
+  var speed=30;if(race.indexOf("Dwarf")>=0||race.indexOf("Halfling")>=0||race.indexOf("Gnome")>=0)speed=25;if(race.indexOf("Wood Elf")>=0)speed=35;
+  var deity=R(DEITIES);
+  var origin=R(ORIGINS);
+  var skin=R(SKIN);var build=R(BUILDS);var hair=R(HAIR);var eyes=R(EYES);var mark=R(MARKS);var clothing=R(CLOTHING);var fabric=R(FABRICS);
+  var color=R(COLORS);var age=R(AGES);var quirk=R(QUIRKS);var vice=R(VICES);var fear=R(FEARS);var trinket=R(TRINKETS);var voice=R(VOICES);var secret=R(SECRETS);var motivation=R(MOTIVATIONS);
+  var weapon=R(WEAPONS_DETAIL[cls]||WEAPONS_DETAIL["Fighter"]);
+  var spellbook=null;
+  if(cls==="Wizard")spellbook=R(SPELLBOOKS);
+
+  // BUILD SPELL LIST
+  var spellHTML='';
+  var msl=maxSpellLevel(cls,level);
+  var isCaster=msl>0;
+  var isEK=cls==="Fighter"&&sub.name==="Eldritch Knight";
+  var isAT=cls==="Rogue"&&sub.name==="Arcane Trickster";
+  var spellClass=cls;
+  if(isEK||isAT)spellClass="Wizard";
+
+  if(isCaster||isEK||isAT){
+    var nc=numCantrips(isEK||isAT?spellClass:cls,level);
+    if(SPELLS.cantrips[spellClass]){
+      var clist=SPELLS.cantrips[spellClass].slice();
+      var picked=[];for(var c=0;c<Math.min(nc,clist.length);c++){var idx=Math.floor(Math.random()*clist.length);picked.push(clist.splice(idx,1)[0]);}
+      spellHTML+='<div class="spell-level-h">Cantrips</div><div class="spell-list">'+picked.join(', ')+'</div>';
+    }
+    for(var sl=1;sl<=msl;sl++){
+      var key='L'+sl;
+      var pool=SPELLS[key]&&SPELLS[key][spellClass]?SPELLS[key][spellClass]:null;
+      if(!pool)continue;
+      pool=pool.slice();
+      var num=Math.min(Math.max(2,Math.floor(level/2)+1),pool.length);
+      if(sl>6)num=Math.min(2,pool.length);
+      var spells=[];for(var s=0;s<num;s++){var si=Math.floor(Math.random()*pool.length);spells.push(pool.splice(si,1)[0]);}
+      var slLabel=sl===1?'1st Level':sl===2?'2nd Level':sl===3?'3rd Level':sl+'th Level';
+      spellHTML+='<div class="spell-level-h">'+slLabel+' Spells</div><div class="spell-list">'+spells.join(', ')+'</div>';
+    }
+  }
+
+  // FIGHTING STYLE
+  var fightStyle='';
+  if(cls==="Fighter"&&cd.fightingStyles)fightStyle=R(cd.fightingStyles);
+  if(cls==="Paladin")fightStyle=R(["Defense — +1 AC while wearing armor","Dueling — +2 damage with one-handed weapon","Great Weapon Fighting — rerolls low damage dice","Protection — shield imposes disadvantage on attacks against allies","Blessed Warrior — learns two cleric cantrips","Blind Fighting — 10ft blindsight","Interception — reduces damage to nearby allies"]);
+  if(cls==="Ranger")fightStyle=R(["Archery — +2 to ranged attacks","Dueling — +2 damage one-handed","Two-Weapon Fighting — adds modifier to off-hand","Defense — +1 AC","Druidic Warrior — learns two druid cantrips","Thrown Weapon Fighting — +2 thrown damage"]);
+
+  // RAGE REASON
+  var rageReason='';
+  if(cls==="Barbarian"&&cd.rageReasons)rageReason=R(cd.rageReasons);
+
+  // COMBAT STYLE DESCRIPTION
+  var combatDesc='';
+  if(cls==="Barbarian")combatDesc="Charges headlong into the fray, '+weapon.n+' swinging in wide devastating arcs. Relies on fury and endurance over finesse. "+rageReason?"What triggers their rage: "+rageReason:"";
+  else if(cls==="Fighter")combatDesc="A disciplined combatant who controls the battlefield. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
+  else if(cls==="Paladin")combatDesc="Leads from the front, divine energy radiating through every smite. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
+  else if(cls==="Ranger")combatDesc="Patient and lethal, striking from optimal range or ambush. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
+  else if(cls==="Rogue")combatDesc="Never fights fair. Exploits positioning, surprise, and a single devastating strike. Disengages the moment they're exposed.";
+  else if(cls==="Monk")combatDesc="A blur of precise strikes, flowing between offense and defense. Uses ki to enhance speed, stun opponents, and deflect projectiles.";
+  else if(cls==="Wizard")combatDesc="Stays at range, layering battlefield control and devastating evocations. Uses Shield and Counterspell defensively, conserving high-level slots for decisive moments.";
+  else if(cls==="Sorcerer")combatDesc="Unleashes raw magical power, Twinning and Quickening spells for overwhelming offense. Their magic is instinct, not study.";
+  else if(cls==="Warlock")combatDesc="Opens with Hex, then hammers with Eldritch Blast from maximum range. Conserves their precious few spell slots for emergencies.";
+  else if(cls==="Bard")combatDesc="Controls the battlefield through inspiration, debuffs, and well-timed spells. Rarely attacks directly — instead ensures every ally hits harder and every enemy fails.";
+  else if(cls==="Cleric")combatDesc="The backbone of any group. Heals, buffs, and when necessary, wades into melee with divine power crackling through their weapon.";
+  else if(cls==="Druid")combatDesc="Adapts to every situation — shapeshifting for melee, summoning allies, or controlling terrain. The battlefield itself becomes their weapon.";
+  else if(cls==="Artificer")combatDesc="Fights with ingenuity — infused weapons, magical gadgets, and constructs. Always has the right tool, because they built it themselves.";
+  else combatDesc="A capable combatant who adapts to the situation at hand.";
+
+  // BUILD HTML
+  var h='';
+  h+='<div class="sheet-page">';
+  // HEADER
+  h+='<div class="sh-top"><div><div class="sh-name">'+name+'</div>';
+  h+='<div class="sh-title">'+race+' '+cls+' — '+sub.name+' <em>('+sub.src+')</em></div></div>';
+  h+='<div class="sh-level-badge">Level<span class="lvl">'+level+'</span></div></div>';
+  // INFO BAR
+  h+='<div class="info-bar">';
+  h+='<span class="info-chip">'+align+'</span>';
+  h+='<span class="info-chip">'+bg+'</span>';
+  h+='<span class="info-chip">'+age+'</span>';
+  h+='<span class="info-chip">'+origin.w+' — '+origin.l+'</span>';
+  h+='</div>';
+  // STATS
+  h+='<div class="stats-row">';
+  ["STR","DEX","CON","INT","WIS","CHA"].forEach(function(s){
+    h+='<div class="stat-box"><div class="stat-name">'+s+'</div><div class="stat-score">'+stats[s]+'</div><div class="stat-mod">'+mod(stats[s])+'</div></div>';
+  });
+  h+='</div>';
+  // COMBAT
+  h+='<div class="combat-row">';
+  h+='<div class="combat-stat"><div class="cs-label">AC</div><div class="cs-val">'+ac+'</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">HP</div><div class="cs-val">'+hp+'</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">Hit Dice</div><div class="cs-val">'+level+'d'+cd.hd+'</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">Initiative</div><div class="cs-val">'+mod(stats.DEX)+'</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">Speed</div><div class="cs-val">'+speed+' ft</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">Prof. Bonus</div><div class="cs-val">+'+pb+'</div></div>';
+  h+='</div>';
+  h+='</div>'; // end page 1
+
+  // PAGE 2 — APPEARANCE & EQUIPMENT
+  h+='<div class="sheet-page">';
+  h+='<div class="sec-h">Physical Appearance</div>';
+  h+='<div class="flav"><strong>Build:</strong> '+build+'<br><strong>Skin:</strong> '+skin+'<br><strong>Hair:</strong> '+hair+'<br><strong>Eyes:</strong> '+eyes+'<br><strong>Distinguishing Mark:</strong> '+mark+'</div>';
+  h+='<div class="flav"><strong>Clothing:</strong> '+clothing+', made primarily of '+fabric+'.<br><strong>Favorite Color:</strong> '+color+'</div>';
+
+  h+='<div class="sec-h">Equipment</div>';
+  h+='<div class="equip-grid">';
+  h+='<div class="equip-card"><div class="ec-label">Primary Weapon</div><div class="ec-name">'+weapon.n+'</div><div class="ec-desc">'+weapon.d+'</div></div>';
+  h+='<div class="equip-card"><div class="ec-label">Armor</div><div class="ec-name">'+armorPick.n+'</div><div class="ec-desc">'+armorPick.d+'</div></div>';
+  if(spellbook){
+    h+='<div class="equip-card"><div class="ec-label">Spellbook</div><div class="ec-name">'+spellbook.clasp+'</div><div class="ec-desc">'+spellbook.look+'</div></div>';
+    h+='<div class="equip-card"><div class="ec-label">Pages</div><div class="ec-name">Organization</div><div class="ec-desc">'+spellbook.pages+'</div></div>';
+  }
+  h+='<div class="equip-card"><div class="ec-label">Keepsake</div><div class="ec-name">Trinket</div><div class="ec-desc">'+trinket+'</div></div>';
+  h+='</div>'; // end equip grid
+
+  // SUBCLASS
+  h+='<div class="sec-h">'+sub.name+' <em style="font-size:.7rem;text-transform:none">('+sub.src+')</em></div>';
+  h+='<div class="flav">'+sub.desc+'</div>';
+
+  // COMBAT STYLE
+  h+='<div class="flav-block"><div class="fb-title">Combat Style</div>'+combatDesc+'</div>';
+
+  h+='</div>'; // end page 2
+
+  // PAGE 3 — SPELLS (if caster)
+  if(spellHTML){
+    h+='<div class="sheet-page">';
+    h+='<div class="sec-h">Spells</div>';
+    h+=spellHTML;
+    h+='</div>';
+  }
+
+  // PAGE 4 — PERSONALITY & FAITH
+  h+='<div class="sheet-page">';
+  h+='<div class="sec-h">Personality</div>';
+  h+='<div class="pers-grid">';
+  h+='<div class="pers-box"><div class="pb-label">Personality Quirk</div><div class="pb-text">'+quirk+'</div></div>';
+  h+='<div class="pers-box"><div class="pb-label">Vice</div><div class="pb-text">'+vice+'</div></div>';
+  h+='<div class="pers-box"><div class="pb-label">Fear</div><div class="pb-text">'+fear+'</div></div>';
+  h+='<div class="pers-box"><div class="pb-label">Voice</div><div class="pb-text">'+voice+'</div></div>';
+  h+='<div class="pers-box"><div class="pb-label">Motivation</div><div class="pb-text">'+motivation+'</div></div>';
+  h+='<div class="pers-box"><div class="pb-label">Hidden Secret</div><div class="pb-text">'+secret+'</div></div>';
+  h+='</div>';
+
+  h+='<div class="sec-h">Faith & Deity</div>';
+  if(deity.n.indexOf("None")<0&&deity.n!=="Ancestor Spirits"&&deity.n!=="The Primal Spirits"&&deity.n!=="Patron (Warlock)"){
+    h+='<div class="flav"><strong>Deity:</strong> '+deity.n+' — '+deity.desc+'<br><strong>Domain:</strong> '+deity.d+'<br><strong>Holy Symbol:</strong> '+deity.t+'<br><strong>Setting:</strong> '+deity.w+'</div>';
+  } else {
+    h+='<div class="flav"><strong>Faith:</strong> '+deity.n+' — '+deity.desc+'</div>';
+  }
+
+  h+='<div class="sec-h">Backstory Hook</div>';
+  var bsHook='Born in '+origin.l+' ('+origin.w+'), '+name+' grew up as a '+bg.toLowerCase()+'. ';
+  bsHook+='Driven by '+motivation.toLowerCase()+', they took up the path of the '+cls+'. ';
+  bsHook+='Their '+sub.name+' training shaped them into something more than ordinary. ';
+  bsHook+='They carry '+trinket.toLowerCase()+' — a reminder of what they left behind. ';
+  bsHook+='Beneath the surface, '+secret.toLowerCase()+'. ';
+  bsHook+='But what keeps them going is simple: '+motivation.toLowerCase()+'.';
+  h+='<div class="backstory">'+bsHook+'</div>';
+
+  h+='</div>'; // end page 4
+
+  var sheet=document.getElementById('sheet');
+  sheet.innerHTML=h;
+  sheet.classList.add('visible');
+  sheet.scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>D&D Character Forge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;700;900&family=Spectral:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --dnd-red: #58180D;
+      --dnd-red-light: #7A200D;
+      --parchment: #EFE5D0;
+      --parchment-dark: #E0D5C0;
+      --parchment-deep: #D4C4A8;
+      --ink: #1A1A1A;
+      --ink-light: #333;
+      --gold: #C9AD6A;
+      --gold-bright: #E8D5A3;
+      --gold-dim: #A08940;
+      --rule-color: #9C2B1B;
+      --wood-dark: #2A1A0A;
+      --wood-mid: #3E2415;
+      --wood-light: #5D3A1A;
+      --sidebar-w: 280px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      background-image: url('https://i.imgur.com/B1kEKpW.png');
+      background-repeat: repeat;
+      background-size: 400px;
+      font-family: 'Spectral', serif;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scrollBackground 60s linear infinite;
+      padding: 12px;
+    }
+
+    @keyframes scrollBackground {
+      from { background-position: 0 0; }
+      to { background-position: 400px 0; }
+    }
+
+    .layout {
+      display: flex;
+      height: calc(100vh - 24px);
+      max-width: 1080px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100%;
+      background: var(--wood-dark);
+      border-radius: 3px 0 0 3px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: inset -8px 0 20px rgba(0,0,0,0.3), -2px 0 10px rgba(0,0,0,0.3);
+      transition: margin-left 0.3s ease, opacity 0.3s ease;
+      background-image:
+        radial-gradient(ellipse at 30% 20%, rgba(80,50,20,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(60,35,10,0.2) 0%, transparent 50%);
+      background-color: var(--wood-dark);
+    }
+
+    .sidebar.collapsed {
+      margin-left: calc(var(--sidebar-w) * -1);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(201,173,106,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header h2 {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .sidebar-close {
+      background: none; border: none; color: var(--gold-dim);
+      cursor: pointer; font-size: 0.8rem; padding: 4px; transition: color 0.2s;
+    }
+    .sidebar-close:hover { color: var(--gold-bright); }
+
+    .sidebar-sections {
+      flex: 1; overflow-y: auto; padding: 8px 0;
+      scrollbar-width: thin; scrollbar-color: var(--wood-light) transparent;
+    }
+    .sidebar-sections::-webkit-scrollbar { width: 4px; }
+    .sidebar-sections::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-sections::-webkit-scrollbar-thumb { background: var(--wood-light); border-radius: 2px; }
+
+    .sb-section-label {
+      font-family: 'Cinzel', serif; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 2px; color: var(--gold-dim);
+      padding: 10px 16px 4px; display: flex; align-items: center; gap: 6px;
+    }
+    .sb-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,173,106,0.15); }
+
+    .sb-empty { padding: 8px 16px; font-size: 0.7rem; color: rgba(201,173,106,0.3); font-style: italic; }
+
+    .sb-entry {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 16px; cursor: pointer; transition: background 0.15s;
+      border-left: 3px solid transparent; position: relative;
+    }
+    .sb-entry:hover { background: rgba(255,255,255,0.04); border-left-color: var(--gold-dim); }
+    .sb-entry.active { background: rgba(201,173,106,0.08); border-left-color: var(--gold); }
+
+    .sb-entry-icon { font-size: 0.65rem; color: var(--gold-dim); width: 14px; text-align: center; flex-shrink: 0; }
+    .sb-entry-info { flex: 1; min-width: 0; }
+    .sb-entry-name {
+      font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
+      color: var(--gold-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+    }
+    .sb-entry-meta {
+      font-size: 0.6rem; color: var(--gold-dim); font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sb-entry-lvl {
+      font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700;
+      color: var(--dnd-red-light); background: rgba(201,173,106,0.15);
+      padding: 1px 5px; border-radius: 2px; flex-shrink: 0; min-width: 20px; text-align: center;
+    }
+
+    .sb-entry-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
+    .sb-entry:hover .sb-entry-actions { opacity: 1; }
+
+    .sb-action-btn {
+      background: none; border: none; color: var(--gold-dim); cursor: pointer;
+      font-size: 0.6rem; padding: 2px 4px; border-radius: 2px; transition: all 0.15s;
+    }
+    .sb-action-btn:hover { color: var(--gold-bright); background: rgba(255,255,255,0.06); }
+    .sb-action-btn.delete:hover { color: #e74c3c; }
+
+    .sidebar-footer {
+      padding: 10px 16px; border-top: 1px solid rgba(201,173,106,0.15);
+      font-family: 'Cinzel', serif; font-size: 0.55rem; color: var(--gold-dim);
+      text-align: center; letter-spacing: 1px; flex-shrink: 0;
+    }
+
+    /* BOOK PAGE */
+    .book-page {
+      flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column;
+      background: var(--parchment); border-radius: 0 3px 3px 0; position: relative;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(0,0,0,0.06);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,108,74,0.04) 28px, rgba(139,108,74,0.04) 29px),
+        radial-gradient(ellipse at 20% 50%, rgba(139,108,74,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse at 80% 50%, rgba(139,108,74,0.04) 0%, transparent 70%);
+      background-color: var(--parchment);
+      transition: border-radius 0.3s ease;
+    }
+    .sidebar.collapsed + .book-page { border-radius: 3px; }
+
+    .book-page::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      pointer-events: none; z-index: 1;
+      background:
+        linear-gradient(to right, rgba(120,80,40,0.12) 0%, transparent 3%),
+        linear-gradient(to left, rgba(120,80,40,0.08) 0%, transparent 2%),
+        linear-gradient(to bottom, rgba(120,80,40,0.08) 0%, transparent 2%),
+        linear-gradient(to top, rgba(120,80,40,0.1) 0%, transparent 3%);
+    }
+
+    /* HEADER */
+    .page-header {
+      flex-shrink: 0; padding: 12px 20px 9px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 3px solid var(--dnd-red); position: relative; z-index: 2;
+    }
+    .page-header::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
+      height: 1px; background: var(--dnd-red); opacity: 0.4;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 12px; }
+
+    .sidebar-toggle {
+      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
+      color: var(--dnd-red); width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; padding: 0;
+    }
+    .sidebar-toggle:hover { background: var(--dnd-red); color: var(--parchment); }
+
+    .header-title {
+      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.25rem;
+      color: var(--dnd-red); letter-spacing: 2px; text-transform: uppercase; line-height: 1;
+    }
+    .header-subtitle {
+      font-family: 'Spectral', serif; font-style: italic; font-size: 0.65rem;
+      color: var(--dnd-red-light); letter-spacing: 1px; margin-top: 1px;
+    }
+
+    .header-tools { display: flex; gap: 5px; }
+
+    .tool-btn {
+      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
+      color: var(--dnd-red); width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+      font-family: inherit; padding: 0; position: relative;
+    }
+    .tool-btn:hover { background: var(--dnd-red); color: var(--parchment); transform: none; box-shadow: none; filter: none; }
+    .tool-btn.saved { background: var(--dnd-red); color: var(--gold-bright); border-color: var(--dnd-red); }
+    .tool-btn[disabled] { opacity: 0.3; pointer-events: none; }
+
+    /* CONTROLS */
+    .controls-bar {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
+      background: rgba(0,0,0,0.02); position: relative; z-index: 2; flex-wrap: wrap;
+    }
+    .control-group { display: flex; align-items: center; gap: 4px; }
+    .control-group label {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
+    }
+    .control-group select {
+      padding: 3px 20px 3px 7px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
+      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2358180D'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 5px center; min-width: 82px;
+    }
+    .control-group select:focus { outline: none; border-color: var(--dnd-red); }
+
+    .conjure-btn {
+      margin-left: auto; background: var(--dnd-red); color: var(--gold-bright);
+      border: none; border-radius: 2px; padding: 6px 16px;
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.15s; display: flex; align-items: center; gap: 7px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2); white-space: nowrap;
+    }
+    .conjure-btn:hover { background: var(--dnd-red-light); box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+    .conjure-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .conjure-btn .fa-dice-d20 { font-size: 0.85rem; }
+
+    .prefix-bar {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 6px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
+      background: rgba(0,0,0,0.02); position: relative; z-index: 2;
+    }
+    .prefix-bar label {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .prefix-bar label .fa-paintbrush { font-size: 0.6rem; }
+    .prefix-bar input {
+      flex: 1; padding: 5px 10px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
+      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
+      min-width: 0;
+    }
+    .prefix-bar input::placeholder { color: rgba(88,24,13,0.3); font-style: italic; font-size: 0.72rem; }
+    .prefix-bar input:focus { outline: none; border-color: var(--dnd-red); background: #FFF9F0; }
+
+    /* STAT SCROLL */
+    .stat-scroll {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 18px 26px 26px; position: relative; z-index: 2;
+      scrollbar-width: thin; scrollbar-color: var(--dnd-red) transparent;
+    }
+    .stat-scroll::-webkit-scrollbar { width: 6px; }
+    .stat-scroll::-webkit-scrollbar-track { background: transparent; }
+    .stat-scroll::-webkit-scrollbar-thumb { background: var(--dnd-red); border-radius: 3px; }
+
+    /* FOOTER */
+    .page-footer {
+      flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 20px; border-top: 1px solid rgba(88,24,13,0.15);
+      position: relative; z-index: 2;
+    }
+    .footer-nav { display: flex; align-items: center; gap: 4px; }
+    .nav-btn {
+      background: none; border: 1px solid rgba(88,24,13,0.25); border-radius: 2px;
+      color: var(--dnd-red); width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.65rem; transition: all 0.15s; padding: 0;
+    }
+    .nav-btn:hover:not([disabled]) { background: var(--dnd-red); color: var(--parchment); }
+    .nav-btn[disabled] { opacity: 0.2; pointer-events: none; }
+
+    .page-indicator {
+      font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700;
+      color: var(--dnd-red); min-width: 50px; text-align: center;
+    }
+
+    .footer-flavor, .footer-chapter {
+      font-family: 'Spectral', serif; font-style: italic; font-size: 0.6rem; color: var(--ink-light);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 300px; text-align: center; color: var(--dnd-red); opacity: 0.5;
+    }
+    .empty-state .pentagram { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 6px; }
+    .empty-state p { font-family: 'Spectral', serif; font-size: 0.85rem; font-style: italic; }
+    .empty-state .shortcuts {
+      margin-top: 18px; display: flex; gap: 16px; font-family: 'Spectral', serif;
+      font-size: 0.72rem; color: var(--ink-light);
+    }
+    .empty-state kbd {
+      display: inline-block; background: rgba(88,24,13,0.08); border: 1px solid rgba(88,24,13,0.2);
+      border-radius: 2px; padding: 1px 5px; font-family: inherit; font-size: 0.65rem;
+    }
+
+    /* STAT BLOCK */
+    .gradient-bar { height: 5px; background: linear-gradient(to right, var(--dnd-red), var(--gold), var(--dnd-red)); border-radius: 2px; margin: 0 0 8px; }
+    .gradient-bar.bottom { margin: 16px 0 0; }
+
+    .char-name {
+      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.9rem;
+      color: var(--dnd-red); line-height: 1.05; letter-spacing: 1px;
+    }
+    .char-meta { font-family: 'Spectral', serif; font-style: italic; font-size: 0.82rem; color: var(--ink-light); margin-bottom: 8px; }
+
+    .tapered-rule { height: 2px; border: none; background: linear-gradient(to right, transparent, var(--rule-color), transparent); margin: 8px 0; }
+
+    .prop-line { font-size: 0.85rem; line-height: 1.5; margin: 2px 0; }
+    .prop-label { font-weight: 700; color: var(--dnd-red); }
+    .prop-value { color: var(--ink); }
+
+    .ability-scores { display: flex; justify-content: space-between; margin: 8px 0; padding: 6px 0; text-align: center; }
+    .ability-score { flex: 1; }
+    .ability-score .label { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.65rem; color: var(--dnd-red); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 1px; }
+    .ability-score .value { font-family: 'Spectral', serif; font-size: 0.85rem; color: var(--ink); }
+
+    .section-header {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.05rem;
+      color: var(--dnd-red); border-bottom: 2px solid var(--dnd-red);
+      padding-bottom: 2px; margin: 14px 0 6px; letter-spacing: 0.5px;
+    }
+
+    .action-entry { margin-bottom: 6px; font-size: 0.85rem; line-height: 1.45; }
+    .action-name { font-weight: 700; font-style: italic; }
+
+    .appearance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; margin-top: 4px; }
+    .app-item { font-size: 0.8rem; line-height: 1.45; padding: 1px 0; border-bottom: 1px dotted rgba(88,24,13,0.15); }
+    .app-item .app-label { font-weight: 700; color: var(--dnd-red); }
+
+    .color-swatch {
+      display: inline-block; width: 10px; height: 10px; border: 1px solid rgba(0,0,0,0.3);
+      border-radius: 1px; margin: 0 3px; vertical-align: middle; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .flavor-line { font-size: 0.82rem; line-height: 1.45; margin-top: 3px; }
+    .flavor-line .fl-label { font-weight: 700; color: var(--dnd-red); }
+
+    .personality-box { margin-top: 4px; }
+    .personality-box .p-item { font-size: 0.82rem; line-height: 1.45; margin: 2px 0; }
+    .personality-box .p-label { font-weight: 700; color: var(--dnd-red); font-style: italic; }
+
+    .equipment-list { font-size: 0.82rem; line-height: 1.5; margin-top: 4px; }
+
+    /* TOAST */
+    #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
+    .toast {
+      background: var(--wood-dark); color: var(--gold-bright);
+      padding: 10px 20px; border-radius: 3px; border: 1px solid var(--gold);
+      font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(8px); white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    #portraitPromptStorage, #scenePromptStorage { display: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 800px) {
+      .sidebar { position: fixed; left: 0; top: 0; height: 100vh; z-index: 100; border-radius: 0; }
+      .sidebar.collapsed { margin-left: 0; transform: translateX(-100%); }
+      .sidebar:not(.collapsed) { transform: translateX(0); }
+      .book-page { border-radius: 3px !important; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
+      .sidebar-overlay.active { display: block; }
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 6px; }
+      .layout { height: calc(100vh - 12px); }
+      .page-header { padding: 8px 14px 7px; }
+      .header-title { font-size: 1rem; letter-spacing: 1px; }
+      .header-subtitle { display: none; }
+      .controls-bar { padding: 6px 14px; gap: 5px; }
+      .prefix-bar { padding: 5px 14px; gap: 5px; }
+      .prefix-bar label { font-size: 0.5rem; }
+      .prefix-bar input { font-size: 0.72rem; padding: 4px 8px; }
+      .control-group select { min-width: 65px; font-size: 0.72rem; padding: 2px 16px 2px 5px; }
+      .control-group label { font-size: 0.5rem; }
+      .stat-scroll { padding: 12px 14px 18px; }
+      .char-name { font-size: 1.3rem; }
+      .conjure-btn { padding: 5px 10px; font-size: 0.6rem; }
+      .conjure-btn span { display: none; }
+      .appearance-grid { grid-template-columns: 1fr; }
+      .footer-flavor { display: none; }
+      .footer-chapter { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-book-open" style="margin-right:6px;font-size:0.65rem"></i> Character Index</h2>
+      <button class="sidebar-close" id="sidebarCloseBtn" title="Close index"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sidebar-sections" id="sidebarSections">
+      <div class="sb-section-label"><i class="fas fa-bookmark" style="font-size:0.5rem"></i> Saved</div>
+      <div id="savedList"><div class="sb-empty">No saved characters yet</div></div>
+      <div class="sb-section-label"><i class="fas fa-clock-rotate-left" style="font-size:0.5rem"></i> History</div>
+      <div id="historyList"><div class="sb-empty">No history yet</div></div>
+    </div>
+    <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 forged</div>
+  </aside>
+
+  <main class="book-page">
+    <div class="page-header">
+      <div class="header-left">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Open Character Index"><i class="fas fa-book-open"></i></button>
+        <div>
+          <div class="header-title">Character Forge</div>
+          <div class="header-subtitle">NPC &amp; Player Character Generator</div>
+        </div>
+      </div>
+      <div class="header-tools">
+        <button class="tool-btn" id="saveBtn" title="Save Character" disabled><i class="fas fa-bookmark"></i></button>
+        <button class="tool-btn" id="copyBtn" title="Copy Stat Block" disabled><i class="fas fa-scroll"></i></button>
+        <button class="tool-btn" id="copyPortraitBtn" title="Copy Portrait Prompt (White BG)" disabled><i class="fas fa-user"></i></button>
+        <button class="tool-btn" id="copySceneBtn" title="Copy Scene Prompt" disabled><i class="fas fa-image"></i></button>
+      </div>
+    </div>
+
+    <div class="controls-bar">
+      <div class="control-group">
+        <label for="raceSelect">Race</label>
+        <select id="raceSelect"><option value="Any">Any</option></select>
+      </div>
+      <div class="control-group">
+        <label for="classSelect">Class</label>
+        <select id="classSelect"><option value="Any">Any</option></select>
+      </div>
+      <div class="control-group">
+        <label for="levelSelect">Level</label>
+        <select id="levelSelect"></select>
+      </div>
+      <div class="control-group">
+        <label for="genderSelect">Gender</label>
+        <select id="genderSelect">
+          <option value="Any">Any</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <button class="conjure-btn" id="generateBtn">
+        <i class="fas fa-dice-d20"></i><span>Forge</span>
+      </button>
+    </div>
+    <div class="prefix-bar">
+      <label for="prefixInput"><i class="fas fa-paintbrush"></i> Prompt Prefix</label>
+      <input type="text" id="prefixInput" placeholder='e.g. "digital painterly art style, dramatic lighting"' spellcheck="false">
+    </div>
+
+    <div class="stat-scroll" id="statScroll">
+      <div id="charDisplay">
+        <div class="empty-state">
+          <div class="pentagram"><i class="fas fa-hat-wizard"></i></div>
+          <h3>Awaiting the Forge</h3>
+          <p>Select your parameters and roll the dice.</p>
+          <div class="shortcuts">
+            <div><kbd>Space</kbd> Forge</div>
+            <div><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate</div>
+            <div><kbd>S</kbd> Save &nbsp; <kbd>B</kbd> Index</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span class="footer-flavor">Chapter IV: Peoples of the Realms</span>
+      <div class="footer-nav">
+        <button class="nav-btn" id="navFirst" title="First page" disabled><i class="fas fa-angles-left"></i></button>
+        <button class="nav-btn" id="navPrev" title="Previous page" disabled><i class="fas fa-chevron-left"></i></button>
+        <span class="page-indicator" id="pageIndicator">--</span>
+        <button class="nav-btn" id="navNext" title="Next page" disabled><i class="fas fa-chevron-right"></i></button>
+        <button class="nav-btn" id="navLast" title="Last page" disabled><i class="fas fa-angles-right"></i></button>
+      </div>
+      <span class="footer-chapter">Codex Populorum</span>
+    </div>
+  </main>
+</div>
+
+<input type="hidden" id="portraitPromptStorage" value="">
+<input type="hidden" id="scenePromptStorage" value="">
+<div id="toast-container"></div>
+
+<script>
+
+/* ============ DATA ============ */
+
+const R=a=>a[Math.floor(Math.random()*a.length)];
+const chance=p=>Math.random()<p;
+const RN=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const mod=s=>Math.floor((s-10)/2);
+const fmtMod=m=>m>=0?`+${m}`:`${m}`;
+function pickDistinct(arr,count){
+  const pool=[...arr]; const out=[];
+  while(pool.length&&out.length<count){ const idx=Math.floor(Math.random()*pool.length); out.push(pool.splice(idx,1)[0]); }
+  return out;
+}
+function weightedPick(items,wk="weight"){
+  const total=items.reduce((s,i)=>s+(i[wk]||1),0);
+  let roll=Math.random()*total;
+  for(const item of items){ roll-=(item[wk]||1); if(roll<=0)return item; }
+  return items[items.length-1];
+}
+
+/* RACES */
+const raceCatalog=[
+  {name:"Human",type:"Humanoid",sizes:["Medium"],speed:30,langs:["Common"],bonus:{any:2},
+    skinTones:["pale","fair","light","olive","tan","brown","dark brown","deep brown","ebony"],
+    hairColors:["black","dark brown","brown","auburn","red","blonde","sandy","gray","white"],
+    eyeColors:["brown","dark brown","hazel","green","blue","gray","amber"],
+    hairStyles:["short cropped","shoulder length","long flowing","braided","tied back in a ponytail","shaved on the sides","curly","wavy","straight","dreadlocked","in a bun","loose and wild"],
+    buildRange:["lean","average","stocky","muscular","heavyset","wiry","athletic","slim","broad-shouldered"],
+    heightRange:[60,76],ageRange:[18,75],lifespan:"80 years"},
+  {name:"High Elf",type:"Humanoid (Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish"],bonus:{dex:2,int:1},
+    skinTones:["pale","alabaster","fair","light","golden","bronze","light copper"],
+    hairColors:["silver","platinum blonde","golden blonde","copper","auburn","black","white","pale blue","honey"],
+    eyeColors:["green","blue","violet","gold","silver","amber","emerald"],
+    hairStyles:["long and straight","flowing past shoulders","elegantly braided","half-up with silver clasps","loose with thin braids woven through","in an elaborate updo","long and sleek"],
+    buildRange:["slender","lithe","graceful","willowy","lean","athletic"],
+    heightRange:[62,74],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Wood Elf",type:"Humanoid (Elf)",sizes:["Medium"],speed:35,langs:["Common","Elvish"],bonus:{dex:2,wis:1},
+    skinTones:["copper","tan","olive","light brown","brown","golden brown","umber","tawny"],
+    hairColors:["brown","dark brown","black","auburn","copper red","mossy green","chestnut","dark auburn"],
+    eyeColors:["green","hazel","brown","amber","golden","copper","dark green"],
+    hairStyles:["long and wild","braided with leaves","tied back","dreadlocked with beads","short and practical","loose and windswept","woven with vines","in two long braids"],
+    buildRange:["lean","athletic","wiry","lithe","toned","rangy"],
+    heightRange:[60,72],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Drow",type:"Humanoid (Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish","Undercommon"],bonus:{dex:2,cha:1},
+    skinTones:["obsidian","charcoal","dark gray","deep purple-black","slate gray","midnight blue-black","ash gray","jet black"],
+    hairColors:["white","silver","pale blonde","stark white","pale lavender","platinum","pale gray","snow white"],
+    eyeColors:["red","crimson","pale lavender","amber","pink","pale yellow","violet","magenta"],
+    hairStyles:["long and straight","pulled back tightly","in an elaborate high ponytail","wild and flowing","short and severe","in intricate braids","swept to one side","cropped close"],
+    buildRange:["slender","lithe","lean","wiry","graceful","compact","athletic"],
+    heightRange:[58,70],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Hill Dwarf",type:"Humanoid (Dwarf)",sizes:["Medium"],speed:25,langs:["Common","Dwarvish"],bonus:{con:2,wis:1},
+    skinTones:["tan","ruddy","pale","light brown","weathered brown","bronze","fair","rosy"],
+    hairColors:["black","brown","dark brown","red","auburn","gray","white","ginger","rust","sandy"],
+    eyeColors:["brown","dark brown","amber","hazel","green","gray","blue"],
+    hairStyles:["long braided beard","thick braided beard and hair","wild bushy beard","neatly trimmed beard","massive forked beard","elaborate beard with metal rings","short cropped with full beard","mohawk with braided beard"],
+    buildRange:["stocky","broad","stout","heavyset","barrel-chested","thick","muscular","compact"],
+    heightRange:[44,52],ageRange:[50,340],lifespan:"350 years"},
+  {name:"Mountain Dwarf",type:"Humanoid (Dwarf)",sizes:["Medium"],speed:25,langs:["Common","Dwarvish"],bonus:{con:2,str:2},
+    skinTones:["pale","fair","ruddy","tan","weathered","light bronze","rosy"],
+    hairColors:["black","dark brown","red","auburn","gray","white","rust","iron gray","copper"],
+    eyeColors:["brown","dark brown","steel gray","blue","green","amber"],
+    hairStyles:["massive braided beard","war-braids in beard and hair","iron-clasped beard","thick beard with runes carved into beads","wild mane and thick beard","short cropped with imposing beard","elaborate braided mohawk"],
+    buildRange:["stocky","broad","muscular","powerful","barrel-chested","thick","hulking","compact and dense"],
+    heightRange:[46,54],ageRange:[50,340],lifespan:"350 years"},
+  {name:"Lightfoot Halfling",type:"Humanoid (Halfling)",sizes:["Small"],speed:25,langs:["Common","Halfling"],bonus:{dex:2,cha:1},
+    skinTones:["fair","tan","ruddy","light","olive","warm brown","rosy"],
+    hairColors:["brown","sandy","auburn","black","chestnut","honey","red","curly brown"],
+    eyeColors:["brown","hazel","green","blue","amber"],
+    hairStyles:["curly and wild","short and messy","neatly combed","in loose curls","tied back casually","fluffy and unkempt","parted to the side","in a messy bun"],
+    buildRange:["small and nimble","slight","compact","round-bellied","lean","wiry","plump","quick-footed"],
+    heightRange:[30,38],ageRange:[20,150],lifespan:"150 years"},
+  {name:"Stout Halfling",type:"Humanoid (Halfling)",sizes:["Small"],speed:25,langs:["Common","Halfling"],bonus:{dex:2,con:1},
+    skinTones:["fair","ruddy","tan","rosy","light brown","weathered","warm"],
+    hairColors:["brown","dark brown","sandy","auburn","black","chestnut","red"],
+    eyeColors:["brown","hazel","green","dark brown","amber"],
+    hairStyles:["curly and thick","short and practical","messy and windswept","neatly trimmed","bushy sideburns","wild curls","in a low ponytail"],
+    buildRange:["compact","sturdy","round","stocky","stout","thick","solid","hardy"],
+    heightRange:[30,38],ageRange:[20,150],lifespan:"150 years"},
+  {name:"Rock Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish"],bonus:{int:2,con:1},
+    skinTones:["tan","ruddy","fair","light brown","rosy","pale"],
+    hairColors:["white","gray","sandy","red","orange","auburn","brown","wild white"],
+    eyeColors:["blue","green","brown","hazel","amber","bright blue","sparkling green"],
+    hairStyles:["wild and spiky","unkempt mad-scientist style","long and flyaway","neatly groomed with a pointed beard","bushy eyebrows and wild hair","in a messy topknot","sticking out at all angles","elaborate with goggles perched on top"],
+    buildRange:["small","wiry","slight","compact","lean","skinny","nimble"],
+    heightRange:[36,42],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Forest Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish"],bonus:{int:2,dex:1},
+    skinTones:["tan","bark-brown","fair","olive","earthy brown","ruddy"],
+    hairColors:["brown","dark brown","mossy green","auburn","sandy","gray","chestnut"],
+    eyeColors:["green","hazel","brown","amber","bright green","golden brown"],
+    hairStyles:["wild with twigs and leaves","long and tangled","braided with natural fibers","short and messy","adorned with small flowers","loose and flowing","in a practical braid"],
+    buildRange:["small","slight","nimble","wiry","compact","tiny","lean"],
+    heightRange:[34,40],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Deep Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish","Undercommon"],bonus:{int:2,dex:1},
+    skinTones:["gray","dark gray","stone gray","slate","medium gray","ash gray","charcoal gray"],
+    hairColors:["bald","gray","pale gray","white","sparse white","thin gray"],
+    eyeColors:["dark","gray","pale gray","black","dark brown"],
+    hairStyles:["bald","sparse and wispy","thin and close-cropped","completely smooth","slight fuzz","thin strands combed over"],
+    buildRange:["wiry","gaunt","compact","lean","slight","bony","small and tough"],
+    heightRange:[34,40],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Tiefling",type:"Humanoid (Tiefling)",sizes:["Medium"],speed:30,langs:["Common","Infernal"],bonus:{cha:2,int:1},
+    skinTones:["red","crimson","deep red","maroon","purple","lavender","dark purple","dusky rose","ash gray","blue-gray","pale with reddish hue","dark magenta","burnt sienna","slate blue"],
+    hairColors:["black","dark red","deep purple","crimson","midnight blue","dark brown","white","silver","blood red","charcoal"],
+    eyeColors:["solid gold","solid red","solid silver","solid black","solid white","solid amber","pale yellow","fiery orange","pale violet","glowing red"],
+    hairStyles:["long and wild framing horns","swept back between curved horns","in a high ponytail draped past horns","shaved on sides with long top","braided and wrapped around horns","short and spiky between small horns","flowing loose with horns prominently displayed","in elaborate twists adorned with dark jewelry"],
+    buildRange:["lean","athletic","lithe","average","slender","toned","wiry","sinuous"],
+    heightRange:[60,74],ageRange:[18,100],lifespan:"110 years",
+    extraFeatures:["curved horns","small pointed horns","ram-like horns","swept-back horns","spiraling horns","long curving horns"],
+    tailDesc:["long thin prehensile tail","thick tail ending in a spaded tip","whip-like tail","coiled muscular tail","slender tail with a forked tip"]},
+  {name:"Dragonborn",type:"Humanoid (Dragonborn)",sizes:["Medium"],speed:30,langs:["Common","Draconic"],bonus:{str:2,cha:1},
+    skinTones:["brass","bronze","copper","gold","silver","red","blue","green","black","white","scarlet","cobalt","emerald","obsidian","pearl","amber","sapphire","verdant","crimson","iron gray"],
+    hairColors:["none"],
+    eyeColors:["red","gold","amber","orange","silver","blue","green","pale yellow","slitted gold","burning orange","ice blue"],
+    hairStyles:["no hair, scaled crest","no hair, ridged frill along skull","no hair, smooth scaled head","no hair, bony head ridges","no hair, small horn-like protrusions","no hair, fin-like crest"],
+    buildRange:["tall and muscular","broad and powerful","imposing","massive","athletic and scaled","towering","bulky","thick-limbed"],
+    heightRange:[66,80],ageRange:[15,80],lifespan:"80 years",
+    extraFeatures:["brass draconic ancestry","bronze draconic ancestry","copper draconic ancestry","gold draconic ancestry","silver draconic ancestry","red draconic ancestry","blue draconic ancestry","green draconic ancestry","black draconic ancestry","white draconic ancestry"]},
+  {name:"Half-Elf",type:"Humanoid (Half-Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish"],bonus:{cha:2},
+    skinTones:["pale","fair","light","olive","tan","light brown","bronze","golden","warm brown"],
+    hairColors:["black","dark brown","brown","auburn","red","blonde","silver-streaked","honey","chestnut","copper"],
+    eyeColors:["green","blue","hazel","violet","brown","amber","gray","emerald","bright blue"],
+    hairStyles:["long and flowing","shoulder-length and wavy","short and stylish","braided elegantly","loose with elven-style braids","tied back","wild and windswept","half-up with decorative pins","long and straight"],
+    buildRange:["lean","athletic","slender","average","graceful","lithe","medium","toned"],
+    heightRange:[60,74],ageRange:[20,180],lifespan:"180 years"},
+  {name:"Half-Orc",type:"Humanoid (Half-Orc)",sizes:["Medium"],speed:30,langs:["Common","Orc"],bonus:{str:2,con:1},
+    skinTones:["gray-green","pale green","olive green","grayish","greenish brown","light gray","sallow green","ashen","dusky green","muddy green"],
+    hairColors:["black","dark brown","dark gray","dark red","brown","iron gray"],
+    eyeColors:["brown","dark brown","red","amber","yellow-green","gray","dark","golden"],
+    hairStyles:["shaved with a topknot","wild and unkempt","in a mohawk","short and bristly","long and pulled back tight","braided with bones","cropped close","loose and tangled","tied in warrior braids"],
+    buildRange:["massive","muscular","broad","powerful","hulking","thick","imposing","brawny","heavy-set","towering"],
+    heightRange:[66,80],ageRange:[18,75],lifespan:"75 years",
+    extraFeatures:["prominent lower tusks","small lower fangs","one broken tusk","large jutting tusks","small but visible tusks"]},
+  {name:"Aasimar",type:"Humanoid (Aasimar)",sizes:["Medium"],speed:30,langs:["Common","Celestial"],bonus:{cha:2,wis:1},
+    skinTones:["luminous pale","golden","silver-tinged","warm bronze","radiant brown","glowing fair","opalescent","sun-kissed","ivory with faint shimmer","deep brown with golden undertones"],
+    hairColors:["silver","gold","platinum","white","pale blonde","radiant copper","shimmering auburn","luminous black","pale gold","celestial white"],
+    eyeColors:["solid gold","solid silver","pale blue","luminous white","bright amber","pale violet","shimmering green","radiant gold","glowing topaz"],
+    hairStyles:["long and luminous","flowing with an ethereal quality","braided with golden threads","short and radiant","swept back elegantly","loose and shimmering","in a celestial crown braid","wild and light-catching"],
+    buildRange:["graceful","athletic","lean","statuesque","imposing","elegant","strong","lithe"],
+    heightRange:[60,76],ageRange:[18,160],lifespan:"160 years"},
+  {name:"Fire Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,int:1},
+    skinTones:["red","deep red","orange-red","charcoal","ashen with ember cracks","dark red","coal black","burnt umber","flame-orange","smoldering bronze"],
+    hairColors:["flames","flickering fire","smoldering embers","red-orange","bright red","living fire","charcoal with glowing tips","none"],
+    eyeColors:["fiery orange","bright red","molten gold","ember red","yellow-orange","blazing amber","glowing coal"],
+    hairStyles:["literally flames rising from the head","smoldering embers for hair","fire-like flickering strands","shaved with glowing rune tattoos","wild flame-like hair","short with ember-glowing tips","flickering flame mohawk"],
+    buildRange:["lean","athletic","wiry","average","warm to the touch","radiating heat","toned","fit"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Water Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,wis:1},
+    skinTones:["blue","sea-green","teal","pale blue","aquamarine","deep ocean blue","blue-green","turquoise","seafoam"],
+    hairColors:["blue","sea-green","flowing water-like","deep blue","kelp-green","ocean blue","translucent blue","teal"],
+    eyeColors:["deep blue","sea green","pale blue","aquamarine","dark ocean blue","teal","glowing blue"],
+    hairStyles:["flowing like water","moves as if underwater","in wave-like patterns","dripping wet perpetually","sleek and water-slicked","long and flowing like a river","short and constantly damp","wild like crashing waves"],
+    buildRange:["lean","lithe","athletic","average","swimmer's build","sleek","graceful","fluid"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Earth Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,str:1},
+    skinTones:["stone gray","brown like packed earth","sandy","granite","clay","dusty brown","rough gray","slate","deep brown like rich soil","rocky tan"],
+    hairColors:["none","stone-like protrusions","crystalline growths","iron gray","earth brown","like jagged rocks","sandy brown","slate gray"],
+    eyeColors:["brown","dark brown","gemstone green","amber","obsidian black","golden","crystal blue","earthy brown"],
+    hairStyles:["no hair with rocky protrusions","crystalline formations instead of hair","rough stone-like ridges","short and coarse like gravel","thin and stiff like dried grass","bald with visible mineral veins","stone-like spikes"],
+    buildRange:["stocky","broad","heavy","dense","muscular","thick","powerful","solid as rock","immovable"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Air Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,dex:1},
+    skinTones:["pale blue","light blue","sky blue","pale","almost translucent","cloud white","pale gray","light lavender","ice blue"],
+    hairColors:["white","pale blue","translucent","wind-blown white","silver","wispy cloud-like","pale lavender","ethereal white"],
+    eyeColors:["pale blue","sky blue","white","silver","light gray","pale violet","cloud white","pale cyan"],
+    hairStyles:["constantly moving as if in a breeze","floating and weightless","wild and windswept","flowing upward","billowing like clouds","short and perpetually tousled","streaming behind like a banner","light and airy"],
+    buildRange:["lean","lithe","light","airy","slender","willowy","graceful","thin","ethereal"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Goliath",type:"Humanoid (Goliath)",sizes:["Medium"],speed:30,langs:["Common","Giant"],bonus:{str:2,con:1},
+    skinTones:["gray","light gray","stone gray","pale gray with darker patches","mottled gray","blue-gray","granite"],
+    hairColors:["black","dark brown","none","bald","white","gray"],
+    eyeColors:["blue","bright blue","pale blue","green","gray","dark brown","ice blue"],
+    hairStyles:["bald with lithoderms","bald","short and dark","shaved clean","braided close to the scalp","thin mohawk","cropped tight"],
+    buildRange:["massive","towering","hugely muscular","broad","powerful","imposing","enormous","thick-limbed"],
+    heightRange:[84,96],ageRange:[18,100],lifespan:"100 years",
+    extraFeatures:["dark lithoderm patches on skin","bony growths on forehead","lithoderm markings on arms and torso"]},
+  {name:"Tabaxi",type:"Humanoid (Tabaxi)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{dex:2,cha:1},
+    skinTones:["covered in fur"],
+    hairColors:["tawny","spotted leopard","black panther","orange tabby","gray","snow white","calico","brown striped","silver","golden","russet","smoky gray"],
+    eyeColors:["yellow","green","amber","bright green","gold","copper","bright yellow","slitted green","slitted amber"],
+    hairStyles:["short sleek fur covering entire body","thick mane-like fur around neck and head","spotted fur pattern","striped fur pattern","solid colored fur","tufted ears and short fur","long fur with dark rosettes","tabby-patterned fur"],
+    buildRange:["lean","lithe","agile","slender","athletic","graceful","nimble","quick","feline"],
+    heightRange:[60,74],ageRange:[15,80],lifespan:"80 years",
+    extraFeatures:["retractable claws","long feline tail","tufted ears","whiskers","cat-like nose"]},
+  {name:"Kenku",type:"Humanoid (Kenku)",sizes:["Medium"],speed:30,langs:["Common","Auran"],bonus:{dex:2,wis:1},
+    skinTones:["covered in feathers"],
+    hairColors:["black feathers","dark gray feathers","iridescent black feathers","crow-black feathers","raven feathers","dark brown feathers","glossy black feathers"],
+    eyeColors:["black","dark brown","beady black","bright black","dark"],
+    hairStyles:["sleek black plumage","ruffled feathered crest","smooth dark feathers","ragged molting feathers","glossy well-preened feathers","patchy feathers","thick feathered ruff around neck"],
+    buildRange:["slight","lean","hunched","wiry","small","compact","thin","birdlike"],
+    heightRange:[56,64],ageRange:[12,60],lifespan:"60 years",
+    extraFeatures:["corvid beak","dark feathered wings (vestigial)","taloned feet","beady eyes"]},
+  {name:"Firbolg",type:"Humanoid (Firbolg)",sizes:["Medium"],speed:30,langs:["Common","Elvish","Giant"],bonus:{wis:2,str:1},
+    skinTones:["pinkish","pale","blue-gray","earthy","light gray","ruddy","flushed pink","soft blue"],
+    hairColors:["red","auburn","brown","blond","white","gray","copper","fiery red","strawberry blonde"],
+    eyeColors:["blue","green","brown","amber","gray","pale blue","gentle brown"],
+    hairStyles:["long and wild","thick and bushy beard","braided with natural materials","loose and flowing","unkempt and nature-touched","long with flowers woven in","massive beard and long hair","tangled with leaves"],
+    buildRange:["tall","broad","gentle giant","large","soft","hulking but gentle","heavy","big-boned","lumbering"],
+    heightRange:[84,96],ageRange:[30,500],lifespan:"500 years"},
+  {name:"Lizardfolk",type:"Humanoid (Lizardfolk)",sizes:["Medium"],speed:30,langs:["Common","Draconic"],bonus:{con:2,wis:1},
+    skinTones:["green","dark green","olive green","brown","gray-green","mottled green","swamp green","blue-green","dark olive"],
+    hairColors:["none"],
+    eyeColors:["yellow","orange","red","amber","yellow with slitted pupils","golden","green with slitted pupils"],
+    hairStyles:["no hair, smooth scaled head","no hair, frilled crest","no hair, ridged scales","no hair, bony head plate","no hair, small horn nubs"],
+    buildRange:["lean","muscular","athletic","thick-tailed","broad","powerful","reptilian","sinewy"],
+    heightRange:[66,78],ageRange:[14,60],lifespan:"60 years",
+    extraFeatures:["thick muscular tail","frilled neck","sharp claws","rows of small teeth"]},
+  {name:"Goblin",type:"Humanoid (Goblinoid)",sizes:["Small"],speed:30,langs:["Common","Goblin"],bonus:{dex:2,con:1},
+    skinTones:["green","yellow-green","orange","sickly yellow","olive","dark green","brownish green","yellow","muddy green"],
+    hairColors:["black","dark brown","none","wiry black","patchy brown","greasy black"],
+    eyeColors:["yellow","red","amber","orange","dark","bright yellow","beady red"],
+    hairStyles:["bald","patchy tufts","wild and spiky","greasy and unkempt","thin and scraggly","messy topknot","ratty mohawk"],
+    buildRange:["scrawny","wiry","small","bony","lean","runty","quick","compact"],
+    heightRange:[36,44],ageRange:[8,60],lifespan:"60 years",
+    extraFeatures:["large pointed ears","flat nose","sharp teeth","beady eyes"]},
+  {name:"Hobgoblin",type:"Humanoid (Goblinoid)",sizes:["Medium"],speed:30,langs:["Common","Goblin"],bonus:{con:2,int:1},
+    skinTones:["red-orange","dark orange","ruddy red","brick red","dark red-brown","dusky orange","burnt orange"],
+    hairColors:["black","dark brown","dark red","iron gray","brown"],
+    eyeColors:["dark brown","yellow","red","amber","dark"],
+    hairStyles:["short and military","shaved","cropped tight","in a strict topknot","braided tightly","severe and short","regulation cut"],
+    buildRange:["muscular","athletic","disciplined","broad","solid","sturdy","imposing","military bearing"],
+    heightRange:[60,72],ageRange:[18,80],lifespan:"80 years"},
+  {name:"Bugbear",type:"Humanoid (Goblinoid)",sizes:["Medium"],speed:30,langs:["Common","Goblin"],bonus:{str:2,dex:1},
+    skinTones:["yellow-brown","dark brown","tawny","ruddy brown","orangish brown"],
+    hairColors:["brown","dark brown","tawny","reddish brown","coarse brown","shaggy brown"],
+    eyeColors:["yellow","green-yellow","brown","amber","red-brown"],
+    hairStyles:["shaggy all over","wild and matted","coarse fur-like hair","unkempt and thick","tangled with debris","long and shaggy like a mane"],
+    buildRange:["large","powerful","lanky but strong","brutish","tall and gangly","hulking","long-armed","rangy"],
+    heightRange:[72,84],ageRange:[16,80],lifespan:"80 years",
+    extraFeatures:["large pointed ears","long arms","covered in coarse fur","flat nose","wedge-shaped ears"]},
+  {name:"Orc",type:"Humanoid (Orc)",sizes:["Medium"],speed:30,langs:["Common","Orc"],bonus:{str:2,con:1},
+    skinTones:["gray","gray-green","green","dark gray","grayish-brown","olive gray","greenish gray","dark green"],
+    hairColors:["black","dark brown","dark red","gray","none","iron gray"],
+    eyeColors:["red","dark red","brown","yellow","amber","bloodshot dark"],
+    hairStyles:["shaved with a topknot","wild and unkempt","in a tall mohawk","braided war-braids","cropped brutally short","long and matted","in a warrior's knot","dreadlocked"],
+    buildRange:["massive","muscular","brutish","hulking","broad","powerful","thick","towering","scarred"],
+    heightRange:[68,82],ageRange:[18,50],lifespan:"50 years",
+    extraFeatures:["prominent lower tusks","sloping forehead","heavy brow ridge","scarred face","jutting jaw with tusks"]},
+  {name:"Kobold",type:"Humanoid (Kobold)",sizes:["Small"],speed:30,langs:["Common","Draconic"],bonus:{dex:2},
+    skinTones:["rusty brown","red-brown","dark brown","orange-brown","reddish","scaly brown","dull red","dark reddish-brown"],
+    hairColors:["none"],
+    eyeColors:["red","orange","amber","burning red","bright orange","yellow"],
+    hairStyles:["no hair, smooth scaled head","no hair, tiny horn nubs","no hair, small head crest","no hair, bony ridges"],
+    buildRange:["tiny","scrawny","small and wiry","slight","bony","diminutive","compact","quick"],
+    heightRange:[24,30],ageRange:[6,120],lifespan:"120 years",
+    extraFeatures:["small draconic snout","vestigial wings (sometimes)","long thin tail","small horns","dog-like snout"]},
+  {name:"Warforged",type:"Humanoid (Construct)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{con:2},
+    skinTones:["dark metal","burnished steel","iron gray","copper-plated","bronze","wooden and metal composite","mithral-laced","dark iron","oxidized copper","polished steel"],
+    hairColors:["none"],
+    eyeColors:["glowing blue","glowing yellow","glowing green","glowing red","glowing white","dim amber","bright cyan","pulsing violet"],
+    hairStyles:["no hair, smooth metal head","no hair, with a crest-like ridge","no hair, flat metal plate","no hair, exposed gears at temple","no hair, rune-etched forehead"],
+    buildRange:["heavy","bulky","imposing","thick","angular","broad","solid","mechanical","articulated"],
+    heightRange:[66,78],ageRange:[2,30],lifespan:"indeterminate"},
+  {name:"Changeling",type:"Humanoid (Changeling)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{cha:2},
+    skinTones:["pale white","ghostly pale","nearly colorless","ashen","very light gray","milk-white"],
+    hairColors:["white","silver","pale","colorless","light gray","shifting"],
+    eyeColors:["pale","white","silver","colorless","very light gray","faintly luminous"],
+    hairStyles:["short and nondescript","shoulder-length and plain","currently shifted to appear normal","in their natural form featureless","sleek and simple","shifting subtly"],
+    buildRange:["average","nondescript","lean","slim","medium","unremarkable","adaptable"],
+    heightRange:[60,72],ageRange:[18,100],lifespan:"100 years"}
+];
+
+/* CLASSES */
+const classCatalog=[
+  {name:"Fighter",hitDie:10,primaryStat:"str",saves:["str","con"],skills:["Athletics","Perception","Intimidation","Survival"],
+    weapons:["longsword","greatsword","battleaxe","warhammer","longbow","halberd","shortsword and shield","pike","flail and shield","maul"],
+    armor:["chain mail","half plate","plate armor","splint armor","scale mail"],
+    equipment:["explorer's pack","dungeoneer's pack"],
+    subclasses:["Champion","Battle Master","Eldritch Knight","Arcane Archer","Cavalier","Samurai","Echo Knight","Rune Knight","Psi Warrior"]},
+  {name:"Wizard",hitDie:6,primaryStat:"int",saves:["int","wis"],skills:["Arcana","History","Investigation","Medicine"],
+    weapons:["quarterstaff","dagger","light crossbow"],
+    armor:["none (robes)"],
+    equipment:["scholar's pack","component pouch","spellbook","arcane focus"],
+    subclasses:["Abjuration","Conjuration","Divination","Enchantment","Evocation","Illusion","Necromancy","Transmutation","War Magic","Bladesinging","Chronurgy","Graviturgy","Scribes"]},
+  {name:"Rogue",hitDie:8,primaryStat:"dex",saves:["dex","int"],skills:["Stealth","Sleight of Hand","Acrobatics","Perception","Deception","Investigation"],
+    weapons:["rapier","shortsword","shortbow","hand crossbow","daggers (×2)","scimitar"],
+    armor:["leather armor","studded leather"],
+    equipment:["burglar's pack","thieves' tools","dark cloak"],
+    subclasses:["Thief","Assassin","Arcane Trickster","Swashbuckler","Mastermind","Scout","Phantom","Soulknife","Inquisitive"]},
+  {name:"Cleric",hitDie:8,primaryStat:"wis",saves:["wis","cha"],skills:["Insight","Medicine","Religion","Persuasion"],
+    weapons:["mace","warhammer","light crossbow","shield"],
+    armor:["chain mail","scale mail","shield","half plate"],
+    equipment:["priest's pack","holy symbol","prayer book"],
+    subclasses:["Life","Light","War","Tempest","Knowledge","Trickery","Death","Grave","Forge","Order","Twilight","Peace"]},
+  {name:"Ranger",hitDie:10,primaryStat:"dex",saves:["str","dex"],skills:["Survival","Nature","Perception","Stealth","Animal Handling","Athletics"],
+    weapons:["longbow","two shortswords","hand crossbow","dual scimitars","shortbow"],
+    armor:["studded leather","leather armor","scale mail"],
+    equipment:["explorer's pack","quiver of arrows","hunting trap"],
+    subclasses:["Hunter","Beast Master","Gloom Stalker","Horizon Walker","Monster Slayer","Fey Wanderer","Swarmkeeper","Drakewarden"]},
+  {name:"Paladin",hitDie:10,primaryStat:"str",saves:["wis","cha"],skills:["Athletics","Insight","Intimidation","Medicine","Persuasion","Religion"],
+    weapons:["longsword and shield","warhammer and shield","greatsword","glaive","maul","morningstar and shield"],
+    armor:["chain mail","plate armor","half plate","splint armor"],
+    equipment:["priest's pack","holy symbol","explorer's pack"],
+    subclasses:["Devotion","Ancients","Vengeance","Redemption","Conquest","Crown","Glory","Watchers","Oathbreaker"]},
+  {name:"Barbarian",hitDie:12,primaryStat:"str",saves:["str","con"],skills:["Athletics","Intimidation","Nature","Perception","Survival","Animal Handling"],
+    weapons:["greataxe","greatsword","maul","two handaxes","javelin and shield"],
+    armor:["none (unarmored)","hide armor"],
+    equipment:["explorer's pack","four javelins","trophy from a slain beast"],
+    subclasses:["Berserker","Totem Warrior","Ancestral Guardian","Storm Herald","Zealot","Beast","Wild Magic","Giant"]},
+  {name:"Bard",hitDie:8,primaryStat:"cha",saves:["dex","cha"],skills:["Performance","Persuasion","Deception","Acrobatics","History","Insight","Perception"],
+    weapons:["rapier","longsword","hand crossbow","shortsword","dagger"],
+    armor:["leather armor","studded leather"],
+    equipment:["entertainer's pack","lute","diplomat's pack","musical instrument"],
+    subclasses:["Lore","Valor","Glamour","Swords","Whispers","Eloquence","Creation","Spirits"]},
+  {name:"Druid",hitDie:8,primaryStat:"wis",saves:["int","wis"],skills:["Nature","Perception","Survival","Medicine","Animal Handling","Arcana","Insight"],
+    weapons:["quarterstaff","scimitar","club","sickle","wooden shield"],
+    armor:["leather armor","hide armor","wooden shield"],
+    equipment:["explorer's pack","druidic focus","herbalism kit","totem"],
+    subclasses:["Land","Moon","Dreams","Shepherd","Spores","Stars","Wildfire"]},
+  {name:"Monk",hitDie:8,primaryStat:"dex",saves:["str","dex"],skills:["Acrobatics","Athletics","History","Insight","Religion","Stealth"],
+    weapons:["shortsword","unarmed strikes","quarterstaff","dart","nunchaku"],
+    armor:["none (unarmored)"],
+    equipment:["explorer's pack","dungeoneer's pack","10 darts"],
+    subclasses:["Open Hand","Shadow","Four Elements","Drunken Master","Kensei","Sun Soul","Mercy","Astral Self","Ascendant Dragon"]},
+  {name:"Sorcerer",hitDie:6,primaryStat:"cha",saves:["con","cha"],skills:["Arcana","Deception","Insight","Intimidation","Persuasion","Religion"],
+    weapons:["dagger","light crossbow","quarterstaff"],
+    armor:["none (robes)"],
+    equipment:["dungeoneer's pack","arcane focus","component pouch","explorer's pack"],
+    subclasses:["Draconic Bloodline","Wild Magic","Divine Soul","Shadow Magic","Storm Sorcery","Aberrant Mind","Clockwork Soul","Lunar Sorcery"]},
+  {name:"Warlock",hitDie:8,primaryStat:"cha",saves:["wis","cha"],skills:["Arcana","Deception","History","Intimidation","Investigation","Nature","Religion"],
+    weapons:["light crossbow","dagger","quarterstaff","eldritch blast (cantrip)"],
+    armor:["leather armor","studded leather"],
+    equipment:["scholar's pack","dungeoneer's pack","arcane focus","component pouch"],
+    subclasses:["Archfey","Fiend","Great Old One","Celestial","Hexblade","Fathomless","Genie","Undead","Undying"]},
+  {name:"Artificer",hitDie:8,primaryStat:"int",saves:["con","int"],skills:["Arcana","Investigation","Medicine","Nature","Perception","Sleight of Hand"],
+    weapons:["hand crossbow","light hammer","dagger","light crossbow"],
+    armor:["scale mail","studded leather","chain mail","half plate"],
+    equipment:["dungeoneer's pack","thieves' tools","tinker's tools","smith's tools"],
+    subclasses:["Alchemist","Artillerist","Battle Smith","Armorer"]}
+];
+
+/* BACKGROUNDS */
+const backgrounds=[
+  {name:"Acolyte",skills:["Insight","Religion"],traits:["devout","scholarly","sheltered","ritualistic"],
+    ideals:["Faith","Tradition","Change","Power","Charity","Aspiration"],
+    bonds:["my temple","an ancient text I protect","a deity I serve","a holy relic I guard","the community I serve"],
+    flaws:["I judge others harshly","I trust too easily","I am inflexible","I am secretly faithless","I am holier-than-thou"]},
+  {name:"Charlatan",skills:["Deception","Sleight of Hand"],traits:["charming","sly","quick-witted","smooth-talking"],
+    ideals:["Independence","Fairness","Charity","Creativity","Friendship","Ambition"],
+    bonds:["a con gone wrong","a rival I must outdo","a debt I owe","a secret identity I protect","someone I swindled who seeks revenge"],
+    flaws:["I can't resist a pretty face","I always have an exit plan","I lie compulsively","I can't help pushing my luck","I betrayed someone close"]},
+  {name:"Criminal",skills:["Deception","Stealth"],traits:["suspicious","resourceful","daring","street-smart"],
+    ideals:["Honor among thieves","Freedom","Greed","Power","Redemption","Loyalty"],
+    bonds:["my criminal contacts","a heist gone wrong","a partner I abandoned","a debt to a crime lord","a stolen item I can't fence"],
+    flaws:["I have a tell when I lie","I turn tail at the first sign of trouble","I can't trust anyone","I'm wanted in several cities","I never forgive a slight"]},
+  {name:"Entertainer",skills:["Acrobatics","Performance"],traits:["dramatic","flamboyant","attention-seeking","captivating"],
+    ideals:["Beauty","Tradition","Creativity","Greed","Fame","Honesty"],
+    bonds:["my instrument","a fan who helped me","a rival performer","the troupe I left behind","a venue where I got my big break"],
+    flaws:["I'm a sucker for flattery","I can't keep a secret","I'm an insufferable egotist","I'll do anything for fame","I turn hostile when upstaged"]},
+  {name:"Folk Hero",skills:["Animal Handling","Survival"],traits:["humble","determined","rustic","brave"],
+    ideals:["Respect","Fairness","Freedom","Might","Sincerity","Destiny"],
+    bonds:["my home village","the tyrant I oppose","the people who believe in me","a family heirloom","the land I was raised on"],
+    flaws:["I'm convinced of my own destiny","I'm naive about the wider world","I'm too trusting","I have a weakness for vice","I secretly doubt myself"]},
+  {name:"Guild Artisan",skills:["Insight","Persuasion"],traits:["industrious","proud","meticulous","ambitious"],
+    ideals:["Community","Generosity","Freedom","Greed","Knowledge","Aspiration"],
+    bonds:["my workshop","my guild","a masterpiece I'm working on","the artisan who trained me","my guild's reputation"],
+    flaws:["I overcharge for my work","I'm a perfectionist to a fault","I'm jealous of rival artisans","I'll do anything for money","I look down on manual labor"]},
+  {name:"Hermit",skills:["Medicine","Religion"],traits:["reclusive","contemplative","eccentric","insightful"],
+    ideals:["Knowledge","Self-Knowledge","Logic","Free Thinking","Power","Inquiry"],
+    bonds:["a secret discovery","the place of my seclusion","an inner vision I pursue","nature itself","a truth the world isn't ready for"],
+    flaws:["I'm dogmatic about my beliefs","I have no social skills","I'm paranoid","I harbor dark thoughts","I'm out of touch with reality"]},
+  {name:"Noble",skills:["History","Persuasion"],traits:["refined","entitled","commanding","eloquent"],
+    ideals:["Responsibility","Power","Tradition","Reform","Duty","Noble Obligation"],
+    bonds:["my family name","a political rival","a loyal retainer","my ancestral estate","a family secret"],
+    flaws:["I'm vain","I believe everyone is beneath me","I can't stand insults","I crave luxury","I have a shameful secret"]},
+  {name:"Outlander",skills:["Athletics","Survival"],traits:["self-reliant","wild","wary of civilization","nomadic"],
+    ideals:["Change","Might","Nature","Glory","Honor","Freedom"],
+    bonds:["my tribe","a sacred grove","a trophy from a great hunt","the wilderness itself","a creature I once saved"],
+    flaws:["I'm slow to trust city-dwellers","I'm reckless","I remember every insult","I'm uncomfortable indoors","I'm easily distracted by nature"]},
+  {name:"Sage",skills:["Arcana","History"],traits:["curious","bookish","absent-minded","analytical"],
+    ideals:["Knowledge","Beauty","Logic","Power","Self-Improvement","Inquiry"],
+    bonds:["a rare text I seek","a library I protect","a mentor who taught me","an unsolved mystery","an academic rival"],
+    flaws:["I'm easily distracted by knowledge","I speak without thinking","I believe I'm the smartest person","I overlook obvious solutions","I can't keep a secret if it's interesting"]},
+  {name:"Sailor",skills:["Athletics","Perception"],traits:["sea-weathered","superstitious","boisterous","loyal"],
+    ideals:["Freedom","Fairness","Adventure","Wealth","Mastery","Comradeship"],
+    bonds:["my old ship","a crew I sailed with","the sea itself","a port I call home","a treasure map"],
+    flaws:["I follow orders even when wrong","I drink too much","I can't resist a dare","I'm haunted by a shipwreck","I never learned to swim"]},
+  {name:"Soldier",skills:["Athletics","Intimidation"],traits:["disciplined","battle-scarred","direct","tactical"],
+    ideals:["Greater Good","Responsibility","Independence","Might","Honor","Duty"],
+    bonds:["my unit","a fallen comrade","a commanding officer","a war I fought in","a weapon I carried through battle"],
+    flaws:["I obey orders without question","I'd rather fight than talk","I'm haunted by what I've done","I'm inflexible","I'm slow to trust outsiders"]},
+  {name:"Urchin",skills:["Sleight of Hand","Stealth"],traits:["scrappy","street-smart","mistrustful","resourceful"],
+    ideals:["Respect","Community","Change","Retribution","Freedom","Survival"],
+    bonds:["a street gang","the city I grew up in","a mentor who showed me kindness","a stolen memento","a friend still living on the streets"],
+    flaws:["I can't trust anyone with money","I hoard everything","I run from fights","I have trouble with authority","I steal when I don't need to"]},
+  {name:"Spy",skills:["Deception","Stealth"],traits:["paranoid","observant","manipulative","resourceful"],
+    ideals:["Freedom","Truth","Loyalty","Information","Survival","Greater Good"],
+    bonds:["my handler","a secret I carry","a cover identity","the network I serve","a target I couldn't eliminate"],
+    flaws:["I trust no one completely","I see enemies everywhere","I've told so many lies I forget the truth","I'm addicted to risk","I have multiple identities and lose myself"]},
+  {name:"Merchant",skills:["Insight","Persuasion"],traits:["shrewd","well-traveled","negotiating","calculating"],
+    ideals:["Wealth","Community","Fairness","Ambition","Generosity","Progress"],
+    bonds:["my trade route","a business partner","a rare commodity I seek","my family's trade legacy","a rival merchant house"],
+    flaws:["I see everyone as a potential customer","I cut corners","I value coin over people","I can't resist a bargain","I embellish my goods' quality"]}
+];
+
+/* NAME TABLES */
+const firstNamesMale=["Aldric","Bran","Caelum","Dorian","Edrin","Faelan","Gareth","Hadrian","Ivor","Jareth","Kael","Lucian","Merric","Nolan","Orin","Percival","Quillan","Rowan","Sylas","Thorn","Ulric","Valen","Wren","Xander","Yorick","Zephyr","Theron","Cormac","Dain","Elric","Fenris","Gideon","Halvar","Iskander","Jorin","Kaelen","Lysander","Magnus","Niall","Osric","Pelham","Rennick","Silas","Tavish","Uriel","Vidar","Wyatt","Alaric","Bastian","Cedric","Darian","Eamon","Flynn","Galen","Holt","Idris","Jasper"];
+const firstNamesFemale=["Aelara","Brynn","Calista","Dahlia","Elara","Fiora","Gwendolyn","Haleth","Isolde","Jessa","Kaira","Lyra","Mira","Nyx","Orla","Phaedra","Quinn","Ravenna","Senna","Thalia","Ursa","Vespera","Willow","Xyla","Yara","Zara","Seraphina","Althea","Brielle","Celeste","Daphne","Eowyn","Freya","Gwyneth","Helena","Ilona","Juniper","Kira","Liriel","Morrigan","Nessa","Ophelia","Petra","Rhiannon","Soraya","Talindra","Undine","Vivienne","Wynn","Astrid","Beatrix","Cordelia","Drusilla","Elowen","Faye","Greta","Hestia","Iris"];
+const lastNames=["Ashford","Blackthorn","Crestfall","Dawnforge","Emberheart","Frostwind","Goldmantle","Hawkwood","Ironvale","Jadeblade","Kingsward","Lightbringer","Moonwhisper","Nighthollow","Oakenshield","Pinebrook","Quicksilver","Ravencrest","Stormrider","Thornwall","Underhill","Voidwalker","Windrunner","Ashwood","Brightwater","Copperfield","Darkmore","Elmshadow","Foxglove","Greywood","Hollowbone","Ivythorn","Kettelburn","Longstrider","Mosshill","Northwind","Oathkeeper","Pyreborn","Redmantle","Silverspire","Trueforge","Umbrawood","Vesperion","Wolfsbane","Starweaver","Battleborn","Cinderveil","Deeproot","Everhart","Firebrand"];
+
+/* ALIGNMENT */
+const alignments=["lawful good","neutral good","chaotic good","lawful neutral","true neutral","chaotic neutral","lawful evil","neutral evil","chaotic evil"];
+
+/* DISTINGUISHING FEATURES */
+const scars=["a jagged scar across the left cheek","a long scar down the right arm","burn scars on both hands","a thin scar over one eye","a bite-mark scar on the neck","claw-mark scars across the chest","no visible scars","a faded scar on the chin","a missing chunk from one ear","whip-mark scars across the back"];
+const distinguishingFeatures=["a prominent nose","high cheekbones","a strong jawline","freckles across the nose","a beauty mark","a crooked smile","a gap-toothed grin","deep-set eyes","a broad forehead","a cleft chin","laugh lines around the eyes","sharp angular features","soft rounded features","weathered sun-worn skin","a perpetual smirk","a warm gentle expression","an intense focused gaze","a tired weary look","a youthful face","crow's feet around the eyes"];
+const accessories=["a silver ring on the left hand","a leather cord necklace with a small charm","a worn belt pouch","a tattered cloak","a feather tucked behind the ear","an eye patch","fingerless gloves","a holy symbol pendant","a well-worn hat","a braided leather bracelet","a gem-studded earring","a bandolier of vials","a quill behind the ear","a set of reading spectacles","a tattoo on the forearm","ritual scarification marks","an old military insignia pin","a small bone talisman","a flower tucked in the hair","nothing particularly noteworthy"];
+
+/* SCENE LOCATIONS */
+const sceneLocations={
+  "Acolyte":["inside a candlelit temple","at a stone altar surrounded by incense","in a monastery courtyard at dawn","before a stained glass window","in a shadowy crypt beneath a cathedral"],
+  "Charlatan":["in a crowded marketplace stall","in a dimly lit tavern corner","at a card table in a gambling den","on a busy city street","in a back alley leaning against a wall"],
+  "Criminal":["in a dark alley at night","in an underground thieves' guild hideout","on a moonlit rooftop overlooking the city","in a smoky den","in a cramped sewer tunnel"],
+  "Entertainer":["on a tavern stage with lantern light","at a royal court performing","in a town square during a festival","backstage at a grand theater","around a campfire under the stars"],
+  "Folk Hero":["in a sunlit village square","standing in a golden wheat field","at the edge of a farmstead","on a country road at sunset","in a rustic tavern surrounded by villagers"],
+  "Guild Artisan":["in a busy workshop surrounded by tools","at a forge with glowing embers","in a cluttered artisan's studio","at a market stall displaying wares","in a well-lit crafting hall"],
+  "Hermit":["in a secluded forest clearing","at the mouth of a cave","beside a tranquil woodland pond","in a tiny woodland cottage","on a misty mountain peak"],
+  "Noble":["in a grand manor hall","on a balcony overlooking a city","in an ornate study surrounded by books","at a formal banquet table","in a courtyard with manicured gardens"],
+  "Outlander":["in a wild untamed wilderness","on a rocky mountain trail","beside a roaring river","in a dense ancient forest","on a windswept plain under a vast sky"],
+  "Sage":["in a vast library surrounded by towering bookshelves","at a cluttered desk covered in scrolls","in an arcane study with floating candles","in a university lecture hall","in a dusty archive"],
+  "Sailor":["on the deck of a sailing ship","at a harbor dock at sunset","in a portside tavern","standing at a ship's wheel","on a rocky shoreline looking out to sea"],
+  "Soldier":["on a muddy battlefield","at a military encampment","standing guard at a fortress gate","in a war room over a map table","marching on a dusty road in formation"],
+  "Urchin":["in a narrow city alley","on a crowded slum rooftop","huddled in a doorway","picking through a market crowd","in the shadow of a towering city wall"],
+  "Spy":["in a shadowy corner of a crowded tavern","on a moonlit balcony","disguised in a busy marketplace","in a secret meeting room","peering through a window at night"],
+  "Merchant":["behind a market stall piled with goods","on a trade caravan at sunset","in a well-appointed counting house","negotiating in a bustling bazaar","in a warehouse full of crates"]
+};
+
+/* POPULATE SELECTS */
+function populateSelect(el,items){
+  const existing=new Set([...el.options].map(o=>o.value));
+  items.forEach(i=>{if(existing.has(i))return;const o=document.createElement('option');o.value=i;o.textContent=i;el.appendChild(o);});
+}
+const raceNames=raceCatalog.map(r=>r.name);
+const classNames=classCatalog.map(c=>c.name);
+populateSelect(document.getElementById('raceSelect'),raceNames);
+populateSelect(document.getElementById('classSelect'),classNames);
+populateSelect(document.getElementById('levelSelect'),["Any",...Array.from({length:20},(_,i)=>String(i+1))]);
+
+/* STATE */
+let history=[], currentIndex=-1, savedSet=new Set();
+let storageAvailable=typeof window!=="undefined"&&typeof window.localStorage!=="undefined";
+
+function persistSaved(){
+  if(!storageAvailable)return;
+  try{
+    const saved=[...savedSet].map(idx=>history[idx]).filter(Boolean);
+    window.localStorage.setItem('charforge-saved',JSON.stringify(saved));
+  }catch(e){console.warn('Storage write failed:',e);}
+}
+function loadSaved(){
+  if(!storageAvailable)return;
+  try{
+    const raw=window.localStorage.getItem('charforge-saved');
+    if(raw){
+      const saved=JSON.parse(raw);
+      if(Array.isArray(saved)&&saved.length>0){
+        saved.forEach(c=>{history.push(c);savedSet.add(history.length-1);});
+        showPage(0);
+        showToast(`Loaded ${saved.length} saved character${saved.length>1?'s':''}`);
+        return;
+      }
+    }
+  }catch(e){console.warn('Storage read failed:',e);}
+}
+
+/* GENERATION */
+function generateAbilityScores(cls, race, level){
+  const base=()=>Math.max(3, [0,0,0,0].reduce(s=>s+RN(1,6),0)-RN(1,6)+RN(1,6));
+  let str=base(),dex=base(),con=base(),int_=base(),wis=base(),cha=base();
+  
+  // Boost primary stat
+  const primary=cls.primaryStat;
+  const boost=Math.floor(level/4)+2;
+  if(primary==="str") str=clamp(str+boost,3,20);
+  if(primary==="dex") dex=clamp(dex+boost,3,20);
+  if(primary==="con") con=clamp(con+boost,3,20);
+  if(primary==="int") int_=clamp(int_+boost,3,20);
+  if(primary==="wis") wis=clamp(wis+boost,3,20);
+  if(primary==="cha") cha=clamp(cha+boost,3,20);
+  
+  // Racial bonuses
+  if(race.bonus){
+    if(race.bonus.str) str=clamp(str+race.bonus.str,3,20);
+    if(race.bonus.dex) dex=clamp(dex+race.bonus.dex,3,20);
+    if(race.bonus.con) con=clamp(con+race.bonus.con,3,20);
+    if(race.bonus.int) int_=clamp(int_+race.bonus.int,3,20);
+    if(race.bonus.wis) wis=clamp(wis+race.bonus.wis,3,20);
+    if(race.bonus.cha) cha=clamp(cha+race.bonus.cha,3,20);
+    if(race.bonus.any) { str=clamp(str+1,3,20); con=clamp(con+1,3,20); }
+  }
+  return {str,dex,con,int:int_,wis,cha};
+}
+
+function generateHP(level, hitDie, con){
+  const conMod=mod(con);
+  const hp=hitDie+conMod+Math.max(0,(level-1)*(Math.ceil(hitDie/2+1)+conMod));
+  return Math.max(1,hp);
+}
+
+function generateAC(cls, dex, level){
+  const dexMod=mod(dex);
+  if(cls.name==="Barbarian") return 10+dexMod+2+Math.floor(level/6);
+  if(cls.name==="Monk") return 10+dexMod+2+Math.floor(level/6);
+  if(cls.armor.some(a=>a.includes("plate"))) return clamp(18+Math.floor(level/8),18,22);
+  if(cls.armor.some(a=>a.includes("chain")||a.includes("splint")||a.includes("scale"))) return clamp(16+Math.min(2,dexMod)+Math.floor(level/8),14,20);
+  if(cls.armor.some(a=>a.includes("half plate"))) return clamp(15+Math.min(2,dexMod)+Math.floor(level/8),15,20);
+  if(cls.armor.some(a=>a.includes("studded"))) return 12+dexMod+Math.floor(level/10);
+  if(cls.armor.some(a=>a.includes("leather"))) return 11+dexMod+Math.floor(level/10);
+  return 10+dexMod;
+}
+
+function profBonus(level){ return Math.ceil(level/4)+1; }
+
+function buildCharacterData(){
+  const selRace=document.getElementById('raceSelect').value;
+  const selClass=document.getElementById('classSelect').value;
+  const selLevel=document.getElementById('levelSelect').value;
+  const selGender=document.getElementById('genderSelect').value;
+
+  const race=selRace==='Any'?R(raceCatalog):raceCatalog.find(r=>r.name===selRace)||R(raceCatalog);
+  const cls=selClass==='Any'?R(classCatalog):classCatalog.find(c=>c.name===selClass)||R(classCatalog);
+  const level=selLevel==='Any'?weightedPick([
+    {v:1,weight:6},{v:2,weight:6},{v:3,weight:6},{v:4,weight:5},{v:5,weight:5},
+    {v:6,weight:4},{v:7,weight:4},{v:8,weight:3},{v:9,weight:3},{v:10,weight:3},
+    {v:11,weight:2},{v:12,weight:2},{v:13,weight:2},{v:14,weight:1.5},{v:15,weight:1.5},
+    {v:16,weight:1},{v:17,weight:1},{v:18,weight:0.8},{v:19,weight:0.6},{v:20,weight:0.5}
+  ]).v : parseInt(selLevel);
+
+  const gender=selGender==='Any'?(chance(0.5)?'Male':'Female'):selGender;
+  const firstName=gender==='Male'?R(firstNamesMale):R(firstNamesFemale);
+  const lastName=R(lastNames);
+  const charName=`${firstName} ${lastName}`;
+  const alignment=R(alignments);
+  const bg=R(backgrounds);
+  const subclass=level>=3?R(cls.subclasses):null;
+
+  const stats=generateAbilityScores(cls,race,level);
+  const pb=profBonus(level);
+  const hp=generateHP(level,cls.hitDie,stats.con);
+  const ac=generateAC(cls,stats.dex,level);
+  const speed=race.speed;
+
+  // Skills
+  const classSkills=pickDistinct(cls.skills, Math.min(3,cls.skills.length));
+  const bgSkills=bg.skills.filter(s=>!classSkills.includes(s));
+  const allSkills=[...new Set([...classSkills,...bgSkills])];
+
+  // Equipment
+  const weapon=R(cls.weapons);
+  const armor=R(cls.armor);
+  const gear=R(cls.equipment);
+
+  // Personality
+  const trait=R(bg.traits);
+  const ideal=R(bg.ideals);
+  const bond=R(bg.bonds);
+  const flaw=R(bg.flaws);
+
+  // Appearance
+  const skinTone=R(race.skinTones);
+  const hairColor=R(race.hairColors);
+  const eyeColor=R(race.eyeColors);
+  const hairStyle=R(race.hairStyles);
+  const build=R(race.buildRange);
+  const height=RN(race.heightRange[0],race.heightRange[1]);
+  const heightFt=Math.floor(height/12);
+  const heightIn=height%12;
+  const age=race.ageRange?RN(race.ageRange[0],race.ageRange[1]):RN(20,60);
+  const scar=R(scars);
+  const feature=R(distinguishingFeatures);
+  const accessory=R(accessories);
+  const extraFeature=race.extraFeatures?R(race.extraFeatures):null;
+  const tailDesc=race.tailDesc?R(race.tailDesc):null;
+
+  // Languages
+  const langs=[...race.langs];
+  if(stats.int>=14&&!langs.includes("additional language")) langs.push(R(["Elvish","Dwarvish","Draconic","Celestial","Infernal","Sylvan","Undercommon","Giant","Gnomish","Goblin","Primordial","Abyssal","Deep Speech"].filter(l=>!langs.includes(l))));
+
+  // Saves
+  const saveStr=cls.saves.map(s=>{
+    const val=mod(stats[s])+pb;
+    return `${s.charAt(0).toUpperCase()+s.slice(1)} ${fmtMod(val)}`;
+  }).join(', ');
+
+  // Build prompts
+  const prefix=(document.getElementById('prefixInput').value||'').trim();
+  
+  // Physical description string for prompts
+  let physDesc=`${gender.toLowerCase()} ${race.name.toLowerCase()}`;
+  if(race.name==="Dragonborn"){
+    physDesc+=`, ${skinTone} scales, ${R(race.hairStyles)}, ${eyeColor} slitted eyes`;
+  } else if(race.name==="Kenku"){
+    physDesc+=`, ${hairColor}, corvid beak, ${eyeColor} eyes`;
+  } else if(race.name==="Tabaxi"){
+    physDesc+=`, ${hairColor} fur, ${eyeColor} cat-like eyes, feline features`;
+  } else if(race.name==="Lizardfolk"){
+    physDesc+=`, ${skinTone} scales, ${eyeColor} slitted eyes`;
+  } else if(race.name==="Warforged"){
+    physDesc+=`, ${skinTone} plating, ${eyeColor} eyes`;
+  } else {
+    physDesc+=`, ${skinTone} skin, ${hairColor} ${hairStyle} hair, ${eyeColor} eyes`;
+  }
+  physDesc+=`, ${build} build`;
+  if(extraFeature) physDesc+=`, ${extraFeature}`;
+  if(tailDesc) physDesc+=`, ${tailDesc}`;
+  if(scar!=="no visible scars") physDesc+=`, ${scar}`;
+
+  let gearDesc=`wearing ${armor}`;
+  if(weapon) gearDesc+=`, carrying ${weapon}`;
+
+  // Portrait prompt (white background)
+  let portraitPrompt=`${physDesc}, ${gearDesc}, ${feature}, ${cls.name.toLowerCase()} class, D&D character portrait, white background, full body, highly detailed, fantasy art`;
+  if(prefix) portraitPrompt=prefix+'\n'+portraitPrompt;
+
+  // Scene prompt
+  const sceneLoc=R(sceneLocations[bg.name]||["in a dramatic fantasy setting","in a medieval tavern","on a forest path","in a dungeon corridor","at a castle gate"]);
+  let scenePrompt=`${physDesc}, ${gearDesc}, ${feature}, ${cls.name.toLowerCase()} class, ${sceneLoc}, D&D character art, dramatic lighting, highly detailed, fantasy illustration`;
+  if(prefix) scenePrompt=prefix+'\n'+scenePrompt;
+
+  // Attacks
+  let attacks=[];
+  const atkMod=cls.primaryStat==="str"?mod(stats.str):cls.primaryStat==="dex"?mod(stats.dex):cls.primaryStat==="int"?mod(stats.int):cls.primaryStat==="wis"?mod(stats.wis):mod(stats.cha);
+  const atkBonus=atkMod+pb;
+  if(weapon&&!weapon.includes("cantrip")){
+    const avgDmg=Math.max(1,Math.floor(level/2)+atkMod+RN(2,6));
+    attacks.push(`<div class="action-entry"><span class="action-name">${weapon}.</span> <em>Attack:</em> ${fmtMod(atkBonus)} to hit. <em>Hit:</em> ${avgDmg} damage.</div>`);
+  }
+  if(["Wizard","Sorcerer","Warlock","Cleric","Druid","Bard"].includes(cls.name)){
+    const spellDC=8+pb+(cls.primaryStat==="int"?mod(stats.int):cls.primaryStat==="wis"?mod(stats.wis):mod(stats.cha));
+    const spellAtk=pb+(cls.primaryStat==="int"?mod(stats.int):cls.primaryStat==="wis"?mod(stats.wis):mod(stats.cha));
+    attacks.push(`<div class="action-entry"><span class="action-name">Spellcasting.</span> Spell save DC ${spellDC}, ${fmtMod(spellAtk)} to hit with spell attacks. ${cls.name==="Warlock"?`Pact Magic (${Math.min(5,Math.ceil(level/2))} slots).`:`${level>=1?Math.ceil(level*1.2):1} spell slots available.`}</div>`);
+  }
+  if(cls.name==="Warlock"){
+    const ebDmg=Math.floor(1+(level>=5?1:0)+(level>=11?1:0)+(level>=17?1:0));
+    attacks.push(`<div class="action-entry"><span class="action-name">Eldritch Blast.</span> <em>Ranged Spell Attack:</em> ${fmtMod(atkBonus)} to hit, range 120 ft. <em>Hit:</em> ${ebDmg}d10 force damage (${ebDmg} beam${ebDmg>1?'s':''}).</div>`);
+  }
+  if(cls.name==="Rogue"&&level>=1){
+    const sneakDice=Math.ceil(level/2);
+    attacks.push(`<div class="action-entry"><span class="action-name">Sneak Attack.</span> ${sneakDice}d6 extra damage once per turn when conditions are met.</div>`);
+  }
+  if(cls.name==="Barbarian"&&level>=1){
+    const rageDmg=level>=16?4:level>=9?3:2;
+    attacks.push(`<div class="action-entry"><span class="action-name">Rage.</span> +${rageDmg} melee damage, resistance to bludgeoning/piercing/slashing. ${Math.min(6,2+Math.floor(level/3))} uses per long rest.</div>`);
+  }
+  if(cls.name==="Monk"&&level>=1){
+    const martialDie=level>=17?'1d10':level>=11?'1d8':level>=5?'1d6':'1d4';
+    attacks.push(`<div class="action-entry"><span class="action-name">Martial Arts.</span> Unarmed strike deals ${martialDie} + ${mod(stats.dex)} damage. Ki points: ${level}.</div>`);
+  }
+  if(subclass){
+    attacks.push(`<div class="action-entry"><span class="action-name">${subclass} Features.</span> This character follows the ${subclass} ${cls.name==="Wizard"?"school":cls.name==="Cleric"?"domain":cls.name==="Warlock"?"patron":cls.name==="Sorcerer"?"origin":cls.name==="Druid"?"circle":cls.name==="Ranger"?"conclave":cls.name==="Fighter"?"archetype":cls.name==="Rogue"?"archetype":cls.name==="Paladin"?"oath":cls.name==="Barbarian"?"path":cls.name==="Bard"?"college":cls.name==="Monk"?"tradition":cls.name==="Artificer"?"specialist":"subclass"}.</div>`);
+  }
+
+  const meta=`${race.name} ${cls.name}, Level ${level}`;
+  const html=`<div class="stat-block">
+    <div class="gradient-bar"></div>
+    <div class="char-name">${charName}</div>
+    <div class="char-meta">${gender} ${race.name} (${race.type}), ${cls.name}${subclass?` — ${subclass}`:''}, Level ${level}</div>
+    <div class="char-meta" style="margin-top:-4px">${alignment}, ${bg.name} background</div>
+    <hr class="tapered-rule">
+    <div class="prop-line"><span class="prop-label">Armor Class</span> <span class="prop-value">${ac} (${armor})</span></div>
+    <div class="prop-line"><span class="prop-label">Hit Points</span> <span class="prop-value">${hp} (${level}d${cls.hitDie}${mod(stats.con)>=0?' + ':' - '}${Math.abs(level*mod(stats.con))})</span></div>
+    <div class="prop-line"><span class="prop-label">Speed</span> <span class="prop-value">${speed} ft.</span></div>
+    <hr class="tapered-rule">
+    <div class="ability-scores">
+      <div class="ability-score"><span class="label">STR</span><span class="value">${stats.str} (${fmtMod(mod(stats.str))})</span></div>
+      <div class="ability-score"><span class="label">DEX</span><span class="value">${stats.dex} (${fmtMod(mod(stats.dex))})</span></div>
+      <div class="ability-score"><span class="label">CON</span><span class="value">${stats.con} (${fmtMod(mod(stats.con))})</span></div>
+      <div class="ability-score"><span class="label">INT</span><span class="value">${stats.int} (${fmtMod(mod(stats.int))})</span></div>
+      <div class="ability-score"><span class="label">WIS</span><span class="value">${stats.wis} (${fmtMod(mod(stats.wis))})</span></div>
+      <div class="ability-score"><span class="label">CHA</span><span class="value">${stats.cha} (${fmtMod(mod(stats.cha))})</span></div>
+    </div>
+    <hr class="tapered-rule">
+    <div class="prop-line"><span class="prop-label">Saving Throws</span> <span class="prop-value">${saveStr}</span></div>
+    <div class="prop-line"><span class="prop-label">Skills</span> <span class="prop-value">${allSkills.join(', ')}</span></div>
+    <div class="prop-line"><span class="prop-label">Languages</span> <span class="prop-value">${langs.join(', ')}</span></div>
+    <div class="prop-line"><span class="prop-label">Proficiency Bonus</span> <span class="prop-value">${fmtMod(pb)}</span></div>
+    ${race.name==="Drow"?'<div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">Superior Darkvision 120 ft.</span></div>':
+      ["High Elf","Wood Elf"].includes(race.name)?'<div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">Darkvision 60 ft.</span></div>':
+      ["Hill Dwarf","Mountain Dwarf","Deep Gnome"].includes(race.name)?'<div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">Darkvision 60 ft.</span></div>':
+      race.name==="Tiefling"?'<div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">Darkvision 60 ft.</span></div>':
+      race.name==="Half-Orc"?'<div class="prop-line"><span class="prop-label">Senses</span> <span class="prop-value">Darkvision 60 ft.</span></div>':''}
+    <hr class="tapered-rule">
+    <div class="section-header">Combat</div>
+    ${attacks.join('')}
+    <hr class="tapered-rule">
+    <div class="section-header">Appearance</div>
+    <div class="appearance-grid">
+      <div class="app-item"><span class="app-label">Age:</span> ${age}</div>
+      <div class="app-item"><span class="app-label">Height:</span> ${heightFt}'${heightIn}"</div>
+      <div class="app-item"><span class="app-label">Build:</span> ${build}</div>
+      <div class="app-item"><span class="app-label">Skin:</span> ${skinTone}</div>
+      <div class="app-item"><span class="app-label">Hair:</span> ${hairColor}, ${hairStyle}</div>
+      <div class="app-item"><span class="app-label">Eyes:</span> ${eyeColor}</div>
+      <div class="app-item"><span class="app-label">Features:</span> ${feature}</div>
+      <div class="app-item"><span class="app-label">Scars:</span> ${scar}</div>
+      ${extraFeature?`<div class="app-item"><span class="app-label">Racial Trait:</span> ${extraFeature}</div>`:''}
+      ${tailDesc?`<div class="app-item"><span class="app-label">Tail:</span> ${tailDesc}</div>`:''}
+      <div class="app-item"><span class="app-label">Accessory:</span> ${accessory}</div>
+      <div class="app-item"><span class="app-label">Lifespan:</span> ${race.lifespan||'unknown'}</div>
+    </div>
+    <hr class="tapered-rule">
+    <div class="section-header">Equipment</div>
+    <div class="equipment-list">
+      ${armor!=="none (robes)"&&armor!=="none (unarmored)"?`${armor}, `:''}${weapon}, ${gear}${accessory!=="nothing particularly noteworthy"?`, ${accessory}`:''}
+    </div>
+    <hr class="tapered-rule">
+    <div class="section-header">Personality</div>
+    <div class="personality-box">
+      <div class="p-item"><span class="p-label">Trait:</span> ${trait}</div>
+      <div class="p-item"><span class="p-label">Ideal:</span> ${ideal}</div>
+      <div class="p-item"><span class="p-label">Bond:</span> ${bond}</div>
+      <div class="p-item"><span class="p-label">Flaw:</span> ${flaw}</div>
+    </div>
+    <div class="gradient-bar bottom"></div>
+  </div>`;
+
+  return {name:charName,meta,level,html,portraitPrompt,scenePrompt,alignment,race:race.name,cls:cls.name,gender};
+}
+
+/* NAVIGATION */
+function showPage(index){
+  if(index<0||index>=history.length)return;
+  currentIndex=index;
+  const entry=history[index];
+  document.getElementById('charDisplay').innerHTML=entry.html;
+  document.getElementById('portraitPromptStorage').value=entry.portraitPrompt;
+  document.getElementById('scenePromptStorage').value=entry.scenePrompt;
+  document.getElementById('statScroll').scrollTop=0;
+  updateUI();
+}
+
+function updateUI(){
+  const total=history.length;
+  const has=currentIndex>=0&&currentIndex<total;
+  document.getElementById('pageIndicator').textContent=has?`${currentIndex+1} / ${total}`:'--';
+  document.getElementById('navFirst').disabled=!has||currentIndex===0;
+  document.getElementById('navPrev').disabled=!has||currentIndex===0;
+  document.getElementById('navNext').disabled=!has||currentIndex>=total-1;
+  document.getElementById('navLast').disabled=!has||currentIndex>=total-1;
+  document.getElementById('saveBtn').disabled=!has;
+  document.getElementById('copyBtn').disabled=!has;
+  document.getElementById('copyPortraitBtn').disabled=!has;
+  document.getElementById('copySceneBtn').disabled=!has;
+  if(has&&savedSet.has(currentIndex)){document.getElementById('saveBtn').classList.add('saved');}
+  else{document.getElementById('saveBtn').classList.remove('saved');}
+  renderSidebar();
+}
+
+/* SIDEBAR */
+function renderSidebar(){
+  const savedList=document.getElementById('savedList');
+  const savedEntries=[...savedSet].sort((a,b)=>b-a);
+  if(!savedEntries.length){savedList.innerHTML='<div class="sb-empty">No saved characters yet</div>';}
+  else{savedList.innerHTML=savedEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
+    <div class="sb-entry-icon"><i class="fas fa-bookmark"></i></div>
+    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.gender} ${e.race} ${e.cls}</div></div>
+    <div class="sb-entry-lvl">${e.level}</div>
+    <div class="sb-entry-actions"><button class="sb-action-btn delete" data-remove="${idx}" title="Remove"><i class="fas fa-times"></i></button></div>
+  </div>`;}).join('');}
+
+  const historyList=document.getElementById('historyList');
+  const historyEntries=history.map((_,i)=>i).filter(i=>!savedSet.has(i)).reverse();
+  if(!historyEntries.length){historyList.innerHTML=history.length?'<div class="sb-empty">All characters are saved</div>':'<div class="sb-empty">No history yet</div>';}
+  else{historyList.innerHTML=historyEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
+    <div class="sb-entry-icon"><i class="fas fa-scroll" style="opacity:0.5"></i></div>
+    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.gender} ${e.race} ${e.cls}</div></div>
+    <div class="sb-entry-lvl">${e.level}</div>
+  </div>`;}).join('');}
+
+  document.getElementById('sidebarFooter').textContent=`${savedSet.size} saved \u00B7 ${history.length} forged`;
+
+  document.querySelectorAll('.sb-entry[data-index]').forEach(el=>{
+    el.addEventListener('click',e=>{if(e.target.closest('.sb-action-btn'))return;showPage(parseInt(el.dataset.index));});
+  });
+  document.querySelectorAll('.sb-action-btn[data-remove]').forEach(el=>{
+    el.addEventListener('click',e=>{e.stopPropagation();savedSet.delete(parseInt(el.dataset.remove));updateUI();persistSaved();showToast('Removed from roster');});
+  });
+}
+
+function generateChar(){const data=buildCharacterData();history.push(data);showPage(history.length-1);}
+function toggleSave(){if(currentIndex<0)return;if(savedSet.has(currentIndex)){savedSet.delete(currentIndex);showToast('Removed from roster');}else{savedSet.add(currentIndex);showToast('Saved to roster!');}updateUI();persistSaved();}
+function toggleSidebar(){const sb=document.getElementById('sidebar');const ov=document.getElementById('sidebarOverlay');sb.classList.toggle('collapsed');ov.classList.toggle('active',!sb.classList.contains('collapsed'));}
+
+/* TOAST & COPY */
+function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.classList.add('toast');t.textContent=msg;c.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{if(t.parentNode)c.removeChild(t);},300);},2500);}
+function copyText(text,msg){if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast(msg)).catch(()=>fbCopy(text,msg));}else{fbCopy(text,msg);}}
+function fbCopy(text,msg){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast(msg);}
+
+/* EVENTS */
+document.getElementById('generateBtn').addEventListener('click',generateChar);
+document.getElementById('saveBtn').addEventListener('click',toggleSave);
+document.getElementById('sidebarToggle').addEventListener('click',toggleSidebar);
+document.getElementById('sidebarCloseBtn').addEventListener('click',toggleSidebar);
+document.getElementById('sidebarOverlay').addEventListener('click',toggleSidebar);
+document.getElementById('navFirst').addEventListener('click',()=>showPage(0));
+document.getElementById('navPrev').addEventListener('click',()=>showPage(currentIndex-1));
+document.getElementById('navNext').addEventListener('click',()=>showPage(currentIndex+1));
+document.getElementById('navLast').addEventListener('click',()=>showPage(history.length-1));
+document.getElementById('copyBtn').addEventListener('click',()=>{const t=document.getElementById('charDisplay').innerText;if(!t||currentIndex<0)return showToast('Forge a character first!');copyText(t,'Stat block copied!');});
+document.getElementById('copyPortraitBtn').addEventListener('click',()=>{const p=document.getElementById('portraitPromptStorage').value;if(!p)return showToast('Forge a character first!');copyText(p,'Portrait prompt copied! (White BG)');});
+document.getElementById('copySceneBtn').addEventListener('click',()=>{const p=document.getElementById('scenePromptStorage').value;if(!p)return showToast('Forge a character first!');copyText(p,'Scene prompt copied!');});
+
+document.addEventListener('keydown',e=>{
+  if(['SELECT','INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
+  if(e.code==='Space'){e.preventDefault();generateChar();}
+  if(e.code==='ArrowLeft'){e.preventDefault();if(currentIndex>0)showPage(currentIndex-1);}
+  if(e.code==='ArrowRight'){e.preventDefault();if(currentIndex<history.length-1)showPage(currentIndex+1);}
+  if(e.code==='KeyS'&&!e.ctrlKey&&!e.metaKey){toggleSave();}
+  if(e.code==='KeyB'){toggleSidebar();}
+});
+
+/* INIT */
+loadSaved();
+
+</script>
+</body>
+</html>
