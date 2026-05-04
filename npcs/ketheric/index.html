@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KETHERIC THORM — Chosen of Myrkul</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=IM+Fell+English+SC&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #030408;
+    --deep:     #07080f;
+    --bone:     #c8bfa0;
+    --bone-dim: #6a6248;
+    --bone-bright: #e8dfc0;
+    --necrotic: #7a40a0;
+    --necrotic-bright: #c080e0;
+    --necrotic-dim:    #3a1a50;
+    --death:    #1a1428;
+    --white:    #d8d0e8;
+    --white-dim:#8a8898;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  #bg-canvas, #particle-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; pointer-events: none;
+  }
+  #bg-canvas      { z-index: 0; }
+  #particle-canvas{ z-index: 1; }
+
+  .page-wrap { position: relative; z-index: 2; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; padding: 2rem; text-align: center;
+  }
+
+  .myrkul-skull {
+    width: 130px; height: 130px; margin-bottom: 2rem;
+    animation: floatSkull 5s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(122,64,160,0.6)) drop-shadow(0 0 50px rgba(122,64,160,0.25));
+  }
+
+  @keyframes floatSkull {
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%    { transform: translateY(-12px) rotate(2deg); }
+  }
+
+  .hero-kicker {
+    font-family: 'IM Fell English SC', serif; font-size: 0.85rem;
+    letter-spacing: 0.4em; color: var(--bone-dim); text-transform: uppercase;
+    margin-bottom: 1rem; opacity:0; animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.5rem, 8vw, 7rem); font-weight: 900; line-height: 0.9;
+    color: var(--bone);
+    text-shadow: 0 0 30px rgba(200,191,160,0.6), 0 0 80px rgba(122,64,160,0.3), 4px 4px 0 #0a0810;
+    opacity:0; animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif; font-size: clamp(1rem,2.5vw,1.4rem);
+    letter-spacing: 0.3em; color: var(--necrotic-dim);
+    margin-top: 1rem; text-transform: uppercase;
+    opacity:0; animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  .hero-divider {
+    width: 300px; height: 2px; margin: 2rem auto;
+    background: linear-gradient(90deg, transparent, var(--bone), transparent);
+    position: relative; opacity:0; animation: fadeIn 1s ease 1.2s forwards;
+  }
+
+  .hero-divider::before,.hero-divider::after {
+    content:'✦'; position:absolute; top:50%; transform:translateY(-50%); color:var(--bone); font-size:0.8rem;
+  }
+  .hero-divider::before { left:-1rem; }
+  .hero-divider::after  { right:-1rem; }
+
+  .mc-bar {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem;
+    margin:1.5rem 0 3rem; opacity:0; animation:fadeUp 1s ease 1.8s forwards;
+  }
+
+  .mc-pip {
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-family:'IM Fell English SC',serif; font-size:0.75rem; letter-spacing:0.15em;
+    padding:0.25rem 0.75rem; border:1px solid rgba(200,191,160,0.2);
+    color:var(--bone-dim); background:rgba(200,191,160,0.04); margin:0 0.25rem;
+  }
+
+  .hero-quote {
+    font-style:italic; font-size:clamp(1rem,2vw,1.25rem);
+    color:var(--white-dim); max-width:600px; line-height:1.8;
+    opacity:0; animation:fadeUp 1s ease 1.5s forwards;
+  }
+
+  .hero-quote cite {
+    display:block; margin-top:0.5rem; font-style:normal;
+    font-size:0.85rem; letter-spacing:0.2em;
+    color:var(--bone-dim); font-family:'IM Fell English SC',serif;
+  }
+
+  .scroll-hint {
+    position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+    color:var(--bone-dim); font-size:0.75rem; letter-spacing:0.3em;
+    font-family:'IM Fell English SC',serif; opacity:0; animation:fadeIn 1s ease 2.5s forwards;
+  }
+
+  .scroll-arrow { width:20px; height:30px; border:1px solid var(--bone-dim); border-radius:10px; position:relative; }
+  .scroll-arrow::after {
+    content:''; position:absolute; top:4px; left:50%; transform:translateX(-50%);
+    width:4px; height:8px; background:var(--bone); border-radius:2px;
+    animation:scrollDot 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollDot { 0%{top:4px;opacity:1;} 100%{top:16px;opacity:0;} }
+
+  /* 3D */
+  .ring-section { display:flex; justify-content:center; align-items:center; padding:4rem 2rem; }
+  #three-canvas { width:400px; height:400px; max-width:90vw; display:block; }
+
+  /* LAYOUT */
+  .section { max-width:1100px; margin:0 auto; padding:4rem 2rem; }
+
+  .section-label {
+    font-family:'IM Fell English SC',serif; font-size:0.75rem; letter-spacing:0.5em;
+    color:var(--bone-dim); margin-bottom:0.5rem;
+    display:flex; align-items:center; gap:1rem;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--bone-dim),transparent); }
+
+  .section-title {
+    font-family:'Cinzel',serif; font-size:clamp(1.6rem,4vw,2.8rem); font-weight:900;
+    color:var(--bone-bright); margin-bottom:3rem;
+    text-shadow:0 0 20px rgba(200,191,160,0.3);
+  }
+
+  .divider {
+    display:flex; align-items:center; gap:1rem; margin:4rem 0 2rem;
+    color:var(--bone-dim); font-size:0.8rem;
+  }
+  .divider::before,.divider::after {
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(200,191,160,0.25),transparent);
+  }
+
+  /* LORE */
+  .lore-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:4rem; }
+  @media(max-width:700px){.lore-grid{grid-template-columns:1fr;}}
+
+  .lore-card {
+    background:linear-gradient(135deg,rgba(7,8,15,0.95),rgba(15,12,24,0.95));
+    border:1px solid rgba(200,191,160,0.12); padding:2rem; position:relative; overflow:hidden;
+    transition:border-color 0.3s,transform 0.3s;
+  }
+  .lore-card:hover { border-color:rgba(200,191,160,0.4); transform:translateY(-3px); }
+  .lore-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--bone),transparent); opacity:0; transition:opacity 0.3s;
+  }
+  .lore-card:hover::before { opacity:1; }
+  .lore-card-icon  { font-size:2rem; margin-bottom:1rem; display:block; filter:drop-shadow(0 0 8px rgba(122,64,160,0.5)); }
+  .lore-card-title { font-family:'Cinzel',serif; font-size:1rem; font-weight:600; color:var(--bone); letter-spacing:0.1em; margin-bottom:0.75rem; text-transform:uppercase; }
+  .lore-card-text  { font-size:0.95rem; line-height:1.8; color:var(--white-dim); }
+
+  /* CLASS GRID */
+  .class-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-bottom:4rem; }
+  @media(max-width:800px){.class-grid{grid-template-columns:1fr;}}
+
+  .class-card {
+    background:var(--deep); border:1px solid #2a2838; overflow:hidden;
+    transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),box-shadow 0.4s;
+    animation:cardAppear 0.8s ease backwards;
+  }
+  .class-card:nth-child(1){animation-delay:0.1s;} .class-card:nth-child(2){animation-delay:0.3s;} .class-card:nth-child(3){animation-delay:0.5s;}
+  @keyframes cardAppear{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+  .class-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 30px var(--card-glow,rgba(200,191,160,0.15)); }
+
+  .class-card.paladin  { --card-glow:rgba(200,191,160,0.2); }
+  .class-card.necro    { --card-glow:rgba(122,64,160,0.3); }
+  .class-card.oathbreaker { --card-glow:rgba(90,50,130,0.4); }
+
+  .class-card-header { padding:1.5rem 1.5rem 1rem; position:relative; }
+  .class-card-header::after {
+    content:''; position:absolute; bottom:0; left:1.5rem; right:1.5rem; height:1px;
+    background:linear-gradient(90deg,transparent,var(--card-accent,var(--bone)),transparent);
+  }
+  .paladin     .class-card-header { --card-accent:var(--bone); }
+  .necro       .class-card-header { --card-accent:var(--necrotic); }
+  .oathbreaker .class-card-header { --card-accent:#5a3280; }
+
+  .class-level-badge { display:inline-block; font-family:'Cinzel',serif; font-size:0.7rem; font-weight:600; letter-spacing:0.2em; padding:0.2rem 0.7rem; border:1px solid; margin-bottom:0.75rem; text-transform:uppercase; }
+  .paladin     .class-level-badge { color:var(--bone);    border-color:var(--bone); }
+  .necro       .class-level-badge { color:var(--necrotic);border-color:var(--necrotic); }
+  .oathbreaker .class-level-badge { color:#9060c0;        border-color:#9060c0; }
+
+  .class-name    { font-family:'Cinzel Decorative',serif; font-size:1.3rem; font-weight:700; display:block; margin-bottom:0.3rem; }
+  .class-subclass{ font-family:'IM Fell English SC',serif; font-size:0.85rem; color:var(--bone-dim); letter-spacing:0.1em; }
+
+  .paladin     .class-name { color:var(--bone-bright); }
+  .necro       .class-name { color:var(--necrotic-bright); }
+  .oathbreaker .class-name { color:#9060c0; }
+
+  .class-body  { padding:1.25rem 1.5rem 1.5rem; }
+  .class-desc  { font-size:0.9rem; line-height:1.75; color:var(--white-dim); margin-bottom:1.25rem; }
+  .class-features { list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
+  .class-features li { font-size:0.82rem; color:var(--white-dim); padding-left:1.2rem; position:relative; }
+  .class-features li::before { content:'▸'; position:absolute; left:0; }
+  .paladin     .class-features li::before { color:var(--bone); }
+  .necro       .class-features li::before { color:var(--necrotic); }
+  .oathbreaker .class-features li::before { color:#9060c0; }
+
+  .level-bar-wrap { margin-top:1.25rem; }
+  .level-bar-label { display:flex; justify-content:space-between; font-family:'IM Fell English SC',serif; font-size:0.72rem; letter-spacing:0.15em; margin-bottom:0.4rem; }
+  .level-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+  .level-bar-fill { height:100%; border-radius:2px; animation:barGrow 1.5s cubic-bezier(0.23,1,0.32,1) 1s backwards; }
+  @keyframes barGrow{from{width:0;}}
+  .paladin     .level-bar-fill { width:50%; background:linear-gradient(90deg,#2a2818,var(--bone)); }
+  .necro       .level-bar-fill { width:30%; background:linear-gradient(90deg,var(--necrotic-dim),var(--necrotic)); }
+  .oathbreaker .level-bar-fill { width:20%; background:linear-gradient(90deg,#1a0a28,#7a40a0); }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(6,1fr); gap:1rem; margin-bottom:4rem; }
+  @media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr);}}
+
+  .stat-box {
+    border:1px solid rgba(200,191,160,0.15); padding:1rem 0.5rem; text-align:center;
+    background:rgba(7,8,15,0.8); position:relative; transition:border-color 0.3s,transform 0.3s;
+  }
+  .stat-box:hover { border-color:var(--bone); transform:scale(1.05); }
+  .stat-box::after { content:''; position:absolute; inset:3px; border:1px solid rgba(200,191,160,0.05); pointer-events:none; }
+
+  .stat-label { font-family:'IM Fell English SC',serif; font-size:0.65rem; letter-spacing:0.2em; color:var(--bone-dim); text-transform:uppercase; margin-bottom:0.3rem; }
+  .stat-value { font-family:'Cinzel',serif; font-size:2rem; font-weight:900; color:var(--bone); line-height:1; text-shadow:0 0 15px rgba(200,191,160,0.3); }
+  .stat-mod   { font-family:'Cinzel',serif; font-size:0.8rem; color:var(--white-dim); margin-top:0.2rem; }
+
+  /* COMBAT STATS */
+  .combat-stats-wrap {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:rgba(200,191,160,0.08); border:1px solid rgba(200,191,160,0.12);
+    margin-bottom:2rem; overflow:hidden;
+  }
+  @media(max-width:700px){.combat-stats-wrap{grid-template-columns:repeat(2,1fr);}}
+  .cs-cell { background:var(--deep); padding:1rem 1.25rem; display:flex; flex-direction:column; gap:0.25rem; transition:background 0.2s; }
+  .cs-cell:hover { background:rgba(200,191,160,0.04); }
+  .cs-key { font-family:'IM Fell English SC',serif; font-size:0.62rem; letter-spacing:0.25em; color:var(--bone-dim); text-transform:uppercase; }
+  .cs-val { font-family:'Cinzel',serif; font-size:1.1rem; font-weight:700; color:var(--white); }
+  .cs-val.hl { color:var(--bone);    text-shadow:0 0 10px rgba(200,191,160,0.3); }
+  .cs-val.nc { color:var(--necrotic-bright); }
+  .cs-val.dg { color:#c080e0; }
+
+  .saves-grid {
+    display:grid; grid-template-columns:repeat(6,1fr); gap:1px;
+    background:rgba(200,191,160,0.06); border:1px solid rgba(200,191,160,0.1);
+    margin-bottom:3rem; overflow:hidden;
+  }
+  @media(max-width:700px){.saves-grid{grid-template-columns:repeat(3,1fr);}}
+  .save-cell { background:var(--deep); padding:0.8rem 0.5rem; text-align:center; transition:background 0.2s; }
+  .save-cell:hover { background:rgba(200,191,160,0.03); }
+  .save-cell.proficient { border-top:2px solid var(--bone-dim); }
+  .save-key { font-family:'IM Fell English SC',serif; font-size:0.6rem; letter-spacing:0.2em; color:var(--bone-dim); display:block; margin-bottom:0.3rem; }
+  .save-val { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--white-dim); }
+  .save-cell.proficient .save-val { color:var(--bone); }
+
+  /* ACTIONS */
+  .action-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom:4rem; }
+  @media(max-width:700px){.action-grid{grid-template-columns:1fr;}}
+
+  .action-card {
+    background:rgba(5,6,12,0.9); border:1px solid rgba(200,191,160,0.1);
+    padding:1.4rem; position:relative; overflow:hidden; transition:all 0.3s;
+  }
+  .action-card:hover { border-color:rgba(200,191,160,0.4); transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.6); }
+
+  .action-card.apostle {
+    border-color:rgba(122,64,160,0.2);
+    background:linear-gradient(135deg,rgba(26,20,40,0.25),rgba(5,6,12,0.9));
+  }
+  .action-card.apostle:hover { border-color:rgba(122,64,160,0.6); }
+
+  .action-header { display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.75rem; }
+  .action-icon   { font-size:1.5rem; flex-shrink:0; filter:drop-shadow(0 0 5px rgba(122,64,160,0.5)); }
+  .action-title-wrap { flex:1; }
+  .action-name   { font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600; color:var(--bone-bright); letter-spacing:0.05em; }
+  .action-card.apostle .action-name { color:var(--necrotic-bright); }
+  .action-tags { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.3rem; }
+
+  .tag { font-family:'IM Fell English SC',serif; font-size:0.6rem; letter-spacing:0.15em; padding:0.1rem 0.5rem; border:1px solid; text-transform:uppercase; }
+  .tag.action  { color:#6a9a6a; border-color:#6a9a6a; }
+  .tag.bonus   { color:#9a8a4a; border-color:#9a8a4a; }
+  .tag.reaction{ color:#9a4a9a; border-color:#9a4a9a; }
+  .tag.passive { color:var(--bone-dim); border-color:var(--bone-dim); }
+  .tag.phase2  { color:var(--necrotic-bright); border-color:var(--necrotic-bright); }
+  .tag.conc    { color:#9a6a4a; border-color:#9a6a4a; }
+  .tag.combat  { color:var(--white-dim); border-color:var(--white-dim); }
+  .tag.short   { color:var(--bone-dim); border-color:var(--bone-dim); }
+
+  .action-desc { font-size:0.88rem; line-height:1.75; color:var(--white-dim); }
+
+  .action-damage {
+    display:inline-block; margin-top:0.6rem; font-family:'Cinzel',serif; font-size:0.8rem;
+    color:var(--bone); background:rgba(200,191,160,0.06); border:1px solid rgba(200,191,160,0.2);
+    padding:0.2rem 0.6rem; letter-spacing:0.08em;
+  }
+  .action-damage.dmg-necrotic { color:#c080e0; border-color:rgba(192,128,224,0.3); background:rgba(192,128,224,0.06); }
+  .action-damage.dmg-blunt    { color:var(--bone-bright); border-color:rgba(200,191,160,0.3); }
+  .action-damage.dmg-psychic  { color:#80a0e0; border-color:rgba(128,160,224,0.3); background:rgba(128,160,224,0.06); }
+
+  /* PASSIVE LIST */
+  .passive-list { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:4rem; }
+  @media(max-width:800px){.passive-list{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:500px) {.passive-list{grid-template-columns:1fr;}}
+
+  .passive-pill {
+    display:flex; align-items:flex-start; gap:0.6rem; padding:0.9rem 1rem;
+    border:1px solid rgba(200,191,160,0.08); background:rgba(7,8,15,0.7);
+    transition:all 0.25s; position:relative; overflow:hidden;
+  }
+  .passive-pill::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--bone-dim),transparent); opacity:0; transition:opacity 0.25s; }
+  .passive-pill:hover { border-color:rgba(200,191,160,0.3); transform:translateY(-1px); }
+  .passive-pill:hover::before { opacity:1; }
+
+  .passive-dot  { width:6px; height:6px; border-radius:50%; background:var(--bone-dim); flex-shrink:0; margin-top:0.45rem; }
+  .passive-name { font-family:'Cinzel',serif; font-size:0.82rem; font-weight:600; color:var(--bone); margin-bottom:0.2rem; }
+  .passive-text { font-size:0.8rem; color:var(--white-dim); line-height:1.6; }
+
+  /* EQUIP */
+  .equip-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom:4rem; }
+  @media(max-width:700px){.equip-grid{grid-template-columns:1fr;}}
+
+  .equip-card {
+    border:1px solid rgba(200,191,160,0.1); background:rgba(5,6,12,0.9);
+    padding:1.4rem; position:relative; overflow:hidden; transition:all 0.3s;
+  }
+  .equip-card:hover { border-color:rgba(200,191,160,0.35); transform:translateY(-2px); box-shadow:0 12px 40px rgba(0,0,0,0.6); }
+  .equip-card.featured { grid-column:1/-1; border-color:rgba(200,191,160,0.25); background:linear-gradient(135deg,rgba(200,191,160,0.04),rgba(5,6,12,0.95)); }
+
+  .equip-rarity { font-family:'IM Fell English SC',serif; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:0.4rem; }
+  .rarity-very-rare { color:#9370db; }
+  .rarity-rare      { color:#4a90e2; }
+  .rarity-uncommon  { color:#5a9a5a; }
+  .rarity-key       { color:var(--bone); }
+
+  .equip-name   { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--white); margin-bottom:0.2rem; }
+  .equip-type   { font-family:'IM Fell English SC',serif; font-size:0.75rem; color:var(--white-dim); letter-spacing:0.1em; margin-bottom:0.75rem; }
+  .equip-stats  { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem; }
+  .equip-stat   { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--bone-dim); background:rgba(200,191,160,0.06); border:1px solid rgba(200,191,160,0.15); padding:0.15rem 0.5rem; }
+  .equip-desc   { font-size:0.85rem; color:var(--white-dim); line-height:1.7; font-style:italic; }
+  .equip-flavor { margin-top:0.6rem; font-size:0.8rem; color:var(--bone-dim); line-height:1.6; border-left:2px solid rgba(200,191,160,0.2); padding-left:0.75rem; }
+
+  /* VERDICT */
+  .verdict-block {
+    background:linear-gradient(135deg,rgba(26,20,40,0.3),rgba(7,8,15,0.95));
+    border:1px solid var(--necrotic-dim); padding:3rem; position:relative; margin-bottom:4rem; overflow:hidden;
+  }
+  .verdict-block::before {
+    content:'"'; position:absolute; top:-1rem; left:1.5rem;
+    font-family:'Cinzel Decorative',serif; font-size:8rem; color:rgba(122,64,160,0.1); line-height:1; pointer-events:none;
+  }
+  .verdict-text { font-style:italic; font-size:clamp(1.1rem,2vw,1.4rem); line-height:1.9; color:var(--white); position:relative; z-index:1; max-width:800px; }
+  .verdict-sig  { display:block; margin-top:1.5rem; font-family:'IM Fell English SC',serif; font-size:0.85rem; letter-spacing:0.25em; color:var(--bone-dim); position:relative; z-index:1; }
+
+  /* FOOTER */
+  .footer { text-align:center; padding:3rem 2rem 4rem; border-top:1px solid rgba(200,191,160,0.08); }
+  .footer-skull { width:50px; height:50px; margin:0 auto 1rem; opacity:0.25; animation:floatSkull 4s ease-in-out infinite; }
+  .footer-text  { font-family:'IM Fell English SC',serif; font-size:0.75rem; letter-spacing:0.3em; color:var(--bone-dim); }
+
+  /* CLICK */
+  .glow-burst {
+    position:fixed; border-radius:50%; pointer-events:none; z-index:9999;
+    transform:translate(-50%,-50%) scale(0); animation:burst 0.6s ease-out forwards;
+    background:radial-gradient(circle,rgba(122,64,160,0.4) 0%,transparent 70%);
+  }
+  @keyframes burst{to{transform:translate(-50%,-50%) scale(1);width:200px;height:200px;opacity:0;}}
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeIn { from{opacity:0;}to{opacity:1;} }
+
+  body::after {
+    content:''; position:fixed; inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+    pointer-events:none; z-index:1000;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<canvas id="particle-canvas"></canvas>
+
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="myrkul-skull" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#7a40a0" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      <circle cx="70" cy="70" r="65" fill="url(#sGlow)"/>
+      <circle cx="70" cy="70" r="60" fill="none" stroke="#3a1a50" stroke-width="1.5" stroke-dasharray="6 4"/>
+      <!-- Skull head -->
+      <ellipse cx="70" cy="60" rx="28" ry="30" fill="none" stroke="#c8bfa0" stroke-width="2"/>
+      <!-- Eye sockets -->
+      <ellipse cx="59" cy="55" rx="7" ry="8" fill="#1a1428"/>
+      <ellipse cx="81" cy="55" rx="7" ry="8" fill="#1a1428"/>
+      <!-- Glowing eyes -->
+      <ellipse cx="59" cy="55" rx="4" ry="5" fill="#7a40a0" opacity="0.8"/>
+      <ellipse cx="81" cy="55" rx="4" ry="5" fill="#7a40a0" opacity="0.8"/>
+      <!-- Nose cavity -->
+      <path d="M67 66 L70 72 L73 66 Z" fill="#1a1428"/>
+      <!-- Jaw / teeth -->
+      <path d="M52 76 Q70 88 88 76" fill="none" stroke="#c8bfa0" stroke-width="1.5"/>
+      <line x1="61" y1="76" x2="61" y2="83" stroke="#c8bfa0" stroke-width="1.5"/>
+      <line x1="67" y1="77" x2="67" y2="85" stroke="#c8bfa0" stroke-width="1.5"/>
+      <line x1="73" y1="77" x2="73" y2="85" stroke="#c8bfa0" stroke-width="1.5"/>
+      <line x1="79" y1="76" x2="79" y2="83" stroke="#c8bfa0" stroke-width="1.5"/>
+      <!-- Crown-like upper -->
+      <path d="M42 40 L50 20 L58 40 M82 40 L90 20 L98 40" fill="none" stroke="#c8bfa0" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="50" cy="20" r="3" fill="#7a40a0"/>
+      <circle cx="90" cy="20" r="3" fill="#7a40a0"/>
+      <circle cx="70" cy="14" r="3.5" fill="#7a40a0"/>
+      <path d="M56 40 L70 22 L84 40" fill="none" stroke="#c8bfa0" stroke-width="1.5" opacity="0.7"/>
+      <!-- Spine dots below -->
+      <circle cx="70" cy="100" r="4" fill="none" stroke="#c8bfa0" stroke-width="1.5"/>
+      <circle cx="70" cy="114" r="3" fill="none" stroke="#3a1a50" stroke-width="1.5"/>
+      <circle cx="70" cy="126" r="2" fill="none" stroke="#3a1a50" stroke-width="1"/>
+      <line x1="70" y1="90" x2="70" y2="95" stroke="#c8bfa0" stroke-width="1.5"/>
+      <line x1="70" y1="105" x2="70" y2="110" stroke="#3a1a50" stroke-width="1.5"/>
+    </svg>
+
+    <p class="hero-kicker">Chosen of Myrkul · General of the Absolute · Lord of Bones</p>
+    <h1 class="hero-title">KETHERIC<br>THORM</h1>
+    <p class="hero-subtitle">The Undying · Apostle of Death · Fallen Paladin</p>
+
+    <div class="hero-divider"></div>
+
+    <div class="mc-bar">
+      <span class="mc-pip">⚔ Paladin · Oathbreaker · Lv 10</span>
+      <span class="mc-pip">💀 Wizard · School of Necromancy · Lv 6</span>
+      <span class="mc-pip">🛡 Fighter · Battle Master · Lv 4</span>
+    </div>
+
+    <blockquote class="hero-quote">
+      "Our darling will live again. What kind of man would I be if I didn't raze the <em>world entire</em> for her sake?"
+      <cite>— General Ketheric Thorm, Moonrise Towers</cite>
+    </blockquote>
+
+    <div class="scroll-hint"><span>SCROLL</span><div class="scroll-arrow"></div></div>
+  </section>
+
+  <div class="ring-section"><canvas id="three-canvas"></canvas></div>
+
+  <main class="section">
+
+    <!-- LORE -->
+    <p class="section-label">Origins & History</p>
+    <h2 class="section-title">A Century of Grief</h2>
+
+    <div class="lore-grid">
+      <div class="lore-card">
+        <span class="lore-card-icon">⚔️</span>
+        <h3 class="lore-card-title">Paladin of Selûne — Then Shar</h3>
+        <p class="lore-card-text">Ketheric Thorm was once a devoted Selûnite paladin — a husband, father, governor of Reithwin Town. When his wife died, grief cracked him. When Isobel was killed, it shattered him completely. He turned to Shar — goddess of loss — seeking oblivion. She gave him exactly that: the gift of forgetting the pain, at the cost of his soul.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">💀</span>
+        <h3 class="lore-card-title">The Shadow Curse</h3>
+        <p class="lore-card-text">Defeated a century ago by a coalition of Harpers and Emerald Grove druids, Ketheric's death rattle unleashed the Shadow Curse — a necrotic blight that consumed Reithwin Town and the surrounding lands. Everything within died or twisted. He was already shaping death on a regional scale before Myrkul ever touched him.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">🌙</span>
+        <h3 class="lore-card-title">Myrkul's Bargain</h3>
+        <p class="lore-card-text">Myrkul, Lord of Bones, offered Ketheric what no other god could: true immortality through the imprisonment of Aylin, the Nightsong, a godling daughter of Selûne. As long as Aylin remained trapped in his soul cage, Ketheric could not die. He fed on her divine life force for a century. The god of death made him <em>unkillable</em> with someone else's immortality.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">👧</span>
+        <h3 class="lore-card-title">Isobel — The Price of Everything</h3>
+        <p class="lore-card-text">Myrkul resurrected Isobel as payment for Ketheric's service. But when she saw what her father had become — the broken, undead warlord looming over a cursed wasteland — she fled. Protected by Selûne, she became a cleric of the Moonmaiden. Ketheric spent a century building an apocalypse army to bring her home, and she still wouldn't come. He is a tragedy as much as a villain.</p>
+      </div>
+    </div>
+
+    <!-- CLASS -->
+    <div class="divider">⚔ D&D Multiclass Analysis ⚔</div>
+    <p class="section-label">Class & Subclass</p>
+    <h2 class="section-title">The Multiclass Build</h2>
+
+    <div class="class-grid">
+      <div class="class-card paladin">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 10 · Primary</span>
+          <span class="class-name">Paladin</span>
+          <span class="class-subclass">Subclass: Oathbreaker</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">Ketheric is a paladin who broke his oath to Selûne and converted first to Shar, then to Myrkul. The Oathbreaker subclass was designed for exactly this — divine power warped into necrotic tyranny. His AC 22, Divine Smite, Extra Attack, and Aura abilities are all straight paladin. The flair on the wiki lists "Improved Divine Smite" specifically.</p>
+          <ul class="class-features">
+            <li>Improved Divine Smite — automatic necrotic damage on every hit</li>
+            <li>Aura of Hate — nearby fiends and undead gain CHA bonus to damage</li>
+            <li>Aura of Protection — save bonus equal to CHA modifier</li>
+            <li>Animate Dead (Oathbreaker) — his necromite spam is this</li>
+            <li>Extra Attack — triple action economy in melee</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>10 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card necro">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 6 · Secondary</span>
+          <span class="class-name">Wizard</span>
+          <span class="class-subclass">Subclass: School of Necromancy</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">The necromantic army — the Shadow Curse, the Necromites, Incubate Death, Finger of Death — all require a Necromancy Wizard spine. He has been a military general for hundreds of years, and a century of undeath under Myrkul would absolutely develop deep necromantic spellcasting. The Apostle form is Necromancy pushed past the edge of mortality.</p>
+          <ul class="class-features">
+            <li>Grim Harvest — regains HP when creatures he controls die nearby</li>
+            <li>Undead Thralls — animated dead have bonus HP and attack</li>
+            <li>Finger of Death — his Apostle form's execute spell</li>
+            <li>Incubate Death — spawning skeletal Necromites</li>
+            <li>Inured to Undeath — necrotic resistance, max HP raise cap</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>6 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card oathbreaker">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 4 · Tertiary</span>
+          <span class="class-name">Fighter</span>
+          <span class="class-subclass">Subclass: Battle Master</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">Ketheric has been a military general for hundreds of years. He doesn't just swing a warhammer — he commands the field. Battle Master gives him Superiority Dice for tactical maneuvers: Menacing Attack (Frightened), Trip Attack (Knockdown), Commander's Strike. His military intelligence and buff to unit targeting directly mirror the Battle Master toolkit.</p>
+          <ul class="class-features">
+            <li>Action Surge — an extra action of attacks mid-boss-fight</li>
+            <li>Menacing Attack — Frightened condition from warhammer blows</li>
+            <li>Trip Attack — the knockdown potential in Phase 1</li>
+            <li>Tactical Report — commanding minions to focus targets</li>
+            <li>Second Wind — minor self-heal in prolonged fights</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>4 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMBAT STATS -->
+    <div class="divider">⚔ Combat Statistics ⚔</div>
+    <p class="section-label">Boss Data · Phase 1 & 2</p>
+    <h2 class="section-title">Character Sheet</h2>
+
+    <div class="combat-stats-wrap">
+      <div class="cs-cell"><span class="cs-key">Race</span><span class="cs-val">Undead Half-Elf</span></div>
+      <div class="cs-cell"><span class="cs-key">Phase 1 HP</span><span class="cs-val dg">145 HP</span></div>
+      <div class="cs-cell"><span class="cs-key">Phase 1 AC</span><span class="cs-val hl">22 AC</span></div>
+      <div class="cs-cell"><span class="cs-key">Movement</span><span class="cs-val">9 m / 30 ft</span></div>
+      <div class="cs-cell"><span class="cs-key">Phase 2 HP</span><span class="cs-val dg">225 HP</span></div>
+      <div class="cs-cell"><span class="cs-key">Phase 2 AC</span><span class="cs-val nc">18 AC</span></div>
+      <div class="cs-cell"><span class="cs-key">Apostle Size</span><span class="cs-val">Large</span></div>
+      <div class="cs-cell"><span class="cs-key">Apostle Speed</span><span class="cs-val nc">0 m (Stationary)</span></div>
+    </div>
+
+    <div class="saves-grid">
+      <div class="save-cell proficient"><span class="save-key">STR ★</span><span class="save-val">+8</span></div>
+      <div class="save-cell"><span class="save-key">DEX</span><span class="save-val">+0</span></div>
+      <div class="save-cell proficient"><span class="save-key">CON ★</span><span class="save-val">+7</span></div>
+      <div class="save-cell"><span class="save-key">INT</span><span class="save-val">+2</span></div>
+      <div class="save-cell proficient"><span class="save-key">WIS ★</span><span class="save-val">+6</span></div>
+      <div class="save-cell proficient"><span class="save-key">CHA ★</span><span class="save-val">+8</span></div>
+    </div>
+
+    <!-- ABILITY SCORES -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-label">Strength</div><div class="stat-value">20</div><div class="stat-mod" style="color:var(--bone)">+5 ★</div></div>
+      <div class="stat-box"><div class="stat-label">Dexterity</div><div class="stat-value">10</div><div class="stat-mod">+0</div></div>
+      <div class="stat-box"><div class="stat-label">Constitution</div><div class="stat-value">18</div><div class="stat-mod" style="color:var(--bone)">+4 ★</div></div>
+      <div class="stat-box"><div class="stat-label">Intelligence</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+      <div class="stat-box"><div class="stat-label">Wisdom</div><div class="stat-value">16</div><div class="stat-mod">+3</div></div>
+      <div class="stat-box"><div class="stat-label">Charisma</div><div class="stat-value">18</div><div class="stat-mod" style="color:var(--bone)">+4 ★</div></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="divider">⚔ Weapons & Abilities ⚔</div>
+    <p class="section-label">Phase One · Active Abilities</p>
+    <h2 class="section-title">Actions & Attacks</h2>
+
+    <div class="action-grid">
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🔨</span>
+          <div class="action-title-wrap"><div class="action-name">Warhammer Strike</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag">Extra Attack</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Ketheric's primary melee attack — a devastating warhammer blow that inflicts Improved Divine Smite necrotic damage on every hit automatically. His STR 20 means this hits hard before any smite bonus. Disarming him forces him to use a Flail of Myrkul instead, shutting off his smite economy.</p>
+        <span class="action-damage dmg-blunt">1d10+5 Bludgeoning + 1d4 Psychic (warhammer) + necrotic smite</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">💀</span>
+          <div class="action-title-wrap"><div class="action-name">Incubate Death</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag">Necromancy</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Spawns a skeletal involucre. After 1 turn, the involucre explodes for 3d8 Necrotic damage and births a living Necromite that serves Ketheric. In Phase 2, up to four Necromites spawn at the arena edges every round. Managing these is the primary mechanical challenge of the entire Act 2 climax.</p>
+        <span class="action-damage dmg-necrotic">3d8 Necrotic (explosion) · Spawns Necromite minion</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">⚡</span>
+          <div class="action-title-wrap"><div class="action-name">Tactical Report</div>
+            <div class="action-tags"><span class="tag bonus">Bonus Action</span><span class="tag passive">Commander</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Commands nearby undead and cultist troops to prioritise a specific enemy target. Allied units are substantially more likely to focus that creature. A Battle Master ability played out at warlord scale — he doesn't fight alone, he coordinates an <em>army</em>.</p>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">😨</span>
+          <div class="action-title-wrap"><div class="action-name">Death Knell Aura</div>
+            <div class="action-tags"><span class="tag passive">Passive</span><span class="tag">Fear / Necrotic</span></div>
+          </div>
+        </div>
+        <p class="action-desc">A passive aura that numbs all nearby creatures — dealing necrotic damage and potentially Frightening them on failed saves. His Aura of Hate simultaneously boosts nearby fiend and undead damage by his CHA modifier (+4). The man is a walking debuff field and buff beacon simultaneously.</p>
+        <span class="action-damage dmg-necrotic">Necrotic aura · Frightened on fail · +4 to ally damage</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🔮</span>
+          <div class="action-title-wrap"><div class="action-name">Spectral Hammer (Phase 1)</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag">Ranged Necrotic</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Launches a hammer of spectral force at a creature his minions are attacking. A ranged follow-up that punishes enemies who draw his undead army's attention. Death comes from every direction in his encounter — melee from him, spectral force from range, necrotic aura from proximity.</p>
+        <span class="action-damage dmg-necrotic">Force/Necrotic damage · Targets enemies engaged with minions</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🛡️</span>
+          <div class="action-title-wrap"><div class="action-name">Immortality (via Aylin)</div>
+            <div class="action-tags"><span class="tag passive">Permanent</span><span class="tag">Phase 1 Lock</span></div>
+          </div>
+        </div>
+        <p class="action-desc">As long as the Nightsong (Aylin) remains imprisoned in the soul cage, Ketheric is absolutely immune to all damage in Phase 2. No cheesing, no bypassing — you must use the Help action on Aylin to free her first. His immortality is literally a hostage situation. Break the cage, break the man.</p>
+      </div>
+    </div>
+
+    <!-- PASSIVES -->
+    <div class="divider">🛡 Passive Features 🛡</div>
+    <p class="section-label">Always Active</p>
+    <h2 class="section-title">Passive Abilities</h2>
+
+    <div class="passive-list">
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--bone)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Divine Health</div>
+          <p class="passive-text">The divine magic within him prevents disease. An undead paladin immune to disease. His body is beyond mortal infection — it's already dead.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--necrotic)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Improved Divine Smite</div>
+          <p class="passive-text">Every single weapon attack automatically deals additional necrotic damage. No spell slots required. No decision. Every hit is a smite, always.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--bone)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Fey Ancestry</div>
+          <p class="passive-text">Half-Elf heritage. Advantage on saves vs Charmed, magic can't put him to sleep. Even his racial traits tilt toward "cannot be controlled."</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--necrotic)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Aura of Hate</div>
+          <p class="passive-text">Nearby fiends and undead add his Charisma modifier (+4) to their weapon damage rolls. Every Necromite and undead ally is hitting harder just because he's standing there.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--bone)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Aura of Protection</div>
+          <p class="passive-text">Adds his CHA modifier (+4) to all saving throws for himself and nearby allies. His presence makes everyone harder to control or kill.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--necrotic)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Darkvision (12m)</div>
+          <p class="passive-text">Sees perfectly in the dark. He controls the Shadow Curse — a literal darkness that killed everything around Reithwin for a century. Of course he sees in the dark.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--bone)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Defence (+1 AC in armour)</div>
+          <p class="passive-text">His Reaper's Embrace armour + Defence feat = the 22 AC that makes Phase 1 Ketheric feel like hitting a fortified wall. His total AC is among the highest of any non-construct boss.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--necrotic)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Extra Attack</div>
+          <p class="passive-text">Multiple attacks per action. Combined with Improved Divine Smite on each, his action economy in melee is terrifying for a creature who also commands an undead army.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--bone)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Immutable Form (Apostle)</div>
+          <p class="passive-text">The Apostle of Myrkul cannot be polymorphed or otherwise altered in form. The god does not allow his vessel to be changed by mortal magic.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 — APOSTLE OF MYRKUL -->
+    <div class="divider" style="color:var(--necrotic)">💀 Phase 2 · Apostle of Myrkul 💀</div>
+    <p class="section-label">Final Transformation · Myrkul Takes the Wheel</p>
+    <h2 class="section-title" style="color:var(--necrotic-bright);">The God of Death Arrives</h2>
+
+    <div class="action-grid">
+      <div class="action-card apostle" style="grid-column:1/-1;">
+        <div class="action-header"><span class="action-icon">💀</span>
+          <div class="action-title-wrap"><div class="action-name">Apostle of Myrkul Transformation</div>
+            <div class="action-tags"><span class="tag phase2">Phase 2 Trigger</span><span class="tag combat">Divine Avatar</span></div>
+          </div>
+        </div>
+        <p class="action-desc">When Ketheric's mortal form is destroyed, he pleads to Myrkul — and the god answers. Ketheric casts himself into a brine pool and emerges as the Apostle of Myrkul: a colossal, stationary skeletal avatar of divine death. He gains 225 HP, a new AC of 18, and a completely different attack set. He does not move — 0 movement speed — but doesn't need to. The arena comes to him. His Bone Chill aura emanates from the platform and prevents all healing. His Necromite spawn rate doubles. And he can absorb a Necromite as a reaction to charge Finger of Death — an instant death spell that kills outright on failed save.</p>
+      </div>
+
+      <div class="action-card apostle">
+        <div class="action-header"><span class="action-icon">💀</span>
+          <div class="action-title-wrap"><div class="action-name">Myrkul's Presence (Bone Chill)</div>
+            <div class="action-tags"><span class="tag passive">Permanent Aura</span><span class="tag phase2">Apostle Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">The Apostle exudes the god of death's unholy will, Bone Chilling all nearby creatures. Bone Chill prevents all healing — spells, potions, Second Wind, everything. To heal party members, you must exit the circular platform, lose the condition, heal, then re-enter. You cannot revive downed allies within his aura. He doesn't need to kill you — he just needs to outlast your resources.</p>
+        <span class="action-damage dmg-necrotic">Bone Chill: Blocks all healing · Necrotic damage on proximity</span>
+      </div>
+
+      <div class="action-card apostle">
+        <div class="action-header"><span class="action-icon">☠️</span>
+          <div class="action-title-wrap"><div class="action-name">Finger of Death</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag reaction">Via Consume the Faithful</span><span class="tag phase2">Apostle Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">A Level 7 necromancy spell. The target must make a Constitution save or take 7d8+30 necrotic damage — and if they die, they rise as a zombie permanently under Myrkul's control. The Apostle can only cast this by consuming a Necromite as a reaction. Kill every Necromite before it reaches him and this ability is locked out entirely. Let one through and someone in your party might die permanently.</p>
+        <span class="action-damage dmg-necrotic">7d8 + 30 Necrotic · CON Save or die · victim rises as zombie</span>
+      </div>
+
+      <div class="action-card apostle">
+        <div class="action-header"><span class="action-icon">💀</span>
+          <div class="action-title-wrap"><div class="action-name">Gaze of the Dead / Reaper's Scythe</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag phase2">Apostle Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">His two-attack pattern: Reaper's Scythe in melee (massive bludgeoning damage, AoE slam) and Gaze of the Dead as a ranged attack that fires necrotic beams at distant targets. If no one is in melee range, he substitutes Call of the Damned — which hits <em>everyone</em> for 10–37 damage. You must keep someone adjacent to him at all times or face a party-wide nuke.</p>
+        <span class="action-damage dmg-necrotic">Ranged: necrotic beam · Melee: scythe slam · No target: 10–37 AoE</span>
+      </div>
+
+      <div class="action-card apostle">
+        <div class="action-header"><span class="action-icon">🧟</span>
+          <div class="action-title-wrap"><div class="action-name">Consume the Faithful (Reaction)</div>
+            <div class="action-tags"><span class="tag reaction">Reaction</span><span class="tag phase2">Apostle Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">When a Necromite reaches the Apostle, it can use a reaction to consume it — absorbing the undead creature's essence and gaining Reaper's Reward, which charges Finger of Death. This reaction fires before your turn, meaning you cannot kill a Necromite on your turn if it's already adjacent to him at round's end. You must manage the arena perimeter.</p>
+      </div>
+
+      <div class="action-card apostle">
+        <div class="action-header"><span class="action-icon">🦴</span>
+          <div class="action-title-wrap"><div class="action-name">Necromite Wave</div>
+            <div class="action-tags"><span class="tag phase2">Each Round End</span><span class="tag">Summon</span></div>
+          </div>
+        </div>
+        <p class="action-desc">At the end of every round in Phase 2, up to four new Necromites spawn at random positions on the arena edges. They then walk toward the Apostle. They're resistant to piercing damage but vulnerable to bludgeoning and radiant. If the Nightsong (Aylin) has been freed, she intercepts them. If she hasn't — you're dealing with four fresh necromites every single turn while maintaining melee range and healing rotation.</p>
+      </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="divider">⚔ Equipment & Loot ⚔</div>
+    <p class="section-label">Worn · Wielded · Legendary Drops</p>
+    <h2 class="section-title">Arsenal & Items</h2>
+
+    <div class="equip-grid">
+      <div class="equip-card featured">
+        <div class="equip-rarity" style="color:#6a9a8a">◆ Very Rare</div>
+        <div class="equip-name">Reaper's Embrace</div>
+        <div class="equip-type">Heavy Armour · Chest · Signature Look</div>
+        <div class="equip-stats">
+          <span class="equip-stat">+19 AC total</span>
+          <span class="equip-stat">−2 Magic Damage received</span>
+          <span class="equip-stat">Cannot be moved against will</span>
+          <span class="equip-stat">Disadv. on DEX saves</span>
+          <span class="equip-stat">Howl of the Dead cantrip</span>
+        </div>
+        <p class="equip-desc">The armour of the undying general. Reduces all incoming magical damage by 2, makes him immovable (cannot be shoved, pushed, or repositioned against his will), and grants the Howl of the Dead cantrip — a necrotic aura attack. The Disadvantage on DEX saves is irrelevant when his DEX is 10 anyway.</p>
+        <p class="equip-flavor">The combination of Reaper's Embrace, the Defence feature, and his base armour is what produces the infamous AC 22 of Phase 1. The highest non-construct boss AC in Act 2.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-very-rare">◆ Very Rare</div>
+        <div class="equip-name">Ketheric's Warhammer</div>
+        <div class="equip-type">Warhammer · Main Weapon</div>
+        <div class="equip-stats">
+          <span class="equip-stat">+1 Enchantment</span>
+          <span class="equip-stat">1d10 Bludgeoning</span>
+          <span class="equip-stat">1d4 Psychic</span>
+          <span class="equip-stat">Versatile</span>
+        </div>
+        <p class="equip-desc">Deals 3–15 damage and adds 1d4 Psychic bonus damage. The psychic component is Myrkul's mark — death magic bleeds into the mind. Disarming him in Phase 1 forces him to use a Flail of Myrkul instead and shuts down his smite damage output. Absolutely worth picking up on death.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-rare">◆ Rare</div>
+        <div class="equip-name">Ketheric's Shield</div>
+        <div class="equip-type">Shield · Off-Hand</div>
+        <div class="equip-stats">
+          <span class="equip-stat">+2 AC</span>
+          <span class="equip-stat">+1 Spell Save DC</span>
+          <span class="equip-stat">+1 Spell Attack Rolls</span>
+          <span class="equip-stat">Shield Bash (Reaction)</span>
+        </div>
+        <p class="equip-desc">An exceptional shield that simultaneously boosts his physical defence and spellcasting potency, then allows a reaction Shield Bash to knock enemies prone. A paladin-wizard hybrid item for a paladin-wizard hybrid character. Extremely useful loot.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-key">★ Key Item</div>
+        <div class="equip-name">Ketheric's Netherstone</div>
+        <div class="equip-type">Quest Item · Dropped on Death</div>
+        <div class="equip-stats">
+          <span class="equip-stat">Controls Elder Brain</span>
+          <span class="equip-stat">Act 2 Completion</span>
+        </div>
+        <p class="equip-desc">The first Netherstone — looted after the Apostle of Myrkul falls and Ketheric mutters Isobel's name one final time. His death ends Act 2. The Netherstone is what makes the party's eventual confrontation with the Netherbrain possible. He dies as he lived: for his daughter, and for a god who stopped caring.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity" style="color:#5a9a5a">◆ Uncommon</div>
+        <div class="equip-name">Ring of Exalted Marrow</div>
+        <div class="equip-type">Ring · Rooftop Chest Reward</div>
+        <div class="equip-stats">
+          <span class="equip-stat">Bone-related bonus</span>
+        </div>
+        <p class="equip-desc">Lootable from a locked chest on the Moonrise Towers rooftop directly after the first phase fight — right in front of his throne. Requires the Bone Key from Susdera or lockpicking. Easy to miss in the rush to pursue him underground.</p>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="divider">✦ Final Verdict ✦</div>
+    <div class="verdict-block">
+      <p class="verdict-text">
+        General Ketheric Thorm is a <strong>20th-level Paladin (Oathbreaker) 10 / Wizard (School of Necromancy) 6 / Fighter (Battle Master) 4</strong>. He is the only one of the three Chosen who fights as a juggernaut rather than a tactician or an assassin. His build reflects his history perfectly: a paladin who broke his oath and let divine corruption transmute his devotion into necrotic power, a necromancer who has spent a century studying death from the inside, and a general who commands armies rather than fighting alone. The Apostle of Myrkul phase is the most mechanically layered boss fight in Act 2 — not because Ketheric is clever, but because the <em>god of death doesn't let people stop dying</em>. He ends the act with his daughter's name on his lips, which is the most damning thing Larian could have done to him.
+      </p>
+      <span class="verdict-sig">— Character Analysis · Baldur's Gate III · Act II · Moonrise Towers / Mind Flayer Colony</span>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <svg class="footer-skull" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="25" cy="22" rx="10" ry="11" fill="none" stroke="#c8bfa0" stroke-width="1.5"/>
+      <ellipse cx="21" cy="19" rx="3" ry="3.5" fill="#1a1428"/>
+      <ellipse cx="29" cy="19" rx="3" ry="3.5" fill="#1a1428"/>
+      <path d="M18 29 Q25 33 32 29" fill="none" stroke="#c8bfa0" stroke-width="1"/>
+      <line x1="22" y1="29" x2="22" y2="33" stroke="#c8bfa0" stroke-width="1"/>
+      <line x1="25" y1="30" x2="25" y2="34" stroke="#c8bfa0" stroke-width="1"/>
+      <line x1="28" y1="29" x2="28" y2="33" stroke="#c8bfa0" stroke-width="1"/>
+    </svg>
+    <p class="footer-text">Myrkul · The Lord of Bones · Death · Decay · Inevitability</p>
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* BACKGROUND */
+(function(){
+  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+  let W,H,t=0;
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  resize();addEventListener('resize',resize);
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#030408';ctx.fillRect(0,0,W,H);
+    [{x:W*0.25,y:H*0.4,r:450,cl:'rgba(122,64,160,0.07)',dx:Math.sin(t*0.0003)*80,dy:Math.cos(t*0.0002)*60},
+     {x:W*0.75,y:H*0.5,r:380,cl:'rgba(26,20,40,0.12)',dx:Math.cos(t*0.0004)*60,dy:Math.sin(t*0.0003)*80},
+     {x:W*0.5, y:H*0.1,r:300,cl:'rgba(200,191,160,0.04)',dx:Math.sin(t*0.0002)*30,dy:0}
+    ].forEach(o=>{const g=ctx.createRadialGradient(o.x+o.dx,o.y+o.dy,0,o.x+o.dx,o.y+o.dy,o.r);g.addColorStop(0,o.cl);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);});
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* PARTICLES */
+(function(){
+  const c=document.getElementById('particle-canvas'),ctx=c.getContext('2d');
+  let W,H;
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  resize();addEventListener('resize',resize);
+  const cols=['rgba(122,64,160,','rgba(200,191,160,','rgba(58,26,80,','rgba(192,180,160,'];
+  class P{
+    constructor(){this.reset(true);}
+    reset(init){this.x=Math.random()*W;this.y=init?Math.random()*H:H+10;this.sz=Math.random()*2+0.4;this.sy=-(Math.random()*0.4+0.15);this.sx=(Math.random()-0.5)*0.3;this.op=Math.random()*0.5+0.1;this.c=cols[Math.floor(Math.random()*cols.length)];this.w=Math.random()*Math.PI*2;this.ws=(Math.random()-0.5)*0.015;}
+    update(){this.w+=this.ws;this.x+=this.sx+Math.sin(this.w)*0.3;this.y+=this.sy;if(this.y<-10)this.reset(false);}
+    draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fillStyle=this.c+this.op+')';ctx.fill();}
+  }
+  const ps=Array.from({length:90},()=>new P());
+  function animate(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animate);}
+  animate();
+})();
+
+/* THREE.JS */
+(function(){
+  const canvas=document.getElementById('three-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(400,400);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(50,1,0.1,100);
+  camera.position.set(0,0,5);
+  scene.add(new THREE.AmbientLight(0x080812,1));
+  const bL=new THREE.PointLight(0xc8bfa0,2.5,10);bL.position.set(2,2,2);scene.add(bL);
+  const nL=new THREE.PointLight(0x7a40a0,3,8);nL.position.set(-2,-1,2);scene.add(nL);
+
+  // Bone-coloured central skull sphere
+  const core=new THREE.Mesh(new THREE.SphereGeometry(0.5,32,32),new THREE.MeshStandardMaterial({color:0x1a1428,emissive:0x7a40a0,emissiveIntensity:0.4,metalness:0.1,roughness:0.8}));
+  scene.add(core);
+
+  // Rings
+  const boneRing=new THREE.Mesh(new THREE.TorusGeometry(1.4,0.04,12,100),new THREE.MeshStandardMaterial({color:0xc8bfa0,metalness:0.8,roughness:0.25}));scene.add(boneRing);
+  const necRing=new THREE.Mesh(new THREE.TorusGeometry(1.0,0.03,10,80),new THREE.MeshStandardMaterial({color:0x7a40a0,metalness:0.85,roughness:0.2}));necRing.rotation.x=Math.PI/3;scene.add(necRing);
+  const outerRing=new THREE.Mesh(new THREE.TorusGeometry(1.7,0.015,8,80),new THREE.MeshStandardMaterial({color:0x3a1a50,metalness:0.7,roughness:0.4}));outerRing.rotation.y=Math.PI/5;scene.add(outerRing);
+
+  // Orbiting octahedra (bone fragments)
+  const frags=[];
+  for(let i=0;i<8;i++){
+    const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.06),new THREE.MeshStandardMaterial({color:i%2===0?0xc8bfa0:0x7a40a0,emissive:i%2===0?0xc8bfa0:0x7a40a0,emissiveIntensity:0.3,metalness:0.8,roughness:0.2}));
+    frags.push({mesh:m,angle:i*(Math.PI*2/8),r:1.4,pl:i%2});scene.add(m);
+  }
+  // Small necromite spheres
+  const necrites=[];
+  for(let i=0;i<5;i++){
+    const m=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,8),new THREE.MeshStandardMaterial({color:0x3a1a50,emissive:0x7a40a0,emissiveIntensity:0.8}));
+    necrites.push({mesh:m,angle:i*(Math.PI*2/5)+0.5,r:0.8,speed:0.7+i*0.1});scene.add(m);
+  }
+
+  let t=0;
+  function animate(){
+    requestAnimationFrame(animate);t+=0.007;
+    boneRing.rotation.y=t*0.5;boneRing.rotation.x=Math.sin(t*0.3)*0.15;
+    necRing.rotation.z=t*0.8;necRing.rotation.x=Math.PI/3+Math.sin(t*0.35)*0.1;
+    outerRing.rotation.y=-t*0.35;outerRing.rotation.z=t*0.15;
+    core.rotation.y=t*0.4;core.material.emissiveIntensity=0.3+Math.sin(t*1.8)*0.2;
+    nL.intensity=2.5+Math.sin(t*1.2)*0.8;nL.position.x=Math.cos(t*0.35)*3;nL.position.z=Math.sin(t*0.35)*3;
+    frags.forEach((d,i)=>{
+      const a=d.angle+t*(0.45+i*0.03);
+      if(d.pl===0)d.mesh.position.set(Math.cos(a)*d.r,Math.sin(a)*d.r,0);
+      else d.mesh.position.set(Math.cos(a)*d.r,0,Math.sin(a)*d.r);
+      d.mesh.rotation.x=t*2+i;d.mesh.rotation.y=t*1.5+i;
+    });
+    necrites.forEach(n=>{
+      const a=n.angle+t*n.speed;
+      n.mesh.position.set(Math.cos(a)*n.r,Math.sin(a*0.7)*0.4,Math.sin(a)*n.r);
+    });
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+
+/* CLICK BURST */
+document.addEventListener('click',e=>{
+  const b=document.createElement('div');b.className='glow-burst';
+  b.style.left=e.clientX+'px';b.style.top=e.clientY+'px';
+  b.style.width='10px';b.style.height='10px';
+  document.body.appendChild(b);setTimeout(()=>b.remove(),600);
+});
+
+/* PARALLAX */
+addEventListener('scroll',()=>{
+  const y=scrollY,t=document.querySelector('.hero-title');
+  if(t){t.style.transform=`translateY(${y*0.3}px)`;t.style.opacity=Math.max(0,1-y/400);}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everything D&D — 5e Megabook</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+:root{--r:#58180D;--rl:#7B2D26;--g:#C9AD6A;--gl:#E0D5A0;--p:#FDF1DC;--pd:#EDE5C8;--ink:#1A1A1A;--inkl:#3A3A3A;--sw:280px;--hh:56px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Spectral',Georgia,serif;background:#1a0a05;color:var(--ink);line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#1a0805}::-webkit-scrollbar-thumb{background:var(--g);border-radius:4px}
+
+/* TOP BAR */
+.top-bar{position:fixed;top:0;left:0;right:0;height:var(--hh);background:linear-gradient(180deg,#2a0a05,#1a0a05);border-bottom:2px solid var(--g);z-index:1000;display:flex;align-items:center;padding:0 16px;gap:12px}
+.top-bar .logo{font-family:'Cinzel Decorative',serif;color:var(--g);font-size:1.1rem;font-weight:700;white-space:nowrap;cursor:pointer;text-shadow:0 0 20px rgba(201,173,106,0.3)}
+.top-bar .logo span{color:#fff;font-size:0.65rem;opacity:0.5;margin-left:6px;font-family:'Spectral',serif}
+.search-box{flex:1;max-width:480px;position:relative}
+.search-box input{width:100%;padding:7px 14px 7px 32px;background:rgba(255,255,255,0.08);border:1px solid rgba(201,173,106,0.3);border-radius:5px;color:#ddd;font-family:'Spectral',serif;font-size:0.85rem;outline:none;transition:all 0.3s}
+.search-box input:focus{background:rgba(255,255,255,0.12);border-color:var(--g);box-shadow:0 0 12px rgba(201,173,106,0.15)}
+.search-box .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--g);font-size:0.85rem;opacity:0.6}
+.srd{position:absolute;top:100%;left:0;right:0;margin-top:3px;background:#2a1510;border:1px solid var(--g);border-radius:5px;max-height:380px;overflow-y:auto;display:none;z-index:9999;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.srd.active{display:block}
+.sri{padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(201,173,106,0.1);transition:background 0.2s}
+.sri:hover{background:rgba(201,173,106,0.1)}
+.sri .srt{color:var(--g);font-weight:600;font-size:0.85rem}
+.sri .sty{color:#888;font-size:0.7rem;margin-left:6px}
+.sri .srd2{color:#aaa;font-size:0.78rem;margin-top:1px}
+.mt{display:none;background:none;border:none;color:var(--g);font-size:1.4rem;cursor:pointer;padding:2px 6px}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:var(--hh);left:0;width:var(--sw);height:calc(100vh - var(--hh));background:linear-gradient(180deg,#1e0805,#150603);border-right:2px solid rgba(201,173,106,0.3);overflow-y:auto;z-index:900;padding:16px 0;transition:transform 0.3s}
+.so{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:899}
+.nc{padding:0 12px;margin-bottom:2px}
+.nct{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;cursor:pointer;color:var(--g);font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;border-radius:3px;transition:all 0.2s;user-select:none}
+.nct:hover{background:rgba(201,173,106,0.1)}
+.nct .ar{transition:transform 0.3s;font-size:0.6rem}
+.nct.exp .ar{transform:rotate(90deg)}
+.nsi{max-height:0;overflow:hidden;transition:max-height 0.4s ease;padding-left:10px}
+.nsi.exp{max-height:3000px}
+.nsi a{display:block;padding:5px 10px;color:#b8a88a;font-size:0.75rem;text-decoration:none;border-radius:3px;transition:all 0.2s;cursor:pointer}
+.nsi a:hover{color:var(--g);background:rgba(201,173,106,0.08)}
+.nd{height:1px;background:rgba(201,173,106,0.12);margin:10px 16px}
+
+/* MAIN */
+.main{margin-left:var(--sw);margin-top:var(--hh);min-height:calc(100vh - var(--hh))}
+
+/* COVER */
+.cover{min-height:calc(100vh - var(--hh));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;position:relative;overflow:hidden;background:#0a0302}
+.cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.35;filter:brightness(0.7) contrast(1.1)}
+.cover::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(88,24,13,0.4) 0%,rgba(10,3,2,0.95) 75%)}
+.cover-orn{width:280px;height:2px;margin:16px auto;background:linear-gradient(90deg,transparent,var(--g),transparent);position:relative;z-index:2}
+.cover-orn::before,.cover-orn::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--g);font-size:10px}
+.cover-orn::before{left:-6px}.cover-orn::after{right:-6px}
+.cover h1{font-family:'Cinzel Decorative',serif;font-size:clamp(2.2rem,5.5vw,4rem);color:var(--g);text-shadow:0 0 60px rgba(201,173,106,0.4),0 2px 4px rgba(0,0,0,0.6);position:relative;z-index:2;letter-spacing:4px;animation:fiu 1s ease-out}
+.cover h2{font-family:'Cinzel',serif;color:#b8a88a;font-size:clamp(0.8rem,1.8vw,1.1rem);font-weight:400;letter-spacing:8px;text-transform:uppercase;position:relative;z-index:2;animation:fiu 1s 0.3s ease-out both}
+.cover .cs{color:#8a7a6a;font-size:0.88rem;max-width:550px;margin-top:16px;position:relative;z-index:2;animation:fiu 1s 0.6s ease-out both}
+.cover .cta{margin-top:32px;padding:12px 36px;background:linear-gradient(135deg,var(--r),var(--rl));color:var(--g);border:1px solid var(--g);font-family:'Cinzel',serif;font-size:0.9rem;cursor:pointer;border-radius:3px;transition:all 0.3s;position:relative;z-index:2;text-decoration:none;display:inline-block;animation:fiu 1s 0.9s ease-out both}
+.cover .cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,173,106,0.2);background:linear-gradient(135deg,var(--rl),#8B3A2A)}
+@keyframes fiu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* CHAPTER SECTIONS */
+.ch{background:linear-gradient(135deg,var(--p) 0%,#f5e6c8 50%,var(--pd) 100%);padding:44px 50px 56px;min-height:100vh;position:relative;border-bottom:3px solid var(--g)}
+.ch::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--r),var(--g),var(--r))}
+.ch::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0.025;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23000'/%3E%3Crect width='2' height='2' fill='%23111'/%3E%3C/svg%3E")}
+.chh{text-align:center;margin-bottom:36px;position:relative;z-index:1}
+.chn{font-family:'Cinzel',serif;color:var(--r);font-size:0.8rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
+.cht{font-family:'Cinzel Decorative',serif;color:var(--r);font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;margin-bottom:10px}
+.chd{width:180px;height:2px;margin:0 auto 16px;background:linear-gradient(90deg,transparent,var(--r),transparent)}
+.chi{max-width:650px;margin:0 auto;text-align:center;color:var(--inkl);font-style:italic;font-size:0.95rem;line-height:1.7}
+
+/* CONTENT */
+.ca{position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.ca h2{font-family:'Cinzel',serif;color:var(--r);font-size:1.6rem;margin:36px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--g)}
+.ca h3{font-family:'Cinzel',serif;color:var(--rl);font-size:1.15rem;margin:24px 0 8px}
+.ca h4{font-family:'Cinzel',serif;color:var(--ink);font-size:0.95rem;margin:16px 0 6px;font-style:italic}
+.ca p{margin-bottom:10px;color:var(--inkl);font-size:0.93rem;line-height:1.7}
+.dc::first-letter{float:left;font-family:'Cinzel Decorative',serif;font-size:3.2rem;line-height:0.8;padding-right:6px;padding-top:3px;color:var(--r);font-weight:700}
+
+/* CARDS */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin:20px 0}
+.pc{background:linear-gradient(135deg,#fdf8ee,#f5e6c8);border:2px solid var(--g);border-radius:2px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;position:relative}
+.pc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+.pc .ci{width:100%;height:180px;object-fit:cover;border-bottom:2px solid var(--g);display:block}
+.pc .cip{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-bottom:2px solid var(--g)}
+.pc .cb{padding:14px 18px}
+.pc .ct2{font-family:'Cinzel',serif;color:var(--r);font-size:1.1rem;font-weight:700;margin-bottom:3px}
+.pc .cso{font-size:0.72rem;color:#999;font-style:italic;margin-bottom:6px}
+.pc .cde{font-size:0.85rem;color:var(--inkl);line-height:1.5}
+.pc .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.pc .tag{padding:2px 9px;background:rgba(88,24,13,0.1);color:var(--r);font-size:0.68rem;border-radius:2px;font-family:'Cinzel',serif;letter-spacing:0.4px}
+
+/* DETAIL OVERLAY */
+.dov{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);backdrop-filter:blur(3px);overflow-y:auto;padding:30px 16px}
+.dov.active{display:flex;justify-content:center;align-items:flex-start}
+.dp{background:linear-gradient(135deg,var(--p),#f5e6c8);border:3px solid var(--g);border-radius:3px;max-width:850px;width:100%;padding:36px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.4);animation:pi 0.3s ease-out}
+@keyframes pi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dp .xb{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--r);font-size:1.4rem;cursor:pointer;font-family:'Cinzel',serif}
+.dp h2{font-family:'Cinzel Decorative',serif;color:var(--r);font-size:1.7rem;margin-bottom:3px;border:none;padding:0}
+.dp .ds{color:#999;font-style:italic;font-size:0.82rem;margin-bottom:14px}
+.dp .sl{display:flex;gap:20px;flex-wrap:wrap;margin:14px 0;padding:10px 14px;background:rgba(88,24,13,0.06);border-left:3px solid var(--r)}
+.dp .si label{font-family:'Cinzel',serif;font-size:0.65rem;color:#999;display:block;text-transform:uppercase;letter-spacing:1px}
+.dp .si span{font-size:0.9rem;color:var(--ink);font-weight:600}
+.dp .dt{margin:14px 0;color:var(--inkl);font-size:0.93rem;line-height:1.7}
+.dp h3{font-family:'Cinzel',serif;color:var(--r);font-size:1.05rem;margin:20px 0 6px}
+.dp ul{padding-left:18px;margin:6px 0 14px}
+.dp li{color:var(--inkl);font-size:0.88rem;margin-bottom:5px;line-height:1.5}
+
+/* PROGRESSION TABLE */
+.prog-table{width:100%;border-collapse:collapse;font-size:0.8rem;margin:16px 0}
+.prog-table th{background:var(--r);color:var(--g);font-family:'Cinzel',serif;font-size:0.72rem;padding:7px 10px;text-align:left;letter-spacing:0.5px;position:sticky;top:0}
+.prog-table td{padding:6px 10px;border-bottom:1px solid rgba(201,173,106,0.2);color:var(--inkl);font-size:0.8rem}
+.prog-table tr:nth-child(even){background:rgba(201,173,106,0.04)}
+.prog-table tr:hover{background:rgba(88,24,13,0.04)}
+.prog-wrap{overflow-x:auto;margin:12px 0;max-height:500px;overflow-y:auto;border:1px solid rgba(201,173,106,0.3);border-radius:3px}
+
+/* SUBCLASS GRID */
+.scg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:14px}
+.sci{padding:10px 14px;background:rgba(253,241,220,0.7);border:1px solid rgba(201,173,106,0.4);border-radius:2px;cursor:pointer;transition:all 0.2s}
+.sci:hover{border-color:var(--r);background:rgba(253,241,220,1)}
+.sci .scn{font-family:'Cinzel',serif;color:var(--r);font-size:0.85rem;font-weight:600}
+.sci .scs{font-size:0.68rem;color:#999;font-style:italic}
+.sci .scd{font-size:0.8rem;color:var(--inkl);margin-top:3px;line-height:1.4}
+
+/* FILTER BAR */
+.fb{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 20px;padding:14px 16px;background:rgba(88,24,13,0.04);border:1px solid rgba(201,173,106,0.3);border-radius:3px}
+.fbtn{padding:5px 14px;background:transparent;border:1px solid var(--g);color:var(--r);font-family:'Cinzel',serif;font-size:0.72rem;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.fbtn:hover,.fbtn.act{background:var(--r);color:#fff;border-color:var(--r)}
+
+/* TABLES */
+.tw{overflow-x:auto;margin:16px 0}
+table.pt{width:100%;border-collapse:collapse;font-size:0.85rem}
+table.pt thead th{background:var(--r);color:var(--g);font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.4px;padding:9px 12px;text-align:left;position:sticky;top:0}
+table.pt tbody td{padding:8px 12px;border-bottom:1px solid rgba(201,173,106,0.2);color:var(--inkl)}
+table.pt tbody tr{transition:background 0.2s;cursor:pointer}
+table.pt tbody tr:hover{background:rgba(88,24,13,0.05)}
+table.pt tbody tr:nth-child(even){background:rgba(201,173,106,0.04)}
+
+/* INFO BOX */
+.ib{background:linear-gradient(135deg,rgba(88,24,13,0.08),rgba(88,24,13,0.03));border:1px solid var(--g);border-left:4px solid var(--r);padding:14px 18px;margin:16px 0;border-radius:0 3px 3px 0}
+.ib .ibt{font-family:'Cinzel',serif;color:var(--r);font-size:0.88rem;margin-bottom:5px;font-weight:700}
+.ib p{font-size:0.85rem;margin-bottom:5px}
+
+/* CONDITION CARD */
+.cc{background:linear-gradient(135deg,#fdf8ee,#f5e6c8);border:2px solid var(--g);padding:18px;border-radius:2px;transition:transform 0.2s}
+.cc:hover{transform:translateY(-2px)}
+.cc .ccn{font-family:'Cinzel',serif;color:var(--r);font-size:1.05rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.cc .cci{font-size:1.4rem}
+.cc .ccd{font-size:0.85rem;color:var(--inkl);line-height:1.6}
+.cc .ccm{margin-top:8px;padding:8px 12px;background:rgba(88,24,13,0.05);border-radius:2px;font-size:0.82rem;color:var(--ink)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.so.active{display:block}.main{margin-left:0}.mt{display:block}.ch{padding:24px 16px 36px}.two-col{grid-template-columns:1fr}.cg{grid-template-columns:1fr}}
+
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--r);color:var(--g);border:2px solid var(--g);border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:all 0.3s;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.btt.vis{opacity:1}.btt:hover{transform:translateY(-2px);background:var(--rl)}
+
+/* CLASS IMAGE GRADIENTS */
+.gi-barbarian{background:linear-gradient(135deg,#8B0000 0%,#2d0a0a 100%)}
+.gi-bard{background:linear-gradient(135deg,#6B3FA0 0%,#1a0f2e 100%)}
+.gi-cleric{background:linear-gradient(135deg,#DAA520 0%,#2a1a05 100%)}
+.gi-druid{background:linear-gradient(135deg,#228B22 0%,#0a2a0a 100%)}
+.gi-fighter{background:linear-gradient(135deg,#708090 0%,#1a1a2a 100%)}
+.gi-monk{background:linear-gradient(135deg,#D2691E 0%,#1a0f05 100%)}
+.gi-paladin{background:linear-gradient(135deg,#FFD700 0%,#2a2205 100%)}
+.gi-ranger{background:linear-gradient(135deg,#2E8B57 0%,#0a1a10 100%)}
+.gi-rogue{background:linear-gradient(135deg,#2F4F4F 0%,#0a1515 100%)}
+.gi-sorcerer{background:linear-gradient(135deg,#DC143C 0%,#2a0515 100%)}
+.gi-warlock{background:linear-gradient(135deg,#4B0082 0%,#150020 100%)}
+.gi-wizard{background:linear-gradient(135deg,#1E90FF 0%,#05102a 100%)}
+.gi-artificer{background:linear-gradient(135deg,#B8860B 0%,#1a1505 100%)}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="mt" onclick="tSB()">&#9776;</button>
+  <div class="logo" onclick="go('cover')">Everything D&D <span>5e Compendium</span></div>
+  <div class="search-box">
+    <span class="si">&#128269;</span>
+    <input type="text" id="sI" placeholder="Search classes, spells, races, items... ( / )" oninput="doS(this.value)" onfocus="doS(this.value)">
+    <div class="srd" id="sD"></div>
+  </div>
+</div>
+
+<div class="so" id="sO" onclick="tSB()"></div>
+<nav class="sidebar" id="sb"></nav>
+
+<div class="main" id="mc">
+  <section class="cover" id="cover">
+    <div class="cover-bg" style="background-image:url('https://preview.redd.it/dungeon-dragon-v0-d5vrjt6vwamg1.png?width=640&crop=smart&auto=webp&s=be6aa4a1597e067de6ac38aa72773503eb89fa62')"></div>
+    <h2>Dungeons &amp; Dragons 5th Edition</h2>
+    <div class="cover-orn"></div>
+    <h1>Everything D&D</h1>
+    <div class="cover-orn"></div>
+    <p class="cs">The complete adventurer's reference. Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything unified in one tome.</p>
+    <a class="cta" onclick="go('ch-races')">Begin Your Journey &#10148;</a>
+  </section>
+  <div id="cc"></div>
+</div>
+
+<div class="dov" id="dO" onclick="if(event.target===this)cD()"><div class="dp" id="dP"></div></div>
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<script>
+// ============================================================
+//  COMPLETE D&D 5e DATA
+// ============================================================
+const D={
+races:[
+  {id:'human',name:'Human',src:'PHB',icon:'🧑',traits:['Ability Score Increase: +1 to all (Standard) or +1 to two plus a feat (Variant)','Extra Language of your choice','Size: Medium','Speed: 30 ft.','Languages: Common and one extra'],desc:'Humans are the most adaptable and ambitious of the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds. Their diversity is their greatest strength, thriving in every environment from frozen tundra to scorching desert.',subs:[{name:'Standard Human',d:'+1 to all six ability scores. One extra language of your choice.'},{name:'Variant Human',d:'+1 to two different ability scores. One skill proficiency of your choice. One feat of your choice at 1st level.'}]},
+  {id:'elf',name:'Elf',src:'PHB',icon:'🧝',traits:['Darkvision 60 ft.','Keen Senses: Proficiency in Perception','Fey Ancestry: Advantage on saves vs. charmed, immune to magical sleep','Trance: 4 hours of meditation replaces 8 hours of sleep','Speed: 30 ft.','Languages: Common, Elvish'],desc:'Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light. They love nature and magic, art and artistry, music and poetry.',subs:[{name:'High Elf',d:'+1 Int. One wizard cantrip. Extra language. Longsword, shortsword, shortbow, and longbow proficiency.'},{name:'Wood Elf',d:'+1 Wis. Fleet of Foot (35 ft. speed). Mask of the Wild (hide in light natural phenomena like rain, mist, foliage).'},{name:'Dark Elf (Drow)',d:'+1 Cha. Superior Darkvision (120 ft.). Sunlight Sensitivity. Drow Magic: dancing lights, faerie fire (3rd), darkness (5th).'},{name:'Eladrin',d:'Fey Step: bonus action teleport 30 ft., with season-based effect (charm, frighten, fire damage, or temp HP to allies).'}]},
+  {id:'dwarf',name:'Dwarf',src:'PHB',icon:'⛏️',traits:['Darkvision 60 ft.','Dwarven Resilience: Advantage on saves vs. poison, resistance to poison damage','Dwarven Combat Training: Battleaxe, handaxe, light hammer, warhammer proficiency','Stonecunning: Double proficiency on History checks about stonework','Speed: 25 ft. (not reduced by heavy armor)','Languages: Common, Dwarvish'],desc:'Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal. They stand well under 5 feet tall but are so broad and compact that they can weigh as much as a human standing nearly two feet taller.',subs:[{name:'Hill Dwarf',d:'+1 Wis. Dwarven Toughness: +1 hit point per level.'},{name:'Mountain Dwarf',d:'+2 Str. Dwarven Armor Training: Proficiency with light and medium armor.'}]},
+  {id:'halfling',name:'Halfling',src:'PHB',icon:'🍀',traits:['Lucky: Reroll natural 1s on attack rolls, ability checks, and saving throws','Brave: Advantage on saves against being frightened','Halfling Nimbleness: Move through the space of any creature one size larger','Size: Small','Speed: 25 ft.','Languages: Common, Halfling'],desc:'The diminutive halflings survive in a world full of larger creatures by avoiding notice or, barring that, avoiding offense. Standing about 3 feet tall, they appear relatively harmless and so have managed to survive for centuries in the shadow of empires.',subs:[{name:'Lightfoot',d:'+1 Cha. Naturally Stealthy: Can hide behind a creature one size larger than you.'},{name:'Stout',d:'+1 Con. Stout Resilience: Advantage on saves vs. poison, resistance to poison damage.'}]},
+  {id:'gnome',name:'Gnome',src:'PHB',icon:'🔧',traits:['Darkvision 60 ft.','Gnome Cunning: Advantage on Int, Wis, and Cha saves against magic','Size: Small','Speed: 25 ft.','Languages: Common, Gnomish'],desc:"A gnome's energy and enthusiasm for living shines through every inch of their tiny body. Gnomes average slightly over 3 feet tall and weigh 40 to 45 pounds. Their tan or brown faces are usually adorned with broad smiles.",subs:[{name:'Forest Gnome',d:'+1 Dex. Natural Illusionist: You know the minor illusion cantrip. Speak with Small Beasts.'},{name:'Rock Gnome',d:"+1 Con. Artificer's Lore: Double proficiency on History checks for magic items, alchemical objects, or tech. Tinker: Create tiny clockwork devices."}]},
+  {id:'half-elf',name:'Half-Elf',src:'PHB',icon:'🌓',traits:['+2 Cha, +1 to two other ability scores of your choice','Darkvision 60 ft.','Fey Ancestry: Advantage on saves vs. charmed, immune to magical sleep','Skill Versatility: Proficiency in two skills of your choice','Speed: 30 ft.','Languages: Common, Elvish, one extra'],desc:'Half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves.',subs:[]},
+  {id:'half-orc',name:'Half-Orc',src:'PHB',icon:'💪',traits:['+2 Str, +1 Con','Darkvision 60 ft.','Menacing: Proficiency in Intimidation','Relentless Endurance: Drop to 1 HP instead of 0 (once per long rest)','Savage Attacks: Extra weapon damage die on critical melee hits','Speed: 30 ft.','Languages: Common, Orc'],desc:"Half-orcs' grayish pigmentation, sloping foreheads, jutting jaws, prominent teeth, and towering builds make their orcish heritage plain for all to see. Half-orcs are between 5 and well over 6 feet tall.",subs:[]},
+  {id:'tiefling',name:'Tiefling',src:'PHB',icon:'😈',traits:['+2 Cha, +1 Int','Darkvision 60 ft.','Hellish Resistance: Resistance to fire damage','Infernal Legacy: thaumaturgy cantrip; hellish rebuke at 3rd level; darkness at 5th level','Speed: 30 ft.','Languages: Common, Infernal'],desc:'To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. Tieflings are derived from human bloodlines touched by the power of the Nine Hells.',subs:[]},
+  {id:'dragonborn',name:'Dragonborn',src:'PHB',icon:'🐉',traits:['+2 Str, +1 Cha','Draconic Ancestry: Choose a dragon type for breath weapon and resistance','Breath Weapon: 2d6 damage (scaling at 6th, 11th, 16th level), Dex or Con save','Damage Resistance: Determined by ancestry','Speed: 30 ft.','Languages: Common, Draconic'],desc:'Dragonborn look very much like dragons standing erect in humanoid form, though they lack wings or a tail. They are tall and strongly built, often standing close to 6.5 feet tall and weighing over 250 pounds.',subs:[{name:'Black/Copper (Acid)',d:'5x30 ft. line, Dex save. Acid resistance.'},{name:'Blue/Bronze (Lightning)',d:'5x30 ft. line, Dex save. Lightning resistance.'},{name:'Brass/Gold/Red (Fire)',d:'Line or 15 ft. cone (varies), Dex save. Fire resistance.'},{name:'Green (Poison)',d:'15 ft. cone, Con save. Poison resistance.'},{name:'Silver/White (Cold)',d:'15 ft. cone, Con save. Cold resistance.'}]},
+  {id:'custom-lineage',name:'Custom Lineage',src:"Tasha's",icon:'✨',traits:['+2 to one ability score of your choice','One feat of your choice','Variable size: Small or Medium (your choice)','Darkvision 60 ft. OR one skill proficiency','Speed: 30 ft.'],desc:"Introduced in Tasha's Cauldron of Everything, the Custom Lineage lets you build a truly unique origin. You choose your appearance, whether you're Small or Medium, and gain a feat at 1st level plus either darkvision or an extra skill.",subs:[]},
+],
+
+classes:[
+  {id:'barbarian',name:'Barbarian',src:'PHB',hd:'d12',pa:'Strength',sv:'Str & Con',icon:'⚔️',arm:'Light, medium armor, shields',wpn:'Simple & martial weapons',tools:'None',desc:'A fierce warrior who can enter a battle rage. For every barbarian, their rage is a power that fuels not just a battle frenzy but also uncanny reflexes, resilience, and feats of strength.',
+  features:['Rage (bonus damage, resistance to B/P/S)','Unarmored Defense (10 + Dex + Con)','Reckless Attack','Danger Sense (adv. Dex saves)','Extra Attack','Fast Movement (+10 ft.)','Feral Instinct (adv. initiative)','Brutal Critical (extra die)','Relentless Rage','Primal Champion (+4 Str & Con)'],
+  progression:[
+    [1,'+2','2','Rage, Unarmored Defense','+2'],
+    [2,'+2','2','Reckless Attack, Danger Sense','+2'],
+    [3,'+2','3','Primal Path','+2'],
+    [4,'+2','3','ASI','+2'],
+    [5,'+3','3','Extra Attack, Fast Movement','+2'],
+    [6,'+3','4','Path Feature','+2'],
+    [7,'+3','4','Feral Instinct','+2'],
+    [8,'+3','4','ASI','+2'],
+    [9,'+4','4','Brutal Critical (1 die)','+3'],
+    [10,'+4','4','Path Feature','+3'],
+    [11,'+4','4','Relentless Rage','+3'],
+    [12,'+4','5','ASI','+3'],
+    [13,'+5','5','Brutal Critical (2 dice)','+3'],
+    [14,'+5','5','Path Feature','+3'],
+    [15,'+5','5','Persistent Rage','+3'],
+    [16,'+5','5','ASI','+3'],
+    [17,'+6','6','Brutal Critical (3 dice)','+4'],
+    [18,'+6','6','Indomitable Might','+4'],
+    [19,'+6','6','ASI','+4'],
+    [20,'+6','Unlimited','Primal Champion','+4'],
+  ],
+  progCols:['Level','Prof.','Rages','Features','Rage Dmg'],
+  subs:[
+    {name:'Path of the Berserker',src:'PHB',d:'Frenzy: bonus action attack each turn while raging (causes exhaustion). Mindless Rage: immune to charm/frighten while raging. Intimidating Presence: use action to frighten. Retaliation: melee attack as reaction when hit.'},
+    {name:'Path of the Totem Warrior',src:'PHB',d:'Choose a totem animal spirit. Bear: resistance to all damage except psychic while raging. Eagle: disadvantage on opportunity attacks against you, Dash as bonus action. Wolf: allies have advantage on melee attacks vs. creatures within 5 ft. of you.'},
+    {name:'Path of the Ancestral Guardian',src:"Xanathar's",d:'Ancestral Protectors: first creature you hit while raging has disadvantage on attacks against anyone but you, and allies have resistance to its damage.'},
+    {name:'Path of the Storm Herald',src:"Xanathar's",d:'Choose a storm aura when you rage. Desert: fire damage to nearby enemies. Sea: lightning damage to one creature. Tundra: temporary HP to allies in the aura.'},
+    {name:'Path of the Zealot',src:"Xanathar's",d:'Divine Fury: extra radiant/necrotic damage on first hit per turn. Warrior of the Gods: revive spells cost no material components. Fanatical Focus: reroll a failed save. Rage Beyond Death: fight at 0 HP while raging.'},
+    {name:'Path of the Beast',src:"Tasha's",d:'Form of the Beast: choose a natural weapon each rage. Bite: regain HP on hit. Claws: extra attack. Tail: reaction +1d8 AC. Bestial Soul: swim/climb speed or jump boost.'},
+    {name:'Path of Wild Magic',src:"Tasha's",d:'Wild Surge: roll on a d8 table when you rage for random magical effects. Bolstering Magic: boost ally attack rolls (+1d3) or restore a spell slot. Unstable Backlash: reroll surge when damaged. Controlled Surge: choose from two rolls.'},
+  ]},
+  {id:'bard',name:'Bard',src:'PHB',hd:'d8',pa:'Charisma',sv:'Dex & Cha',icon:'🎵',arm:'Light armor',wpn:'Simple weapons, hand crossbows, longswords, rapiers, shortswords',tools:'Three musical instruments',desc:'An inspiring magician whose power echoes the music of creation. Bards use words, music, and magic to inspire allies, demoralize foes, manipulate minds, and weave reality-bending illusions.',
+  features:['Spellcasting (Charisma)','Bardic Inspiration','Jack of All Trades','Song of Rest','Expertise','Countercharm','Magical Secrets','Superior Inspiration'],
+  progression:[
+    [1,'+2','1d6','Spellcasting, Bardic Inspiration','2','4','2','--','--','--','--','--','--','--','--'],
+    [2,'+2','1d6','Jack of All Trades, Song of Rest (d6)','2','5','3'],
+    [3,'+2','1d6','Bard College, Expertise','2','6','4','2'],
+    [4,'+2','1d6','ASI','3','7','4','3'],
+    [5,'+3','1d8','Bardic Inspiration (d8), Font of Inspiration','3','8','4','3','2'],
+    [6,'+3','1d8','Countercharm, College Feature','3','9','4','3','3'],
+    [7,'+3','1d8','--','3','10','4','3','3','1'],
+    [8,'+3','1d8','ASI','3','11','4','3','3','2'],
+    [9,'+4','1d8','Song of Rest (d8)','3','12','4','3','3','3','1'],
+    [10,'+4','1d10','Bardic Inspiration (d10), Expertise, Magical Secrets','4','14','4','3','3','3','2'],
+    [11,'+4','1d10','--','4','15','4','3','3','3','2','1'],
+    [12,'+4','1d10','ASI','4','15','4','3','3','3','2','1'],
+    [13,'+5','1d10','Song of Rest (d10)','4','16','4','3','3','3','2','1','1'],
+    [14,'+5','1d10','Magical Secrets, College Feature','4','18','4','3','3','3','2','1','1'],
+    [15,'+5','1d12','Bardic Inspiration (d12)','4','19','4','3','3','3','2','1','1','1'],
+    [16,'+5','1d12','ASI','4','19','4','3','3','3','2','1','1','1'],
+    [17,'+6','1d12','Song of Rest (d12)','4','20','4','3','3','3','2','1','1','1','1'],
+    [18,'+6','1d12','Magical Secrets','4','22','4','3','3','3','3','1','1','1','1'],
+    [19,'+6','1d12','ASI','4','22','4','3','3','3','3','2','1','1','1'],
+    [20,'+6','1d12','Superior Inspiration','4','22','4','3','3','3','3','2','2','1','1'],
+  ],
+  progCols:['Lvl','Prof','Insp. Die','Features','Cantrips','Spells Known','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'],
+  subs:[
+    {name:'College of Lore',src:'PHB',d:'Cutting Words: subtract Bardic Inspiration die from enemy attack, check, or damage rolls. Additional Magical Secrets at 6th level. Three extra skill proficiencies.'},
+    {name:'College of Valor',src:'PHB',d:'Combat Inspiration: allies can add Bardic Inspiration to damage or AC. Medium armor, shields, martial weapons. Extra Attack at 6th level. Battle Magic at 14th.'},
+    {name:'College of Glamour',src:"Xanathar's",d:'Mantle of Inspiration: temp HP and free movement to allies. Enthralling Performance: charm audience after 1-minute performance. Mantle of Majesty: command as bonus action. Unbreakable Majesty: foes must save to attack you.'},
+    {name:'College of Swords',src:"Xanathar's",d:'Blade Flourish: Defensive (+AC), Slashing (damage to second target), Mobile (extra movement). Medium armor, Extra Attack. Weapon as spellcasting focus. Master\'s Flourish at 14th.'},
+    {name:'College of Whispers',src:"Xanathar's",d:'Psychic Blades: spend Bardic Inspiration die for psychic damage on hits. Words of Terror: frighten after private conversation. Mantle of Whispers: steal a dead creature\'s identity. Shadow Lore: magically command creatures.'},
+    {name:'College of Creation',src:"Tasha's",d:'Mote of Potential: enhances Bardic Inspiration based on use (attack, save, or check). Performance of Creation: conjure nonmagical items. Animating Performance: bring an item to life as a dancing ally.'},
+    {name:'College of Eloquence',src:"Tasha's",d:'Silver Tongue: minimum of 10 on Persuasion/Deception. Unsettling Words: subtract Inspiration from enemy\'s next save. Unfailing Inspiration: unused dice are returned. Universal Speech. Infectious Inspiration chains dice to new allies.'},
+  ]},
+  {id:'cleric',name:'Cleric',src:'PHB',hd:'d8',pa:'Wisdom',sv:'Wis & Cha',icon:'✝️',arm:'Light, medium armor, shields',wpn:'Simple weapons',tools:'None',desc:'A priestly champion who wields divine magic in service of a higher power. Clerics are intermediaries between the mortal world and the gods, combining the healing power of their faith with martial might.',
+  features:['Spellcasting (Wisdom, ritual casting)','Divine Domain','Channel Divinity: Turn Undead','Destroy Undead','Divine Intervention'],
+  progression:[[1,'+2','Spellcasting, Divine Domain','3','2'],[2,'+2','Channel Divinity (1/rest), Domain Feature','3','3'],[3,'+2','--','3','4','2'],[4,'+2','ASI','4','4','3'],[5,'+3','Destroy Undead (CR 1/2)','4','4','3','2'],[6,'+3','Channel Divinity (2/rest), Domain Feature','4','4','3','3'],[7,'+3','--','4','4','3','3','1'],[8,'+3','ASI, Destroy Undead (CR 1), Domain Feature','4','4','3','3','2'],[9,'+4','--','4','4','3','3','3','1'],[10,'+4','Divine Intervention','5','4','3','3','3','2'],[11,'+4','Destroy Undead (CR 2)','5','4','3','3','3','2','1'],[12,'+4','ASI','5','4','3','3','3','2','1'],[13,'+5','Destroy Undead (CR 3)','5','4','3','3','3','2','1','1'],[14,'+5','--','5','4','3','3','3','2','1','1'],[15,'+5','Destroy Undead (CR 4)','5','4','3','3','3','2','1','1','1'],[16,'+5','ASI','5','4','3','3','3','2','1','1','1'],[17,'+6','Destroy Undead (CR 5), Domain Feature','5','4','3','3','3','2','1','1','1','1'],[18,'+6','Channel Divinity (3/rest)','5','4','3','3','3','3','1','1','1','1'],[19,'+6','ASI','5','4','3','3','3','3','2','1','1','1'],[20,'+6','Divine Intervention Improvement','5','4','3','3','3','3','2','2','1','1']],
+  progCols:['Lvl','Prof','Features','Cantrips','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'],
+  subs:[
+    {name:'Knowledge Domain',src:'PHB',d:'Two extra languages, two skill proficiencies (Arcana, History, Nature, Religion). Channel Divinity: Knowledge of the Ages grants proficiency in any skill or tool for 10 minutes.'},
+    {name:'Life Domain',src:'PHB',d:'Heavy armor. Disciple of Life: bonus healing on all spells equal to 2 + spell level. Blessed Healer: heal yourself when healing others. Supreme Healing: maximize healing dice.'},
+    {name:'Light Domain',src:'PHB',d:'Warding Flare: impose disadvantage on attacks against you as reaction. Radiance of the Dawn: Channel Divinity for AoE radiant damage and dispel magical darkness. Corona of Light: bright light aura that imposes disadvantage on saves vs. fire/radiant spells.'},
+    {name:'Nature Domain',src:'PHB',d:'Heavy armor. Learn a druid cantrip. Proficiency in Animal Handling, Nature, or Survival. Dampen Elements: grant resistance to elemental damage as reaction.'},
+    {name:'Tempest Domain',src:'PHB',d:'Heavy armor, martial weapons. Wrath of the Storm: deal lightning/thunder as reaction when hit. Destructive Wrath: maximize lightning/thunder damage with Channel Divinity.'},
+    {name:'Trickery Domain',src:'PHB',d:'Blessing of the Trickster: grant advantage on Stealth to ally. Invoke Duplicity: create illusory double. Cloak of Shadows: turn invisible. Improved Duplicity: create four illusory duplicates.'},
+    {name:'War Domain',src:'PHB',d:'Heavy armor, martial weapons. War Priest: bonus action weapon attacks (Wis mod/long rest). Guided Strike: +10 to an attack roll with Channel Divinity. Avatar of Battle: resistance to nonmagical B/P/S.'},
+    {name:'Forge Domain',src:"Xanathar's",d:'Heavy armor. Blessing of the Forge: +1 to one weapon or armor per long rest. Soul of the Forge: +1 AC in heavy armor, fire resistance. Saint of Forge and Fire: immunity to fire damage, resistance to nonmagical B/P/S in heavy armor.'},
+    {name:'Grave Domain',src:"Xanathar's",d:'Spare the dying as bonus action at 30 ft. range. Sentinel at Death\'s Door: cancel critical hits. Path to the Grave: Channel Divinity gives vulnerability to next hit. Keeper of Souls: heal allies when creatures die near you.'},
+    {name:'Order Domain',src:"Tasha's",d:'Heavy armor. Voice of Authority: when you cast a spell on an ally, that ally can use reaction to make a weapon attack. Order\'s Demand: Channel Divinity charms creatures and optionally drops their items.'},
+    {name:'Peace Domain',src:"Tasha's",d:'Emboldening Bond: bonded creatures add 1d4 to attacks, saves, or checks near each other. Protective Bond: bonded allies can teleport and take damage for each other. Expansive Bond: range increases.'},
+    {name:'Twilight Domain',src:"Tasha's",d:'Heavy armor, martial weapons. Eyes of Night: 300 ft. darkvision, share with allies. Vigilant Blessing: give one creature advantage on initiative. Twilight Sanctuary: Channel Divinity creates 30 ft. sphere granting 1d6+cleric level temp HP or ending charm/frighten each turn.'},
+  ]},
+  {id:'druid',name:'Druid',src:'PHB',hd:'d8',pa:'Wisdom',sv:'Int & Wis',icon:'🌿',arm:'Light, medium armor, shields (nonmetal)',wpn:'Clubs, daggers, darts, javelins, maces, quarterstaffs, scimitars, sickles, slings, spears',tools:'Herbalism kit',desc:'A priest of the Old Faith, wielding the powers of nature and adopting animal forms. Druids revere nature above all, drawing their power from the natural world itself.',
+  features:['Druidic language','Spellcasting (Wisdom, ritual casting)','Wild Shape','Timeless Body','Beast Spells','Archdruid (unlimited Wild Shape)'],
+  progression:[[1,'+2','Druidic, Spellcasting','2','2'],[2,'+2','Wild Shape, Druid Circle','2','3'],[3,'+2','--','2','4','2'],[4,'+2','Wild Shape Improvement, ASI','3','4','3'],[5,'+3','--','3','4','3','2'],[6,'+3','Druid Circle Feature','3','4','3','3'],[7,'+3','--','3','4','3','3','1'],[8,'+3','Wild Shape Improvement, ASI','3','4','3','3','2'],[9,'+4','--','3','4','3','3','3','1'],[10,'+4','Druid Circle Feature','4','4','3','3','3','2'],[11,'+4','--','4','4','3','3','3','2','1'],[12,'+4','ASI','4','4','3','3','3','2','1'],[13,'+5','--','4','4','3','3','3','2','1','1'],[14,'+5','Druid Circle Feature','4','4','3','3','3','2','1','1'],[15,'+5','--','4','4','3','3','3','2','1','1','1'],[16,'+5','ASI','4','4','3','3','3','2','1','1','1'],[17,'+6','--','4','4','3','3','3','2','1','1','1','1'],[18,'+6','Timeless Body, Beast Spells','4','4','3','3','3','3','1','1','1','1'],[19,'+6','ASI','4','4','3','3','3','3','2','1','1','1'],[20,'+6','Archdruid','4','4','3','3','3','3','2','2','1','1']],
+  progCols:['Lvl','Prof','Features','Cantrips','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'],
+  subs:[
+    {name:'Circle of the Land',src:'PHB',d:'Bonus cantrip. Natural Recovery: recover spell slots on short rest. Circle Spells based on terrain: Arctic, Coast, Desert, Forest, Grassland, Mountain, Swamp, or Underdark. Nature\'s Ward and Nature\'s Sanctuary at higher levels.'},
+    {name:'Circle of the Moon',src:'PHB',d:'Combat Wild Shape: transform as bonus action, spend spell slots to heal in beast form. Circle Forms: Wild Shape into higher CR beasts. Primal Strike: beast attacks count as magical. Elemental Wild Shape at 10th. Thousand Forms at 14th.'},
+    {name:'Circle of Dreams',src:"Xanathar's",d:'Balm of the Summer Court: pool of d6 healing dice. Hearth of Moonlight and Shadow: safe long rest area. Hidden Paths: teleport self or ally 60 ft. as bonus action. Walker in Dreams: dream walk and related spells.'},
+    {name:'Circle of the Shepherd',src:"Xanathar's",d:'Speech of the Woods: Sylvan language, communicate with beasts. Spirit Totem auras: Bear (temp HP), Hawk (advantage on attacks), Unicorn (bonus healing). Guardian Spirit and Faithful Summons boost summoned creatures.'},
+    {name:'Circle of Spores',src:"Tasha's",d:'Halo of Spores: deal necrotic damage as reaction. Symbiotic Entity: boost Wild Shape with temp HP and extra melee damage. Spreading Spores: create damage zone. Fungal Infestation: animate dead humanoids as zombies.'},
+    {name:'Circle of Stars',src:"Tasha's",d:'Star Map: free guiding bolt casts. Starry Form: Archer (bonus ranged radiant attack), Chalice (bonus healing), Dragon (minimum 10 on concentration). Cosmic Omen: bonus reaction to help or hinder. Full of Stars: resistance to B/P/S in Starry Form.'},
+    {name:'Circle of Wildfire',src:"Tasha's",d:'Summon Wildfire Spirit companion. Enhanced Bond: +1d8 to fire/healing spells through spirit. Cauterizing Flames: heal or damage when creatures near spirit die. Blazing Revival: revive through your spirit.'},
+  ]},
+  {id:'fighter',name:'Fighter',src:'PHB',hd:'d10',pa:'Strength or Dexterity',sv:'Str & Con',icon:'🛡️',arm:'All armor, shields',wpn:'Simple & martial weapons',tools:'None',desc:'A master of martial combat, skilled with a variety of weapons and armor. Fighters learn the basics of all combat styles and specialize through their martial archetype.',
+  features:['Fighting Style','Second Wind','Action Surge','Extra Attack (up to 4)','Indomitable'],
+  progression:[[1,'+2','Fighting Style, Second Wind'],[2,'+2','Action Surge (1 use)'],[3,'+2','Martial Archetype'],[4,'+2','ASI'],[5,'+3','Extra Attack'],[6,'+3','ASI'],[7,'+3','Archetype Feature'],[8,'+3','ASI'],[9,'+4','Indomitable (1 use)'],[10,'+4','Archetype Feature'],[11,'+4','Extra Attack (2)'],[12,'+4','ASI'],[13,'+5','Indomitable (2 uses)'],[14,'+5','ASI'],[15,'+5','Archetype Feature'],[16,'+5','ASI'],[17,'+6','Action Surge (2 uses), Indomitable (3 uses)'],[18,'+6','Archetype Feature'],[19,'+6','ASI'],[20,'+6','Extra Attack (3)']],
+  progCols:['Lvl','Prof','Features'],
+  subs:[
+    {name:'Champion',src:'PHB',d:'Improved Critical: crit on 19-20. Remarkable Athlete: +half proficiency to physical checks. Additional Fighting Style. Superior Critical: crit on 18-20. Survivor: regain HP each turn when below half.'},
+    {name:'Battle Master',src:'PHB',d:'Superiority dice (d8, then d10, d12) fuel Combat Maneuvers. Learn 3+ maneuvers: Trip, Riposte, Precision, Menacing, Disarming, Commander\'s Strike, Evasive, Feinting, Goading, Lunging, Maneuvering, Parry, Pushing, Rally, Sweeping, and more.'},
+    {name:'Eldritch Knight',src:'PHB',d:'Wizard spellcasting (abjuration/evocation focus). War Magic: bonus action attack after casting cantrip. Eldritch Strike: weapon hits impose disadvantage on spell saves. Arcane Charge: teleport with Action Surge. Improved War Magic at 18th.'},
+    {name:'Arcane Archer',src:"Xanathar's",d:'Arcane Shot options (2, scaling to 7): Banishing, Beguiling, Bursting, Enfeebling, Grasping, Piercing, Seeking, Shadow arrows. Curving Shot: redirect missed ranged attacks. Ever-Ready Shot: regain use on initiative.'},
+    {name:'Cavalier',src:"Xanathar's",d:'Born to the Saddle: advantage vs. falling. Unwavering Mark: punish marked foes who attack allies. Warding Maneuver: grant resistance and AC to nearby allies. Hold the Line: stop movement on opportunity attacks. Vigilant Defender: special reaction each turn.'},
+    {name:'Samurai',src:"Xanathar's",d:'Fighting Spirit: advantage on all attacks and temp HP as bonus action (3/long rest). Elegant Courtier: add Wis to Persuasion. Tireless Spirit: regain Fighting Spirit on initiative. Rapid Strike: trade advantage for extra attack. Strength Before Death: extra turn at 0 HP.'},
+    {name:'Echo Knight',src:'Wildemount',d:'Manifest Echo: summon an echo of yourself you can attack through, swap places with, or use for opportunity attacks. Unleash Incarnation: extra attack through echo. Echo Avatar: see through echo. Reclaim Potential: temp HP when echo destroyed. Legion of One: two echoes.'},
+    {name:'Psi Warrior',src:"Tasha's",d:'Psionic Power dice: Protective Field (reduce damage), Psionic Strike (force damage), Telekinetic Movement (move objects). Telekinetic Adept: telekinetic thrust and psi-powered leap. Bulwark of Force: half cover for allies. Telekinetic Master: telekinesis spell.'},
+    {name:'Rune Knight',src:"Tasha's",d:"Giant's Might: become Large with bonus damage. Inscribe runes: Cloud (redirect attacks), Fire (restrain), Frost (Str/Con boost), Stone (charm), Hill (resistance), Storm (prevent reactions). Runic Shield: force rerolls. Great Stature and Master of Runes at higher levels."},
+  ]},
+  {id:'monk',name:'Monk',src:'PHB',hd:'d8',pa:'Dex & Wis',sv:'Str & Dex',icon:'👊',arm:'None',wpn:'Simple weapons, shortswords',tools:'One artisan tool or instrument',desc:'A master of martial arts harnessing ki to fuel extraordinary feats. Monks channel this mystical energy to perform amazing physical feats, strike with supernatural speed, and deflect attacks.',
+  features:['Unarmored Defense (10+Dex+Wis)','Martial Arts','Ki','Unarmored Movement','Deflect Missiles','Slow Fall','Extra Attack','Stunning Strike','Ki-Empowered Strikes','Evasion','Stillness of Mind','Diamond Soul','Timeless Body','Empty Body','Perfect Self'],
+  progression:[[1,'+2','1d4','--','--','Unarmored Defense, Martial Arts'],[2,'+2','1d4','2','+10 ft.','Ki, Unarmored Movement'],[3,'+2','1d4','3','+10 ft.','Monastic Tradition, Deflect Missiles'],[4,'+2','1d4','4','+10 ft.','ASI, Slow Fall'],[5,'+3','1d6','5','+10 ft.','Extra Attack, Stunning Strike'],[6,'+3','1d6','6','+15 ft.','Ki-Empowered Strikes, Tradition Feature'],[7,'+3','1d6','7','+15 ft.','Evasion, Stillness of Mind'],[8,'+3','1d6','8','+15 ft.','ASI'],[9,'+4','1d6','9','+15 ft.','Unarmored Movement Improvement'],[10,'+4','1d6','10','+20 ft.','Purity of Body'],[11,'+4','1d8','11','+20 ft.','Tradition Feature'],[12,'+4','1d8','12','+20 ft.','ASI'],[13,'+5','1d8','13','+20 ft.','Tongue of Sun and Moon'],[14,'+5','1d8','14','+25 ft.','Diamond Soul'],[15,'+5','1d8','15','+25 ft.','Timeless Body'],[16,'+5','1d8','16','+25 ft.','ASI'],[17,'+6','1d10','17','+25 ft.','Tradition Feature'],[18,'+6','1d10','18','+30 ft.','Empty Body'],[19,'+6','1d10','19','+30 ft.','ASI'],[20,'+6','1d10','20','+30 ft.','Perfect Self']],
+  progCols:['Lvl','Prof','Martial Arts','Ki','Unarmored Mvmt','Features'],
+  subs:[
+    {name:'Way of the Open Hand',src:'PHB',d:'Open Hand Technique: Flurry of Blows can knock prone, push 15 ft., or prevent reactions. Wholeness of Body: heal 3x monk level. Tranquility: sanctuary between rests. Quivering Palm: set up vibrations that can reduce a creature to 0 HP.'},
+    {name:'Way of Shadow',src:'PHB',d:'Shadow Arts: cast darkness, darkvision, pass without trace, silence, or minor illusion for ki. Shadow Step: teleport 60 ft. between shadows as bonus action. Cloak of Shadows: invisible in dim light/darkness. Opportunist: attack when ally hits nearby creature.'},
+    {name:'Way of the Four Elements',src:'PHB',d:'Choose elemental disciplines: Fangs of the Fire Snake, Fist of Unbroken Air, Shape the Flowing River, Water Whip, and more. Cast elemental spells using ki points. Additional disciplines at higher levels.'},
+    {name:'Way of the Drunken Master',src:"Xanathar's",d:'Drunken Technique: Disengage and +10 speed on Flurry of Blows. Tipsy Sway: redirect missed attacks to other creatures, stand from prone for 5 ft. Drunkard\'s Luck: cancel disadvantage. Intoxicated Frenzy: up to 5 Flurry attacks.'},
+    {name:'Way of the Kensei',src:"Xanathar's",d:'Kensei Weapons: choose ranged and melee weapons. Agile Parry: +2 AC when making unarmed attack with kensei weapon. Kensei\'s Shot: +1d4 ranged damage. Deft Strike: spend ki for bonus damage. Sharpen the Blade: +1 to +3 bonus to attacks.'},
+    {name:'Way of the Sun Soul',src:"Xanathar's",d:'Radiant Sun Bolt: ranged spell attacks using Dex for 1d4+ radiant. Searing Arc Strike: burning hands after Attack. Searing Sunburst: 20 ft. radius radiant explosion. Sun Shield: radiant damage to melee attackers.'},
+    {name:'Way of Mercy',src:"Tasha's",d:'Implements of Mercy: Insight/Medicine proficiency, herbalism kit. Hands of Healing: restore HP during Flurry. Hands of Harm: necrotic damage + poisoned. Physician\'s Touch: remove disease/conditions. Hand of Ultimate Mercy: revive dead.'},
+    {name:'Way of the Astral Self',src:"Tasha's",d:'Arms of the Astral Self: spectral arms for force damage using Wis, +5 ft. reach. Visage: darkvision, advantage on Insight/Intimidation, amplified voice. Body of the Astral Self: deflect damage and empower arms. Awakened Astral Self: bonus arm attack, +2 AC.'},
+  ]},
+  {id:'paladin',name:'Paladin',src:'PHB',hd:'d10',pa:'Str & Cha',sv:'Wis & Cha',icon:'⚜️',arm:'All armor, shields',wpn:'Simple & martial weapons',tools:'None',desc:'A holy warrior bound to a sacred oath. Paladins combine martial prowess with divine magic, calling upon the power of their oath to smite evil and protect the innocent.',
+  features:['Divine Sense','Lay on Hands','Fighting Style','Spellcasting (Cha)','Divine Smite','Divine Health','Extra Attack','Aura of Protection','Aura of Courage','Improved Divine Smite','Cleansing Touch'],
+  progression:[[1,'+2','Divine Sense, Lay on Hands','--','--'],[2,'+2','Fighting Style, Spellcasting, Divine Smite','2','--'],[3,'+2','Divine Health, Sacred Oath','3','--'],[4,'+2','ASI','3','--'],[5,'+3','Extra Attack','4','2'],[6,'+3','Aura of Protection','4','2'],[7,'+3','Sacred Oath Feature','4','3'],[8,'+3','ASI','4','3'],[9,'+4','--','4','3','2'],[10,'+4','Aura of Courage','4','3','2'],[11,'+4','Improved Divine Smite','4','3','3'],[12,'+4','ASI','4','3','3'],[13,'+5','--','4','3','3','1'],[14,'+5','Cleansing Touch','4','3','3','1'],[15,'+5','Sacred Oath Feature','4','3','3','2'],[16,'+5','ASI','4','3','3','2'],[17,'+6','--','4','3','3','3','1'],[18,'+6','Aura Improvements (30 ft.)','4','3','3','3','1'],[19,'+6','ASI','4','3','3','3','2'],[20,'+6','Sacred Oath Feature','4','3','3','3','2']],
+  progCols:['Lvl','Prof','Features','1st','2nd','3rd','4th','5th'],
+  subs:[
+    {name:'Oath of Devotion',src:'PHB',d:'Sacred Weapon: +Cha to attacks. Turn the Unholy: repel fiends/undead. Aura of Devotion: immune to charm within 10 ft. Purity of Spirit: protection from evil and good always on. Holy Nimbus: radiant damage aura and bright light.'},
+    {name:'Oath of the Ancients',src:'PHB',d:'Nature\'s Wrath: vines restrain foe. Turn the Faithless: turn fey/fiends. Aura of Warding: resistance to spell damage within 10 ft. Undying Sentinel: drop to 1 HP instead of 0. Elder Champion: regain HP each turn, spells as bonus action.'},
+    {name:'Oath of Vengeance',src:'PHB',d:'Abjure Enemy: frighten one creature. Vow of Enmity: advantage on attacks vs. one foe. Relentless Avenger: move after opportunity attack. Soul of Vengeance: reaction attack when vowed enemy attacks. Avenging Angel: fly speed and frightening presence.'},
+    {name:'Oath of Conquest',src:"Xanathar's",d:'Conquering Presence: frighten nearby enemies. Guided Strike: +10 to attack. Aura of Conquest: frightened enemies near you are immobilized and take psychic damage. Scornful Rebuke: psychic damage to attackers. Invincible Conqueror: resistance to all damage, extra attack, crit on 19-20.'},
+    {name:'Oath of Redemption',src:"Xanathar's",d:'Emissary of Peace: +5 Persuasion. Rebuke the Violent: reflect damage. Aura of the Guardian: absorb damage for allies. Protective Spirit: regenerate HP. Emissary of Redemption: resistance to all damage from attackers, reflect half.'},
+    {name:'Oath of Glory',src:"Tasha's",d:'Peerless Athlete: enhanced athletics. Inspiring Smite: distribute temp HP after smiting. Aura of Alacrity: +10 speed for nearby allies. Glorious Defense: add Cha to ally\'s AC then counterattack. Living Legend: advantage on Cha checks, miss becomes hit once per turn.'},
+    {name:'Oath of the Watchers',src:"Tasha's",d:'Watcher\'s Will: advantage on Int/Wis/Cha saves for allies. Abjure the Extraplanar: turn aberrations, celestials, elementals, fey, fiends. Aura of the Sentinel: +Prof to initiative for nearby allies. Vigilant Rebuke: force damage to creatures that succeed on mental saves near you. Mortal Bulwark: truesight and banish on hit.'},
+    {name:'Oathbreaker',src:'DMG',d:'Control Undead: dominate one undead. Dreadful Aspect: frighten all nearby. Aura of Hate: +Cha to melee damage for fiends/undead nearby. Supernatural Resistance: resistance to nonmagical B/P/S. Dread Lord: shadow damage aura.'},
+  ]},
+  {id:'ranger',name:'Ranger',src:'PHB',hd:'d10',pa:'Dex & Wis',sv:'Str & Dex',icon:'🏹',arm:'Light, medium armor, shields',wpn:'Simple & martial weapons',tools:'None',desc:'A warrior who combats threats on the edges of civilization. Rangers combine martial prowess, nature magic, and wilderness expertise to protect the realms from dire threats.',
+  features:['Favored Enemy/Foe','Natural Explorer/Deft Explorer','Fighting Style','Spellcasting (Wis)','Extra Attack','Land\'s Stride','Hide in Plain Sight','Vanish','Feral Senses','Foe Slayer'],
+  progression:[[1,'+2','Favored Enemy, Natural Explorer','--','2'],[2,'+2','Fighting Style, Spellcasting','2','2'],[3,'+2','Ranger Archetype, Primeval Awareness','3','2'],[4,'+2','ASI','3','3'],[5,'+3','Extra Attack','4','3'],[6,'+3','Favored Enemy Improvement, Natural Explorer Improvement','4','4','2'],[7,'+3','Archetype Feature','5','4','2'],[8,'+3','ASI, Land\'s Stride','5','4','3'],[9,'+4','--','6','4','3','2'],[10,'+4','Natural Explorer Improvement, Hide in Plain Sight','6','4','3','2'],[11,'+4','Archetype Feature','7','4','3','3'],[12,'+4','ASI','7','4','3','3'],[13,'+5','--','8','4','3','3','1'],[14,'+5','Favored Enemy Improvement, Vanish','8','4','3','3','1'],[15,'+5','Archetype Feature','9','4','3','3','2'],[16,'+5','ASI','9','4','3','3','2'],[17,'+6','--','10','4','3','3','3','1'],[18,'+6','Feral Senses','10','4','3','3','3','1'],[19,'+6','ASI','11','4','3','3','3','2'],[20,'+6','Foe Slayer','11','4','3','3','3','2']],
+  progCols:['Lvl','Prof','Features','Spells Known','1st','2nd','3rd','4th','5th'],
+  subs:[
+    {name:'Hunter',src:'PHB',d:'Choose combat specialties at each tier: 3rd (Colossus Slayer +1d8, Giant Killer, Horde Breaker), 7th (Escape the Horde, Multiattack Defense, Steel Will), 11th (Volley AoE, Whirlwind Attack), 15th (Evasion, Stand Against the Tide, Uncanny Dodge).'},
+    {name:'Beast Master',src:'PHB',d:'Ranger\'s Companion: choose a beast CR 1/4 or lower. Beast attacks on your command. Exceptional Training: Dash, Disengage, Help. Bestial Fury: beast multiattack. Share Spells: your spells affect your beast too.'},
+    {name:'Gloom Stalker',src:"Xanathar's",d:'Dread Ambusher: +Wis to initiative, extra speed and extra attack on first turn with +1d8. Umbral Sight: invisible to darkvision. Iron Mind: Wis save proficiency. Stalker\'s Flurry: reattack on miss. Shadowy Dodge: impose disadvantage on attacks as reaction.'},
+    {name:'Horizon Walker',src:"Xanathar's",d:'Detect Portal: sense planar portals. Planar Warrior: bonus action to convert damage to force +1d8. Ethereal Step: bonus action etherealness. Distant Strike: teleport 10 ft. before each attack, extra attack when attacking 3 targets. Spectral Defense: reaction to resist damage.'},
+    {name:'Monster Slayer',src:"Xanathar's",d:'Hunter\'s Sense: learn immunities, resistances, vulnerabilities. Slayer\'s Prey: +1d6 damage per turn. Supernatural Defense: +1d6 to saves vs. prey. Magic-User\'s Nemesis: reaction to counter teleportation/spellcasting. Slayer\'s Counter: immediate attack if prey forces a save.'},
+    {name:'Fey Wanderer',src:"Tasha's",d:'Add Wis to Charisma checks. Dreadful Strikes: +1d4 psychic on hit (once per turn). Beguiling Twist: redirect charm/frighten to new targets. Fey Reinforcements: summon fey. Misty Wanderer: misty step + bring an ally.'},
+    {name:'Swarmkeeper',src:"Tasha's",d:'Gathered Swarm: on hit, move target 15 ft., deal 1d6 piercing, or move yourself 5 ft. Writhing Tide: hover flight 10 ft. as bonus action. Mighty Swarm: swarm upgrades (knocked prone, half cover, advantage). Swarming Dispersal: teleport and resist damage.'},
+  ]},
+  {id:'rogue',name:'Rogue',src:'PHB',hd:'d8',pa:'Dexterity',sv:'Dex & Int',icon:'🗡️',arm:'Light armor',wpn:'Simple weapons, hand crossbows, longswords, rapiers, shortswords',tools:"Thieves' tools",desc:'A scoundrel who uses stealth and trickery to overcome obstacles. Rogues rely on skill, stealth, and their foes\' vulnerabilities to get the upper hand.',
+  features:['Expertise','Sneak Attack','Thieves\' Cant','Cunning Action','Uncanny Dodge','Evasion','Reliable Talent','Blindsense','Slippery Mind','Elusive','Stroke of Luck'],
+  progression:[[1,'+2','1d6','Expertise, Sneak Attack, Thieves\' Cant'],[2,'+2','1d6','Cunning Action'],[3,'+2','2d6','Roguish Archetype'],[4,'+2','2d6','ASI'],[5,'+3','3d6','Uncanny Dodge'],[6,'+3','3d6','Expertise'],[7,'+3','4d6','Evasion'],[8,'+3','4d6','ASI'],[9,'+4','5d6','Archetype Feature'],[10,'+4','5d6','ASI'],[11,'+4','6d6','Reliable Talent'],[12,'+4','6d6','ASI'],[13,'+5','7d6','Archetype Feature'],[14,'+5','7d6','Blindsense'],[15,'+5','8d6','Slippery Mind'],[16,'+5','8d6','ASI'],[17,'+6','9d6','Archetype Feature'],[18,'+6','9d6','Elusive'],[19,'+6','10d6','ASI'],[20,'+6','10d6','Stroke of Luck']],
+  progCols:['Lvl','Prof','Sneak Atk','Features'],
+  subs:[
+    {name:'Thief',src:'PHB',d:'Fast Hands: use objects, disarm traps, pick locks as bonus action. Second-Story Work: climb speed, jump bonus. Supreme Sneak: advantage on Stealth at half speed. Use Magic Device: ignore requirements. Thief\'s Reflexes: two turns in first round.'},
+    {name:'Assassin',src:'PHB',d:'Assassinate: advantage and auto-crit on surprised creatures. Infiltration Expertise: create false identities. Impostor: mimic others perfectly. Death Strike: double damage on surprised targets (Con save).'},
+    {name:'Arcane Trickster',src:'PHB',d:'Wizard spellcasting (illusion/enchantment). Mage Hand Legerdemain: invisible mage hand tricks. Magical Ambush: disadvantage on spell saves from hiding. Versatile Trickster: mage hand grants advantage. Spell Thief: steal spells.'},
+    {name:'Inquisitive',src:"Xanathar's",d:'Ear for Deceit: minimum Insight rolls. Eye for Detail: bonus action Perception/Investigation. Insightful Fighting: Sneak Attack via Insight vs. Deception. Steady Eye: advantage on searches at half speed. Unerring Eye: detect illusions/shapechangers.'},
+    {name:'Mastermind',src:"Xanathar's",d:'Master of Intrigue: disguise kit, forgery kit, gaming set, two languages. Master of Tactics: Help as bonus action at 30 ft. Insightful Manipulator: assess creature stats. Misdirection: redirect attacks to cover. Soul of Deceit: immune to telepathy, undetectable thoughts.'},
+    {name:'Scout',src:"Xanathar's",d:'Skirmisher: move half speed as reaction when enemy ends near you. Survivalist: Nature/Survival expertise. Superior Mobility: +10 ft. speed. Ambush Master: advantage on initiative, allies get advantage vs. first creature you hit. Sudden Strike: Sneak Attack two targets per turn.'},
+    {name:'Phantom',src:"Tasha's",d:'Whispers of the Dead: gain any skill/tool proficiency after rest. Wails from the Grave: necrotic to second creature on Sneak Attack. Tokens of the Departed: soul trinkets grant advantages. Ghost Walk: fly speed, move through objects, spectral form.'},
+    {name:'Soulknife',src:"Tasha's",d:'Psionic Power: Psi-Bolstered Knack and Psychic Whispers. Psychic Blades: summon psychic damage weapons. Soul Blades: Homing Strikes and Psychic Teleportation. Psychic Veil: invisibility. Rend Mind: stun on Sneak Attack.'},
+  ]},
+  {id:'sorcerer',name:'Sorcerer',src:'PHB',hd:'d6',pa:'Charisma',sv:'Con & Cha',icon:'🔮',arm:'None',wpn:'Daggers, darts, slings, quarterstaffs, light crossbows',tools:'None',desc:'A spellcaster who draws on inherent magic from a gift or bloodline. Sorcerers carry a magical birthright that lets them reshape spells through Metamagic.',
+  features:['Spellcasting (Charisma)','Font of Magic (sorcery points)','Metamagic','Sorcerous Restoration'],
+  progression:[[1,'+2','Spellcasting, Sorcerous Origin','4','2','2'],[2,'+2','Font of Magic','4','3','3'],[3,'+2','Metamagic','4','4','4','2'],[4,'+2','ASI','5','5','4','3'],[5,'+3','--','5','6','4','3','2'],[6,'+3','Origin Feature','5','7','4','3','3'],[7,'+3','--','5','8','4','3','3','1'],[8,'+3','ASI','5','9','4','3','3','2'],[9,'+4','--','5','10','4','3','3','3','1'],[10,'+4','Metamagic','6','11','4','3','3','3','2'],[11,'+4','--','6','12','4','3','3','3','2','1'],[12,'+4','ASI','6','12','4','3','3','3','2','1'],[13,'+5','--','6','13','4','3','3','3','2','1','1'],[14,'+5','Origin Feature','6','13','4','3','3','3','2','1','1'],[15,'+5','--','6','14','4','3','3','3','2','1','1','1'],[16,'+5','ASI','6','14','4','3','3','3','2','1','1','1'],[17,'+6','Metamagic','6','15','4','3','3','3','2','1','1','1','1'],[18,'+6','Origin Feature','6','15','4','3','3','3','3','1','1','1','1'],[19,'+6','ASI','6','15','4','3','3','3','3','2','1','1','1'],[20,'+6','Sorcerous Restoration','6','15','4','3','3','3','3','2','2','1','1']],
+  progCols:['Lvl','Prof','Features','Cantrips','Sorc Pts','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'],
+  subs:[
+    {name:'Draconic Bloodline',src:'PHB',d:'Dragon Ancestor: extra HP, AC 13+Dex. Elemental Affinity: +Cha damage and resistance for your element. Dragon Wings: permanent flight. Draconic Presence: frightened or charmed aura.'},
+    {name:'Wild Magic',src:'PHB',d:'Wild Magic Surge: random effects from d100 table. Tides of Chaos: advantage on one roll (triggers DM surge). Bend Luck: +/-1d4 to others\' rolls. Controlled Chaos: choose from two surge results. Spell Bombardment: maximize one damage die per spell.'},
+    {name:'Divine Soul',src:"Xanathar's",d:'Full cleric spell list access. Favored by the Gods: +2d4 to failed save or missed attack. Empowered Healing: reroll healing dice. Angelic Form: spectral wings. Unearthly Recovery: heal half HP when below half.'},
+    {name:'Shadow Magic',src:"Xanathar's",d:'120 ft. darkvision. Strength of the Grave: stay at 1 HP on Cha save. Eyes of the Dark: free darkness + see through it. Hound of Ill Omen: shadow dire wolf stalks target. Shadow Walk: teleport through shadows. Umbral Form: incorporeal with resistances.'},
+    {name:'Storm Sorcery',src:"Xanathar's",d:'Tempestuous Magic: fly 10 ft. as bonus action after casting. Heart of the Storm: lightning/thunder damage to nearby enemies when you cast. Storm Guide: control local weather. Storm\'s Fury: reaction lightning damage. Wind Soul: permanent flight, lightning/thunder immunity.'},
+    {name:'Aberrant Mind',src:"Tasha's",d:'Psionic Spells: arms of Hadar, calm emotions, hunger of Hadar, Evard\'s black tentacles, telekinesis, etc. Telepathic Speech. Psionic Sorcery: cast psionic spells with sorcery points, no components. Psychic Defenses: resist psychic, advantage vs. charm/frighten. Revelation in Flesh: transform body. Warping Implosion: teleport + AoE.'},
+    {name:'Clockwork Soul',src:"Tasha's",d:'Clockwork Magic: aid, lesser/greater restoration, wall of force, etc. Restore Balance: cancel advantage or disadvantage within 60 ft. Bastion of Law: ward of sorcery points absorbs damage. Trance of Order: minimum 10 on all d20 rolls. Clockwork Cavalcade: mass heal + repair.'},
+  ]},
+  {id:'warlock',name:'Warlock',src:'PHB',hd:'d8',pa:'Charisma',sv:'Wis & Cha',icon:'👁️',arm:'Light armor',wpn:'Simple weapons',tools:'None',desc:'A wielder of magic derived from a bargain with an extraplanar entity. Warlocks piece together arcane secrets from forbidden knowledge, shaping eldritch power through their patron.',
+  features:['Pact Magic (Cha, short rest slots)','Eldritch Invocations','Pact Boon','Mystic Arcanum','Eldritch Master'],
+  progression:[[1,'+2','Otherworldly Patron, Pact Magic','2','1','1','1st'],[2,'+2','Eldritch Invocations (2)','2','2','1','1st'],[3,'+2','Pact Boon','2','2','2','2nd'],[4,'+2','ASI','3','3','2','2nd'],[5,'+3','--','3','3','2','3rd'],[6,'+3','Patron Feature','3','4','2','3rd'],[7,'+3','--','3','4','2','4th'],[8,'+3','ASI','3','5','2','4th'],[9,'+4','--','3','5','2','5th'],[10,'+4','Patron Feature','4','6','2','5th'],[11,'+4','Mystic Arcanum (6th)','4','6','3','5th'],[12,'+4','ASI','4','6','3','5th'],[13,'+5','Mystic Arcanum (7th)','4','7','3','5th'],[14,'+5','Patron Feature','4','7','3','5th'],[15,'+5','Mystic Arcanum (8th)','4','8','3','5th'],[16,'+5','ASI','4','8','3','5th'],[17,'+6','Mystic Arcanum (9th)','4','8','4','5th'],[18,'+6','--','4','9','4','5th'],[19,'+6','ASI','4','9','4','5th'],[20,'+6','Eldritch Master','4','9','4','5th']],
+  progCols:['Lvl','Prof','Features','Cantrips','Invocations','Slots','Slot Lvl'],
+  subs:[
+    {name:'The Archfey',src:'PHB',d:'Fey Presence: charm/frighten nearby creatures. Misty Escape: reaction teleport + invisibility when damaged. Beguiling Defenses: immune to charm, reflect it back. Dark Delirium: trap creature in illusory realm.'},
+    {name:'The Fiend',src:'PHB',d:'Dark One\'s Blessing: temp HP on kills. Dark One\'s Own Luck: +1d10 to check/save. Fiendish Resilience: choose a damage resistance. Hurl Through Hell: banish + 10d10 psychic.'},
+    {name:'The Great Old One',src:'PHB',d:'Awakened Mind: 30 ft. telepathy. Entropic Ward: impose disadvantage on attacks, gain advantage if they miss. Thought Shield: immune to telepathy, reflect psychic damage. Create Thrall: charm humanoid indefinitely.'},
+    {name:'The Celestial',src:"Xanathar's",d:'Healing Light: d6 pool to heal. Radiant Soul: +Cha to radiant/fire, radiant resistance. Celestial Resilience: temp HP on rest. Searing Vengeance: explode with radiant when revived from 0 HP.'},
+    {name:'The Hexblade',src:"Xanathar's",d:'Hexblade\'s Curse: bonus damage, crit on 19-20, heal on kill. Hex Warrior: Cha for weapon attacks, medium armor, shields. Accursed Specter: raise specters from slain foes. Armor of Hexes: cursed target misses on d6 roll of 4+. Master of Hexes: transfer curse.'},
+    {name:'The Fathomless',src:"Tasha's",d:'Tentacle of the Deeps: spectral tentacle attacks and reduces speed. Gift of the Sea: swim speed and water breathing. Oceanic Soul: cold resist, underwater communication. Guardian Coil: tentacle reduces damage. Grasping Tentacles: Evard\'s black tentacles that grant temp HP.'},
+    {name:'The Genie',src:"Tasha's",d:'Genie\'s Vessel: magic vessel you can rest inside. Genie\'s Wrath: +Prof bonus damage of genie type. Elemental Gift: damage resistance and flight. Sanctuary Vessel: allies enter vessel. Limited Wish: replicate any 6th-or-lower spell once per long rest. Choose Dao (earth), Djinni (air), Efreeti (fire), or Marid (water).'},
+  ]},
+  {id:'wizard',name:'Wizard',src:'PHB',hd:'d6',pa:'Intelligence',sv:'Int & Wis',icon:'📖',arm:'None',wpn:'Daggers, darts, slings, quarterstaffs, light crossbows',tools:'None',desc:'A scholarly magic-user capable of manipulating reality. Wizards are supreme magic-users defined by their spellbooks, capable of casting spells of devastating power.',
+  features:['Spellcasting (Int, ritual casting)','Arcane Recovery','Spell Mastery','Signature Spells'],
+  progression:[[1,'+2','Spellcasting, Arcane Recovery','3','2'],[2,'+2','Arcane Tradition','3','3'],[3,'+2','--','3','4','2'],[4,'+2','ASI','4','4','3'],[5,'+3','--','4','4','3','2'],[6,'+3','Tradition Feature','4','4','3','3'],[7,'+3','--','4','4','3','3','1'],[8,'+3','ASI','4','4','3','3','2'],[9,'+4','--','4','4','3','3','3','1'],[10,'+4','Tradition Feature','5','4','3','3','3','2'],[11,'+4','--','5','4','3','3','3','2','1'],[12,'+4','ASI','5','4','3','3','3','2','1'],[13,'+5','--','5','4','3','3','3','2','1','1'],[14,'+5','Tradition Feature','5','4','3','3','3','2','1','1'],[15,'+5','--','5','4','3','3','3','2','1','1','1'],[16,'+5','ASI','5','4','3','3','3','2','1','1','1'],[17,'+6','--','5','4','3','3','3','2','1','1','1','1'],[18,'+6','Spell Mastery','5','4','3','3','3','3','1','1','1','1'],[19,'+6','ASI','5','4','3','3','3','3','2','1','1','1'],[20,'+6','Signature Spells','5','4','3','3','3','3','2','2','1','1']],
+  progCols:['Lvl','Prof','Features','Cantrips','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'],
+  subs:[
+    {name:'School of Abjuration',src:'PHB',d:'Arcane Ward: absorb damage (2x wizard level + Int HP pool). Projected Ward: extend protection to allies. Improved Abjuration: add proficiency to counterspell/dispel. Spell Resistance: advantage on saves vs. spells, resistance to spell damage.'},
+    {name:'School of Conjuration',src:'PHB',d:'Minor Conjuration: create nonmagical objects. Benign Transposition: teleport/swap 30 ft. Focused Conjuration: concentration unbreakable by damage. Durable Summons: +30 temp HP to conjured creatures.'},
+    {name:'School of Divination',src:'PHB',d:'Portent: roll 2d20 after long rest, replace any creature\'s roll with your stored results. Expert Divination: regain lower slots after casting divination. Third Eye: darkvision, ethereal sight, read languages, or see invisibility. Greater Portent: 3d20 rolls.'},
+    {name:'School of Enchantment',src:'PHB',d:'Hypnotic Gaze: incapacitate a creature. Instinctive Charm: redirect attacks to other creatures. Split Enchantment: target two creatures with single-target enchantment. Alter Memories: erase knowledge of enchantment.'},
+    {name:'School of Evocation',src:'PHB',d:'Sculpt Spells: protect allies from your evocation AoEs. Potent Cantrip: half damage on saves. Empowered Evocation: +Int to evocation damage. Overchannel: maximize damage dice on 5th-or-lower spells.'},
+    {name:'School of Illusion',src:'PHB',d:'Improved Minor Illusion: sound + image. Malleable Illusions: reshape active illusions. Illusory Self: duplicate absorbs one attack. Illusory Reality: make one element of an illusion real and tangible.'},
+    {name:'School of Necromancy',src:'PHB',d:'Grim Harvest: heal when killing with spells. Undead Thralls: enhanced animate dead. Inured to Undeath: necrotic resistance, max HP protection. Command Undead: permanently control one undead creature.'},
+    {name:'School of Transmutation',src:'PHB',d:'Minor Alchemy: change material type temporarily. Transmuter\'s Stone: grant darkvision, speed, proficiency, or resistance. Shapechanger: polymorph on self at will. Master Transmuter: major transformations.'},
+    {name:'War Magic',src:"Xanathar's",d:'Arcane Deflection: +2 AC or +4 to save as reaction (limits next turn to cantrips). Tactical Wit: +Int to initiative. Power Surge: store and release extra force damage. Durable Magic: +2 AC and saves while concentrating.'},
+    {name:'Bladesinging',src:"Tasha's",d:'Bladesong: +Int to AC, +10 speed, advantage on Acrobatics, +Int to concentration saves. Extra Attack: replace one with cantrip. Song of Defense: spend spell slots to reduce damage. Song of Victory: +Int to melee damage in Bladesong.'},
+    {name:'Order of Scribes',src:"Tasha's",d:'Wizardly Quill: write at incredible speed. Awakened Spellbook: swap damage types, fast ritual casting. Manifest Mind: project book consciousness to cast from its location. Master Scrivener: create daily spell scrolls. One with the Word: advantage on Arcana, absorb lethal damage through spellbook.'},
+  ]},
+  {id:'artificer',name:'Artificer',src:"Tasha's",hd:'d8',pa:'Intelligence',sv:'Con & Int',icon:'⚙️',arm:'Light, medium armor, shields',wpn:'Simple weapons',tools:"Thieves' tools, tinker's tools, one artisan's tools",desc:"Masters of invention who use ingenuity and magic to unlock extraordinary capabilities in objects. Artificers create magical items, infuse objects with power, and solve problems through creative engineering.",
+  features:['Spellcasting (Int, tools as focus)','Magical Tinkering','Infuse Item','The Right Tool for the Job','Tool Expertise','Flash of Genius','Magic Item Adept/Savant/Master','Spell-Storing Item','Soul of Artifice'],
+  progression:[[1,'+2','Magical Tinkering, Spellcasting','2','2'],[2,'+2','Infuse Item','2','2'],[3,'+2','Artificer Specialist, Right Tool for the Job','2','3'],[4,'+2','ASI','2','3'],[5,'+3','Specialist Feature','2','4','2'],[6,'+3','Tool Expertise','2','4','2'],[7,'+3','Flash of Genius','2','4','3'],[8,'+3','ASI','2','4','3'],[9,'+4','Specialist Feature','2','4','3','2'],[10,'+4','Magic Item Adept','3','4','3','2'],[11,'+4','Spell-Storing Item','3','4','3','3'],[12,'+4','ASI','3','4','3','3'],[13,'+5','--','3','4','3','3','1'],[14,'+5','Magic Item Savant','4','4','3','3','1'],[15,'+5','Specialist Feature','4','4','3','3','2'],[16,'+5','ASI','4','4','3','3','2'],[17,'+6','--','4','4','3','3','3','1'],[18,'+6','Magic Item Master','4','4','3','3','3','1'],[19,'+6','ASI','4','4','3','3','3','2'],[20,'+6','Soul of Artifice','4','4','3','3','3','2']],
+  progCols:['Lvl','Prof','Features','Cantrips','1st','2nd','3rd','4th','5th'],
+  subs:[
+    {name:'Alchemist',src:"Tasha's",d:'Experimental Elixir: random beneficial potions. Alchemical Savant: +Int to acid/fire/necrotic/poison/healing spells through alchemist supplies. Restorative Reagents: lesser restoration from elixirs, temp HP. Chemical Mastery: acid/poison immunity, free greater restoration and heal.'},
+    {name:'Armorer',src:"Tasha's",d:'Arcane Armor: magical power suit. Guardian Model: thunder gauntlets + defensive field. Infiltrator Model: lightning launcher + stealth. Armor Modifications: extra infusions. Perfected Armor: upgraded model abilities.'},
+    {name:'Artillerist',src:"Tasha's",d:'Eldritch Cannon: Force Ballista (force damage), Flamethrower (fire cone), or Protector (temp HP field). Arcane Firearm: +1d8 to spell damage. Explosive Cannon: detonate for AoE. Fortified Position: two cannons, half cover.'},
+    {name:'Battle Smith',src:"Tasha's",d:'Battle Ready: martial weapons, use Int for magic weapon attacks. Steel Defender: construct companion. Arcane Jolt: bonus force damage or healing through weapon/defender. Improved Defender: upgraded steel defender.'},
+  ]},
+],
+
+// BACKGROUNDS
+bg:[
+  {n:'Acolyte',s:'PHB',sk:'Insight, Religion',lg:'Two of choice',eq:'Holy symbol, prayer book, 5 incense, vestments, 15 gp',ft:'Shelter of the Faithful',d:'You have spent your life in temple service. You act as an intermediary between the holy realm and the mortal world, performing sacred rites and offering sacrifices.'},
+  {n:'Charlatan',s:'PHB',sk:'Deception, Sleight of Hand',lg:'None',eq:'Fine clothes, disguise kit, con tools, 15 gp',ft:'False Identity',d:'You have always had a way with people. You know what makes them tick, can tease out their desires, and with a few questions can read them like a book.'},
+  {n:'Criminal',s:'PHB',sk:'Deception, Stealth',lg:'None',eq:'Crowbar, dark common clothes with hood, 15 gp',ft:'Criminal Contact',d:'You are an experienced criminal with a history of breaking the law. You have contacts within the criminal underworld and know how to navigate the shadowy side of society.'},
+  {n:'Entertainer',s:'PHB',sk:'Acrobatics, Performance',lg:'None',eq:'Musical instrument, admirer favor, costume, 15 gp',ft:'By Popular Demand',d:'You thrive in front of an audience. You know how to entrance them, entertain them, and inspire them. Your poetics can stir hearts.'},
+  {n:'Folk Hero',s:'PHB',sk:'Animal Handling, Survival',lg:'None',eq:"Artisan's tools, shovel, iron pot, common clothes, 10 gp",ft:'Rustic Hospitality',d:'You come from humble origins but are destined for more. The people of your home village regard you as their champion.'},
+  {n:'Guild Artisan',s:'PHB',sk:'Insight, Persuasion',lg:'One of choice',eq:"Artisan's tools, guild letter, traveler's clothes, 15 gp",ft:'Guild Membership',d:'You are a member of an artisan guild, skilled in a particular field and closely associated with other artisans and merchants.'},
+  {n:'Hermit',s:'PHB',sk:'Medicine, Religion',lg:'One of choice',eq:'Scroll case, winter blanket, common clothes, herbalism kit, 5 gp',ft:'Discovery',d:'You lived in seclusion for a formative part of your life, perhaps searching for spiritual enlightenment or shunned by society.'},
+  {n:'Noble',s:'PHB',sk:'History, Persuasion',lg:'One of choice',eq:'Fine clothes, signet ring, scroll of pedigree, 25 gp',ft:'Position of Privilege',d:'You carry a noble title and your family owns land, collects taxes, and wields significant social power.'},
+  {n:'Outlander',s:'PHB',sk:'Athletics, Survival',lg:'One of choice',eq:"Staff, hunting trap, trophy, traveler's clothes, 10 gp",ft:'Wanderer',d:'You grew up in the wilds, far from civilization. The wilderness is in your blood and you have an excellent memory for maps and geography.'},
+  {n:'Sage',s:'PHB',sk:'Arcana, History',lg:'Two of choice',eq:'Ink, quill, small knife, letter, common clothes, 10 gp',ft:'Researcher',d:'You spent years learning the lore of the multiverse, scouring manuscripts and studying scrolls.'},
+  {n:'Sailor',s:'PHB',sk:'Athletics, Perception',lg:'None',eq:'Belaying pin, 50 ft. silk rope, lucky charm, common clothes, 10 gp',ft:"Ship's Passage",d:'You sailed on a seagoing vessel for years as part of a navy, merchant fleet, or pirate crew.'},
+  {n:'Soldier',s:'PHB',sk:'Athletics, Intimidation',lg:'None',eq:'Insignia of rank, trophy, bone dice, common clothes, 10 gp',ft:'Military Rank',d:'War has been your life. You trained as a youth in weapons and armor and learned survival techniques on the battlefield.'},
+  {n:'Urchin',s:'PHB',sk:'Sleight of Hand, Stealth',lg:'None',eq:'Small knife, city map, pet mouse, parent token, common clothes, 10 gp',ft:'City Secrets',d:'You grew up on the streets alone, orphaned, and poor. You learned to provide for yourself through cunning and quick hands.'},
+  {n:'City Watch',s:"Xanathar's (SCAG)",sk:'Athletics, Insight',lg:'Two of choice',eq:'Uniform, horn, manacles, 10 gp',ft:"Watcher's Eye",d:'You served the community as a member of the city guard, protecting the common folk from crime and danger.'},
+  {n:'Clan Crafter',s:"Xanathar's (SCAG)",sk:'History, Insight',lg:'One of choice',eq:"Artisan's tools, maker's mark chisel, traveler's clothes, 5 gp + 10 gp gem",ft:'Respect of the Stout Folk',d:'You are one of the skilled crafters of a dwarven clan, producing quality goods for trade.'},
+  {n:'Cloistered Scholar',s:"Xanathar's (SCAG)",sk:'History + Arcana/Nature/Religion',lg:'Two of choice',eq:"Scholar's robes, writing supplies, borrowed book, 10 gp",ft:'Library Access',d:'You were raised in or spent significant time within a great library or institution of learning.'},
+  {n:'Courtier',s:"Xanathar's (SCAG)",sk:'Insight, Persuasion',lg:'Two of choice',eq:'Fine clothes, 5 gp',ft:'Court Functionary',d:'Your knowledge of bureaucracies lets you gain access to records and inner workings of any court or government.'},
+  {n:'Far Traveler',s:"Xanathar's (SCAG)",sk:'Insight, Perception',lg:'One of choice',eq:"Traveler's clothes, instrument or gaming set, poorly wrought maps, 5 gp foreign",ft:'All Eyes on You',d:'Almost everyone you meet has never traveled far from home. You are an exotic curiosity to most people.'},
+  {n:'Inheritor',s:"Xanathar's (SCAG)",sk:'Survival + Arcana/History/Religion',lg:'One of choice',eq:"Inheritance item, traveler's clothes, 15 gp",ft:'Inheritance',d:'You inherited an item of special significance from a mentor, ancestor, or important figure in your life.'},
+  {n:'Urban Bounty Hunter',s:"Xanathar's (SCAG)",sk:'Two of Deception/Insight/Persuasion/Stealth',lg:'None',eq:'Appropriate clothing, 20 gp',ft:'Ear to the Ground',d:'You make your living tracking down wanted individuals within the labyrinthine streets and hidden corners of cities.'},
+],
+
+// CONDITIONS (expanded)
+conditions:[
+  {n:'Blinded',icon:'🚫',d:'A blinded creature can\'t see and automatically fails any ability check that requires sight.',fx:['Attack rolls against the creature have advantage','The creature\'s attack rolls have disadvantage','The creature can\'t make opportunity attacks based on sight','Spells requiring line of sight can\'t target the creature'],note:'Common sources: blindness/deafness, color spray, darkness (for non-darkvision creatures), fog cloud, stinking cloud.'},
+  {n:'Charmed',icon:'💖',d:'A charmed creature can\'t attack the charmer or target them with harmful abilities or magical effects.',fx:['The charmer has advantage on ability checks to interact socially with the creature','The creature may still be able to attack the charmer\'s allies','Multiple charm effects can apply simultaneously from different sources'],note:'Common sources: charm person, hypnotic pattern, vampire charm, succubus, fey creatures. Many creatures have advantage on saves against being charmed.'},
+  {n:'Deafened',icon:'🔇',d:'A deafened creature can\'t hear and automatically fails any ability check that requires hearing.',fx:['The creature can\'t hear verbal components of spells','Thunder damage still affects deafened creatures','The creature can\'t be affected by abilities requiring it to hear (e.g., Command spell)'],note:'Common sources: blindness/deafness, thunderwave (temporary), being inside a silence spell area.'},
+  {n:'Exhaustion',icon:'😰',d:'Exhaustion is measured in six levels. Effects are cumulative. An effect can give a creature one or more levels.',fx:['Level 1: Disadvantage on ability checks','Level 2: Speed halved','Level 3: Disadvantage on attack rolls and saving throws','Level 4: Hit point maximum halved','Level 5: Speed reduced to 0','Level 6: Death'],note:'Finishing a long rest reduces exhaustion by 1 level (if food/water available). Greater restoration removes 1 level. Common sources: forced marches, extreme environments, berserker frenzy, sickening radiance.'},
+  {n:'Frightened',icon:'😱',d:'A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.',fx:['The creature can\'t willingly move closer to the source of fear','If the creature can no longer see the source, it still has the condition but no longer suffers the effects','Multiple frighten effects can stack from different sources'],note:'Common sources: cause fear, fear, wrathful smite, dragon frightful presence, turn undead, intimidation abilities.'},
+  {n:'Grappled',icon:'🤼',d:'A grappled creature\'s speed becomes 0 and it can\'t benefit from any bonus to its speed.',fx:['The condition ends if the grappler is incapacitated','The condition ends if an effect removes the grappled creature from the grappler\'s reach','Grappled creatures can still attack, cast spells, and take other actions normally','Use Athletics (Str) vs. Athletics or Acrobatics to escape'],note:'Grappling requires a free hand. Moving a grappled creature costs double movement. You can drag or carry a grappled creature with you.'},
+  {n:'Incapacitated',icon:'💫',d:'An incapacitated creature can\'t take actions or reactions.',fx:['The creature can still move (unless another condition prevents it)','Concentration on spells is automatically broken','This is often a component of other conditions (stunned, unconscious, paralyzed)'],note:'Common sources: this condition is usually applied through other conditions rather than directly. Hypnotic pattern causes charmed + incapacitated.'},
+  {n:'Invisible',icon:'👻',d:'An invisible creature is impossible to see without magic or a special sense. The creature is heavily obscured for purposes of hiding.',fx:['Attack rolls against the creature have disadvantage','The creature\'s attack rolls have advantage','The creature can still be detected by noise, tracks, smell, etc.','Attacking reveals the creature\'s general location'],note:'Common sources: invisibility, greater invisibility, cloak of shadows, potion of invisibility. See invisibility, truesight, and blindsight counter this.'},
+  {n:'Paralyzed',icon:'⚡',d:'A paralyzed creature is incapacitated and can\'t move or speak.',fx:['The creature automatically fails Strength and Dexterity saving throws','Attack rolls against the creature have advantage','Any attack that hits from within 5 feet is a critical hit','The creature can\'t take reactions'],note:'Common sources: hold person, hold monster, ghoul touch, some poisons. This is one of the most devastating conditions due to auto-crit hits.'},
+  {n:'Petrified',icon:'🗿',d:'A petrified creature is transformed, along with nonmagical objects it carries, into a solid inanimate substance (usually stone).',fx:['Weight increases by a factor of ten','The creature is incapacitated, can\'t move or speak, and is unaware of surroundings','Attack rolls against it have advantage','It automatically fails Strength and Dexterity saves','Resistance to all damage','Immune to poison and disease (existing poison/disease suspended)'],note:'Common sources: flesh to stone, basilisk gaze, medusa gaze, cockatrice touch. Greater restoration or equivalent magic can reverse it.'},
+  {n:'Poisoned',icon:'☠️',d:'A poisoned creature has disadvantage on attack rolls and ability checks.',fx:['This does NOT impose disadvantage on saving throws','The duration varies widely by source','Some poisons inflict additional damage or effects beyond this condition','Dwarves, Yuan-ti, and some other races have advantage on saves vs. poison'],note:'Common sources: poisonous creatures, poisoned food/drink, cloudkill, stinking cloud, ray of sickness. Lesser restoration cures this.'},
+  {n:'Prone',icon:'⬇️',d:'A prone creature\'s only movement option is to crawl (every foot costs an extra foot of movement) unless it stands up.',fx:['Standing up costs half your total movement speed','The creature has disadvantage on attack rolls','An attack roll against the creature has advantage if the attacker is within 5 feet','An attack roll against the creature has disadvantage if the attacker is farther than 5 feet away'],note:'Being knocked prone while flying causes you to fall (unless you can hover). Common sources: grease, thunderwave, Shove action, tripping attack.'},
+  {n:'Restrained',icon:'⛓️',d:'A restrained creature\'s speed becomes 0 and it can\'t benefit from any bonus to speed.',fx:['Attack rolls against the creature have advantage','The creature\'s attack rolls have disadvantage','The creature has disadvantage on Dexterity saving throws','The creature can still cast spells (if able)'],note:'Common sources: entangle, web, grappler feat, net, evard\'s black tentacles, various monster abilities.'},
+  {n:'Stunned',icon:'💥',d:'A stunned creature is incapacitated, can\'t move, and can speak only falteringly.',fx:['The creature automatically fails Strength and Dexterity saving throws','Attack rolls against the creature have advantage','The creature drops whatever it\'s holding (DM discretion)','This is extremely powerful as it effectively skips the creature\'s turn'],note:'Common sources: stunning strike (monk), power word stun, divine word, contagion, some monster abilities. Usually lasts only until end of the creature\'s next turn.'},
+  {n:'Unconscious',icon:'😵',d:'An unconscious creature is incapacitated, can\'t move or speak, and is unaware of its surroundings.',fx:['The creature drops whatever it\'s holding and falls prone','The creature automatically fails Strength and Dexterity saving throws','Attack rolls against the creature have advantage','Any attack from within 5 feet that hits is a critical hit','The creature can\'t take reactions'],note:'Common sources: dropping to 0 hit points, sleep spell, some poisons, being knocked out (choosing nonlethal damage). Falling unconscious at 0 HP triggers death saving throws.'},
+],
+
+// SPELLS - extensive
+spells:[
+  // CANTRIPS
+  {n:'Acid Splash',l:0,sc:'Conjuration',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'Hurl acid at one or two creatures within 5 ft. of each other. Dex save or 1d6 acid damage. Scales at 5th (2d6), 11th (3d6), 17th (4d6).'},
+  {n:'Blade Ward',l:0,sc:'Abjuration',t:'1 action',r:'Self',c:'V, S',du:'1 round',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Gain resistance to bludgeoning, piercing, and slashing from weapon attacks until end of next turn.'},
+  {n:'Booming Blade',l:0,sc:'Evocation',t:'1 action',r:'Self (5 ft.)',c:'S, M',du:'1 round',cl:['Sorcerer','Warlock','Wizard'],s:"Tasha's",d:'Make a melee weapon attack. On hit, if target willingly moves before your next turn, it takes 1d8 thunder damage. Scales.'},
+  {n:'Chill Touch',l:0,sc:'Necromancy',t:'1 action',r:'120 ft.',c:'V, S',du:'1 round',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'Ghostly hand strikes. 1d8 necrotic, target can\'t regain HP. Undead have disadvantage on attacks against you. Scales.'},
+  {n:'Dancing Lights',l:0,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Bard','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Create up to four torch-sized lights or one vaguely humanoid form of light.'},
+  {n:'Druidcraft',l:0,sc:'Transmutation',t:'1 action',r:'30 ft.',c:'V, S',du:'Instantaneous',cl:['Druid'],s:'PHB',d:'Predict weather, bloom a flower, create sensory effect, or light/snuff a small fire.'},
+  {n:'Eldritch Blast',l:0,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Warlock'],s:'PHB',d:'1d10 force damage beam. Additional beams at 5th (2), 11th (3), 17th (4). Each beam can target separately.'},
+  {n:'Fire Bolt',l:0,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'1d10 fire damage. Flammable unattended objects ignite. Scales at 5th (2d10), 11th (3d10), 17th (4d10).'},
+  {n:'Green-Flame Blade',l:0,sc:'Evocation',t:'1 action',r:'Self (5 ft.)',c:'S, M',du:'Instantaneous',cl:['Sorcerer','Warlock','Wizard'],s:"Tasha's",d:'Make melee attack. On hit, fire leaps to creature within 5 ft. dealing spellcasting mod fire damage. Scales.'},
+  {n:'Guidance',l:0,sc:'Divination',t:'1 action',r:'Touch',c:'V, S',du:'Conc., 1 min.',cl:['Cleric','Druid','Artificer'],s:'PHB',d:'Target can add 1d4 to one ability check before spell ends.'},
+  {n:'Light',l:0,sc:'Evocation',t:'1 action',r:'Touch',c:'V, M',du:'1 hour',cl:['Bard','Cleric','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Object sheds bright light 20 ft., dim 20 ft. more. Hostile creature: Dex save to avoid.'},
+  {n:'Mage Hand',l:0,sc:'Conjuration',t:'1 action',r:'30 ft.',c:'V, S',du:'1 minute',cl:['Bard','Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'Spectral hand manipulates objects, opens doors, stows items. Can\'t attack or use magic items. Carries up to 10 lbs.'},
+  {n:'Mending',l:0,sc:'Transmutation',t:'1 minute',r:'Touch',c:'V, S, M',du:'Instantaneous',cl:['Bard','Cleric','Druid','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Repair a single break or tear up to 1 ft. in any dimension in an object you touch.'},
+  {n:'Message',l:0,sc:'Transmutation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'1 round',cl:['Bard','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Whisper to a target. Only they hear it and can whisper back. Works around corners but not through solid barriers.'},
+  {n:'Minor Illusion',l:0,sc:'Illusion',t:'1 action',r:'30 ft.',c:'S, M',du:'1 minute',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Create a sound or 5 ft. cube image. Investigation check to identify as illusion.'},
+  {n:'Poison Spray',l:0,sc:'Conjuration',t:'1 action',r:'10 ft.',c:'V, S',du:'Instantaneous',cl:['Druid','Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'Con save or 1d12 poison damage. Scales.'},
+  {n:'Prestidigitation',l:0,sc:'Transmutation',t:'1 action',r:'10 ft.',c:'V, S',du:'Up to 1 hour',cl:['Bard','Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'Minor magical trick: sensory effect, light/snuff candle, clean/soil object, chill/warm/flavor, mark, or trinket.'},
+  {n:'Produce Flame',l:0,sc:'Conjuration',t:'1 action',r:'Self',c:'V, S',du:'10 min.',cl:['Druid'],s:'PHB',d:'Flickering flame in hand sheds 10 ft. bright light. Hurl for 1d8 fire damage. Scales.'},
+  {n:'Ray of Frost',l:0,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'1d8 cold damage and -10 ft. speed until next turn. Scales.'},
+  {n:'Resistance',l:0,sc:'Abjuration',t:'1 action',r:'Touch',c:'V, S, M',du:'Conc., 1 min.',cl:['Cleric','Druid','Artificer'],s:'PHB',d:'Target adds 1d4 to one saving throw before spell ends.'},
+  {n:'Sacred Flame',l:0,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Cleric'],s:'PHB',d:'Dex save or 1d8 radiant damage. No benefit from cover. Scales.'},
+  {n:'Shillelagh',l:0,sc:'Transmutation',t:'1 bonus action',r:'Touch',c:'V, S, M',du:'1 minute',cl:['Druid'],s:'PHB',d:'Club/quarterstaff becomes magical, use spellcasting mod, damage die becomes d8.'},
+  {n:'Spare the Dying',l:0,sc:'Necromancy',t:'1 action',r:'Touch',c:'V, S',du:'Instantaneous',cl:['Cleric','Artificer'],s:'PHB',d:'Stabilize a creature at 0 HP.'},
+  {n:'Thaumaturgy',l:0,sc:'Transmutation',t:'1 action',r:'30 ft.',c:'V',du:'Up to 1 min.',cl:['Cleric'],s:'PHB',d:'Manifest a minor wonder: booming voice, tremors, door slam, eye change, etc.'},
+  {n:'Thorn Whip',l:0,sc:'Transmutation',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Instantaneous',cl:['Druid','Artificer'],s:'PHB',d:'1d6 piercing + pull Large or smaller creature 10 ft. closer. Scales.'},
+  {n:'Toll the Dead',l:0,sc:'Necromancy',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Cleric','Warlock','Wizard'],s:"Xanathar's",d:'Wis save or 1d8 necrotic (1d12 if missing HP). Scales.'},
+  {n:'True Strike',l:0,sc:'Divination',t:'1 action',r:'30 ft.',c:'S',du:'Conc., 1 round',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Advantage on first attack roll against target on your next turn.'},
+  {n:'Vicious Mockery',l:0,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V',du:'Instantaneous',cl:['Bard'],s:'PHB',d:'Wis save or 1d4 psychic + disadvantage on next attack. Scales.'},
+  {n:'Word of Radiance',l:0,sc:'Evocation',t:'1 action',r:'5 ft.',c:'V, M',du:'Instantaneous',cl:['Cleric'],s:"Xanathar's",d:'Con save or 1d6 radiant to each creature of your choice within 5 ft. Scales.'},
+
+  // 1ST LEVEL
+  {n:'Absorb Elements',l:1,sc:'Abjuration',t:'1 reaction',r:'Self',c:'S',du:'1 round',cl:['Druid','Ranger','Sorcerer','Wizard','Artificer'],s:"Xanathar's",d:'Gain resistance to triggering damage type. Next melee attack deals +1d6 of that type. Upcast: +1d6/level.'},
+  {n:'Alarm',l:1,sc:'Abjuration',t:'1 min. (ritual)',r:'30 ft.',c:'V, S, M',du:'8 hours',cl:['Ranger','Wizard','Artificer'],s:'PHB',d:'Ward a 20 ft. cube. Mental or audible alarm when Tiny+ creature enters without password.'},
+  {n:'Armor of Agathys',l:1,sc:'Abjuration',t:'1 action',r:'Self',c:'V, S, M',du:'1 hour',cl:['Warlock'],s:'PHB',d:'5 temp HP. While you have them, melee attackers take 5 cold damage. +5/+5 per upcast level.'},
+  {n:'Bane',l:1,sc:'Enchantment',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Bard','Cleric'],s:'PHB',d:'Up to 3 creatures: Cha save or subtract 1d4 from attacks and saves.'},
+  {n:'Bless',l:1,sc:'Enchantment',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Cleric','Paladin'],s:'PHB',d:'Up to 3 creatures add 1d4 to attacks and saves.'},
+  {n:'Burning Hands',l:1,sc:'Evocation',t:'1 action',r:'Self (15 ft. cone)',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'3d6 fire in 15 ft. cone. Dex save for half.'},
+  {n:'Charm Person',l:1,sc:'Enchantment',t:'1 action',r:'30 ft.',c:'V, S',du:'1 hour',cl:['Bard','Druid','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Wis save (adv. if fighting). Charmed regards you as friendly acquaintance.'},
+  {n:'Command',l:1,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V',du:'1 round',cl:['Cleric','Paladin'],s:'PHB',d:'One-word command. Wis save or obey: Approach, Drop, Flee, Grovel, Halt.'},
+  {n:'Cure Wounds',l:1,sc:'Evocation',t:'1 action',r:'Touch',c:'V, S',du:'Instantaneous',cl:['Bard','Cleric','Druid','Paladin','Ranger','Artificer'],s:'PHB',d:'Heal 1d8 + spellcasting mod. +1d8 per upcast level.'},
+  {n:'Detect Magic',l:1,sc:'Divination',t:'1 action (ritual)',r:'Self',c:'V, S',du:'Conc., 10 min.',cl:['Bard','Cleric','Druid','Paladin','Ranger','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Sense magic within 30 ft. See auras and learn schools.'},
+  {n:'Disguise Self',l:1,sc:'Illusion',t:'1 action',r:'Self',c:'V, S',du:'1 hour',cl:['Bard','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Change appearance including height (+/- 1 ft.), clothing, armor, weapons.'},
+  {n:'Dissonant Whispers',l:1,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V',du:'Instantaneous',cl:['Bard'],s:'PHB',d:'Wis save or 3d6 psychic + must use reaction to flee. Half damage on save, no flee.'},
+  {n:'Divine Favor',l:1,sc:'Evocation',t:'1 bonus action',r:'Self',c:'V, S',du:'Conc., 1 min.',cl:['Paladin'],s:'PHB',d:'Weapon attacks deal +1d4 radiant damage.'},
+  {n:'Entangle',l:1,sc:'Conjuration',t:'1 action',r:'90 ft.',c:'V, S',du:'Conc., 1 min.',cl:['Druid','Ranger'],s:'PHB',d:'20 ft. square of vines. Str save or restrained. Difficult terrain.'},
+  {n:'Faerie Fire',l:1,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V',du:'Conc., 1 min.',cl:['Bard','Druid'],s:'PHB',d:'Dex save or outlined in light. Attacks against outlined creatures have advantage.'},
+  {n:'False Life',l:1,sc:'Necromancy',t:'1 action',r:'Self',c:'V, S, M',du:'1 hour',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'Gain 1d4 + 4 temp HP. +5 per upcast level.'},
+  {n:'Feather Fall',l:1,sc:'Transmutation',t:'1 reaction',r:'60 ft.',c:'V, M',du:'1 minute',cl:['Bard','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Up to 5 falling creatures descend at 60 ft./round and take no falling damage.'},
+  {n:'Find Familiar',l:1,sc:'Conjuration',t:'1 hour (ritual)',r:'10 ft.',c:'V, S, M',du:'Instantaneous',cl:['Wizard'],s:'PHB',d:'Summon spirit as bat, cat, owl, etc. Telepathic link, see through senses. Can deliver touch spells.'},
+  {n:'Fog Cloud',l:1,sc:'Conjuration',t:'1 action',r:'120 ft.',c:'V, S',du:'Conc., 1 hour',cl:['Druid','Ranger','Sorcerer','Wizard'],s:'PHB',d:'20 ft. radius heavily obscured fog. +20 ft. per upcast level.'},
+  {n:'Goodberry',l:1,sc:'Transmutation',t:'1 action',r:'Touch',c:'V, S, M',du:'Instantaneous',cl:['Druid','Ranger'],s:'PHB',d:'Create 10 berries. Eating one restores 1 HP and nourishes for a day.'},
+  {n:'Guiding Bolt',l:1,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S',du:'1 round',cl:['Cleric'],s:'PHB',d:'4d6 radiant. Next attack against target has advantage. +1d6 per upcast.'},
+  {n:'Healing Word',l:1,sc:'Evocation',t:'1 bonus action',r:'60 ft.',c:'V',du:'Instantaneous',cl:['Bard','Cleric','Druid'],s:'PHB',d:'Heal 1d4 + spellcasting mod. +1d4 per upcast level.'},
+  {n:'Hellish Rebuke',l:1,sc:'Evocation',t:'1 reaction',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Warlock'],s:'PHB',d:'When damaged, attacker makes Dex save: 2d10 fire, half on save.'},
+  {n:'Hex',l:1,sc:'Enchantment',t:'1 bonus action',r:'90 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Warlock'],s:'PHB',d:'+1d6 necrotic on hits. Choose ability for disadvantage on checks. Transfer on kill.'},
+  {n:"Hunter's Mark",l:1,sc:'Divination',t:'1 bonus action',r:'90 ft.',c:'V',du:'Conc., 1 hour',cl:['Ranger'],s:'PHB',d:'+1d6 damage on hits. Advantage on Perception/Survival to find target. Transfer on kill.'},
+  {n:'Identify',l:1,sc:'Divination',t:'1 min. (ritual)',r:'Touch',c:'V, S, M',du:'Instantaneous',cl:['Bard','Wizard','Artificer'],s:'PHB',d:'Learn properties of a magic item or spells affecting a creature/object.'},
+  {n:'Inflict Wounds',l:1,sc:'Necromancy',t:'1 action',r:'Touch',c:'V, S',du:'Instantaneous',cl:['Cleric'],s:'PHB',d:'Melee spell attack: 3d10 necrotic. +1d10 per upcast.'},
+  {n:'Mage Armor',l:1,sc:'Abjuration',t:'1 action',r:'Touch',c:'V, S, M',du:'8 hours',cl:['Sorcerer','Wizard'],s:'PHB',d:'AC becomes 13 + Dex mod. Ends if target dons armor.'},
+  {n:'Magic Missile',l:1,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'Three darts of 1d4+1 force each. Auto-hit. +1 dart per upcast level.'},
+  {n:'Shield',l:1,sc:'Abjuration',t:'1 reaction',r:'Self',c:'V, S',du:'1 round',cl:['Sorcerer','Wizard'],s:'PHB',d:'+5 AC until start of next turn. Blocks magic missile.'},
+  {n:'Shield of Faith',l:1,sc:'Abjuration',t:'1 bonus action',r:'60 ft.',c:'V, S, M',du:'Conc., 10 min.',cl:['Cleric','Paladin'],s:'PHB',d:'+2 AC for the duration.'},
+  {n:'Sleep',l:1,sc:'Enchantment',t:'1 action',r:'90 ft.',c:'V, S, M',du:'1 minute',cl:['Bard','Sorcerer','Wizard'],s:'PHB',d:'Roll 5d8. Creatures in 20 ft. radius fall asleep starting from lowest HP. +2d8 per upcast.'},
+  {n:'Thunderwave',l:1,sc:'Evocation',t:'1 action',r:'Self (15 ft. cube)',c:'V, S',du:'Instantaneous',cl:['Bard','Druid','Sorcerer','Wizard'],s:'PHB',d:'2d8 thunder + push 10 ft. Con save for half, no push. Audible 300 ft.'},
+  {n:'Witch Bolt',l:1,sc:'Evocation',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'1d12 lightning. Each turn use action for automatic 1d12. Ends if out of range.'},
+
+  // 2ND LEVEL
+  {n:'Aid',l:2,sc:'Abjuration',t:'1 action',r:'30 ft.',c:'V, S, M',du:'8 hours',cl:['Cleric','Paladin','Artificer'],s:'PHB',d:'3 creatures: +5 max HP and current HP. +5 per upcast.'},
+  {n:'Blur',l:2,sc:'Illusion',t:'1 action',r:'Self',c:'V',du:'Conc., 1 min.',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'Attackers have disadvantage. Doesn\'t work vs. truesight or non-sight.'},
+  {n:'Darkness',l:2,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, M',du:'Conc., 10 min.',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'15 ft. radius magical darkness. Darkvision can\'t see through it. Nonmagical light can\'t illuminate it.'},
+  {n:'Enhance Ability',l:2,sc:'Transmutation',t:'1 action',r:'Touch',c:'V, S, M',du:'Conc., 1 hour',cl:['Bard','Cleric','Druid','Ranger','Sorcerer','Wizard','Artificer'],s:'PHB',d:"Choose: Bear's Endurance, Bull's Strength, Cat's Grace, Eagle's Splendor, Fox's Cunning, Owl's Wisdom. Advantage on that ability's checks."},
+  {n:'Flaming Sphere',l:2,sc:'Conjuration',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Druid','Wizard'],s:'PHB',d:'5 ft. fire sphere. Creatures ending within 5 ft.: Dex save or 2d6 fire. Move 30 ft. as bonus action.'},
+  {n:'Heat Metal',l:2,sc:'Transmutation',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Bard','Druid','Artificer'],s:'PHB',d:'Metal object glows. Creature in contact: 2d8 fire. If held: Con save or drop. Repeat damage as bonus action.'},
+  {n:'Hold Person',l:2,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Bard','Cleric','Druid','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Humanoid: Wis save or paralyzed. Repeat save each turn. +1 target per upcast.'},
+  {n:'Invisibility',l:2,sc:'Illusion',t:'1 action',r:'Touch',c:'V, S, M',du:'Conc., 1 hour',cl:['Bard','Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'Target invisible. Ends on attack or spell cast. +1 target per upcast.'},
+  {n:'Lesser Restoration',l:2,sc:'Abjuration',t:'1 action',r:'Touch',c:'V, S',du:'Instantaneous',cl:['Bard','Cleric','Druid','Paladin','Ranger','Artificer'],s:'PHB',d:'End one disease or condition: blinded, deafened, paralyzed, or poisoned.'},
+  {n:'Levitate',l:2,sc:'Transmutation',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 10 min.',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'Rise 20 ft. and hover. Unwilling: Con save. Move up/down 20 ft. per turn.'},
+  {n:'Mirror Image',l:2,sc:'Illusion',t:'1 action',r:'Self',c:'V, S',du:'1 minute',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'3 duplicates. Attacks may hit a duplicate instead (AC 10 + Dex). Destroyed when hit.'},
+  {n:'Misty Step',l:2,sc:'Conjuration',t:'1 bonus action',r:'Self',c:'V',du:'Instantaneous',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'Teleport up to 30 ft. to visible unoccupied space.'},
+  {n:'Moonbeam',l:2,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Druid'],s:'PHB',d:'5 ft. radius, 40 ft. high beam. Con save or 2d10 radiant. Shapechangers have disadvantage.'},
+  {n:'Pass without Trace',l:2,sc:'Abjuration',t:'1 action',r:'Self',c:'V, S, M',du:'Conc., 1 hour',cl:['Druid','Ranger'],s:'PHB',d:'+10 Stealth to you and creatures within 30 ft. Can\'t be tracked nonmagically.'},
+  {n:'Scorching Ray',l:2,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'3 rays, 2d6 fire each. +1 ray per upcast.'},
+  {n:'Shadow Blade',l:2,sc:'Illusion',t:'1 bonus action',r:'Self',c:'V, S',du:'Conc., 1 min.',cl:['Sorcerer','Warlock','Wizard'],s:"Xanathar's",d:'Conjure shadow sword: 2d8 psychic, finesse, light, thrown. Advantage in dim light/darkness.'},
+  {n:'Shatter',l:2,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'10 ft. radius: 3d8 thunder. Con save for half. Inorganic creatures have disadvantage.'},
+  {n:'Silence',l:2,sc:'Illusion',t:'1 action (ritual)',r:'120 ft.',c:'V, S',du:'Conc., 10 min.',cl:['Bard','Cleric','Ranger'],s:'PHB',d:'20 ft. sphere: no sound. Thunder immunity. Deafened. No verbal component spells.'},
+  {n:'Spiritual Weapon',l:2,sc:'Evocation',t:'1 bonus action',r:'60 ft.',c:'V, S',du:'1 minute',cl:['Cleric'],s:'PHB',d:'Floating weapon: 1d8 + mod force. Bonus action: move 20 ft. and attack. +1d8 per 2 upcast levels.'},
+  {n:'Suggestion',l:2,sc:'Enchantment',t:'1 action',r:'30 ft.',c:'V, M',du:'Conc., 8 hours',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Suggest activity in 1-2 sentences. Wis save or follows suggestion.'},
+  {n:'Web',l:2,sc:'Conjuration',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'20 ft. cube of webs. Dex save or restrained. Difficult terrain. Flammable.'},
+
+  // 3RD LEVEL
+  {n:'Counterspell',l:3,sc:'Abjuration',t:'1 reaction',r:'60 ft.',c:'S',du:'Instantaneous',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'Counter a spell of 3rd or lower automatically. Higher: ability check DC 10+level. Upcast to auto-counter.'},
+  {n:'Dispel Magic',l:3,sc:'Abjuration',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Bard','Cleric','Druid','Paladin','Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'End a spell of 3rd or lower. Higher: ability check DC 10+level.'},
+  {n:'Fireball',l:3,sc:'Evocation',t:'1 action',r:'150 ft.',c:'V, S, M',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'20 ft. radius: 8d6 fire. Dex save for half. Ignites flammable objects. +1d6 per upcast.'},
+  {n:'Fly',l:3,sc:'Transmutation',t:'1 action',r:'Touch',c:'V, S, M',du:'Conc., 10 min.',cl:['Sorcerer','Warlock','Wizard','Artificer'],s:'PHB',d:'60 ft. fly speed. Falls if spell ends while aloft.'},
+  {n:'Haste',l:3,sc:'Transmutation',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Sorcerer','Wizard','Artificer'],s:'PHB',d:'Double speed, +2 AC, advantage on Dex saves, extra action (1 attack, Dash, Disengage, Hide, Use Object). Lethargy when spell ends.'},
+  {n:'Hypnotic Pattern',l:3,sc:'Illusion',t:'1 action',r:'120 ft.',c:'S, M',du:'Conc., 1 min.',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'30 ft. cube: Wis save or charmed + incapacitated + speed 0. Ends on damage or shake.'},
+  {n:'Lightning Bolt',l:3,sc:'Evocation',t:'1 action',r:'Self (100 ft. line)',c:'V, S, M',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'100x5 ft. line: 8d6 lightning. Dex save for half.'},
+  {n:'Revivify',l:3,sc:'Necromancy',t:'1 action',r:'Touch',c:'V, S, M (300 gp)',du:'Instantaneous',cl:['Cleric','Paladin','Artificer'],s:'PHB',d:'Creature dead within 1 minute returns with 1 HP. Can\'t restore missing parts.'},
+  {n:'Spirit Guardians',l:3,sc:'Conjuration',t:'1 action',r:'Self (15 ft.)',c:'V, S, M',du:'Conc., 10 min.',cl:['Cleric'],s:'PHB',d:'Spirits in 15 ft. Half speed for enemies. 3d8 radiant/necrotic on Wis save (half on save).'},
+  {n:'Spirit Shroud',l:3,sc:'Necromancy',t:'1 bonus action',r:'Self',c:'V, S',du:'Conc., 1 min.',cl:['Cleric','Paladin','Warlock','Wizard'],s:"Tasha's",d:'Attacks deal +1d8 radiant/necrotic/cold to creatures within 10 ft. Those creatures can\'t regain HP.'},
+
+  // 4TH LEVEL
+  {n:'Banishment',l:4,sc:'Abjuration',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Cleric','Paladin','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Cha save or banished. Native: harmless demiplane. Extraplanar: stays home if you concentrate the full duration.'},
+  {n:'Dimension Door',l:4,sc:'Conjuration',t:'1 action',r:'500 ft.',c:'V',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Teleport to any spot within range. Bring one willing creature your size or smaller.'},
+  {n:'Greater Invisibility',l:4,sc:'Illusion',t:'1 action',r:'Touch',c:'V, S',du:'Conc., 1 min.',cl:['Bard','Sorcerer','Wizard'],s:'PHB',d:'Invisible for duration. Doesn\'t end on attack or spellcasting.'},
+  {n:'Polymorph',l:4,sc:'Transmutation',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Bard','Druid','Sorcerer','Wizard'],s:'PHB',d:'Transform creature into beast. Unwilling: Wis save. New stats replace old. Reverts at 0 HP.'},
+  {n:'Wall of Fire',l:4,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Druid','Sorcerer','Wizard'],s:'PHB',d:'60 ft. long, 20 ft. high wall. One side: 5d8 fire to creatures within 10 ft. or passing through.'},
+  {n:'Summon Aberration',l:4,sc:'Conjuration',t:'1 action',r:'90 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Warlock','Wizard'],s:"Tasha's",d:'Summon aberrant spirit: Beholderkin (eye ray), Slaad (claw+regen), Star Spawn (psychic aura).'},
+
+  // 5TH LEVEL
+  {n:'Animate Objects',l:5,sc:'Transmutation',t:'1 action',r:'120 ft.',c:'V, S',du:'Conc., 1 min.',cl:['Bard','Sorcerer','Wizard','Artificer'],s:'PHB',d:'Animate up to 10 nonmagical objects. They attack on your bonus action command.'},
+  {n:'Cone of Cold',l:5,sc:'Evocation',t:'1 action',r:'Self (60 ft. cone)',c:'V, S, M',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'8d8 cold. Con save for half. Killed creatures become frozen statues.'},
+  {n:'Greater Restoration',l:5,sc:'Abjuration',t:'1 action',r:'Touch',c:'V, S, M (100 gp)',du:'Instantaneous',cl:['Bard','Cleric','Druid','Artificer'],s:'PHB',d:'End one: exhaustion level, charm/petrify, curse, ability score reduction, or HP max reduction.'},
+  {n:'Hold Monster',l:5,sc:'Enchantment',t:'1 action',r:'90 ft.',c:'V, S, M',du:'Conc., 1 min.',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Wis save or paralyzed. Repeat save each turn.'},
+  {n:'Mass Cure Wounds',l:5,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Bard','Cleric','Druid'],s:'PHB',d:'Up to 6 creatures in 30 ft. radius: heal 3d8 + mod.'},
+  {n:'Raise Dead',l:5,sc:'Necromancy',t:'1 hour',r:'Touch',c:'V, S, M (500 gp)',du:'Instantaneous',cl:['Bard','Cleric','Paladin'],s:'PHB',d:'Revive creature dead up to 10 days. Returns with 1 HP. -4 penalty to d20 rolls for 4 long rests.'},
+  {n:'Steel Wind Strike',l:5,sc:'Conjuration',t:'1 action',r:'30 ft.',c:'S, M',du:'Instantaneous',cl:['Ranger','Wizard'],s:"Xanathar's",d:'Melee spell attack vs. up to 5 creatures: 6d10 force each. Teleport adjacent to one target.'},
+  {n:'Synaptic Static',l:5,sc:'Enchantment',t:'1 action',r:'120 ft.',c:'V, S',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:"Xanathar's",d:'20 ft. sphere: Int save or 8d6 psychic + subtract 1d6 from attacks/checks/concentration for 1 min.'},
+  {n:'Telekinesis',l:5,sc:'Transmutation',t:'1 action',r:'60 ft.',c:'V, S',du:'Conc., 10 min.',cl:['Sorcerer','Wizard'],s:'PHB',d:'Move creature (contested check) or object (up to 1000 lbs.) up to 30 ft.'},
+  {n:'Wall of Force',l:5,sc:'Evocation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'Conc., 10 min.',cl:['Wizard'],s:'PHB',d:'Invisible wall of up to ten 10x10 panels. Immune to all damage. Only disintegrate/dispel destroys it.'},
+
+  // 6TH LEVEL
+  {n:'Chain Lightning',l:6,sc:'Evocation',t:'1 action',r:'150 ft.',c:'V, S, M',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'10d8 lightning to target, arcs to 3 others within 30 ft. Dex save for half.'},
+  {n:'Disintegrate',l:6,sc:'Transmutation',t:'1 action',r:'60 ft.',c:'V, S, M',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'10d6+40 force. If reduced to 0 HP, disintegrated to dust. Dex save: no damage.'},
+  {n:'Globe of Invulnerability',l:6,sc:'Abjuration',t:'1 action',r:'Self (10 ft.)',c:'V, S, M',du:'Conc., 1 min.',cl:['Sorcerer','Wizard'],s:'PHB',d:'5th-or-lower spells from outside can\'t affect inside. Upcast to block higher.'},
+  {n:'Heal',l:6,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Cleric','Druid'],s:'PHB',d:'Restore 70 HP. Ends blindness, deafness, diseases. +10 per upcast.'},
+  {n:"Heroes' Feast",l:6,sc:'Conjuration',t:'10 min.',r:'30 ft.',c:'V, S, M (1000 gp)',du:'Instantaneous',cl:['Cleric','Druid'],s:'PHB',d:'Feast for 12: cure disease/poison, immune to poison/frightened, advantage on Wis saves, +2d10 max HP for 24 hours.'},
+  {n:'Mass Suggestion',l:6,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V, M',du:'24 hours',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Suggest activity to 12 creatures. Wis save. Duration scales with upcast.'},
+  {n:'Sunbeam',l:6,sc:'Evocation',t:'1 action',r:'Self (60 ft. line)',c:'V, S, M',du:'Conc., 1 min.',cl:['Druid','Sorcerer','Wizard'],s:'PHB',d:'60 ft. line: 6d8 radiant + blinded. Con save for half, no blind. New beam each turn. Undead/oozes disadvantage.'},
+  {n:'True Seeing',l:6,sc:'Divination',t:'1 action',r:'Touch',c:'V, S, M (25 gp)',du:'1 hour',cl:['Bard','Cleric','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Truesight 120 ft. See through illusions, shapechangers, into Ethereal Plane.'},
+
+  // 7TH LEVEL
+  {n:'Divine Word',l:7,sc:'Evocation',t:'1 bonus action',r:'30 ft.',c:'V',du:'Instantaneous',cl:['Cleric'],s:'PHB',d:'HP-based effects: 50 or less = killed, 40 = blinded+deafened+stunned, 30 = blinded+deafened, 20 = deafened. Banishes extraplanars.'},
+  {n:'Etherealness',l:7,sc:'Transmutation',t:'1 action',r:'Self',c:'V, S',du:'Up to 8 hours',cl:['Bard','Cleric','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Enter Ethereal Plane. See/hear origin plane (60 ft., gray). Move any direction through objects.'},
+  {n:'Finger of Death',l:7,sc:'Necromancy',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Warlock','Wizard'],s:'PHB',d:'7d8+30 necrotic. Con save for half. Humanoid killed rises as zombie under your control.'},
+  {n:'Forcecage',l:7,sc:'Evocation',t:'1 action',r:'100 ft.',c:'V, S, M (1500 gp)',du:'1 hour',cl:['Bard','Warlock','Wizard'],s:'PHB',d:'Invisible cage (bars) or box (solid). Teleportation requires Cha save.'},
+  {n:'Plane Shift',l:7,sc:'Conjuration',t:'1 action',r:'Touch',c:'V, S, M',du:'Instantaneous',cl:['Cleric','Druid','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Transport up to 8 willing creatures to another plane. Or attack: Cha save or banished.'},
+  {n:'Resurrection',l:7,sc:'Necromancy',t:'1 hour',r:'Touch',c:'V, S, M (1000 gp)',du:'Instantaneous',cl:['Bard','Cleric'],s:'PHB',d:'Revive creature dead up to 100 years. Returns with all HP. -4 penalty for 4 long rests.'},
+  {n:'Teleport',l:7,sc:'Conjuration',t:'1 action',r:'10 ft.',c:'V',du:'Instantaneous',cl:['Bard','Sorcerer','Wizard'],s:'PHB',d:'Transport self + 8 willing creatures. Familiarity determines accuracy.'},
+
+  // 8TH LEVEL
+  {n:'Antimagic Field',l:8,sc:'Abjuration',t:'1 action',r:'Self (10 ft.)',c:'V, S, M',du:'Conc., 1 hour',cl:['Cleric','Wizard'],s:'PHB',d:'10 ft. antimagic sphere. Spells, magic items, magical effects suppressed within.'},
+  {n:'Dominate Monster',l:8,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V, S',du:'Conc., 1 hour',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Wis save or charmed and obey telepathic commands. Repeat save on damage.'},
+  {n:'Feeblemind',l:8,sc:'Enchantment',t:'1 action',r:'150 ft.',c:'V, S, M',du:'Instantaneous',cl:['Bard','Druid','Warlock','Wizard'],s:'PHB',d:'Int save or 4d6 psychic + Int and Cha become 1. Can\'t cast spells. Save every 30 days.'},
+  {n:'Holy Aura',l:8,sc:'Abjuration',t:'1 action',r:'Self',c:'V, S, M (1000 gp)',du:'Conc., 1 min.',cl:['Cleric'],s:'PHB',d:'30 ft. aura: allies get advantage on all saves. Enemies have disadvantage on attacks vs. them. Fiends/undead: Con save or blinded on hit.'},
+  {n:'Maze',l:8,sc:'Conjuration',t:'1 action',r:'60 ft.',c:'V, S',du:'Conc., 10 min.',cl:['Wizard'],s:'PHB',d:'Banish creature to labyrinth demiplane. DC 20 Int check as action to escape.'},
+  {n:'Power Word Stun',l:8,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Stun creature with 150 HP or fewer. Con save each turn to end.'},
+  {n:'Sunburst',l:8,sc:'Evocation',t:'1 action',r:'150 ft.',c:'V, S, M',du:'Instantaneous',cl:['Druid','Sorcerer','Wizard'],s:'PHB',d:'60 ft. radius: 12d6 radiant + blinded 1 min. Con save for half, no blind.'},
+
+  // 9TH LEVEL (EXPANDED)
+  {n:'Astral Projection',l:9,sc:'Necromancy',t:'1 hour',r:'10 ft.',c:'V, S, M (1100 gp)',du:'Special',cl:['Cleric','Warlock','Wizard'],s:'PHB',d:'You and up to 8 willing creatures project astral bodies into the Astral Plane. Silver cord tethers you to your body. Travel the planes freely. Ends if silver cord is severed or you dismiss it.'},
+  {n:'Blade of Disaster',l:9,sc:'Conjuration',t:'1 bonus action',r:'60 ft.',c:'V, S',du:'Conc., 1 min.',cl:['Sorcerer','Warlock','Wizard'],s:"Tasha's",d:'Create a blade-shaped rift. Melee spell attack: +4d12 force, crits on 18-20 (dealing 12d12). Move 30 ft. and attack twice as bonus action.'},
+  {n:'Foresight',l:9,sc:'Divination',t:'1 minute',r:'Touch',c:'V, S, M',du:'8 hours',cl:['Bard','Druid','Warlock','Wizard'],s:'PHB',d:'Target can\'t be surprised. Advantage on attacks, checks, saves. Enemies have disadvantage on attacks against target.'},
+  {n:'Gate',l:9,sc:'Conjuration',t:'1 action',r:'60 ft.',c:'V, S, M (5000 gp)',du:'Conc., 1 min.',cl:['Cleric','Sorcerer','Wizard'],s:'PHB',d:'Portal to another plane. 5-20 ft. diameter. Name a creature: it\'s drawn through if on another plane.'},
+  {n:'Imprisonment',l:9,sc:'Abjuration',t:'1 minute',r:'30 ft.',c:'V, S, M (500 gp/HD)',du:'Until dispelled',cl:['Warlock','Wizard'],s:'PHB',d:'Wis save or imprisoned. Choose form: Burial (underground), Chaining (restrained), Hedged Prison (demiplane), Minimus Containment (gemstone), or Slumber (magical sleep). Lasts until dispelled.'},
+  {n:'Invulnerability',l:9,sc:'Abjuration',t:'1 action',r:'Self',c:'V, S, M (500 gp adamantine)',du:'Conc., 10 min.',cl:['Wizard'],s:"Xanathar's",d:'You are immune to all damage for the duration.'},
+  {n:'Mass Heal',l:9,sc:'Evocation',t:'1 action',r:'60 ft.',c:'V, S',du:'Instantaneous',cl:['Cleric'],s:'PHB',d:'Restore up to 700 HP divided among any number of creatures. Cures all diseases, blindness, deafness.'},
+  {n:'Mass Polymorph',l:9,sc:'Transmutation',t:'1 action',r:'120 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Bard','Sorcerer','Wizard'],s:"Xanathar's",d:'Transform up to 10 creatures into beasts. Unwilling: Wis save. Each new form\'s CR must be equal to or less than the target\'s level/CR.'},
+  {n:'Meteor Swarm',l:9,sc:'Evocation',t:'1 action',r:'1 mile',c:'V, S',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'Four 40 ft. radius spheres: 20d6 fire + 20d6 bludgeoning. Dex save for half. Areas can overlap.'},
+  {n:'Power Word Heal',l:9,sc:'Evocation',t:'1 action',r:'Touch',c:'V, S',du:'Instantaneous',cl:['Bard','Cleric'],s:'PHB',d:'Creature regains all hit points. End all charmed, frightened, paralyzed, and stunned conditions. Creature can use reaction to stand up.'},
+  {n:'Power Word Kill',l:9,sc:'Enchantment',t:'1 action',r:'60 ft.',c:'V',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:'PHB',d:'Instantly kill a creature with 100 HP or fewer. No save.'},
+  {n:'Prismatic Wall',l:9,sc:'Abjuration',t:'1 action',r:'60 ft.',c:'V, S',du:'10 minutes',cl:['Wizard'],s:'PHB',d:'Shimmering 7-layer wall (90 ft. long, 30 ft. high, 1 inch thick). Each colored layer has a unique effect and must be destroyed in order. Within 20 ft.: Con save or blinded 1 min.'},
+  {n:'Psychic Scream',l:9,sc:'Enchantment',t:'1 action',r:'90 ft.',c:'S',du:'Instantaneous',cl:['Bard','Sorcerer','Warlock','Wizard'],s:"Xanathar's",d:'Up to 10 creatures (Int 2+): Int save or 14d6 psychic + stunned. Killed creatures\' heads explode. Stunned targets repeat save each turn.'},
+  {n:'Shapechange',l:9,sc:'Transmutation',t:'1 action',r:'Self',c:'V, S, M (1500 gp jade circlet)',du:'Conc., 1 hour',cl:['Druid','Wizard'],s:'PHB',d:'Transform into any creature with CR equal to your level or lower. Gain its stats, HP, legendary actions. Keep alignment, personality, Int, Wis, Cha. Can change form again each turn.'},
+  {n:'Storm of Vengeance',l:9,sc:'Conjuration',t:'1 action',r:'Sight',c:'V, S',du:'Conc., 1 min.',cl:['Druid'],s:'PHB',d:'Storm cloud 360 ft. radius. Round 1: 2d6 thunder + deafened. Round 2: acid rain 1d6. Round 3: lightning bolts 10d6. Round 4: hailstones 2d6 bludgeoning. Round 5-10: freezing rain, difficult terrain, heavy obscurement.'},
+  {n:'Time Stop',l:9,sc:'Transmutation',t:'1 action',r:'Self',c:'V',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'Stop time. Take 1d4+1 turns in a row. Ends early if you affect another creature or move 1000+ ft. from casting point.'},
+  {n:'True Polymorph',l:9,sc:'Transmutation',t:'1 action',r:'30 ft.',c:'V, S, M',du:'Conc., 1 hour',cl:['Bard','Warlock','Wizard'],s:'PHB',d:'Transform creature into another creature or object, or object into creature. Unwilling: Wis save. Concentrate full duration: permanent.'},
+  {n:'True Resurrection',l:9,sc:'Necromancy',t:'1 hour',r:'Touch',c:'V, S, M (25000 gp)',du:'Instantaneous',cl:['Cleric','Druid'],s:'PHB',d:'Revive creature dead up to 200 years. Provides a new body if needed. Full HP restoration.'},
+  {n:'Weird',l:9,sc:'Illusion',t:'1 action',r:'120 ft.',c:'V, S',du:'Conc., 1 min.',cl:['Wizard'],s:'PHB',d:'Each creature in 30 ft. sphere: Wis save or frightened. Frightened creatures take 4d10 psychic each turn. Wis save each turn to end.'},
+  {n:'Wish',l:9,sc:'Conjuration',t:'1 action',r:'Self',c:'V',du:'Instantaneous',cl:['Sorcerer','Wizard'],s:'PHB',d:'The mightiest spell. Duplicate any 8th-or-lower spell with no requirements. Or wish for anything else (DM interprets). Stressful: 33% chance of never casting wish again, 1d10 necrotic per spell level until long rest, Str drops to 3 for 2d4 days.'},
+],
+
+// FEATS
+feats:[
+  {n:'Alert',s:'PHB',d:'+5 initiative. Can\'t be surprised while conscious. No advantage from hidden attackers.'},
+  {n:'Athlete',s:'PHB',d:'+1 Str/Dex. Stand from prone for 5 ft. Climb without speed penalty. Running jump with 5 ft. start.'},
+  {n:'Actor',s:'PHB',d:'+1 Cha. Advantage on Deception/Performance to impersonate. Mimic speech/sounds.'},
+  {n:'Crossbow Expert',s:'PHB',d:'Ignore loading. No disadvantage at 5 ft. Bonus action hand crossbow attack after one-handed attack.'},
+  {n:'Defensive Duelist',s:'PHB',d:'Reaction: add proficiency bonus to AC vs. one melee attack (requires finesse weapon).'},
+  {n:'Dual Wielder',s:'PHB',d:'+1 AC dual-wielding. Use non-light weapons. Draw/stow two weapons.'},
+  {n:'Elemental Adept',s:'PHB',d:'Choose damage type. Spells ignore resistance. Treat 1s as 2s on damage dice.'},
+  {n:'Fey Touched',s:"Tasha's",d:'+1 Int/Wis/Cha. Learn misty step + one 1st-level divination/enchantment. Free cast each 1/day.'},
+  {n:'Great Weapon Master',s:'PHB',d:'Bonus action attack on crit/kill. -5 to hit for +10 damage with heavy weapons.'},
+  {n:'Heavy Armor Master',s:'PHB',d:'+1 Str. In heavy armor: reduce nonmagical B/P/S by 3.'},
+  {n:'Inspiring Leader',s:'PHB',d:'10-min speech: 6 creatures gain level + Cha mod temp HP.'},
+  {n:'Lucky',s:'PHB',d:'3 luck points/long rest. Add extra d20 to any attack, check, save, or vs. attack on you.'},
+  {n:'Mage Slayer',s:'PHB',d:'Reaction attack when creature casts within 5 ft. Advantage on saves vs. adjacent spells. Disadvantage on concentration.'},
+  {n:'Magic Initiate',s:'PHB',d:'Choose a class: 2 cantrips + 1 first-level spell (1/long rest).'},
+  {n:'Metamagic Adept',s:"Tasha's",d:'2 Metamagic options + 2 sorcery points (Metamagic only). Long rest recovery.'},
+  {n:'Mobile',s:'PHB',d:'+10 ft. speed. Dash ignores difficult terrain. No opportunity attacks from targets you melee.'},
+  {n:'Observant',s:'PHB',d:'+1 Int/Wis. +5 passive Perception and Investigation. Read lips.'},
+  {n:'Polearm Master',s:'PHB',d:'Bonus action butt-end attack (1d4). Opportunity attacks when creatures enter your reach.'},
+  {n:'Resilient',s:'PHB',d:'+1 to one ability. Gain save proficiency in that ability.'},
+  {n:'Sentinel',s:'PHB',d:'Hit drops speed to 0. Disengage doesn\'t prevent your opportunity attacks. Reaction attack when ally hit within 5 ft.'},
+  {n:'Shadow Touched',s:"Tasha's",d:'+1 Int/Wis/Cha. Learn invisibility + one 1st-level illusion/necromancy. Free cast each 1/day.'},
+  {n:'Sharpshooter',s:'PHB',d:'No long range disadvantage. Ignore half/three-quarters cover. -5 to hit for +10 damage with ranged.'},
+  {n:'Shield Master',s:'PHB',d:'Bonus action shove after Attack. Add shield AC to Dex saves vs. you only. Evasion-like with reaction on Dex saves.'},
+  {n:'Skill Expert',s:"Tasha's",d:'+1 ability. One skill proficiency. One expertise.'},
+  {n:'Spell Sniper',s:'PHB',d:'Double range of attack roll spells. Ignore half/three-quarters cover. One attack cantrip.'},
+  {n:'Tavern Brawler',s:'PHB',d:'+1 Str/Con. Proficient with improvised weapons/unarmed (1d4). Bonus action grapple after hit.'},
+  {n:'Telekinetic',s:"Tasha's",d:'+1 Int/Wis/Cha. Invisible mage hand. Bonus action: push/pull 5 ft. (Str save).'},
+  {n:'Tough',s:'PHB',d:'+2 HP per level.'},
+  {n:'War Caster',s:'PHB',d:'Advantage on concentration. Somatic with hands full. Spell as opportunity attack.'},
+],
+
+// WEAPONS
+weapons:[
+  {n:'Club',t:'Simple Melee',co:'1 sp',dm:'1d4 bludgeoning',w:'2 lb.',p:'Light'},
+  {n:'Dagger',t:'Simple Melee',co:'2 gp',dm:'1d4 piercing',w:'1 lb.',p:'Finesse, light, thrown (20/60)'},
+  {n:'Greatclub',t:'Simple Melee',co:'2 sp',dm:'1d8 bludgeoning',w:'10 lb.',p:'Two-handed'},
+  {n:'Handaxe',t:'Simple Melee',co:'5 gp',dm:'1d6 slashing',w:'2 lb.',p:'Light, thrown (20/60)'},
+  {n:'Javelin',t:'Simple Melee',co:'5 sp',dm:'1d6 piercing',w:'2 lb.',p:'Thrown (30/120)'},
+  {n:'Mace',t:'Simple Melee',co:'5 gp',dm:'1d6 bludgeoning',w:'4 lb.',p:'---'},
+  {n:'Quarterstaff',t:'Simple Melee',co:'2 sp',dm:'1d6 bludgeoning',w:'4 lb.',p:'Versatile (1d8)'},
+  {n:'Spear',t:'Simple Melee',co:'1 gp',dm:'1d6 piercing',w:'3 lb.',p:'Thrown (20/60), versatile (1d8)'},
+  {n:'Battleaxe',t:'Martial Melee',co:'10 gp',dm:'1d8 slashing',w:'4 lb.',p:'Versatile (1d10)'},
+  {n:'Glaive',t:'Martial Melee',co:'20 gp',dm:'1d10 slashing',w:'6 lb.',p:'Heavy, reach, two-handed'},
+  {n:'Greataxe',t:'Martial Melee',co:'30 gp',dm:'1d12 slashing',w:'7 lb.',p:'Heavy, two-handed'},
+  {n:'Greatsword',t:'Martial Melee',co:'50 gp',dm:'2d6 slashing',w:'6 lb.',p:'Heavy, two-handed'},
+  {n:'Halberd',t:'Martial Melee',co:'20 gp',dm:'1d10 slashing',w:'6 lb.',p:'Heavy, reach, two-handed'},
+  {n:'Longsword',t:'Martial Melee',co:'15 gp',dm:'1d8 slashing',w:'3 lb.',p:'Versatile (1d10)'},
+  {n:'Maul',t:'Martial Melee',co:'10 gp',dm:'2d6 bludgeoning',w:'10 lb.',p:'Heavy, two-handed'},
+  {n:'Rapier',t:'Martial Melee',co:'25 gp',dm:'1d8 piercing',w:'2 lb.',p:'Finesse'},
+  {n:'Scimitar',t:'Martial Melee',co:'25 gp',dm:'1d6 slashing',w:'3 lb.',p:'Finesse, light'},
+  {n:'Shortsword',t:'Martial Melee',co:'10 gp',dm:'1d6 piercing',w:'2 lb.',p:'Finesse, light'},
+  {n:'Warhammer',t:'Martial Melee',co:'15 gp',dm:'1d8 bludgeoning',w:'2 lb.',p:'Versatile (1d10)'},
+  {n:'Whip',t:'Martial Melee',co:'2 gp',dm:'1d4 slashing',w:'3 lb.',p:'Finesse, reach'},
+  {n:'Shortbow',t:'Simple Ranged',co:'25 gp',dm:'1d6 piercing',w:'2 lb.',p:'Ammunition (80/320), two-handed'},
+  {n:'Light Crossbow',t:'Simple Ranged',co:'25 gp',dm:'1d8 piercing',w:'5 lb.',p:'Ammunition (80/320), loading, two-handed'},
+  {n:'Hand Crossbow',t:'Martial Ranged',co:'75 gp',dm:'1d6 piercing',w:'3 lb.',p:'Ammunition (30/120), light, loading'},
+  {n:'Heavy Crossbow',t:'Martial Ranged',co:'50 gp',dm:'1d10 piercing',w:'18 lb.',p:'Ammunition (100/400), heavy, loading, two-handed'},
+  {n:'Longbow',t:'Martial Ranged',co:'50 gp',dm:'1d8 piercing',w:'2 lb.',p:'Ammunition (150/600), heavy, two-handed'},
+],
+
+armor:[
+  {n:'Padded',t:'Light',co:'5 gp',ac:'11 + Dex',st:'Disadvantage',w:'8 lb.'},
+  {n:'Leather',t:'Light',co:'10 gp',ac:'11 + Dex',st:'---',w:'10 lb.'},
+  {n:'Studded Leather',t:'Light',co:'45 gp',ac:'12 + Dex',st:'---',w:'13 lb.'},
+  {n:'Hide',t:'Medium',co:'10 gp',ac:'12 + Dex (max 2)',st:'---',w:'12 lb.'},
+  {n:'Chain Shirt',t:'Medium',co:'50 gp',ac:'13 + Dex (max 2)',st:'---',w:'20 lb.'},
+  {n:'Scale Mail',t:'Medium',co:'50 gp',ac:'14 + Dex (max 2)',st:'Disadvantage',w:'45 lb.'},
+  {n:'Breastplate',t:'Medium',co:'400 gp',ac:'14 + Dex (max 2)',st:'---',w:'20 lb.'},
+  {n:'Half Plate',t:'Medium',co:'750 gp',ac:'15 + Dex (max 2)',st:'Disadvantage',w:'40 lb.'},
+  {n:'Ring Mail',t:'Heavy',co:'30 gp',ac:'14',st:'Disadvantage',w:'40 lb.'},
+  {n:'Chain Mail',t:'Heavy',co:'75 gp',ac:'16',st:'Disadvantage',w:'55 lb.'},
+  {n:'Splint',t:'Heavy',co:'200 gp',ac:'17',st:'Disadvantage',w:'60 lb.'},
+  {n:'Plate',t:'Heavy',co:'1,500 gp',ac:'18',st:'Disadvantage',w:'65 lb.'},
+  {n:'Shield',t:'Shield',co:'10 gp',ac:'+2',st:'---',w:'6 lb.'},
+],
+};
+
+// ============================================================
+//  SEARCH INDEX + ENGINE
+// ============================================================
+let si=[];
+function bsi(){
+  D.classes.forEach(c=>{si.push({ty:'Class',nm:c.name,sec:'ch-classes',d:c.desc.slice(0,80)+'...'});c.subs.forEach(s=>si.push({ty:'Subclass',nm:s.name+' ('+c.name+')',sec:'ch-classes',d:s.d.slice(0,80)+'...'}))});
+  D.races.forEach(r=>si.push({ty:'Race',nm:r.name,sec:'ch-races',d:r.desc.slice(0,80)+'...'}));
+  D.bg.forEach(b=>si.push({ty:'Background',nm:b.n,sec:'ch-bg',d:b.d.slice(0,80)+'...'}));
+  D.spells.forEach(s=>si.push({ty:'Spell (Lvl '+s.l+')',nm:s.n,sec:'ch-spells',d:s.sc+' | '+s.cl.join(', ')}));
+  D.feats.forEach(f=>si.push({ty:'Feat',nm:f.n,sec:'ch-feats',d:f.d.slice(0,80)+'...'}));
+  D.conditions.forEach(c=>si.push({ty:'Condition',nm:c.n,sec:'ch-rules',d:c.d.slice(0,80)+'...'}));
+}
+function doS(v){const dd=document.getElementById('sD');if(!v||v.length<2){dd.classList.remove('active');return}const q=v.toLowerCase();const r=si.filter(i=>i.nm.toLowerCase().includes(q)||i.d.toLowerCase().includes(q)).slice(0,12);if(!r.length){dd.classList.remove('active');return}dd.innerHTML=r.map(i=>`<div class="sri" onclick="go('${i.sec}');document.getElementById('sD').classList.remove('active');document.getElementById('sI').value='';"><span class="srt">${i.nm}</span><span class="sty">${i.ty}</span><div class="srd2">${i.d}</div></div>`).join('');dd.classList.add('active')}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))document.getElementById('sD').classList.remove('active')});
+
+// ============================================================
+//  SIDEBAR
+// ============================================================
+function bSB(){
+  const ch=[
+    {id:'ch-races',t:'Ch 1: Races',it:D.races.map(r=>r.name)},
+    {id:'ch-classes',t:'Ch 2: Classes',it:D.classes.map(c=>c.name)},
+    {id:'ch-bg',t:'Ch 3: Backgrounds',it:D.bg.slice(0,13).map(b=>b.n)},
+    {id:'ch-spells',t:'Ch 4: Spells',it:['Cantrips','1st Level','2nd Level','3rd-5th Level','6th-9th Level']},
+    {id:'ch-feats',t:'Ch 5: Feats',it:[]},
+    {id:'ch-equip',t:'Ch 6: Equipment',it:['Weapons','Armor']},
+    {id:'ch-rules',t:'Ch 7: Rules & Conditions',it:['Ability Scores','Combat','Conditions']},
+  ];
+  document.getElementById('sb').innerHTML=ch.map(c=>`<div class="nc"><div class="nct" onclick="this.classList.toggle('exp');this.nextElementSibling.classList.toggle('exp');go('${c.id}')">${c.t} <span class="ar">&#9654;</span></div><div class="nsi">${c.it.map(i=>`<a onclick="go('${c.id}')">${i}</a>`).join('')}</div></div><div class="nd"></div>`).join('');
+}
+function tSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('sO').classList.toggle('active')}
+function go(id){const el=document.getElementById(id);if(el){const o=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'))||56;window.scrollTo({top:el.offsetTop-o,behavior:'smooth'})}if(innerWidth<=900){document.getElementById('sb').classList.remove('open');document.getElementById('sO').classList.remove('active')}}
+
+// ============================================================
+//  RENDER ALL CHAPTERS
+// ============================================================
+function sfx(n){return n===1?'st':n===2?'nd':n===3?'rd':'th'}
+
+function render(){
+const c=document.getElementById('cc');let h='';
+
+// CH1: RACES
+h+=`<section class="ch" id="ch-races"><div class="chh"><div class="chn">Chapter One</div><h1 class="cht">Races of the Realms</h1><div class="chd"></div><p class="chi">The worlds of D&D are home to a multitude of peoples. Choose your race, which shapes your fundamental qualities and the foundations upon which you build your hero.</p></div><div class="ca"><div class="cg">${D.races.map(r=>`<div class="pc" onclick="sRD('${r.id}')"><div class="cip gi-fighter">${r.icon}</div><div class="cb"><div class="ct2">${r.name}</div><div class="cso">${r.src}</div><div class="cde">${r.desc.slice(0,110)}...</div><div class="tags">${r.subs.length?r.subs.slice(0,3).map(s=>`<span class="tag">${s.name}</span>`).join(''):'<span class="tag">No subraces</span>'}</div></div></div>`).join('')}</div></div></section>`;
+
+// CH2: CLASSES
+h+=`<section class="ch" id="ch-classes"><div class="chh"><div class="chn">Chapter Two</div><h1 class="cht">Classes</h1><div class="chd"></div><p class="chi">Your class is the primary definition of what your character can do. It shapes how you think about the world and interact with it.</p></div><div class="ca"><div class="cg">${D.classes.map(c=>`<div class="pc" onclick="sCD('${c.id}')"><div class="cip gi-${c.id}">${c.icon}</div><div class="cb"><div class="ct2">${c.name}</div><div class="cso">${c.src} | Hit Die: ${c.hd}</div><div class="cde">${c.desc.slice(0,110)}...</div><div class="tags"><span class="tag">${c.pa}</span><span class="tag">${c.subs.length} Subclasses</span></div></div></div>`).join('')}</div></div></section>`;
+
+// CH3: BACKGROUNDS
+h+=`<section class="ch" id="ch-bg"><div class="chh"><div class="chn">Chapter Three</div><h1 class="cht">Backgrounds</h1><div class="chd"></div><p class="chi">Every story has a beginning. Your background reveals where you came from, how you became an adventurer, and your place in the world.</p></div><div class="ca"><div class="cg">${D.bg.map(b=>`<div class="pc" onclick="sBD('${b.n}')"><div class="cb"><div class="ct2">${b.n}</div><div class="cso">${b.s} | Feature: ${b.ft}</div><div class="cde">${b.d.slice(0,90)}...</div><div class="tags"><span class="tag">${b.sk}</span></div></div></div>`).join('')}</div></div></section>`;
+
+// CH4: SPELLS
+let scl=[...new Set(D.spells.flatMap(s=>s.cl))].sort();
+h+=`<section class="ch" id="ch-spells"><div class="chh"><div class="chn">Chapter Four</div><h1 class="cht">Spells</h1><div class="chd"></div><p class="chi">Magic permeates the worlds of D&D. This chapter provides the comprehensive spell compendium available to spellcasters across all mainline sourcebooks.</p></div><div class="ca"><div class="fb" id="sf1"><button class="fbtn act" onclick="fSC('all',this)">All Classes</button>${scl.map(c=>`<button class="fbtn" onclick="fSC('${c}',this)">${c}</button>`).join('')}</div><div class="fb" id="sf2"><button class="fbtn act" onclick="fSL('all',this)">All Levels</button>${[0,1,2,3,4,5,6,7,8,9].map(l=>`<button class="fbtn" onclick="fSL(${l},this)">${l===0?'Cantrips':l+sfx(l)}</button>`).join('')}</div><div class="tw"><table class="pt" id="st"><thead><tr><th>Name</th><th>Lvl</th><th>School</th><th>Time</th><th>Range</th><th>Duration</th><th>Classes</th></tr></thead><tbody id="stb"></tbody></table></div><p style="font-size:0.8rem;color:#999;margin-top:8px;"><em>Click any spell row for full details. ${D.spells.length} spells indexed.</em></p></div></section>`;
+
+// CH5: FEATS
+h+=`<section class="ch" id="ch-feats"><div class="chh"><div class="chn">Chapter Five</div><h1 class="cht">Feats</h1><div class="chd"></div><p class="chi">A feat represents a talent or expertise that gives a character special capabilities beyond what a class provides.</p></div><div class="ca"><div class="cg">${D.feats.map(f=>`<div class="pc"><div class="cb"><div class="ct2">${f.n}</div><div class="cso">${f.s}</div><div class="cde">${f.d}</div></div></div>`).join('')}</div></div></section>`;
+
+// CH6: EQUIPMENT
+h+=`<section class="ch" id="ch-equip"><div class="chh"><div class="chn">Chapter Six</div><h1 class="cht">Equipment</h1><div class="chd"></div><p class="chi">The marketplace of a large city teems with buyers and sellers. Here you'll find the tools of the adventuring trade.</p></div><div class="ca"><h2>Weapons</h2><div class="tw"><table class="pt"><thead><tr><th>Name</th><th>Type</th><th>Cost</th><th>Damage</th><th>Weight</th><th>Properties</th></tr></thead><tbody>${D.weapons.map(w=>`<tr><td><strong>${w.n}</strong></td><td>${w.t}</td><td>${w.co}</td><td>${w.dm}</td><td>${w.w}</td><td>${w.p}</td></tr>`).join('')}</tbody></table></div><h2>Armor</h2><div class="tw"><table class="pt"><thead><tr><th>Name</th><th>Type</th><th>Cost</th><th>AC</th><th>Stealth</th><th>Weight</th></tr></thead><tbody>${D.armor.map(a=>`<tr><td><strong>${a.n}</strong></td><td>${a.t}</td><td>${a.co}</td><td>${a.ac}</td><td>${a.st}</td><td>${a.w}</td></tr>`).join('')}</tbody></table></div></div></section>`;
+
+// CH7: RULES & CONDITIONS
+h+=`<section class="ch" id="ch-rules"><div class="chh"><div class="chn">Chapter Seven</div><h1 class="cht">Rules & Conditions</h1><div class="chd"></div><p class="chi">A quick reference for the core rules of play, ability scores, combat, and the conditions that can affect creatures during the game.</p></div><div class="ca">
+<h2>Ability Scores</h2>
+<div class="ib"><div class="ibt">The Six Abilities</div><p><strong>Strength:</strong> Physical power, athletics, melee attacks. <strong>Dexterity:</strong> Agility, reflexes, AC, ranged attacks. <strong>Constitution:</strong> Endurance, stamina, hit points.</p><p><strong>Intelligence:</strong> Reasoning, memory, arcane magic. <strong>Wisdom:</strong> Perception, intuition, divine magic. <strong>Charisma:</strong> Force of personality, leadership, social influence.</p></div>
+<div class="ib"><div class="ibt">Modifier Table</div><p>1: -5 | 2-3: -4 | 4-5: -3 | 6-7: -2 | 8-9: -1 | 10-11: +0 | 12-13: +1 | 14-15: +2 | 16-17: +3 | 18-19: +4 | 20: +5</p></div>
+<div class="ib"><div class="ibt">Proficiency Bonus by Level</div><p>Levels 1-4: +2 | Levels 5-8: +3 | Levels 9-12: +4 | Levels 13-16: +5 | Levels 17-20: +6</p></div>
+<h2>Combat</h2>
+<div class="two-col"><div class="ib"><div class="ibt">Turn Structure</div><p><strong>Movement:</strong> Up to your speed (can split). <strong>Action:</strong> Attack, Cast, Dash, Disengage, Dodge, Help, Hide, Ready, Search, Use Object. <strong>Bonus Action:</strong> Only if granted. <strong>Reaction:</strong> One per round. <strong>Free Interaction:</strong> One object or feature.</p></div><div class="ib"><div class="ibt">Attack Rolls</div><p><strong>Melee:</strong> d20 + Str + prof. <strong>Ranged:</strong> d20 + Dex + prof. <strong>Spell:</strong> d20 + casting mod + prof. <strong>Crit:</strong> Natural 20 doubles dice. <strong>Miss:</strong> Natural 1 always misses.</p></div></div>
+<div class="ib"><div class="ibt">Death Saving Throws</div><p>At 0 HP, d20 at start of each turn. 10+ = success, 9- = failure. Three successes: stabilize. Three failures: death. Natural 20: regain 1 HP and conscious. Natural 1: two failures. Damage at 0 HP = 1 failure (crit = 2). Massive damage (remaining damage >= max HP) = instant death.</p></div>
+<div class="two-col"><div class="ib"><div class="ibt">Resting</div><p><strong>Short Rest:</strong> 1+ hours. Spend Hit Dice to heal. Some features recharge. <strong>Long Rest:</strong> 8+ hours (6 sleep, 2 light). Regain all HP and half total Hit Dice. Most features recharge. One per 24 hours.</p></div><div class="ib"><div class="ibt">Cover &amp; Visibility</div><p><strong>Half Cover:</strong> +2 AC/Dex saves. <strong>Three-Quarters:</strong> +5. <strong>Total:</strong> Can't be targeted. <strong>Lightly Obscured:</strong> Disadvantage on Perception. <strong>Heavily Obscured:</strong> Effectively blinded.</p></div></div>
+<div class="ib"><div class="ibt">Advantage &amp; Disadvantage</div><p>Roll 2d20 and take the higher (advantage) or lower (disadvantage). Multiple sources don't stack. If you have both simultaneously, they cancel out and you roll normally.</p></div>
+
+<h2>Conditions</h2>
+<p style="margin-bottom:16px;">Conditions alter a creature's capabilities in a variety of ways and arise from spells, class features, monster attacks, and other effects. Most conditions are impairments, but invisibility can be beneficial.</p>
+<div class="cg">${D.conditions.map(c=>`<div class="cc" id="cond-${c.n.toLowerCase()}"><div class="ccn"><span class="cci">${c.icon}</span> ${c.n}</div><div class="ccd">${c.d}</div><ul style="margin:8px 0 6px;padding-left:18px">${c.fx.map(f=>`<li style="font-size:0.83rem;color:var(--inkl);margin-bottom:3px">${f}</li>`).join('')}</ul><div class="ccm"><strong>Common Sources:</strong> ${c.note.replace('Common sources: ','')}</div></div>`).join('')}</div>
+</div></section>`;
+
+// FOOTER
+h+=`<footer style="background:#0a0302;padding:36px;text-align:center;color:#555;font-size:0.78rem;border-top:2px solid rgba(201,173,106,0.2)"><div style="font-family:'Cinzel Decorative',serif;color:var(--g);font-size:1.1rem;margin-bottom:6px">Everything D&D</div><p>Compiled from the Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything.</p><p style="margin-top:6px">All game content is property of Wizards of the Coast. This is a personal reference tool.</p></footer>`;
+c.innerHTML=h;rST();
+}
+
+// ============================================================
+//  SPELL FILTERING
+// ============================================================
+let cSC='all',cSL='all';
+function fSC(v,b){cSC=v;document.querySelectorAll('#sf1 .fbtn').forEach(x=>x.classList.remove('act'));b.classList.add('act');rST()}
+function fSL(v,b){cSL=v;document.querySelectorAll('#sf2 .fbtn').forEach(x=>x.classList.remove('act'));b.classList.add('act');rST()}
+function rST(){let sp=D.spells;if(cSC!=='all')sp=sp.filter(s=>s.cl.includes(cSC));if(cSL!=='all')sp=sp.filter(s=>s.l===cSL);const tb=document.getElementById('stb');if(!tb)return;tb.innerHTML=sp.map(s=>`<tr onclick="sSD('${s.n.replace(/'/g,"\\'")}')"><td><strong>${s.n}</strong></td><td>${s.l===0?'C':s.l}</td><td>${s.sc}</td><td>${s.t}</td><td>${s.r}</td><td>${s.du}</td><td style="font-size:0.75rem">${s.cl.join(', ')}</td></tr>`).join('')}
+
+// ============================================================
+//  DETAIL VIEWS
+// ============================================================
+function sD2(h){document.getElementById('dP').innerHTML='<button class="xb" onclick="cD()">&times;</button>'+h;document.getElementById('dO').classList.add('active');document.body.style.overflow='hidden'}
+function cD(){document.getElementById('dO').classList.remove('active');document.body.style.overflow=''}
+
+function sRD(id){const r=D.races.find(x=>x.id===id);if(!r)return;sD2(`<div style="font-size:3.5rem;text-align:center;margin-bottom:12px">${r.icon}</div><h2>${r.name}</h2><div class="ds">${r.src}</div><div class="dt dc">${r.desc}</div><h3>Racial Traits</h3><ul>${r.traits.map(t=>`<li>${t}</li>`).join('')}</ul>${r.subs.length?`<h3>Subraces</h3><div class="scg">${r.subs.map(s=>`<div class="sci"><div class="scn">${s.name}</div><div class="scd">${s.d}</div></div>`).join('')}</div>`:''}`)}
+
+function sCD(id){const c=D.classes.find(x=>x.id===id);if(!c)return;
+  let progHTML='';
+  if(c.progression&&c.progression.length){
+    progHTML=`<h3>Class Progression</h3><div class="prog-wrap"><table class="prog-table"><thead><tr>${c.progCols.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${c.progression.map(row=>`<tr>${(Array.isArray(row)?row:[row]).map(cell=>`<td>${cell!==undefined?cell:'--'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  sD2(`<div style="font-size:3.5rem;text-align:center;margin-bottom:12px">${c.icon}</div><h2>${c.name}</h2><div class="ds">${c.src}</div><div class="sl"><div class="si"><label>Hit Die</label><span>${c.hd}</span></div><div class="si"><label>Primary</label><span>${c.pa}</span></div><div class="si"><label>Saves</label><span>${c.sv}</span></div></div><div class="sl"><div class="si"><label>Armor</label><span>${c.arm}</span></div><div class="si"><label>Weapons</label><span>${c.wpn}</span></div></div><div class="dt dc">${c.desc}</div><h3>Key Features</h3><ul>${c.features.map(f=>`<li>${f}</li>`).join('')}</ul>${progHTML}<h3>Subclasses (${c.subs.length})</h3><div class="scg">${c.subs.map(sc=>`<div class="sci"><div class="scn">${sc.name}</div><div class="scs">${sc.src}</div><div class="scd">${sc.d}</div></div>`).join('')}</div>`)
+}
+
+function sBD(name){const b=D.bg.find(x=>x.n===name);if(!b)return;sD2(`<h2>${b.n}</h2><div class="ds">${b.s}</div><div class="sl"><div class="si"><label>Skills</label><span>${b.sk}</span></div><div class="si"><label>Languages</label><span>${b.lg}</span></div><div class="si"><label>Feature</label><span>${b.ft}</span></div></div><div class="dt dc">${b.d}</div><h3>Equipment</h3><p>${b.eq}</p>`)}
+
+function sSD(name){const s=D.spells.find(x=>x.n===name);if(!s)return;sD2(`<h2>${s.n}</h2><div class="ds">${s.s} | ${s.l===0?'Cantrip':s.l+sfx(s.l)+'-level'} ${s.sc}</div><div class="sl"><div class="si"><label>Casting Time</label><span>${s.t}</span></div><div class="si"><label>Range</label><span>${s.r}</span></div><div class="si"><label>Components</label><span>${s.c}</span></div><div class="si"><label>Duration</label><span>${s.du}</span></div></div><div class="dt">${s.d}</div><h3>Available To</h3><div style="display:flex;flex-wrap:wrap;gap:6px">${s.cl.map(c=>`<span class="tag">${c}</span>`).join('')}</div>`)}
+
+// ============================================================
+//  SCROLL + KEYBOARD
+// ============================================================
+addEventListener('scroll',()=>{document.getElementById('btt').classList.toggle('vis',scrollY>400)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cD();if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('sI').focus()}});
+
+// ============================================================
+//  INIT
+// ============================================================
+bsi();bSB();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Archmage Codex: A 5e Handbook of Legendary Wizards</title>
+<style>
+  :root {
+    --bg: #ead9b7;
+    --paper: #f4ead1;
+    --paper-2: #efe1bd;
+    --ink: #2c1f16;
+    --muted: #6e5846;
+    --line: #8c6e53;
+    --gold: #b58a3c;
+    --red: #7b2f23;
+    --deep: #1f1410;
+    --shadow: rgba(33, 16, 8, 0.22);
+    --panel: rgba(255,255,255,0.34);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.42), transparent 28%),
+      radial-gradient(circle at 80% 10%, rgba(255,255,255,0.18), transparent 20%),
+      linear-gradient(180deg, #efe0be 0%, #e3cfaa 100%);
+    line-height: 1.45;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(0deg, rgba(67,44,23,0.03) 0 1px, transparent 1px 5px),
+      radial-gradient(circle at 10% 20%, rgba(82,54,31,0.05), transparent 35%),
+      radial-gradient(circle at 70% 80%, rgba(82,54,31,0.05), transparent 28%);
+    mix-blend-mode: multiply;
+    opacity: .75;
+  }
+  .cover {
+    position: relative;
+    padding: 4.5rem 1.5rem 3rem;
+    border-bottom: 2px solid rgba(95,61,35,0.32);
+    background:
+      linear-gradient(rgba(60,33,15,0.08), rgba(60,33,15,0.04)),
+      linear-gradient(180deg, rgba(255,247,227,0.8), rgba(244,234,209,0.75));
+  }
+  .cover-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .kicker {
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    color: var(--red);
+    font-size: .8rem;
+    margin-bottom: .9rem;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 4vw, 4.75rem);
+    line-height: .92;
+    margin: 0 0 1rem;
+    color: var(--deep);
+    text-shadow: 0 1px 0 rgba(255,255,255,.35);
+  }
+  .lead {
+    font-size: 1.06rem;
+    max-width: 62ch;
+    color: var(--muted);
+  }
+  .cover-note {
+    margin-top: 1.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .7rem;
+  }
+  .chip {
+    border: 1px solid rgba(93,62,39,0.32);
+    padding: .45rem .72rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.34);
+    font-size: .83rem;
+  }
+  .frontispiece {
+    background: rgba(95,61,35,.08);
+    border: 1px solid rgba(95,61,35,.25);
+    border-radius: 24px;
+    padding: 1.3rem;
+    box-shadow: 0 18px 45px var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .frontispiece::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(123,47,35,.22);
+    border-radius: 18px;
+  }
+  .frontispiece-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .8rem;
+  }
+  .cameo {
+    aspect-ratio: 1 / 1.12;
+    border-radius: 999px 999px 28px 28px;
+    overflow: hidden;
+    border: 2px solid rgba(181,138,60,.6);
+    box-shadow: 0 10px 24px rgba(31,20,16,.16);
+    background: linear-gradient(180deg, #cda56a, #6d452c);
+  }
+  .cameo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    background: rgba(239,225,189,0.8);
+    border-bottom: 1px solid rgba(95,61,35,.22);
+  }
+  .toolbar-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: .9rem 1.2rem;
+    display: flex;
+    gap: .9rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .toolbar input {
+    flex: 1 1 280px;
+    min-width: 220px;
+    border: 1px solid rgba(95,61,35,.3);
+    padding: .8rem .95rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.56);
+    font: inherit;
+    color: var(--ink);
+  }
+  .toolbar .legend {
+    font-size: .9rem;
+    color: var(--muted);
+  }
+  .toc {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.1rem 1.2rem .2rem;
+  }
+  .toc-wrap {
+    background: rgba(255,255,255,.28);
+    border: 1px solid rgba(95,61,35,.18);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 12px 30px rgba(31,20,16,.08);
+  }
+  .toc h2 {
+    margin: 0 0 .7rem;
+    font-size: 1.1rem;
+    color: var(--red);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .toc-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .55rem;
+  }
+  .toc-links a {
+    text-decoration: none;
+    color: var(--ink);
+    padding: .55rem .75rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,.35);
+    border: 1px solid rgba(95,61,35,.14);
+  }
+  .toc-links a:hover {
+    background: rgba(255,255,255,.58);
+  }
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1rem 1.2rem 4rem;
+    display: grid;
+    gap: 1.6rem;
+  }
+  .entry {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.18)),
+      linear-gradient(180deg, var(--paper), var(--paper-2));
+    border: 1px solid rgba(95,61,35,.22);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(31,20,16,.12);
+  }
+  .entry-head {
+    padding: 1.4rem;
+    background:
+      linear-gradient(180deg, rgba(123,47,35,.13), rgba(123,47,35,.03)),
+      linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+    border-bottom: 1px solid rgba(95,61,35,.18);
+  }
+  .entry-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 1.35rem;
+    padding: 1.4rem;
+  }
+  .portrait-card {
+    position: sticky;
+    top: 5.3rem;
+    align-self: start;
+  }
+  .portrait-frame {
+    background: linear-gradient(180deg, #f8efd7, #ddc59a);
+    border-radius: 999px;
+    padding: .8rem;
+    border: 2px solid rgba(181,138,60,.7);
+    box-shadow: inset 0 0 0 3px rgba(123,47,35,.15), 0 10px 22px rgba(31,20,16,.12);
+  }
+  .portrait {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(95,61,35,.24);
+    background: #d8bb8f;
+  }
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .basis {
+    margin-top: .85rem;
+    padding: .7rem .8rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,.35);
+    border: 1px solid rgba(95,61,35,.14);
+    font-size: .86rem;
+    color: var(--muted);
+  }
+  .entry h3 {
+    margin: 0 0 .55rem;
+    font-size: 1.05rem;
+    color: var(--red);
+  }
+  .entry h4 {
+    margin: 0 0 .5rem;
+    font-size: .92rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: #7f6247;
+  }
+  .name-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+  .name-row h2 {
+    margin: 0;
+    font-size: clamp(1.9rem, 2.2vw, 2.8rem);
+    line-height: .95;
+  }
+  .name-row .epithet {
+    font-style: italic;
+    color: var(--muted);
+    margin-top: .35rem;
+  }
+  .frame-tag {
+    padding: .5rem .78rem;
+    border-radius: 999px;
+    background: rgba(123,47,35,.1);
+    border: 1px solid rgba(123,47,35,.2);
+    color: var(--red);
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+  .summary {
+    margin: .8rem 0 0;
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 76ch;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: .75rem;
+    margin-top: 1rem;
+  }
+  .fact {
+    padding: .8rem .85rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,.38);
+    border: 1px solid rgba(95,61,35,.14);
+    min-height: 100%;
+  }
+  .fact strong {
+    display: block;
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #7f6247;
+    margin-bottom: .22rem;
+  }
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .panel {
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255,255,255,.3);
+    border: 1px solid rgba(95,61,35,.14);
+  }
+  .ability-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: .5rem;
+  }
+  .ability {
+    text-align: center;
+    padding: .8rem .3rem;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(123,47,35,.08), rgba(181,138,60,.06));
+    border: 1px solid rgba(95,61,35,.14);
+  }
+  .ability .abbr {
+    font-size: .7rem;
+    letter-spacing: .12em;
+    color: #7f6247;
+  }
+  .ability .num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: .15rem;
+  }
+  .lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .lists ul, .panel ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+  .lists li, .panel li {
+    margin: .18rem 0;
+  }
+  .prose {
+    color: var(--muted);
+  }
+
+  .journey-block {
+    color: var(--muted);
+    column-gap: 1.2rem;
+  }
+  .journey-block p {
+    margin: 0;
+  }
+  .journey-block p + p {
+    margin-top: .95rem;
+  }
+  .thread-list li {
+    margin-bottom: .38rem;
+  }
+  .lore-note {
+    color: var(--muted);
+  }
+  .spellbook {
+    margin-top: 1rem;
+  }
+  .spellbook h3 {
+    margin-bottom: .8rem;
+  }
+  .spell-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: .8rem;
+  }
+  details.level {
+    background: rgba(255,255,255,.36);
+    border: 1px solid rgba(95,61,35,.14);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  details.level[open] {
+    box-shadow: inset 0 0 0 1px rgba(181,138,60,.25);
+  }
+  details.level summary {
+    cursor: pointer;
+    list-style: none;
+    padding: .85rem .95rem;
+    font-weight: 700;
+    color: var(--deep);
+    background: linear-gradient(180deg, rgba(181,138,60,.12), rgba(181,138,60,.03));
+  }
+  details.level summary::-webkit-details-marker { display:none; }
+  .spells {
+    padding: .85rem .95rem 1rem;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+  .legacy {
+    margin-top: .95rem;
+    padding: 1rem;
+    border-radius: 18px;
+    border: 1px dashed rgba(123,47,35,.33);
+    background: rgba(123,47,35,.05);
+  }
+  .legacy p {
+    margin: 0 0 .45rem;
+    color: var(--muted);
+  }
+  .legacy-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+  }
+  .legacy-list span {
+    padding: .4rem .6rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.5);
+    border: 1px solid rgba(95,61,35,.16);
+    font-size: .87rem;
+  }
+  .footer {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.2rem 3.5rem;
+    color: var(--muted);
+    font-size: .92rem;
+  }
+  .dropcap:first-letter {
+    float: left;
+    font-size: 3.4rem;
+    line-height: .82;
+    padding-right: .32rem;
+    color: var(--red);
+  }
+  .hidden {
+    display: none !important;
+  }
+  @media (max-width: 960px) {
+    .cover-inner, .entry-grid, .content-grid, .lists {
+      grid-template-columns: 1fr;
+    }
+    .facts {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .portrait-card {
+      position: static;
+    }
+    .spell-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .toolbar-inner,
+    .toc,
+    main,
+    .footer {
+      padding-left: .9rem;
+      padding-right: .9rem;
+    }
+    .entry-head,
+    .entry-grid,
+    .panel,
+    .toc-wrap {
+      padding: .95rem;
+    }
+    .frontispiece {
+      padding: .95rem;
+    }
+    .facts {
+      grid-template-columns: 1fr;
+    }
+    .ability-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .frontispiece-grid {
+      grid-template-columns: repeat(2,1fr);
+    }
+    .toolbar input {
+      min-width: 0;
+      width: 100%;
+    }
+    .frame-tag {
+      white-space: normal;
+    }
+  }
+  @media (max-width: 420px) {
+    h1 {
+      line-height: 1;
+    }
+    .frontispiece-grid,
+    .ability-grid {
+      grid-template-columns: 1fr;
+    }
+    .chip,
+    .legacy-list span {
+      width: 100%;
+      border-radius: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="cover">
+    <div class="cover-inner">
+      <div>
+        <div class="kicker">Recovered leaves, royal dossiers, and ruined grimoires</div>
+        <h1>The Archmage Codex</h1>
+        <p class="lead dropcap">
+          A vintage 5e-style handbook of the great wizard names that still shake worlds:
+          Elminster, Mordenkainen, Khelben, Szass Tam, Alustriel, Laeral, Karsus, Vecna,
+          Iggwilv, Bigby, and Gale of Waterdeep. Each profile is presented in 5e format,
+          with official 5e material used where it exists and lore-faithful 5e conversion work
+          used where the game never printed a full modern sheet.
+        </p>
+        <div class="cover-note">
+          <span class="chip">5e format throughout</span>
+          <span class="chip">Profile art for every wizard</span>
+          <span class="chip">Official spellbooks plus legacy signatures</span>
+          <span class="chip">Attire, relics, towers, sanctums, and lairs</span>
+        </div>
+      </div>
+      <aside class="frontispiece">
+        <div class="frontispiece-grid">
+          <div class="cameo"><img src="assets/elminster.png" alt="Elminster"></div>
+          <div class="cameo"><img src="assets/mordenkainen.png" alt="Mordenkainen"></div>
+          <div class="cameo"><img src="assets/vecna.png" alt="Vecna"></div>
+          <div class="cameo"><img src="assets/alustriel.png" alt="Alustriel"></div>
+          <div class="cameo"><img src="assets/iggwilv.png" alt="Iggwilv"></div>
+          <div class="cameo"><img src="assets/gale.png" alt="Gale"></div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <input id="searchBox" type="search" placeholder="Search by wizard, home, title, or specialty">
+      <div class="legend">Legacy signatures are separated from current 5e spellbook entries so the profiles stay rules-clean without losing history.</div>
+    </div>
+  </div>
+
+  <section class="toc">
+    <div class="toc-wrap">
+      <h2>Table of Contents</h2>
+      <div class="toc-links" id="tocLinks"></div>
+    </div>
+  </section>
+
+  <main id="entries"></main>
+
+  <div class="footer">
+    This codex uses official 5e sources where available and clearly marked 5e conversions where modern published sheets do not exist.
+    The goal is table usefulness without flattening the long history of these archmages into generic spellcaster blocks.
+  </div>
+
+<script>
+const data = [{"slug": "elminster", "name": "Elminster Aumar", "epithet": "The Sage of Shadowdale", "image": "assets/elminster.png", "basis": "5e conversion based on long-running lore and older edition power references", "frame": "Epic 5e conversion", "race": "Human, Chosen of Mystra", "alignment": "Chaotic Good", "age": "1280", "role": "World-wandering archmage, sage, priestly meddler, and silver-fire bearer", "home": "Shadowdale and a web of hidden sanctums across Faerûn", "ac": "20 with layered wards", "hp": "285", "pb": "+8", "spell_dc": "24", "spell_attack": "+16", "stats": {"STR": 13, "DEX": 18, "CON": 20, "INT": 26, "WIS": 22, "CHA": 20}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Alive", "familiar": "No fixed canonical familiar; he favors silver-fire, wards, coded allies, and summoned helpers over a permanent little companion.", "items": ["eversmoking pipe", "enchanted traveling robes", "ward-rings and hidden lockets of Mystra", "caches of scrolls and disguise kits", "quietly legendary blade and staff-quality foci"], "attire": "Broad hat, travel-weathered blue and crimson robes, boots built for roads rather than courts, jewelry that looks harmless until the room starts to glow with ward-light. In battle, the cloth itself seems to become armor as silver fire halos the seams.", "lair": "Elminster’s rooms never feel arranged for show. They feel lived in by someone who expects visitors, ghosts, danger, and tea in roughly equal measure. Pipe smoke, lamp oil, wet wool, old parchment, and crackling hidden wards mark the air. Books lie everywhere, but the chaos is curated. Every apparent inconvenience is bait for the unwary and every battered object might be a relic.", "personal": "He carries centuries of grief without surrendering his humor. His spellbook preserves early road-magic, priestly habits, anti-tyrant measures, and a vast library of practical survival spells because he learned long ago that history is usually saved by the wizard who can still improvise at dawn after not sleeping.", "boons": ["Silver Fire", "Chosen of Mystra protections", "name-hearing magic", "deep clerical insight into the Weave", "mythal and wardcraft intuition"], "spellbook": {"Cantrips": ["blade ward", "dancing lights", "detect magic", "friends", "light", "mage hand", "message", "minor illusion", "prestidigitation", "ray of frost", "resistance"], "1st": ["alarm", "burning hands", "charm person", "comprehend languages", "detect magic", "disguise self", "feather fall", "find familiar", "grease", "identify", "mage armor", "magic missile", "shield", "sleep", "unseen servant"], "2nd": ["arcane lock", "blur", "detect thoughts", "flaming sphere", "hold person", "invisibility", "knock", "levitate", "mirror image", "misty step", "rope trick", "scorching ray", "see invisibility", "suggestion", "web"], "3rd": ["counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "haste", "hypnotic pattern", "lightning bolt", "major image", "protection from energy", "sending", "slow", "tongues", "water breathing"], "4th": ["arcane eye", "banishment", "dimension door", "fire shield", "greater invisibility", "hallucinatory terrain", "ice storm", "locate creature", "Otiluke's resilient sphere", "polymorph", "stoneskin", "wall of fire"], "5th": ["cone of cold", "contact other plane", "dominate person", "dream", "hold monster", "legend lore", "mislead", "modify memory", "passwall", "scrying", "telekinesis", "teleportation circle", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "globe of invulnerability", "guards and wards", "mass suggestion", "programmed illusion", "sunbeam", "true seeing"], "7th": ["delayed blast fireball", "etherealness", "forcecage", "mirage arcane", "plane shift", "project image", "reverse gravity", "simulacrum", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "maze", "mind blank", "power word stun", "sunburst"], "9th": ["foresight", "gate", "meteor swarm", "prismatic wall", "shapechange", "time stop", "wish"]}, "legacy": ["Elminster's effulgent epuration", "thunderlance", "lesser ironguard", "Simbul's synostodweomer studies", "mythal-restitching rites"], "summary": "Born to a throne, broken by the fall of his house, and remade by Mystra, Elminster became the Realms' most durable answer to magical tyranny. He feels less like a courtly wizard than a centuries-deep field agent of the Weave who survives by humor, patience, disguises, and terrifying reserves of power.", "journey": ["Elminster's story begins in Athalantar, where he was born a prince and watched bad rulers and mage-lords poison a kingdom from within. That origin matters. He did not come to magic as a sheltered scholar. He came to it through loss, exile, disguise, and the long practical education of a man who learned early that power without conscience ruins countries. Even at his grandest, there is still something in him of the road-survivor who distrusts crowns, keeps backup plans in his boots, and judges magic by what it does to ordinary lives.", "Mystra's choosing transformed him from an unusually formidable wanderer into one of the central living conduits of the Weave. Across the centuries he served as sage, spy, priestly servant of magic, hidden tutor, and infuriatingly indirect guardian. He crossed eras that killed kingdoms, outlasted archwizards, saw divine upheavals tear at magic itself, and repeatedly returned to the same work: shoring up wards, steering fools away from catastrophe, and making sure no single tyrant, cabal, or apocalypse got to write the last chapter of Faerûn.", "What gives Elminster his particular texture is that his legend is not just about winning duels. It is about staying present through history without calcifying into a relic. He knows monarchs, innkeepers, Chosen, devils, apprentices, Harper agents, and farm children by the same habit of attention. Shadowdale suits him for that reason. It lets the greatest busybody in the Realms remain close to common weather, common speech, and common trouble, which is exactly where he believes the fate of the world usually starts."], "threads": ["Prince turned wanderer, so his politics always skew toward protecting ordinary folk from overmighty rulers.", "Mystra's Chosen first, but never merely ceremonial: he treats the Weave as a sacred duty and a practical crisis to manage.", "Carries centuries of grief under an almost theatrical layer of wit, appetite, and harmless-looking eccentricity.", "Prefers layered contingencies, local allies, and small interventions that avert large disasters before anyone notices."], "spellbook_note": "Elminster's spellbook reads like the working library of a man who has had to be sage, guerrilla, ward-master, priestly servant, diplomat, and survivor across more than a millennium. That is why it mixes brutal high-circle magic with disguises, messenger spells, shelters, field repairs, and protective craft."}, {"slug": "mordenkainen", "name": "Mordenkainen", "epithet": "Lord Mage of Greyhawk", "image": "assets/mordenkainen.png", "basis": "Official 5e lore plus 5e-upscaled spellbook treatment for his full-power archmage persona", "frame": "5e codex synthesis", "race": "Human, Oeridian", "alignment": "True Neutral", "age": "82 in 591 CY; later active across the planes", "role": "Planewalking architect of Balance", "home": "Tower of Urm", "ac": "18", "hp": "230", "pb": "+7", "spell_dc": "23", "spell_attack": "+15", "stats": {"STR": 10, "DEX": 17, "CON": 18, "INT": 25, "WIS": 18, "CHA": 18}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Alive", "familiar": "No famous permanent familiar. He prefers hounds, phantom defenders, seal-constructs, and remote viewing arrays.", "items": ["staff of power", "planar charts", "balance seals", "traveling sanctum keys", "multiversal correspondence folios"], "attire": "Clean-lined robes, dark capes, precise belts, and high collars. He never looks accidental. Even his rings look like legal arguments cast in metal.", "lair": "The Tower of Urm feels like a thesis in stone. Rooms pivot by planar necessity. One window opens on snow, another on a brass sky, another on a world that may not exist tomorrow. His study is spare, because clutter is for people who do not know where every crisis belongs.", "personal": "He collects spells as tools of calibration. Even his comforts are engineered: good chairs, strong wards, absolute privacy, and the minimum number of fragile attachments compatible with still being mortal.", "boons": ["planar mastery", "balance intuition", "disjunction expertise", "sanctum architecture", "deep anti-outsider doctrine"], "spellbook": {"Cantrips": ["blade ward", "detect magic", "light", "mage hand", "mending", "message", "mind sliver", "prestidigitation", "ray of frost", "resistance"], "1st": ["alarm", "burning hands", "chromatic orb", "comprehend languages", "detect magic", "feather fall", "find familiar", "floating disk", "identify", "mage armor", "magic missile", "protection from evil and good", "shield", "silent image", "unseen servant"], "2nd": ["arcane lock", "darkvision", "detect thoughts", "invisibility", "knock", "levitate", "locate object", "magic mouth", "mirror image", "misty step", "rope trick", "see invisibility", "suggestion", "web"], "3rd": ["clairvoyance", "counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "Leomund's tiny hut", "lightning bolt", "magic circle", "major image", "protection from energy", "sending", "slow", "tongues"], "4th": ["arcane eye", "banishment", "dimension door", "Evard's black tentacles", "fire shield", "greater invisibility", "hallucinatory terrain", "Mordenkainen's faithful hound", "Otiluke's resilient sphere", "stoneskin", "wall of fire"], "5th": ["Bigby's hand", "cone of cold", "contact other plane", "dominate person", "hold monster", "legend lore", "Mordenkainen's private sanctum", "passwall", "Rary's telepathic bond", "scrying", "telekinesis", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "drawmij's instant summons", "globe of invulnerability", "guards and wards", "programmed illusion", "true seeing", "Mordenkainen's sword"], "7th": ["etherealness", "forcecage", "plane shift", "project image", "reverse gravity", "sequester", "simulacrum", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "maze", "mind blank", "sunburst"], "9th": ["foresight", "gate", "imprisonment", "meteor swarm", "shapechange", "time stop", "wish"]}, "legacy": ["Mordenkainen's disjunction", "Mordenkainen's lucubration", "Mordenkainen's celerity", "Mordenkainen's penultimate cogitation", "Mordenkainen's arcane seal"], "summary": "Mordenkainen is the classic archmage as strategist rather than savior: brilliant, weary, and obsessed with preventing any cosmic faction from winning too completely. His life is a chain of adventures, cabals, resurrections, and planar interventions all bent toward Balance.", "journey": ["Mordenkainen rose out of the World of Greyhawk as an adventurer first and a theorist second. That order matters. He earned his worldview in dungeons, negotiations, betrayals, and statecraft, not in abstract debate. Over time he gathered wealth, spells, influence, and students enough to become one of the signature wizard names of the setting, but the core habit never changed: study the field, map the powers, and never let ideology blind you to consequences.", "His founding and leadership of the Circle of Eight defined his middle and later legend. The Circle was not built to be a shining fellowship of heroes. It was a mechanism for subtle pressure, intelligence, and calibration. When wars, cults, fiends, or reckless powers threatened to tip the Flanaess too far in one direction, Mordenkainen's answer was often intervention by indirection. That philosophy won him admirers, rivals, and critics in equal number, especially when his commitment to Balance made him look cold to those who wanted a cleaner moral banner.", "Later lore pushes him outward across the planes, where Mordenkainen becomes even more of a grand systems-thinker. Devils, demons, gods, liches, empires, and mortal adventurers all become moving pieces in a vast equilibrium he is forever trying to preserve. The cost is personal isolation. He is one of fantasy's clearest examples of the wizard whose mind has gone so broad that intimacy becomes difficult, yet who still keeps forming circles, apprenticeships, and correspondences because he knows no single mage can track a multiverse alone."], "threads": ["Adventurer roots keep him pragmatic even when his theories sound severe.", "Balance is not neutrality by laziness; it is a deliberate attempt to stop any pole of power from becoming absolute.", "The Circle of Eight is his greatest institutional legacy and also the source of some of his deepest losses.", "His named spells suggest a taste for elegant control magic, secure architecture, and battlefield leverage over spectacle."], "spellbook_note": "Mordenkainen's library favors control, travel, sealing, scouting, and high-order problem solving because his career has been about steering crises rather than merely surviving them. Even his flashiest spells tend to serve positioning, balance, and strategic correction."}, {"slug": "khelben", "name": "Khelben \"Blackstaff\" Arunsun", "epithet": "The Blackstaff", "image": "assets/khelben.png", "basis": "5e conversion based on classic Khelben lore and spell traditions", "frame": "Epic 5e conversion", "race": "Human, Chosen of Mystra", "alignment": "Lawful Neutral", "age": "960 at death", "role": "Lord Mage of Waterdeep, master of force-breaking and city wardcraft", "home": "Blackstaff Tower", "ac": "21 with tower wards and staff backing", "hp": "250", "pb": "+8", "spell_dc": "23", "spell_attack": "+15", "stats": {"STR": 14, "DEX": 16, "CON": 20, "INT": 24, "WIS": 21, "CHA": 18}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Dead in body, enduring in the Blackstaff line", "familiar": "No famous pet familiar. Khelben trusted the Blackstaff, apprentices, encoded agents, and brutally disciplined contingency work.", "items": ["the Blackstaff", "dark civic robes", "warded silver torque", "city keys and sigils", "sealed Moonstar archives"], "attire": "Black, always black, but never plain. Heavy dark robes, a grave silver collar, fur when the season demands it, and a silhouette that announces order before he speaks.", "lair": "Blackstaff Tower is vertical authority. Tight stairwells, deep stone, rooms too large where intimidation matters and too small where privacy matters. His own chambers are immaculate, expensive, and unsentimental. The comfort is in control, not softness.", "personal": "Khelben’s spell library is what happens when love, paranoia, public duty, and a willingness to be hated all enter the same grimoire.", "boons": ["silver fire", "force-magic mastery", "citywide ward intuition", "Moonstar intelligence network", "staff-bond authority"], "spellbook": {"Cantrips": ["blade ward", "dancing lights", "detect magic", "mage hand", "message", "minor illusion", "prestidigitation", "ray of frost", "shocking grasp"], "1st": ["absorb elements", "alarm", "burning hands", "charm person", "comprehend languages", "detect magic", "feather fall", "find familiar", "identify", "mage armor", "magic missile", "shield", "silent image", "thunderwave", "unseen servant"], "2nd": ["arcane lock", "blur", "darkvision", "detect thoughts", "flaming sphere", "hold person", "invisibility", "knock", "levitate", "mirror image", "misty step", "see invisibility", "shatter", "web"], "3rd": ["counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "haste", "lightning bolt", "protection from energy", "sending", "slow", "stinking cloud", "tongues"], "4th": ["arcane eye", "banishment", "black tentacles", "dimension door", "fire shield", "greater invisibility", "ice storm", "locate creature", "stoneskin", "wall of fire"], "5th": ["Bigby's hand", "cone of cold", "contact other plane", "dominate person", "hold monster", "legend lore", "passwall", "Rary's telepathic bond", "scrying", "telekinesis", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "globe of invulnerability", "guards and wards", "programmed illusion", "sunbeam", "true seeing"], "7th": ["delayed blast fireball", "etherealness", "forcecage", "plane shift", "project image", "reverse gravity", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "mind blank", "power word stun", "sunburst"], "9th": ["foresight", "gate", "meteor swarm", "prismatic wall", "shapechange", "time stop", "wish"]}, "legacy": ["Khelben's warding whip", "Khelben's dweomerdoom", "Khelben's blackstaff", "force-glove battle techniques", "Moonstar dead-drops and watchspells"], "summary": "Khelben 'Blackstaff' Arunsun is the stern, state-minded face of high Realms wizardry: a Chosen of Mystra who believed cities survive because somebody makes the hard, ugly choices in time. Where Elminster often feels like a wandering safeguard, Khelben feels like a tower made human.", "journey": ["Khelben's history stretches across some of the deepest currents of the Realms, but his defining public identity is tied to Waterdeep. As Blackstaff and lordly archmage, he embodied a version of wizardly authority built on guardianship, secrecy, and discipline. He was never interested in being charming for its own sake. He cultivated gravity because his work required rulers, nobles, Harpers, and enemies alike to believe there was always another layer behind what they had already discovered.", "His marriage to Laeral Silverhand and his place among Mystra's great servants anchor him emotionally, but Khelben's real dramatic tension is political. He believed civilization could not be defended by idealism alone. That conviction repeatedly pushed him toward covert bargains, withheld truths, and strategic manipulations that made even allies question him. His break with portions of the Harpers and the founding of the Moonstars fit that pattern perfectly: he would rather be condemned for effective secrecy than praised for a noble failure.", "In legacy terms, Khelben matters because he turned the Blackstaff from a single wizard's symbol into an office, a burden, and a continuity of purpose. His tower, apprentices, networks, and hidden plans all assume that no guardian lasts forever. The man may loom, but the larger story is succession. Khelben built magical and civic machinery meant to outlive him, and that is why his shadow still falls over Waterdeep long after his own hand is gone from the staff."], "threads": ["Believes cities need unseen guardians willing to absorb moral ambiguity.", "Uses secrecy as infrastructure, not ornament; almost every alliance has a hidden second function.", "Deeply shaped by Mystra's service, but expresses devotion through vigilance more than warmth.", "Laeral, Waterdeep, and the office of the Blackstaff are the emotional and political anchors of his story."], "spellbook_note": "Khelben's spellbook is the arsenal of a guardian-administrator. It leans toward wards, counters, surveillance, command decisions, and city-scale defensive responses because his life was spent protecting institutions as much as defeating foes."}, {"slug": "szass-tam", "name": "Szass Tam", "epithet": "Regent of Thay", "image": "assets/szass_tam.png", "basis": "Official 5e status and CR, with a 5e-formatted necromantic state spellbook", "frame": "5e conversion with official CR anchor", "race": "Lich, formerly human", "alignment": "Lawful Evil", "age": "Undead since 1159 DR", "role": "Necromantic head of state, ritual tyrant, corpse strategist", "home": "The Citadel on Thaymount", "ac": "22", "hp": "360", "pb": "+9", "spell_dc": "24", "spell_attack": "+16", "stats": {"STR": 12, "DEX": 16, "CON": 20, "INT": 26, "WIS": 21, "CHA": 22}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Undead and ruling", "familiar": "No pet familiar. His substitute ecosystem is made of lich attendants, vampiric generals, dread warriors, and projected presences.", "items": ["staff of power", "Death Moon Orb", "state necromantic reliquaries", "sacrificial ritual tools", "obsidian and gold regalia of Thay"], "attire": "Long crimson-black vestments with funereal volume, gold and bone accents, and enough drape to make him seem to hover even when still. His look is ceremonial terror.", "lair": "The Citadel is volcanic necromancy at imperial scale. Red-black halls, braziers burning with sour alchemical light, regimented silence broken by chains and ritual chant, and rooms full of catalogued remains waiting for assignment.", "personal": "He is less interested in killing than in ownership. A corpse is useful. A frightened court is useful. Time itself is useful if enough souls are burned to buy it.", "boons": ["lich resilience", "state ritual infrastructure", "fear aura", "paralyzing touch", "Thayan circle magic"], "spellbook": {"Cantrips": ["chill touch", "control flames", "detect magic", "mage hand", "message", "prestidigitation", "ray of frost", "toll the dead"], "1st": ["alarm", "cause fear", "detect magic", "false life", "feather fall", "fog cloud", "identify", "mage armor", "magic missile", "protection from evil and good", "ray of sickness", "shield", "unseen servant"], "2nd": ["blindness/deafness", "darkness", "gentle repose", "hold person", "knock", "levitate", "ray of enfeeblement", "scorching ray", "see invisibility", "spider climb", "web"], "3rd": ["animate dead", "bestow curse", "counterspell", "dispel magic", "fear", "fireball", "glyph of warding", "lightning bolt", "protection from energy", "sending", "speak with dead", "vampiric touch"], "4th": ["arcane eye", "blight", "dimension door", "Evard's black tentacles", "fire shield", "greater invisibility", "hallucinatory terrain via proxies", "ice storm", "phantasmal killer via proxies", "stoneskin"], "5th": ["cloudkill", "cone of cold", "contact other plane", "danse macabre", "dominate person", "hold monster", "legend lore", "negative energy flood", "scrying", "telekinesis", "wall of force"], "6th": ["circle of death", "contingency", "create undead", "disintegrate", "eyebite", "globe of invulnerability", "magic jar", "true seeing"], "7th": ["finger of death", "forcecage", "plane shift", "power word pain", "project image", "reverse gravity", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "maddening darkness", "maze", "power word stun"], "9th": ["foresight", "gate", "imprisonment", "meteor swarm", "power word kill", "time stop", "wish"]}, "legacy": ["animate dread warrior", "mage tunnel", "Dread Ring mass rituals", "Eltab-binding runes", "state necromancy circles"], "summary": "Szass Tam is what happens when wizardly statecraft abandons every humane restraint. He did not merely become a lich and ruler of Thay; he restructured an entire nation around necromancy, terror, and the logic of perpetual dominion.", "journey": ["Szass Tam began as one of Thay's Red Wizards and rose within a political culture already comfortable with ruthless magical elitism. His genius was not only in necromancy but in understanding that institutions can be made as monstrous as any spell if fear, bureaucracy, and ambition are aligned correctly. Becoming Zulkir of Necromancy and then lichhood did not redirect his life so much as remove the last mortal limits on its scale.", "His long struggle against rival Zulkirs and competing power centers culminated in his emergence as Regent of Thay, where personal immortality fused with state power. From there his story becomes one of industrialized undeath: armies that do not tire, fortresses that feel embalmed while still functioning, and a regime in which magical talent, trade, espionage, and religion are all bent toward his supremacy. The Dread Ring projects and other apocalypse-scale schemes show the same instinct taken to its endpoint: if the world will not bow naturally, rebuild the conditions of existence until it must.", "What makes Szass Tam more frightening than a simple death-wizard is his patience. He is not dramatic because he needs attention. He is dramatic because spectacle can be useful. At heart he is administrative evil: ledgers, chains of command, embalmed courtiers, polite audiences, and annihilation planned years in advance. Even his court style suggests a being who has passed beyond appetite except for one remaining hunger, which is control itself."], "threads": ["Treats necromancy as governance, logistics, and economic policy, not just battlefield horror.", "Uses Thay's hierarchy as a weapon system, with the state itself acting as his extended spell focus.", "Lichdom sharpened his patience and made long projects more important to him than immediate conquest.", "Prefers dominance through inevitability: attrition, terror, resurrection, and the collapse of resistance."], "spellbook_note": "Szass Tam's spellbook is heavy with command magic, mass death, corpse-management, wards, and reality-warping endgames because he thinks like a sovereign engineer of extinction. Even his utility magic serves state power, secrecy, or preservation of his person."}, {"slug": "alustriel", "name": "Alustriel Silverhand", "epithet": "High Lady of Silverymoon", "image": "assets/alustriel.png", "basis": "Official 5e status as a wizard CR 21, with spellbook expanded to match her long public life", "frame": "Official 5e anchored profile", "race": "Human, Chosen of Mystra", "alignment": "Chaotic Good", "age": "729 in 1491 DR", "role": "Beloved ruler, diplomat, and radiant battle-sage", "home": "The High Palace of Silverymoon", "ac": "18 with mage armor", "hp": "272", "pb": "+7", "spell_dc": "23", "spell_attack": "+15", "stats": {"STR": 12, "DEX": 20, "CON": 18, "INT": 24, "WIS": 23, "CHA": 22}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Alive", "familiar": "No famous constant familiar. Her magic reads more like courtly sorcery, subtle songwarding, and civic blessing than pet companionship.", "items": ["moonlit staff", "silvery ceremonial jewels", "portable audience tokens", "travel-friendly warding charms", "royal seals and private letters"], "attire": "Flowing silver-blue gowns and robes that manage to look regal, warm, and battle-ready all at once. Gold trim, moon-bright jewelry, and the unmistakable ease of someone who has worn both crowns and spellfire for centuries.", "lair": "Alustriel’s quarters feel like a palace that remembers it is also a refuge. Moonlight, silk, fresh air, flowers, warm stone, music in distant halls, and private rooms designed for counsel rather than fear. Her study is full of letters, maps, and civic burdens, not trophies.", "personal": "Her book balances mercy and force. She keeps spells for feasts, negotiations, rescues, wards, and last-ditch war, because loving a city means preparing for all of it.", "boons": ["Chosen protections", "name-hearing magic", "silver fire", "public charisma", "city-sheltering wardcraft"], "spellbook": {"Cantrips": ["dancing lights", "friends", "light", "mage hand", "message", "minor illusion", "prestidigitation", "ray of frost"], "1st": ["alarm", "charm person", "comprehend languages", "detect magic", "disguise self", "feather fall", "find familiar", "identify", "mage armor", "magic missile", "shield", "sleep", "unseen servant"], "2nd": ["arcane lock", "calm emotions", "detect thoughts", "enhance ability", "hold person", "invisibility", "knock", "lesser restoration", "mirror image", "misty step", "see invisibility", "suggestion"], "3rd": ["counterspell", "dispel magic", "fly", "glyph of warding", "hypnotic pattern", "Leomund's tiny hut", "sending", "slow", "tongues", "water breathing"], "4th": ["arcane eye", "banishment", "dimension door", "greater invisibility", "hallucinatory terrain", "locate creature", "Otiluke's resilient sphere", "polymorph", "stoneskin"], "5th": ["cone of cold", "contact other plane", "dominate person", "dream", "greater restoration", "hold monster", "legend lore", "mass cure wounds", "Rary's telepathic bond", "telekinesis", "wall of force"], "6th": ["chain lightning", "contingency", "globe of invulnerability", "guards and wards", "heal", "mass suggestion", "sunbeam", "true seeing"], "7th": ["etherealness", "plane shift", "prismatic spray", "project image", "regenerate", "teleport"], "8th": ["antimagic field", "demiplane", "feeblemind", "mind blank", "sunburst"], "9th": ["foresight", "gate", "mass heal", "power word heal", "time stop", "wish"]}, "legacy": ["Alustriel's banner", "Alustriel's fang", "Alustriel's mantle", "Alustriel's improved mantle", "Alustriel's sword of stars", "turtle soup"], "summary": "Alustriel Silverhand is one of the gentlest great powers in the Realms, but never a soft one. Her journey is the story of a ruler who tried to prove that wizardry, diplomacy, generosity, and beauty could hold the North together without becoming naive.", "journey": ["As one of the Seven Sisters and a daughter of Mystra's long design, Alustriel was born into mythic expectations. Yet what distinguishes her is how consistently she turned overwhelming personal power outward into patronage, alliance-building, and civic splendor. Silverymoon under Alustriel was not just a place she ruled; it was a statement about what magical civilization could look like when elegance, learning, trade, and hospitality were treated as strategic strengths rather than luxuries.", "Her role in gathering the Silver Marches turned that local vision into a regional one. After northern threats and the destruction of old bastions made cooperation urgent, Alustriel worked as convener, persuader, and symbolic center for a fragile confederation. That required a different kind of mastery from battle magic. She had to read dwarves, elves, humans, merchants, soldiers, and proud city-rulers, then make them believe a shared future was worth the compromises. When dragons, fiends, and war tested the Marches, she proved that her gracious reputation did not exclude resolve.", "In later material, Alustriel often feels like one of the Realms' remaining elder lights: not withdrawn, but seasoned into a calmer radiance. She advises, mediates, and reenters the great game when needed, including among the Wizards Three. Her story is therefore less about a single rise and fall than about sustained stewardship. Many archmages leave ruins behind. Alustriel's claim to greatness is that she leaves functioning communities, protected roads, and people who remember feeling safer while she watched over them."], "threads": ["Uses beauty, culture, and generosity as deliberate tools of statecraft.", "Silverymoon is both home and proof of her belief that civilization can be luminous without being weak.", "The Silver Marches show her at her most political: connector, mediator, and architect of coalition.", "Her compassion never cancels her authority; it legitimizes it."], "spellbook_note": "Alustriel's spellbook balances courtly utility, protective magic, communication, and decisive battlefield power because her life has been split between ruling, convening allies, and stepping forward personally when the North needed an archmage rather than a hostess."}, {"slug": "laeral", "name": "Laeral Silverhand", "epithet": "Open Lord of Waterdeep", "image": "assets/laeral.png", "basis": "Official 5e stat block from Dragon Heist / Dragon+ appendix, expanded into a broader personal spellbook", "frame": "Official 5e profile", "race": "Human, Chosen of Mystra", "alignment": "Chaotic Good", "age": "Born 765 DR", "role": "Open Lord, witch-queen, survivor, and silver-haired duelist", "home": "The Palace of Waterdeep; with deep history in Blackstaff Tower and older northern realms", "ac": "18 (robe of the archmagi)", "hp": "228", "pb": "+6", "spell_dc": "21", "spell_attack": "+13", "stats": {"STR": 13, "DEX": 17, "CON": 20, "INT": 20, "WIS": 20, "CHA": 19}, "slots": "4/3/3/3/3/1/1/1/1 prepared officially; deeper book expanded here", "status": "Alive", "familiar": "No constant canonical familiar in the spotlight; her silver hair and spellfire functions often fill the dramatic space a familiar would otherwise occupy.", "items": ["white robe of the archmagi", "flame tongue longsword", "state disguises", "coded signets", "personal notes from older ages"], "attire": "White and gold layered over deep red, courtly and severe in equal measure. Laeral looks like a queen who could start a feast, a duel, or a coup with the same steady hand.", "lair": "Her private quarters in Waterdeep feel less like a queen’s vanity suite and more like a war room with excellent taste. Maps, sealed correspondence, magical disguises, and old keepsakes sit beside polished furniture and perfect linens. The air is calm because she needs one place in Waterdeep that obeys her.", "personal": "Laeral’s spellbook holds court magic, dueling magic, spycraft, healing silver fire, and more than a little old anger.", "boons": ["silver fire", "silver hair attacks", "magic resistance from the robe", "centuries of practical political magic"], "spellbook": {"Cantrips": ["light", "mage hand", "minor illusion", "prestidigitation", "ray of frost", "friends", "message"], "1st": ["detect magic", "disguise self", "magic missile", "shield", "alarm", "charm person", "comprehend languages", "mage armor", "sleep", "unseen servant"], "2nd": ["detect thoughts", "invisibility", "misty step", "arcane lock", "hold person", "mirror image", "suggestion", "see invisibility"], "3rd": ["counterspell", "fly", "sending", "tongues", "dispel magic", "glyph of warding", "hypnotic pattern", "lightning bolt"], "4th": ["banishment", "greater invisibility", "Otiluke's resilient sphere", "arcane eye", "dimension door", "fire shield", "polymorph", "stoneskin"], "5th": ["cone of cold", "geas", "Rary's telepathic bond", "dominate person", "hold monster", "legend lore", "mislead", "telekinesis"], "6th": ["globe of invulnerability", "mass suggestion", "chain lightning", "contingency", "sunbeam", "true seeing"], "7th": ["prismatic spray", "teleport", "etherealness", "project image", "reverse gravity"], "8th": ["feeblemind", "power word stun", "antimagic field", "mind blank"], "9th": ["time stop", "foresight", "wish"]}, "legacy": ["Laeral's silver lance", "Laeral's crowning touch", "Laeral's cutting hand", "Laeral's aqueous column", "Laeral's dancing dweomer", "Laeral's dancing whip", "Laeral's disrobement", "Laeral's invisible blade", "Laeral's raging griffon"], "summary": "Laeral Silverhand combines ancient arcane stature with a ruler's instinct for traffic, money, law, and faction. She feels like a wizard who never stopped understanding cities at street level, which is why Waterdeep suits her so well.", "journey": ["Laeral's life covers wanderings, courts, towers, alliances, and disasters enough for several lesser legends, but her mature identity centers on governance. As one of Mystra's daughters and one of the most formidable spellcasters in Faerûn, she could have settled for being merely feared or revered. Instead, her story repeatedly bends back toward service in urban life, where magical authority has to coexist with merchants, guilds, masked politics, and the bad timing of ordinary crime.", "Her partnership with Khelben links her to one of the great strategic minds of the Realms, yet Laeral has always felt different in texture. Where he often reads as flinty and structural, she reads as adaptive, socially intuitive, and better able to move between salons, councils, and crisis rooms without seeming to change shape. That flexibility becomes decisive in Waterdeep. As Open Lord, she governs not as a remote sorcerous monarch but as the city's most capable reader of power, temperament, and risk.", "In 5e-era Waterdeep lore, Laeral stands at the hinge between mythic past and practical present. She hosts the Council of Waterdeep, navigates noble conspiracies and external threats, and keeps the city legible to itself in dangerous years. Her journey therefore becomes one of condensation. All the ancient grandeur, all the Silverhand history, all the dangerous knowledge, and all the personal losses are compressed into the daily labor of keeping one impossible city alive, rich, and free enough to remain worth protecting."], "threads": ["Ancient power expressed through urban governance rather than isolation.", "Reads rooms, factions, and motives as sharply as she reads spellwork.", "Her marriage to Khelben matters, but she is never merely an extension of his legacy.", "Waterdeep turns her from a legendary figure into an active civic instrument."], "spellbook_note": "Laeral's prepared magic looks like that of a ruler who may need, within the same day, to brief agents, expose deception, protect a council chamber, negotiate peace, and then survive an assassination attempt. Utility and authority sit side by side in her book."}, {"slug": "karsus", "name": "Karsus", "epithet": "The Child-Who-Would-Be-a-God", "image": "assets/karsus.png", "basis": "5e conversion of Netheril’s greatest arcanist, keeping his famous non-5e legacy workings separate from the playable 5e spellbook", "frame": "Mythic 5e conversion", "race": "Human Netherese arcanist", "alignment": "Neutral, often tipping toward Chaotic Neutral in later portrayals", "age": "Mortal age lost to myth", "role": "Archwizard of Netheril and author of catastrophic ambition", "home": "Formerly Karsus Enclave; later vestigial echoes in ruined sanctums and remembered keeps", "ac": "19", "hp": "310", "pb": "+9", "spell_dc": "25", "spell_attack": "+17", "stats": {"STR": 10, "DEX": 16, "CON": 18, "INT": 28, "WIS": 18, "CHA": 22}, "slots": "4/3/3/3/3/2/2/1/1 plus mythic prototype workings", "status": "Dead, vestigial, remembered, and dangerously imitated", "familiar": "No iconic familiar. Karsus trusted intellect, floating specula, spell engines, and his own impossible confidence.", "items": ["Netherese arcanist regalia", "mythallar interfaces", "red-gold sigil rings", "memory crystals", "prototype focus stones"], "attire": "Karsus dresses like someone who has never once doubted he belonged at the center of history: Netherese layered robes, geometric gold trim, red-violet authority, and jewelry designed to imply both youth and inevitability.", "lair": "His sanctum is pure Netheril: floating lamps, rune-glass, suspended observatories, lattice-work floors, gigantic formula walls, and apparatus for holding impossible amounts of magical pressure. Beautiful, brilliant, and one miscalculation away from annihilation.", "personal": "His spellbook reads like genius refusing to believe in limits. The early pages show curiosity. The late pages show appetite.", "boons": ["Netherese arcanist supremacy", "mythallar literacy", "historic talent beyond mortal prudence", "ritual scaling at civilization level"], "spellbook": {"Cantrips": ["blade ward", "detect magic", "mage hand", "message", "mind sliver", "minor illusion", "prestidigitation", "ray of frost", "true strike"], "1st": ["alarm", "charm person", "chromatic orb", "comprehend languages", "disguise self", "find familiar", "identify", "mage armor", "magic missile", "shield", "sleep", "silent image", "Tasha's hideous laughter", "unseen servant"], "2nd": ["arcane lock", "detect thoughts", "enhance ability", "hold person", "invisibility", "knock", "levitate", "mirror image", "misty step", "scorching ray", "see invisibility", "suggestion", "web"], "3rd": ["counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "haste", "hypnotic pattern", "lightning bolt", "major image", "slow", "sending", "tongues"], "4th": ["arcane eye", "banishment", "dimension door", "greater invisibility", "hallucinatory terrain", "ice storm", "locate creature", "polymorph", "stoneskin", "wall of fire"], "5th": ["cone of cold", "contact other plane", "dominate person", "dream", "hold monster", "legend lore", "mislead", "passwall", "scrying", "telekinesis", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "globe of invulnerability", "move earth", "programmed illusion", "sunbeam", "true seeing"], "7th": ["etherealness", "forcecage", "plane shift", "project image", "reverse gravity", "simulacrum", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "maze", "mind blank", "power word stun"], "9th": ["foresight", "gate", "imprisonment", "meteor swarm", "power word kill", "time stop", "wish"]}, "legacy": ["Karsus's avatar", "mythallar-binding theorems", "speculum lessons from Karsus' Keep", "crown-control prototypes", "divinity-usurpation calculus"], "summary": "Karsus is the archetype of magical hubris in D&D lore: a genius so immense that his ambition outgrew not just his peers but the world's ability to survive him. Every later archmage studies his brilliance as both inspiration and warning.", "journey": ["Karsus rose within Netheril, a civilization whose floating enclaves and arcanist-lords already operated at a scale later ages could barely imagine. In that environment he was not merely gifted, he was singular. His research, command of epic spellcraft, and hunger to push beyond inherited limits made him the brightest and most dangerous expression of Netherese magical culture. He belongs to that specific historical moment when wizardry was confident enough to believe there must always be a bigger spell if one were clever enough to build it.", "The crises closing around Netheril, especially existential threats to its magical supremacy, turned Karsus's ambition into desperation. He did not see himself as a vandal. He saw himself as the only mind bold enough to seize control of a failing cosmic order and save his people by force of intellect. That self-conception is what makes Karsus tragic instead of merely arrogant. He misread scale itself. He treated divinity as a problem of access, transfer, and capacity, then cast Karsus's Avatar and discovered too late that the structure holding magic together was not a throne one could simply occupy without consequence.", "The fall that followed made Karsus immortal in the worst possible way. He becomes a name spoken whenever mages discuss the line between genius and trespass. His journey is short compared to many others in this codex, but it casts one of the longest shadows. Netheril did not merely lose a wizard when he failed. Magic, empire, and the future of arcanist civilization were all rewritten by his overreach."], "threads": ["Represents the summit and the fatal flaw of Netherese magical confidence.", "Believed the scale of a problem could always be matched by scaling up arcane power.", "His tragedy comes from misidentifying raw access to power as wisdom enough to wield it.", "Functions in later lore as a cautionary patron-saint of brilliant overreach."], "spellbook_note": "Karsus's book is packed with transformational, world-bending, and aggressive arcanist craft because he came from an age that normalized impossible magic. Even his lower-circle choices feel like steps toward a final thesis: that there should be no ceiling a great enough wizard cannot break."}, {"slug": "vecna", "name": "Vecna", "epithet": "The Whispered One", "image": "assets/vecna.png", "basis": "Official 5e archlich statistics and lore, with spellbook holdings expanded around secrecy, domination, and undeath", "frame": "Official 5e profile", "race": "Human lich, later god", "alignment": "Neutral Evil", "age": "Ancient", "role": "Archlich, god of secrets, and apocalyptic conspirator", "home": "Rotted sanctums across the planes; no throne stays his for long", "ac": "18", "hp": "272", "pb": "+8", "spell_dc": "22", "spell_attack": "+14", "stats": {"STR": 14, "DEX": 16, "CON": 18, "INT": 22, "WIS": 24, "CHA": 16}, "slots": "Special monster casting, with at-will and daily effects rather than normal slot tracking", "status": "Undead and divine", "familiar": "No pet. Vecna uses cults, severed relics, spies, undead, and the weakness of secrecy itself.", "items": ["Afterthought", "theological masks", "hidden reliquary caches", "Hand and Eye legends shadowing every cult site"], "attire": "Vecna dresses like an anatomy lesson that became royalty. Bone, withered flesh, hanging robes, and relic-metal combine into a silhouette halfway between a lich, a king, and a blasphemy.", "lair": "His lairs never feel inhabited in a mortal sense. They feel confessed into being. Walls whisper, secrets echo, and every chamber suggests you should not know it exists. He stores revelation like other tyrants store grain.", "personal": "Vecna’s magic is not merely necromancy. It is possession through knowledge. He kills, yes, but the deeper goal is always control through hidden things.", "boons": ["legendary resistances", "vile teleport", "dread counterspell", "undying rejuvenation", "cultic secret-web across worlds"], "spellbook": {"Cantrips": ["detect magic", "mage hand", "prestidigitation", "chill touch", "toll the dead"], "1st": ["disguise self", "false life", "identify", "mage armor", "magic missile", "ray of sickness", "shield", "silent image"], "2nd": ["blindness/deafness", "detect thoughts", "gentle repose", "hold person", "invisibility", "mirror image", "misty step", "ray of enfeeblement", "see invisibility", "suggestion"], "3rd": ["animate dead", "bestow curse", "counterspell", "dispel magic", "fear", "fireball", "fly", "lightning bolt", "sending", "speak with dead", "vampiric touch"], "4th": ["arcane eye", "blight", "dimension door", "greater invisibility", "phantasmal killer", "polymorph", "stoneskin"], "5th": ["cloudkill", "cone of cold", "dominate person", "hold monster", "legend lore", "mislead", "scrying", "telekinesis", "wall of force"], "6th": ["circle of death", "disintegrate", "flesh to stone", "globe of invulnerability", "magic jar", "mass suggestion", "true seeing"], "7th": ["finger of death", "forcecage", "plane shift", "project image", "reverse gravity", "teleport"], "8th": ["antimagic field", "clone", "demiplane", "feeblemind", "maze", "power word stun"], "9th": ["foresight", "gate", "imprisonment", "power word kill", "shapechange", "time stop", "wish"]}, "legacy": ["Book of Vile Darkness theorems", "god-fracture rites", "Hand-and-Eye relic symbology", "Kas-bound betrayal wards"], "summary": "Vecna's journey is the evolution of forbidden knowledge into a theology of control. He began as a mortal archwizard, became a lich, survived dismemberment, and then turned secrecy itself into one of the multiverse's most terrifying divine portfolios.", "journey": ["Vecna's earliest legend is already intimate with cruelty: a mortal wizard who clawed his way upward through magical mastery, empire-building, and the use of terror as a political instrument. Lichdom let him preserve not just life but method. His was never the flamboyant evil of a conqueror who wants cheers. It was the colder evil of someone who believes hidden knowledge should always sit above the many, and that revelation is valuable chiefly as leverage.", "The betrayal by Kas is the hinge on which all later Vecna stories turn. Losing his hand and eye should have ended him. Instead, it converted his body into relics and his legend into contagion. Cults, secret texts, whispered rites, and the dreadful magnetism of the Eye and Hand kept extending his reach far beyond what a single corpse or citadel could have done. Vecna becomes especially frightening in this phase because defeat only makes him more modular. You do not need to meet him to be captured by his logic.", "In 5e's current framing, Vecna is once again a multiversal threat whose ambitions have outgrown any one world. That is consistent with the whole arc of his life. He always trends upward from wizard to lich, from lich to god, from god to would-be author of reality. His journey is not about learning humility. It is about repeatedly discovering that the universe still contains one more forbidden door, and deciding that it should belong to him."], "threads": ["Knowledge is never neutral in his hands; it is hierarchy, blackmail, initiation, and domination.", "The Eye and Hand turned a defeated body into a distributed empire of temptation.", "Kas is not just a traitor in his story but the proof that Vecna's own methods breed rebellion.", "Every later return escalates the scale, because secrecy for Vecna always seeks a larger throne."], "spellbook_note": "Vecna's spellbook favors domination, concealment, memory violation, apocalyptic force, and escape hatches because his career is built on surviving defeat and turning information asymmetry into absolute advantage."}, {"slug": "iggwilv", "name": "Iggwilv", "epithet": "The Witch Queen", "image": "assets/iggwilv.png", "basis": "Official 5e Witch Queen frame, expanded to cover her whole career from Tasha to archfey demonologist", "frame": "Official 5e profile", "race": "Archfey, formerly human", "alignment": "Chaotic Neutral in 5e", "age": "Ancient", "role": "Demonologist, illusionist, manipulator, and author of the Demonomicon", "home": "The Palace of Heart’s Desire in Prismeer, with older hellish and Oerthly sanctums behind her", "ac": "19", "hp": "255", "pb": "+6", "spell_dc": "22", "spell_attack": "+14", "stats": {"STR": 10, "DEX": 18, "CON": 18, "INT": 27, "WIS": 12, "CHA": 23}, "slots": "4/3/3/3/3/2/2/1/1", "status": "Alive and never as absent as people hope", "familiar": "Her household of companions, fey servitors, and demonic contacts makes the question of one familiar feel almost quaint.", "items": ["robe of the archmagi", "grinning occult curios", "the Demonomicon", "fey glamour jewelry", "binding circles disguised as décor"], "attire": "Iggwilv dresses like temptation with a doctorate. Furs, layered silks, moon-pale skin, impossible tailoring, and jewelry that might be glamour, prison, or proposal depending on the angle.", "lair": "Her quarters combine fairy-tale luxury with occult menace. Soft carpets, impossible desserts, perfume, candlelight, and music sit inches away from demon masks, binding circles, secret passages, and shelves of taboo correspondence. Comfort is one of her weapons.", "personal": "Her spellbook is a seduction and a trap. The apprentice pages are brilliant. The middle pages are dangerous. The late pages are written by someone who stopped treating consequences as a limiting factor.", "boons": ["archfey resilience", "demonological mastery", "layered glamour", "ancient pacts", "reputation strong enough to function as a magical resource"], "spellbook": {"Cantrips": ["friends", "mage hand", "minor illusion", "poison spray", "prestidigitation", "ray of frost", "toll the dead", "vicious mockery"], "1st": ["charm person", "comprehend languages", "detect magic", "disguise self", "find familiar", "hideous laughter", "identify", "mage armor", "magic missile", "shield", "sleep", "unseen servant"], "2nd": ["alter self", "crown of madness", "darkness", "detect thoughts", "hold person", "invisibility", "mirror image", "misty step", "phantasmal force", "suggestion", "web"], "3rd": ["bestow curse", "counterspell", "dispel magic", "fear", "fly", "hypnotic pattern", "major image", "sending", "stinking cloud", "summon shadowspawn", "tongues"], "4th": ["arcane eye", "banishment", "blight", "charm monster", "confusion", "dimension door", "greater invisibility", "hallucinatory terrain", "phantasmal killer", "polymorph"], "5th": ["contact other plane", "dominate person", "dream", "geas", "hold monster", "legend lore", "mislead", "modify memory", "scrying", "telekinesis", "wall of force"], "6th": ["create undead", "disintegrate", "eyebite", "flesh to stone", "globe of invulnerability", "mass suggestion", "programmed illusion", "summon fiend", "true seeing"], "7th": ["etherealness", "forcecage", "plane shift", "project image", "reverse gravity", "sequester", "teleport"], "8th": ["demiplane", "dominate monster", "feeblemind", "maze", "mind blank", "power word stun"], "9th": ["foresight", "gate", "imprisonment", "power word kill", "shapechange", "time stop", "wish"]}, "legacy": ["Iggwilv's lightning cage", "Iggwilv's timeless sleep", "Demonomicon binding formulae", "Natasha the Dark glamour cycles", "Tasha's older prototype cantrips"], "summary": "Iggwilv is one of D&D's great self-inventing wizards: witch queen, demonologist, author, seductress, tyrant, runaway daughter, and archfey under another name. Her journey is not linear power growth so much as a series of frighteningly successful reinventions.", "journey": ["Her origins tie her to Baba Yaga and to a tradition of magic that is older, stranger, and less institutionally tidy than court wizardry. From there Iggwilv accumulates teachers, masks, and names with almost predatory speed. She is associated with apprenticeship under Zagig, with the identity of Tasha, and with the kind of magical experimentation that treats taboos as invitations. Even early in her legend, one gets the sense that she is not content merely to master available categories of power. She wants to rewrite what sort of being she is allowed to become.", "Her most infamous era is the demonological one: the author of the Demonomicon, binder and manipulator of fiends, captor and lover of Graz'zt, and mother to Iuz. Those relationships alone would secure her notoriety, but they also reveal the throughline of her character. Iggwilv is fascinated by dangerous intelligences she can test herself against. She is too proud to remain a servant, too curious to remain safe, and too gifted to avoid changing the political geography around her whenever she enters a room.", "Modern 5e lore complicates her further through Zybilna and Prismeer, where the Witch Queen reappears in a register that is still controlling and secretive but no longer reducible to straightforward villainy. That does not erase the old Iggwilv. It reframes her as a wizard whose life has become a hall of mirrors. Tasha, Iggwilv, Zybilna: each name is true, partial, and strategic. Her journey is therefore about reinvention as magical practice. She does not just cast illusions. She lives as one."], "threads": ["Power through reinvention: names, roles, and even moral presentation shift as tools of survival and ascendancy.", "Her relation to demons is intellectual, erotic, political, and deeply competitive all at once.", "The Demonomicon makes her not only a spellcaster but an author of systems and dangerous expertise.", "Zybilna-era lore adds ambiguity without removing the threat of her older appetites."], "spellbook_note": "Iggwilv's spellbook is broad because she has lived too many magical lives to be narrow. Demon binding, glamours, delight, punishment, summoning, escape magic, and identity-shaping all appear because she treats selfhood and power as things to be edited."}, {"slug": "bigby", "name": "Bigby", "epithet": "Bigby the Great", "image": "assets/bigby.png", "basis": "5e lore frame, with current gnome presentation and an expanded hand-magic spellbook", "frame": "5e codex synthesis", "race": "Gnome in current 5e lore, formerly human", "alignment": "Neutral", "age": "58 in 591 CY before death and reincarnation; later active again in gnomish form", "role": "Force-shaping battlefield savant and hand-spell virtuoso", "home": "Oerth, Greyspace, and later giant-haunted roads", "ac": "18", "hp": "185", "pb": "+6", "spell_dc": "20", "spell_attack": "+12", "stats": {"STR": 8, "DEX": 18, "CON": 16, "INT": 22, "WIS": 16, "CHA": 15}, "slots": "4/3/3/3/3/1/1/1/1", "status": "Alive in modern 5e lore", "familiar": "Usually not the point. Bigby prefers hands, servant-force, and practical magical manipulation. His dog Bigboy matters more emotionally than a familiar does structurally.", "items": ["staff of power", "wand pairings", "field notebooks", "rings of protection and mind shielding", "manual of his hand spells"], "attire": "Whether human or gnome, Bigby dresses like a brilliant field wizard who values movement. Belts, sleeves that do not catch, scarves, boots, and practical layers dominate everything. Even his elegance is ergonomic.", "lair": "Bigby’s quarters are a workshop first. Chalk marks, force diagrams, finger-jointed models, quills, coffee or wine, and notes about grip angles and leverage share space with old trophies and warm domestic clutter. He likes a place that can become a laboratory in seconds.", "personal": "He kept low-circle spells because hands begin with touch. The earliest pages of his spellbook are apprentice tricks. The later pages are battlefield geometry with personality.", "boons": ["force manipulation mastery", "famous hand-spell lineage", "experience with giants and runes", "calm improvisational battlefield sense"], "spellbook": {"Cantrips": ["mage hand", "mending", "message", "minor illusion", "prestidigitation", "ray of frost", "shocking grasp"], "1st": ["alarm", "burning hands", "catapult", "charm person", "find familiar", "grease", "identify", "mage armor", "magic missile", "shield", "silent image", "sleep", "unseen servant"], "2nd": ["arcane lock", "blur", "enlarge/reduce", "hold person", "invisibility", "knock", "levitate", "mirror image", "misty step", "shatter", "suggestion", "web"], "3rd": ["counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "haste", "lightning bolt", "sending", "slow", "tongues"], "4th": ["arcane eye", "dimension door", "Evard's black tentacles", "greater invisibility", "ice storm", "Otiluke's resilient sphere", "stoneskin"], "5th": ["Bigby's hand", "cone of cold", "hold monster", "legend lore", "passwall", "telekinesis", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "globe of invulnerability", "move earth", "true seeing"], "7th": ["forcecage", "plane shift", "project image", "reverse gravity", "teleport"], "8th": ["antimagic field", "maze", "mind blank", "power word stun"], "9th": ["foresight", "meteor swarm", "time stop", "wish"]}, "legacy": ["Bigby's bookworm bane", "Bigby's dexterous digits", "Bigby's pugnacious pugilist", "Bigby's forceful hand", "Bigby's grasping hand", "Bigby's crushing hand", "Bigby's snapping digits", "Manual Powers Beyond Life"], "summary": "Bigby's legend begins in the orbit of Mordenkainen but grows into something distinct: a wizard remembered for precise force, disciplined gesture-magic, and later scholarship broad enough to engage giants and multiversal lore. He is one of the clearest examples of an apprentice who became a full school unto himself.", "journey": ["Bigby's early fame is inseparable from Mordenkainen. In classic Greyhawk tradition he begins under his influence and then grows into one of the most recognized members of that wider magical constellation. That origin gives his journey a satisfying tension. He is never merely derivative, but he is always in conversation with a greater mentor's methods, priorities, and expectations. The result is a wizard whose work feels cleaner, more focused, and often more personally stylized than Mordenkainen's sprawling strategic vision.", "His signature hand spells tell you a great deal about him. Bigby likes force made articulate. Instead of anonymous devastation, he favors shaped pressure, directed grasping, interposition, and controlled violence that still feels almost tactile. That aesthetic choice becomes a personality clue: Bigby is not uninterested in power, but he wants power that can be positioned, measured, and applied with almost mathematical intent.", "Recent 5e material associated with Bigby also widens him into a scholar of giant lore and a voice within a larger archive of mythic knowledge. That later framing fits surprisingly well. A wizard obsessed with scale, force, and shaped magical presence would naturally be drawn to giants, their runes, and their place in the world's older architectures. So Bigby's journey reads as both ascent and refinement: from notable apprentice, to named-spell master, to elder expert whose curiosity remains as active as his battle craft."], "threads": ["One of the strongest apprentice-to-master arcs in wizard lore.", "Prefers force with shape, control, and intention over indiscriminate magical excess.", "His named spells create a coherent style identity rare even among famous archmages.", "Later giant scholarship broadens him without diluting the precision that made him famous."], "spellbook_note": "Bigby's prepared magic emphasizes manipulation of force, secure movement, battlefield control, and practical research because his career bridges dueling precision, expeditionary wizardry, and later comparative scholarship."}, {"slug": "gale", "name": "Gale Dekarios", "epithet": "Gale of Waterdeep", "image": "assets/gale.png", "basis": "Official 5e-era character lore from Baldur's Gate III material, presented as a restored-power 5e codex profile", "frame": "5e narrative profile", "race": "Human, Chosen of Mystra", "alignment": "Neutral", "age": "35 in 1492 DR", "role": "Prodigy wizard, former lover of Mystra, bearer of the Netherese orb", "home": "Formerly Waterdeep; later the road, the camp, and whichever tower he has just charmed into tolerating him", "ac": "17", "hp": "165", "pb": "+6", "spell_dc": "20", "spell_attack": "+12", "stats": {"STR": 8, "DEX": 14, "CON": 16, "INT": 22, "WIS": 15, "CHA": 18}, "slots": "4/3/3/3/3/1/1/1/1", "status": "Alive", "familiar": "Tara the tressym, the obvious and beloved answer.", "items": ["enchanted traveling robe", "personal grimoire", "orb-stabilizing artifacts when available", "letter fragments from Mystra", "camp cookware and wine surprisingly close at hand"], "attire": "Blue-purple scholar’s robes, careful grooming, tasteful jewelry, and just enough romantic flourish to make it clear he knows he is handsome. Gale dresses like a man determined to be remembered fondly, even during catastrophe.", "lair": "When Gale is comfortable, his quarters become immediately domestic. Books open, wine aired, candles lit, little luxuries arranged, notes half-poetic and half-technical, and a chair positioned to imply he expects conversation. His Waterdeep rooms overlook beauty because he likes to think alongside a view.", "personal": "Gale’s spellbook tells on him. It is ambitious, lyrical, and a little hungry. There are careful study spells, crowd-pleasing fireworks, elegant utility workings, and more than one page that sounds like it was written to impress Mystra.", "boons": ["Chosen of Mystra history", "orb-forged desperation", "Blackstaff Academy training", "high social intelligence for a wizard", "Tara’s uncompromising commentary"], "spellbook": {"Cantrips": ["fire bolt", "friends", "light", "mage hand", "minor illusion", "prestidigitation", "ray of frost", "shocking grasp"], "1st": ["charm person", "chromatic orb", "comprehend languages", "detect magic", "disguise self", "feather fall", "find familiar", "grease", "identify", "mage armor", "magic missile", "shield", "sleep", "thunderwave"], "2nd": ["detect thoughts", "enhance ability", "hold person", "invisibility", "knock", "levitate", "mirror image", "misty step", "scorching ray", "see invisibility", "suggestion", "web"], "3rd": ["counterspell", "dispel magic", "fireball", "fly", "glyph of warding", "haste", "hypnotic pattern", "lightning bolt", "sending", "slow", "tiny hut"], "4th": ["arcane eye", "banishment", "dimension door", "greater invisibility", "ice storm", "polymorph", "stoneskin", "wall of fire"], "5th": ["Bigby's hand", "cone of cold", "dominate person", "hold monster", "legend lore", "telekinesis", "teleportation circle", "wall of force"], "6th": ["chain lightning", "contingency", "disintegrate", "globe of invulnerability", "mass suggestion", "true seeing"], "7th": ["forcecage", "plane shift", "project image", "reverse gravity", "teleport"], "8th": ["demiplane", "feeblemind", "maze", "mind blank"], "9th": ["foresight", "meteor swarm", "time stop", "wish"]}, "legacy": ["orb-hunger contingencies", "Netherese fragment research", "portal misfire to Limbo", "romantic lecture-notes to Mystra", "Tara-approved household charms"], "summary": "Gale of Waterdeep is the youngest figure in this codex, and that youth shows in the shape of his legend: dazzling talent, catastrophic overreach, humiliation, charm, and a sincere desire to become worthy of the magic he once tried to grasp too quickly. His journey is intensely personal in a way the elder archmages' stories often are not.", "journey": ["Gale begins as a prodigy from Waterdeep, the sort of student whose brilliance arrives early enough to feel like destiny. He is learned, vain in recognizable human ways, and hungry not simply to study magic but to be beloved by it. That emotional angle is crucial. Gale's rise is tied to Mystra not just through doctrine or service but through intimacy, validation, and the intoxicating feeling that his gifts had been seen by the highest possible witness.", "The Netherese orb story fractures that ascent. In seeking dangerous power and forbidden prestige, Gale turns himself into a crisis object, a man who is at once extremely learned and terrifyingly fragile. That split gives his whole persona its specific flavor. He remains witty, romantic, and performatively composed, but underneath is a person reckoning with shame, dependency, and the possibility that genius without humility becomes self-destruction. The tadpole-era adventure sharpens those pressures by forcing him into companionship, improvisation, and choices that cannot be solved by brilliance alone.", "What makes Gale compelling in a codex like this is not that he has already become another Elminster. It is that his story is still warm. You can still see the habits being reforged. He is moving from ornamented ambition toward wiser stewardship, from needing to impress magic toward learning how to live with it. That makes his restored-power profile feel hopeful. Among all these ancient titans and haunted relics, Gale is one of the few whose legend still obviously contains a future tense."], "threads": ["Brilliance and vanity are never fully separable in him, which makes his successes and mistakes feel painfully human.", "Mystra is not just a patron in his story but part of the emotional architecture of his ambition.", "The orb turns scholarship into mortality, forcing a prodigy to learn limits the hardest possible way.", "Tara, domestic comforts, and conversational warmth keep him grounded even when his magic veers grandiose."], "spellbook_note": "Gale's spellbook mixes showpiece wizardry with earnest scholastic utility because he is both a performer and a real researcher. The high-circle selections express his restored potential; the lower circles reveal the charmingly practical Waterdhavian scholar underneath."}];
+
+const abilityMod = (score) => {
+  const mod = Math.floor((score - 10) / 2);
+  return `${mod >= 0 ? "+" : ""}${mod}`;
+};
+
+const toc = document.getElementById("tocLinks");
+const entries = document.getElementById("entries");
+
+for (const c of data) {
+  const a = document.createElement("a");
+  a.href = `#${c.slug}`;
+  a.textContent = c.name;
+  toc.appendChild(a);
+
+  const article = document.createElement("article");
+  article.className = "entry";
+  article.id = c.slug;
+  article.dataset.search = [
+    c.name, c.epithet, c.role, c.home, c.alignment, c.race, c.basis,
+    c.summary || "", c.spellbook_note || "", ...(c.journey || []), ...(c.threads || []),
+    ...(c.legacy || []), ...(c.boons || []), ...(c.items || [])
+  ].join(" ").toLowerCase();
+
+  const facts = [
+    ["Basis", c.basis],
+    ["Race", c.race],
+    ["Alignment", c.alignment],
+    ["Age", c.age],
+    ["Role", c.role],
+    ["Home", c.home],
+    ["Status", c.status],
+    ["Spell Slots", c.slots]
+  ];
+
+  const spellDetails = Object.entries(c.spellbook).map(([level, spells]) => {
+    return `<details class="level"${level === "Cantrips" ? " open" : ""}>
+      <summary>${level}</summary>
+      <div class="spells">${spells.map(s => `<span>${s}</span>`).join(", ")}</div>
+    </details>`;
+  }).join("");
+
+  article.innerHTML = `
+    <div class="entry-head">
+      <div class="name-row">
+        <div>
+          <h2>${c.name}</h2>
+          <div class="epithet">${c.epithet}</div>
+        </div>
+        <div class="frame-tag">${c.frame}</div>
+      </div>
+      <p class="summary">${c.summary || ""}</p>
+      <div class="facts">
+        ${facts.map(([k,v]) => `<div class="fact"><strong>${k}</strong>${v}</div>`).join("")}
+      </div>
+    </div>
+    <div class="entry-grid">
+      <aside class="portrait-card">
+        <div class="portrait-frame">
+          <div class="portrait"><img src="${c.image}" alt="${c.name} profile art"></div>
+        </div>
+        <div class="basis"><strong>5e handling:</strong> ${c.basis}</div>
+      </aside>
+
+      <div>
+        <div class="content-grid">
+          <section class="panel">
+            <h3>Profile</h3>
+            <div class="ability-grid">
+              ${Object.entries(c.stats).map(([abbr,val]) => `<div class="ability"><div class="abbr">${abbr}</div><div class="num">${val}</div><div>${abilityMod(val)}</div></div>`).join("")}
+            </div>
+            <div class="lists" style="margin-top:1rem">
+              <div>
+                <h4>Combat Frame</h4>
+                <ul>
+                  <li><strong>Armor Class:</strong> ${c.ac}</li>
+                  <li><strong>Hit Points:</strong> ${c.hp}</li>
+                  <li><strong>Proficiency:</strong> ${c.pb}</li>
+                  <li><strong>Spell Save DC:</strong> ${c.spell_dc}</li>
+                  <li><strong>Spell Attack:</strong> ${c.spell_attack}</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Companion</h4>
+                <div class="prose">${c.familiar}</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3>Boons & Signature Traits</h3>
+            <div class="lists" style="margin-top:0">
+              <div>
+                <h4>Boons</h4>
+                <ul>${(c.boons || []).map(x => `<li>${x}</li>`).join("")}</ul>
+              </div>
+              <div>
+                <h4>Personal Read</h4>
+                <div class="prose">${c.personal}</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="content-grid" style="margin-top:1rem">
+          <section class="panel">
+            <h3>Items Worn & Carried</h3>
+            <ul>${(c.items || []).map(x => `<li>${x}</li>`).join("")}</ul>
+          </section>
+          <section class="panel">
+            <h3>Attire</h3>
+            <div class="prose">${c.attire}</div>
+          </section>
+        </div>
+
+        <section class="panel" style="margin-top:1rem">
+          <h3>Quarters, Tower, or Lair</h3>
+          <div class="prose">${c.lair}</div>
+        </section>
+
+        <section class="panel" style="margin-top:1rem">
+          <h3>Journey & Deeper Lore</h3>
+          <div class="journey-block">${(c.journey || []).map(p => `<p>${p}</p>`).join("")}</div>
+          <div class="lists" style="margin-top:1rem">
+            <div>
+              <h4>Defining Threads</h4>
+              <ul class="thread-list">${(c.threads || []).map(x => `<li>${x}</li>`).join("")}</ul>
+            </div>
+            <div>
+              <h4>Why the Spellbook Feels This Way</h4>
+              <div class="lore-note">${c.spellbook_note || c.personal}</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="spellbook">
+          <h3>5e Spellbook Holdings</h3>
+          <div class="spell-grid">${spellDetails}</div>
+          <div class="legacy">
+            <h4>Legacy Signatures and Historical Workings</h4>
+            <p>Older named workings, signature rites, and storied traditions live here beside the current 5e spellbook so ${c.name.split(" ")[0]}'s magical lineage stays visible on the page.</p>
+            <div class="legacy-list">${(c.legacy || []).map(x => `<span>${x}</span>`).join("")}</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+  entries.appendChild(article);
+}
+
+const search = document.getElementById("searchBox");
+search.addEventListener("input", () => {
+  const q = search.value.trim().toLowerCase();
+  for (const article of document.querySelectorAll(".entry")) {
+    article.classList.toggle("hidden", q && !article.dataset.search.includes(q));
+  }
+});
+</script>
+</body>
+</html>
