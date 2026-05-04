@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORIN THE RED — Chosen of Bhaal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=IM+Fell+English+SC&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:      #04030a;
+    --deep:       #0a0508;
+    --red:        #c0112b;
+    --red-bright: #f03050;
+    --red-dim:    #6a0a18;
+    --crimson:    #8b0000;
+    --blood:      #3d0008;
+    --silver:     #9aaabb;
+    --silver-dim: #4a5560;
+    --white:      #e8d8d0;
+    --white-dim:  #9a8880;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  #bg-canvas, #particle-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  #bg-canvas     { z-index: 0; }
+  #particle-canvas { z-index: 1; }
+
+  .page-wrap { position: relative; z-index: 2; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; padding: 2rem; text-align: center;
+  }
+
+  .bhaal-mark {
+    width: 130px; height: 130px;
+    margin-bottom: 2rem;
+    animation: floatMark 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(192,17,43,0.7)) drop-shadow(0 0 60px rgba(192,17,43,0.3));
+  }
+
+  @keyframes floatMark {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-14px) rotate(-4deg); }
+  }
+
+  .hero-kicker {
+    font-family: 'IM Fell English SC', serif;
+    font-size: 0.85rem; letter-spacing: 0.4em;
+    color: var(--red-dim); text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0; animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-weight: 900; line-height: 0.9;
+    color: var(--red);
+    text-shadow: 0 0 30px rgba(192,17,43,0.8), 0 0 80px rgba(192,17,43,0.3), 4px 4px 0 var(--blood);
+    opacity: 0; animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    letter-spacing: 0.3em; color: var(--silver-dim);
+    margin-top: 1rem; text-transform: uppercase;
+    opacity: 0; animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  .hero-divider {
+    width: 300px; height: 2px; margin: 2rem auto;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    position: relative;
+    opacity: 0; animation: fadeIn 1s ease 1.2s forwards;
+  }
+
+  .hero-divider::before, .hero-divider::after {
+    content: '✦'; position: absolute; top: 50%;
+    transform: translateY(-50%); color: var(--red); font-size: 0.8rem;
+  }
+  .hero-divider::before { left: -1rem; }
+  .hero-divider::after  { right: -1rem; }
+
+  .mc-bar {
+    display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 0.5rem;
+    margin: 1.5rem 0 3rem;
+    opacity: 0; animation: fadeUp 1s ease 1.8s forwards;
+  }
+
+  .mc-pip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: 'IM Fell English SC', serif;
+    font-size: 0.75rem; letter-spacing: 0.15em;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid rgba(192,17,43,0.3);
+    color: var(--red-dim); background: rgba(192,17,43,0.06);
+    margin: 0 0.25rem;
+  }
+
+  .hero-quote {
+    font-style: italic; font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--white-dim); max-width: 600px; line-height: 1.8;
+    opacity: 0; animation: fadeUp 1s ease 1.5s forwards;
+  }
+
+  .hero-quote cite {
+    display: block; margin-top: 0.5rem; font-style: normal;
+    font-size: 0.85rem; letter-spacing: 0.2em;
+    color: var(--red-dim); font-family: 'IM Fell English SC', serif;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    color: var(--red-dim); font-size: 0.75rem; letter-spacing: 0.3em;
+    font-family: 'IM Fell English SC', serif;
+    opacity: 0; animation: fadeIn 1s ease 2.5s forwards;
+  }
+
+  .scroll-arrow {
+    width: 20px; height: 30px;
+    border: 1px solid var(--red-dim); border-radius: 10px; position: relative;
+  }
+
+  .scroll-arrow::after {
+    content: ''; position: absolute; top: 4px; left: 50%;
+    transform: translateX(-50%); width: 4px; height: 8px;
+    background: var(--red); border-radius: 2px;
+    animation: scrollDot 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scrollDot { 0% { top: 4px; opacity: 1; } 100% { top: 16px; opacity: 0; } }
+
+  /* ── 3D ── */
+  .ring-section {
+    display: flex; justify-content: center;
+    align-items: center; padding: 4rem 2rem;
+  }
+
+  #three-canvas { width: 400px; height: 400px; max-width: 90vw; display: block; }
+
+  /* ── LAYOUT ── */
+  .section { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
+
+  .section-label {
+    font-family: 'IM Fell English SC', serif;
+    font-size: 0.75rem; letter-spacing: 0.5em;
+    color: var(--red-dim); margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--red-dim), transparent);
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    font-weight: 900; color: var(--red-bright);
+    margin-bottom: 3rem;
+    text-shadow: 0 0 20px rgba(192,17,43,0.4);
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 4rem 0 2rem; color: var(--red-dim); font-size: 0.8rem;
+  }
+
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(192,17,43,0.3), transparent);
+  }
+
+  /* ── LORE GRID ── */
+  .lore-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; margin-bottom: 4rem;
+  }
+
+  @media (max-width: 700px) { .lore-grid { grid-template-columns: 1fr; } }
+
+  .lore-card {
+    background: linear-gradient(135deg, rgba(10,5,8,0.95), rgba(20,10,14,0.95));
+    border: 1px solid rgba(192,17,43,0.15);
+    padding: 2rem; position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .lore-card:hover { border-color: rgba(192,17,43,0.5); transform: translateY(-3px); }
+
+  .lore-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  .lore-card:hover::before { opacity: 1; }
+
+  .lore-card-icon { font-size: 2rem; margin-bottom: 1rem; display: block; filter: drop-shadow(0 0 8px rgba(192,17,43,0.6)); }
+  .lore-card-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: var(--red); letter-spacing: 0.1em; margin-bottom: 0.75rem; text-transform: uppercase; }
+  .lore-card-text  { font-size: 0.95rem; line-height: 1.8; color: var(--white-dim); }
+
+  /* ── CLASS GRID ── */
+  .class-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 4rem; }
+
+  @media (max-width: 800px) { .class-grid { grid-template-columns: 1fr; } }
+
+  .class-card {
+    background: var(--deep); border: 1px solid var(--silver-dim);
+    overflow: hidden; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s;
+    animation: cardAppear 0.8s ease backwards;
+  }
+
+  .class-card:nth-child(1) { animation-delay: 0.1s; }
+  .class-card:nth-child(2) { animation-delay: 0.3s; }
+  .class-card:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes cardAppear { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+  .class-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px var(--card-glow, rgba(192,17,43,0.2)); }
+
+  .class-card.rogue     { --card-glow: rgba(192,17,43,0.3); }
+  .class-card.barbarian { --card-glow: rgba(139,0,0,0.4); }
+  .class-card.cleric    { --card-glow: rgba(154,170,187,0.3); }
+
+  .class-card-header { padding: 1.5rem 1.5rem 1rem; position: relative; }
+
+  .class-card-header::after {
+    content: ''; position: absolute; bottom: 0; left: 1.5rem; right: 1.5rem; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--card-accent, var(--red)), transparent);
+  }
+
+  .rogue     .class-card-header { --card-accent: var(--red); }
+  .barbarian .class-card-header { --card-accent: var(--crimson); }
+  .cleric    .class-card-header { --card-accent: var(--silver); }
+
+  .class-level-badge {
+    display: inline-block; font-family: 'Cinzel', serif; font-size: 0.7rem;
+    font-weight: 600; letter-spacing: 0.2em;
+    padding: 0.2rem 0.7rem; border: 1px solid; margin-bottom: 0.75rem; text-transform: uppercase;
+  }
+
+  .rogue     .class-level-badge { color: var(--red);     border-color: var(--red); }
+  .barbarian .class-level-badge { color: var(--crimson); border-color: var(--crimson); }
+  .cleric    .class-level-badge { color: var(--silver);  border-color: var(--silver); }
+
+  .class-name { font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 700; display: block; margin-bottom: 0.3rem; }
+  .class-subclass { font-family: 'IM Fell English SC', serif; font-size: 0.85rem; color: var(--red-dim); letter-spacing: 0.1em; }
+
+  .rogue     .class-name { color: var(--red-bright); }
+  .barbarian .class-name { color: #c04040; }
+  .cleric    .class-name { color: var(--silver); }
+
+  .class-body  { padding: 1.25rem 1.5rem 1.5rem; }
+  .class-desc  { font-size: 0.9rem; line-height: 1.75; color: var(--white-dim); margin-bottom: 1.25rem; }
+
+  .class-features { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .class-features li { font-size: 0.82rem; color: var(--white-dim); padding-left: 1.2rem; position: relative; }
+  .class-features li::before { content: '▸'; position: absolute; left: 0; }
+
+  .rogue     .class-features li::before { color: var(--red); }
+  .barbarian .class-features li::before { color: var(--crimson); }
+  .cleric    .class-features li::before { color: var(--silver); }
+
+  .level-bar-wrap { margin-top: 1.25rem; }
+  .level-bar-label { display: flex; justify-content: space-between; font-family: 'IM Fell English SC', serif; font-size: 0.72rem; letter-spacing: 0.15em; margin-bottom: 0.4rem; }
+  .level-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .level-bar-fill { height: 100%; border-radius: 2px; animation: barGrow 1.5s cubic-bezier(0.23, 1, 0.32, 1) 1s backwards; }
+
+  @keyframes barGrow { from { width: 0; } }
+
+  .rogue     .level-bar-fill { width: 50%; background: linear-gradient(90deg, var(--blood), var(--red)); }
+  .barbarian .level-bar-fill { width: 30%; background: linear-gradient(90deg, #3d0008, #8b0000); }
+  .cleric    .level-bar-fill { width: 20%; background: linear-gradient(90deg, #2a303a, var(--silver)); }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 4rem; }
+  @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+
+  .stat-box {
+    border: 1px solid rgba(192,17,43,0.2); padding: 1rem 0.5rem; text-align: center;
+    background: rgba(10,5,8,0.8); transition: border-color 0.3s, transform 0.3s; position: relative;
+  }
+
+  .stat-box:hover { border-color: var(--red); transform: scale(1.05); }
+  .stat-box::after { content: ''; position: absolute; inset: 3px; border: 1px solid rgba(192,17,43,0.06); pointer-events: none; }
+
+  .stat-label { font-family: 'IM Fell English SC', serif; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--red-dim); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .stat-value { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; color: var(--red); line-height: 1; text-shadow: 0 0 15px rgba(192,17,43,0.5); }
+  .stat-mod   { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--white-dim); margin-top: 0.2rem; }
+
+  /* ── COMBAT STATS ── */
+  .combat-stats-wrap {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: rgba(192,17,43,0.1);
+    border: 1px solid rgba(192,17,43,0.15);
+    margin-bottom: 2rem; overflow: hidden;
+  }
+
+  @media (max-width: 700px) { .combat-stats-wrap { grid-template-columns: repeat(2, 1fr); } }
+
+  .cs-cell { background: var(--deep); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.25rem; transition: background 0.2s; }
+  .cs-cell:hover { background: rgba(192,17,43,0.05); }
+  .cs-key { font-family: 'IM Fell English SC', serif; font-size: 0.62rem; letter-spacing: 0.25em; color: var(--red-dim); text-transform: uppercase; }
+  .cs-val { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: var(--white); }
+  .cs-val.hl  { color: var(--red);    text-shadow: 0 0 10px rgba(192,17,43,0.4); }
+  .cs-val.st  { color: var(--silver); }
+  .cs-val.dg  { color: #c04040; }
+
+  .saves-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 1px; background: rgba(192,17,43,0.08);
+    border: 1px solid rgba(192,17,43,0.12);
+    margin-bottom: 3rem; overflow: hidden;
+  }
+
+  @media (max-width: 700px) { .saves-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .save-cell { background: var(--deep); padding: 0.8rem 0.5rem; text-align: center; transition: background 0.2s; }
+  .save-cell:hover { background: rgba(192,17,43,0.04); }
+  .save-cell.proficient { border-top: 2px solid var(--red-dim); }
+  .save-key { font-family: 'IM Fell English SC', serif; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--red-dim); display: block; margin-bottom: 0.3rem; }
+  .save-val { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--white-dim); }
+  .save-cell.proficient .save-val { color: var(--red); }
+
+  /* ── ACTION CARDS ── */
+  .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+  @media (max-width: 700px) { .action-grid { grid-template-columns: 1fr; } }
+
+  .action-card {
+    background: rgba(8,4,6,0.9); border: 1px solid rgba(192,17,43,0.12);
+    padding: 1.4rem; position: relative; overflow: hidden; transition: all 0.3s;
+  }
+
+  .action-card:hover { border-color: rgba(192,17,43,0.5); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+
+  .action-card.phase2 {
+    border-color: rgba(192,17,43,0.25);
+    background: linear-gradient(135deg, rgba(61,0,8,0.2), rgba(8,4,6,0.9));
+  }
+
+  .action-card.phase2:hover { border-color: rgba(192,17,43,0.7); }
+
+  .action-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .action-icon   { font-size: 1.5rem; flex-shrink: 0; filter: drop-shadow(0 0 5px rgba(192,17,43,0.5)); }
+  .action-title-wrap { flex: 1; }
+  .action-name { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; color: var(--red-bright); letter-spacing: 0.05em; }
+  .action-card.phase2 .action-name { color: #ff4060; }
+  .action-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.3rem; }
+
+  .tag { font-family: 'IM Fell English SC', serif; font-size: 0.6rem; letter-spacing: 0.15em; padding: 0.1rem 0.5rem; border: 1px solid; text-transform: uppercase; }
+  .tag.action  { color: #6a9a6a; border-color: #6a9a6a; }
+  .tag.bonus   { color: #9a8a4a; border-color: #9a8a4a; }
+  .tag.reaction{ color: #9a4a9a; border-color: #9a4a9a; }
+  .tag.passive { color: var(--silver); border-color: var(--silver); }
+  .tag.phase2  { color: #ff4060;     border-color: #ff4060; }
+  .tag.conc    { color: #9a6a4a;     border-color: #9a6a4a; }
+  .tag.combat  { color: var(--white-dim); border-color: var(--white-dim); }
+  .tag.short   { color: var(--red-dim);   border-color: var(--red-dim); }
+
+  .action-desc { font-size: 0.88rem; line-height: 1.75; color: var(--white-dim); }
+
+  .action-damage {
+    display: inline-block; margin-top: 0.6rem;
+    font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--red);
+    background: rgba(192,17,43,0.07); border: 1px solid rgba(192,17,43,0.25);
+    padding: 0.2rem 0.6rem; letter-spacing: 0.08em;
+  }
+
+  .action-damage.dmg-necrotic { color: #c080c0; border-color: rgba(192,128,192,0.3); background: rgba(192,128,192,0.06); }
+  .action-damage.dmg-pierce   { color: var(--silver); border-color: rgba(154,170,187,0.3); background: rgba(154,170,187,0.06); }
+  .action-damage.dmg-slash    { color: var(--red-bright); }
+
+  /* ── PASSIVE LIST ── */
+  .passive-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 4rem; }
+  @media (max-width: 800px) { .passive-list { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px)  { .passive-list { grid-template-columns: 1fr; } }
+
+  .passive-pill {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.9rem 1rem; border: 1px solid rgba(192,17,43,0.1);
+    background: rgba(10,5,8,0.7); transition: all 0.25s; position: relative; overflow: hidden;
+  }
+
+  .passive-pill::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red-dim), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+
+  .passive-pill:hover { border-color: rgba(192,17,43,0.35); transform: translateY(-1px); }
+  .passive-pill:hover::before { opacity: 1; }
+
+  .passive-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--red-dim); flex-shrink: 0; margin-top: 0.45rem; }
+  .passive-name { font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 600; color: var(--red); margin-bottom: 0.2rem; }
+  .passive-text { font-size: 0.8rem; color: var(--white-dim); line-height: 1.6; }
+
+  /* ── EQUIP ── */
+  .equip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+  @media (max-width: 700px) { .equip-grid { grid-template-columns: 1fr; } }
+
+  .equip-card {
+    border: 1px solid rgba(192,17,43,0.12); background: rgba(8,4,6,0.9);
+    padding: 1.4rem; position: relative; overflow: hidden; transition: all 0.3s;
+  }
+
+  .equip-card:hover { border-color: rgba(192,17,43,0.4); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+  .equip-card.featured { grid-column: 1 / -1; border-color: rgba(192,17,43,0.3); background: linear-gradient(135deg, rgba(192,17,43,0.06), rgba(8,4,6,0.95)); }
+
+  .equip-rarity { font-family: 'IM Fell English SC', serif; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .rarity-legendary { color: #e0a020; }
+  .rarity-rare      { color: #4a90e2; }
+  .rarity-uncommon  { color: #5a9a5a; }
+  .rarity-key       { color: var(--red); }
+
+  .equip-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.2rem; }
+  .equip-type { font-family: 'IM Fell English SC', serif; font-size: 0.75rem; color: var(--white-dim); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+
+  .equip-stats { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+  .equip-stat  { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--silver); background: rgba(154,170,187,0.08); border: 1px solid rgba(154,170,187,0.2); padding: 0.15rem 0.5rem; }
+
+  .equip-desc   { font-size: 0.85rem; color: var(--white-dim); line-height: 1.7; font-style: italic; }
+  .equip-flavor { margin-top: 0.6rem; font-size: 0.8rem; color: var(--red-dim); line-height: 1.6; border-left: 2px solid rgba(192,17,43,0.25); padding-left: 0.75rem; }
+
+  /* ── VERDICT ── */
+  .verdict-block {
+    background: linear-gradient(135deg, rgba(61,0,8,0.25), rgba(10,5,8,0.95));
+    border: 1px solid var(--crimson); padding: 3rem; position: relative; margin-bottom: 4rem; overflow: hidden;
+  }
+
+  .verdict-block::before {
+    content: '"'; position: absolute; top: -1rem; left: 1.5rem;
+    font-family: 'Cinzel Decorative', serif; font-size: 8rem; color: rgba(139,0,0,0.15); line-height: 1; pointer-events: none;
+  }
+
+  .verdict-text { font-style: italic; font-size: clamp(1.1rem, 2vw, 1.4rem); line-height: 1.9; color: var(--white); position: relative; z-index: 1; max-width: 800px; }
+  .verdict-sig  { display: block; margin-top: 1.5rem; font-family: 'IM Fell English SC', serif; font-size: 0.85rem; letter-spacing: 0.25em; color: var(--red-dim); position: relative; z-index: 1; }
+
+  /* ── FOOTER ── */
+  .footer { text-align: center; padding: 3rem 2rem 4rem; border-top: 1px solid rgba(192,17,43,0.1); }
+  .footer-mark { width: 50px; height: 50px; margin: 0 auto 1rem; opacity: 0.3; animation: floatMark 3s ease-in-out infinite; }
+  .footer-text { font-family: 'IM Fell English SC', serif; font-size: 0.75rem; letter-spacing: 0.3em; color: var(--red-dim); }
+
+  /* ── CLICK BURST ── */
+  .glow-burst {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%) scale(0);
+    animation: burst 0.6s ease-out forwards;
+    background: radial-gradient(circle, rgba(192,17,43,0.5) 0%, transparent 70%);
+  }
+
+  @keyframes burst { to { transform: translate(-50%, -50%) scale(1); width: 200px; height: 200px; opacity: 0; } }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 1000;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<canvas id="particle-canvas"></canvas>
+
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <!-- Bhaal mark SVG -->
+    <svg class="bhaal-mark" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#c0112b" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      <circle cx="70" cy="70" r="65" fill="url(#bGlow)"/>
+      <circle cx="70" cy="70" r="60" fill="none" stroke="#8b0000" stroke-width="1" stroke-dasharray="5 4"/>
+      <!-- skull-like core -->
+      <ellipse cx="70" cy="65" rx="22" ry="26" fill="none" stroke="#c0112b" stroke-width="2"/>
+      <circle cx="62" cy="60" r="6" fill="#3d0008"/>
+      <circle cx="78" cy="60" r="6" fill="#3d0008"/>
+      <path d="M62 78 Q70 84 78 78" fill="none" stroke="#c0112b" stroke-width="1.5"/>
+      <!-- three drops of blood (Bhaal symbol) -->
+      <path d="M70 30 Q74 20 70 12 Q66 20 70 30 Z" fill="#c0112b"/>
+      <path d="M36 52 Q26 50 22 56 Q30 60 36 52 Z" fill="#c0112b"/>
+      <path d="M104 52 Q114 50 118 56 Q110 60 104 52 Z" fill="#c0112b"/>
+      <!-- outer ring ticks -->
+      <circle cx="70" cy="70" r="50" fill="none" stroke="#c0112b" stroke-width="1.5" opacity="0.5"/>
+      <line x1="70" y1="20" x2="70" y2="28" stroke="#c0112b" stroke-width="2"/>
+      <line x1="70" y1="112" x2="70" y2="120" stroke="#c0112b" stroke-width="2"/>
+      <line x1="20" y1="70" x2="28" y2="70" stroke="#c0112b" stroke-width="2"/>
+      <line x1="112" y1="70" x2="120" y2="70" stroke="#c0112b" stroke-width="2"/>
+    </svg>
+
+    <p class="hero-kicker">Chosen of Bhaal · Shapeshifter · Daughter of Murder</p>
+    <h1 class="hero-title">ORIN<br>THE RED</h1>
+    <p class="hero-subtitle">The Slayer · Bhaal's Blade · The Crimson</p>
+
+    <div class="hero-divider"></div>
+
+    <div class="mc-bar">
+      <span class="mc-pip">🗡 Rogue · Arcane Trickster · Lv 10</span>
+      <span class="mc-pip">🩸 Barbarian · Berserker · Lv 6</span>
+      <span class="mc-pip">💀 Cleric · Death Domain · Lv 4</span>
+    </div>
+
+    <blockquote class="hero-quote">
+      "Oh, don't look at me like that. Didn't you know? <em>Everything</em> is more beautiful when it's wet and red."
+      <cite>— Orin the Red, Temple of Bhaal</cite>
+    </blockquote>
+
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- 3D -->
+  <div class="ring-section">
+    <canvas id="three-canvas"></canvas>
+  </div>
+
+  <main class="section">
+
+    <!-- LORE -->
+    <p class="section-label">Origins & History</p>
+    <h2 class="section-title">The Making of a Monster</h2>
+
+    <div class="lore-grid">
+      <div class="lore-card">
+        <span class="lore-card-icon">🩸</span>
+        <h3 class="lore-card-title">Bhaalspawn Royalty</h3>
+        <p class="lore-card-text">Orin is the granddaughter of Sarevok Anchev — himself a near-god of murder — making her pure Bhaalspawn twice over. She grew up steeped in blood ritual, assassination, and worship. Her connection to Bhaal isn't metaphorical. The murder god literally flows through her veins, granting her the Slayer transformation others only dream of.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">🎭</span>
+        <h3 class="lore-card-title">The Shapeshifter</h3>
+        <p class="lore-card-text">A Changeling by race, Orin can perfectly mimic any humanoid she has observed. She uses this not just to infiltrate — she uses it to psychologically destroy her targets. She kidnaps a party member, replaces them flawlessly for days, then forces you to watch. She doesn't just kill. She erases.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">👁️</span>
+        <h3 class="lore-card-title">Bhaal's Favoured</h3>
+        <p class="lore-card-text">Of the three Chosen, Orin is the only one Bhaal actually gives a damn about on a personal level — not strategically, but because she IS him in mortal form. She craves his approval with the same desperate hunger she channels into murder. Her sadism isn't random. It's devotional art offered to her god.</p>
+      </div>
+      <div class="lore-card">
+        <span class="lore-card-icon">⚔️</span>
+        <h3 class="lore-card-title">The Dark Urge's Rival</h3>
+        <p class="lore-card-text">Orin's core motivation is dominance over the Dark Urge — her kin and competition for Bhaal's favour. She orchestrated the Urge's fall from grace to claim primacy. Her hostage gambit, her kidnapping mechanic, her entire challenge structure — it's all one long kill brag directed at a single rival.</p>
+      </div>
+    </div>
+
+    <!-- CLASS BREAKDOWN -->
+    <div class="divider">🗡 D&D Multiclass Analysis 🗡</div>
+    <p class="section-label">Class & Subclass</p>
+    <h2 class="section-title">The Multiclass Build</h2>
+
+    <div class="class-grid">
+      <div class="class-card rogue">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 10 · Primary</span>
+          <span class="class-name">Rogue</span>
+          <span class="class-subclass">Subclass: Arcane Trickster</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">Larian confirmed Orin's combat design was modeled after the Arcane Trickster. She's a shortsword specialist who blends illusion magic, stealth, and deception — the epitome of a Rogue who uses spells not to blast but to confuse, misdirect, and vanish.</p>
+          <ul class="class-features">
+            <li>Sneak Attack — her bleed attacks exploit Advantage relentlessly</li>
+            <li>Uncanny Dodge — reaction to halve incoming damage</li>
+            <li>Reliable Talent — skill checks floor of 10 on proficient skills</li>
+            <li>Mage Hand Legerdemain — telekinetic manipulation</li>
+            <li>Illusion/Enchantment spells — Phantasmal Force, Suggestion</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>10 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card barbarian">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 6 · Secondary</span>
+          <span class="class-name">Barbarian</span>
+          <span class="class-subclass">Subclass: Berserker</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">The Slayer form IS Rage. Pure, divine, Bhaal-fuelled Berserker rage that pushes her stats off the charts and transforms her from a finesse killer into a juggernaut. Berserker specifically because Frenzy gives her extra bonus action attacks — the same relentless assault the Slayer dishes out.</p>
+          <ul class="class-features">
+            <li>Rage — damage resistance, bonus damage, can't be charmed</li>
+            <li>Reckless Attack — Advantage on attacks for Sneak Attack setup</li>
+            <li>Frenzy — bonus action melee attack every turn while raging</li>
+            <li>Fast Movement — extra speed in the Slayer form's chasing game</li>
+            <li>Mindless Rage — the Slayer does not stop, period</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>6 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="class-card cleric">
+        <div class="class-card-header">
+          <span class="class-level-badge">Level 4 · Tertiary</span>
+          <span class="class-name">Cleric</span>
+          <span class="class-subclass">Subclass: Death Domain</span>
+        </div>
+        <div class="class-body">
+          <p class="class-desc">She is a priestess of Bhaal. Functionally, mechanically, lore-literally. Death Domain gives her Reaper (necrotic spells hit multiple targets), Undead-like Undying quality, and Cause Fear — all of which map onto her actual abilities. Her cultists use Bhaal's Edict and animate blood. That's Death Cleric territory.</p>
+          <ul class="class-features">
+            <li>Reaper — necrotic cantrips target two creatures</li>
+            <li>Cause Fear — her terror aura on the cultist altar</li>
+            <li>Animate Dead — the Sanguine Animation / Bloodmarrow Skeletons</li>
+            <li>Channel Divinity: Touch of Death — necrotic bonus damage</li>
+            <li>Divine Strike — necrotic damage on weapon attacks</li>
+          </ul>
+          <div class="level-bar-wrap">
+            <div class="level-bar-label"><span>Class Investment</span><span>4 / 20 Levels</span></div>
+            <div class="level-bar"><div class="level-bar-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMBAT STATS -->
+    <div class="divider">⚔ Combat Statistics ⚔</div>
+    <p class="section-label">Boss Data · Balanced Difficulty</p>
+    <h2 class="section-title">Character Sheet</h2>
+
+    <div class="combat-stats-wrap">
+      <div class="cs-cell"><span class="cs-key">Level</span><span class="cs-val hl">12</span></div>
+      <div class="cs-cell"><span class="cs-key">Hit Points</span><span class="cs-val dg">~200 HP</span></div>
+      <div class="cs-cell"><span class="cs-key">Armour Class</span><span class="cs-val st">14 AC</span></div>
+      <div class="cs-cell"><span class="cs-key">Initiative</span><span class="cs-val hl">+5</span></div>
+      <div class="cs-cell"><span class="cs-key">Unstoppable</span><span class="cs-val hl">7 stacks</span></div>
+      <div class="cs-cell"><span class="cs-key">Race</span><span class="cs-val">Changeling</span></div>
+      <div class="cs-cell"><span class="cs-key">Location</span><span class="cs-val">Temple of Bhaal</span></div>
+      <div class="cs-cell"><span class="cs-key">Phase 2</span><span class="cs-val dg">Slayer Form</span></div>
+    </div>
+
+    <div class="saves-grid">
+      <div class="save-cell proficient"><span class="save-key">STR ★</span><span class="save-val">+7</span></div>
+      <div class="save-cell proficient"><span class="save-key">DEX ★</span><span class="save-val">+9</span></div>
+      <div class="save-cell"><span class="save-key">CON</span><span class="save-val">+2</span></div>
+      <div class="save-cell"><span class="save-key">INT</span><span class="save-val">+1</span></div>
+      <div class="save-cell proficient"><span class="save-key">WIS ★</span><span class="save-val">+6</span></div>
+      <div class="save-cell proficient"><span class="save-key">CHA ★</span><span class="save-val">+8</span></div>
+    </div>
+
+    <!-- ABILITY SCORES -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-label">Strength</div><div class="stat-value">18</div><div class="stat-mod">+4</div></div>
+      <div class="stat-box"><div class="stat-label">Dexterity</div><div class="stat-value">20</div><div class="stat-mod" style="color:var(--red)">+5 ★</div></div>
+      <div class="stat-box"><div class="stat-label">Constitution</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+      <div class="stat-box"><div class="stat-label">Intelligence</div><div class="stat-value">12</div><div class="stat-mod">+1</div></div>
+      <div class="stat-box"><div class="stat-label">Wisdom</div><div class="stat-value">16</div><div class="stat-mod">+3</div></div>
+      <div class="stat-box"><div class="stat-label">Charisma</div><div class="stat-value">18</div><div class="stat-mod" style="color:var(--red)">+4 ★</div></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="divider">🗡 Weapon Actions & Abilities 🗡</div>
+    <p class="section-label">Phase One · Active Abilities</p>
+    <h2 class="section-title">Actions & Attacks</h2>
+
+    <div class="action-grid">
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🗡️</span>
+          <div class="action-title-wrap"><div class="action-name">Dual Shortsword Attack</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag">Extra Attack ×2</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Three attacks per turn with her twin shortswords — Crimson Mischief and Bloodthirst — dealing piercing and necrotic damage. Each hit procs her Bhaal bleed effects and stacks toward Sneak Attack. She hits faster than any other Chosen.</p>
+        <span class="action-damage dmg-pierce">1d6+5 Piercing + Necrotic per hit · ×3</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🩸</span>
+          <div class="action-title-wrap"><div class="action-name">Bhaalspawn Bleed</div>
+            <div class="action-tags"><span class="tag passive">On Hit</span><span class="tag">Stacking</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Every melee hit applies a Bleed condition — targets take ongoing necrotic damage each turn they're bleeding. This isn't just damage — Bleed stacks let her proc additional effects and set up Sneak Attack advantage. Let her hit you twice and you're already hemorrhaging.</p>
+        <span class="action-damage dmg-necrotic">1d4 Necrotic per turn · stacking Bleed</span>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🎭</span>
+          <div class="action-title-wrap"><div class="action-name">Let the Slaughter Begin</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag phase2">Tactical Threat</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Orin marks all cultists and allies in the arena. If any marked target is killed — by you or by her — she absorbs the death and gains a stack of AC permanently. Kill her cultists and she becomes harder to hit. Leave them alive and they'll chant to restore her Unstoppable. There is no good option.</p>
+      </div>
+
+      <div class="action-card">
+        <div class="action-header"><span class="action-icon">🩻</span>
+          <div class="action-title-wrap"><div class="action-name">Sanguine Animation</div>
+            <div class="action-tags"><span class="tag action">Reaction</span><span class="tag">Blood Necromancy</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Orin animates blood pools and corpses nearby into Bloodmarrow Skeletons under her control. Knocking enemies off the altar platform reduces available corpses. A Bhaal-specific Death Cleric trick — blood on the floor isn't wasted, it's <em>recruited</em>.</p>
+      </div>
+    </div>
+
+    <!-- PASSIVES -->
+    <div class="divider">🛡 Passive Features 🛡</div>
+    <p class="section-label">Always Active</p>
+    <h2 class="section-title">Passive Abilities</h2>
+
+    <div class="passive-list">
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Unstoppable (7 Stacks)</div>
+          <p class="passive-text">Every attack against her deals only 1 damage until all 7 stacks are consumed. Must be broken by hitting her 7+ times before real damage lands. The most mechanically frustrating passive in the game.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Magic Resistance</div>
+          <p class="passive-text">Advantage on all saving throws against spells. Your Control spells are substantially less reliable. She's not a caster — she just won't be stopped by one either.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Alert (Cannot Be Surprised)</div>
+          <p class="passive-text">Cannot be caught off-guard. No surprise round. You will never get the drop on a woman who has been hunting you across three acts.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:#c080c0"></div>
+        <div class="passive-content">
+          <div class="passive-name">Uncanny Dodge</div>
+          <p class="passive-text">Reaction to reduce incoming damage by half once per round. A Rogue's bread-and-butter survival tool. Even when you land a big hit, she halves it.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Reliable Talent</div>
+          <p class="passive-text">Skill checks she's proficient in always roll minimum 10. Her Deception, Stealth, and Performance checks are effectively un-botchable.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Extra Attack ×2</div>
+          <p class="passive-text">Three attacks per action in her humanoid form. Combined with her bonus action off-hand attack, she hits 4+ times per round. Every hit adds Bleed. The math gets scary fast.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:var(--silver)"></div>
+        <div class="passive-content">
+          <div class="passive-name">Shapeshifting (Changeling)</div>
+          <p class="passive-text">Perfect mimicry of any humanoid. Socially, she is literally untrackable. In combat she used it to get close for kills — disguised as a merchant, a guard, your companion.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot" style="background:#c080c0"></div>
+        <div class="passive-content">
+          <div class="passive-name">Bhaal's Edict (from Bhaal)</div>
+          <p class="passive-text">In Honour Mode, Bhaal acts at the end of every round — targeting a random party member with an edict to deal the killing blow to someone or die. Orin herself doesn't cast this. Her god does. Automatically.</p>
+        </div>
+      </div>
+      <div class="passive-pill">
+        <div class="passive-dot"></div>
+        <div class="passive-content">
+          <div class="passive-name">Fey Ancestry</div>
+          <p class="passive-text">Advantage on saves vs Charmed; can't be magically put to sleep. Her Changeling heritage makes her mind slippery. You cannot charm or sleep the murder god's blade.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="divider" style="color:var(--red)">🩸 Phase 2 · The Slayer 🩸</div>
+    <p class="section-label">Bhaalspawn Transformation · Combat Trigger</p>
+    <h2 class="section-title" style="color:var(--red-bright);">Bhaal Made Flesh</h2>
+
+    <div class="action-grid">
+      <div class="action-card phase2" style="grid-column: 1 / -1;">
+        <div class="action-header"><span class="action-icon">🩸</span>
+          <div class="action-title-wrap"><div class="action-name">Slayer Transformation</div>
+            <div class="action-tags"><span class="tag phase2">Phase 2 Trigger</span><span class="tag combat">Bhaalspawn Form</span></div>
+          </div>
+        </div>
+        <p class="action-desc">When pressured, Orin abandons her humanoid form and transforms into the Slayer — Bhaal's apex predator in mortal flesh. Her stats surge: she becomes massively more powerful, gains new movement abilities including Relentless Lunge, and continues applying Bleed on every hit. The Unstoppable stacks can only be refreshed by her cultists' ritual chanting — kill them to lock her out. If the Dark Urge also has the Slayer form, this becomes a literal mirror fight.</p>
+      </div>
+
+      <div class="action-card phase2">
+        <div class="action-header"><span class="action-icon">💨</span>
+          <div class="action-title-wrap"><div class="action-name">Relentless Lunge</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag phase2">Slayer Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Orin launches into the air and crashes down in a radius, knocking down everyone caught in the AoE. This is her primary repositioning and crowd-control tool in Slayer form — she can leap across the entire altar platform and land on clustered party members. Spread your party or get knocked flat.</p>
+        <span class="action-damage dmg-slash">AoE Slam · Knockdown · Positioning gap-closer</span>
+      </div>
+
+      <div class="action-card phase2">
+        <div class="action-header"><span class="action-icon">🧟</span>
+          <div class="action-title-wrap"><div class="action-name">Unstoppable Refresh (via Reapers)</div>
+            <div class="action-tags"><span class="tag passive">Conditional</span><span class="tag phase2">Ritual Mechanic</span></div>
+          </div>
+        </div>
+        <p class="action-desc">Cultists on the opposite end of the altar are chanting a ritual that continuously refreshes Orin's Unstoppable stacks. They're protected by Sanctuary and can only be harmed by AoE spells. Eliminate them and Orin loses her ability to regenerate the barrier — every remaining Unstoppable stack can then be stripped away conventionally.</p>
+      </div>
+
+      <div class="action-card phase2">
+        <div class="action-header"><span class="action-icon">💀</span>
+          <div class="action-title-wrap"><div class="action-name">Slayer Multiattack</div>
+            <div class="action-tags"><span class="tag action">Action</span><span class="tag phase2">Slayer Only</span></div>
+          </div>
+        </div>
+        <p class="action-desc">In Slayer form, Orin attacks multiple times with bestial slashes that inflict Bleed on every hit. The damage output is higher than Phase 1, the hits are harder to avoid, and every Bleed stack is counting toward her Sanguine Animation fuel. She's not just killing you — she's preparing the blood pool for the next wave of skeletons.</p>
+        <span class="action-damage dmg-slash">Multiple slashing hits · Bleed on each · escalating Necrotic DoT</span>
+      </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="divider">🗡 Equipment & Loot 🗡</div>
+    <p class="section-label">Worn · Wielded · Legendary Drops</p>
+    <h2 class="section-title">Arsenal & Items</h2>
+
+    <div class="equip-grid">
+      <div class="equip-card featured">
+        <div class="equip-rarity rarity-legendary">★★ Legendary</div>
+        <div class="equip-name">Crimson Mischief</div>
+        <div class="equip-type">Shortsword · Main Hand</div>
+        <div class="equip-stats">
+          <span class="equip-stat">+2 Enchantment</span>
+          <span class="equip-stat">1d6+2 Piercing+Necrotic</span>
+          <span class="equip-stat">+1d4 vs ≤50% HP</span>
+          <span class="equip-stat">Advantage = +7 dmg</span>
+        </div>
+        <p class="equip-desc">Her primary blade. Bonus damage against wounded targets, and when attacking with Advantage (which she constantly has via Reckless Attack) deals an extra +7 damage. As an off-hand weapon, adds ability modifier to damage rolls — a passive that breaks dual-wield math in her favour.</p>
+        <p class="equip-flavor">10–23 piercing and necrotic damage at its peak. One of the strongest shortswords in the game.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-legendary">★★ Legendary</div>
+        <div class="equip-name">Netherstone-Pommeled Bloodthirst</div>
+        <div class="equip-type">Shortsword · Off Hand</div>
+        <div class="equip-stats">
+          <span class="equip-stat">+2 Enchantment</span>
+          <span class="equip-stat">Expanded Crit Range</span>
+          <span class="equip-stat">True Strike Cantrip</span>
+          <span class="equip-stat">Pierce Vulnerability</span>
+          <span class="equip-stat">+1 AC (Bound Weapon)</span>
+        </div>
+        <p class="equip-desc">Her off-hand blade, embedded with a Netherstone fragment. Enemies hit by it become vulnerable to piercing damage — every follow-up slash from Crimson Mischief then deals double. Also expands her critical hit range. A weapon that makes the next weapon hit harder.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-key">★ Key Item</div>
+        <div class="equip-name">Mutilated Carapace</div>
+        <div class="equip-type">Armour · Chest · Her Signature Look</div>
+        <div class="equip-stats">
+          <span class="equip-stat">Dye-able</span>
+          <span class="equip-stat">Obtainable post-Patch 5</span>
+        </div>
+        <p class="equip-desc">The blood-red chitinous armour she wears — rigid and rough like insect carapace, styled like a predator's exoskeleton. Looted after her death in Patch 5+. Wearable by any party member. A trophy as much as gear.</p>
+      </div>
+
+      <div class="equip-card">
+        <div class="equip-rarity rarity-key">★ Key Item</div>
+        <div class="equip-name">Orin's Netherstone</div>
+        <div class="equip-type">Quest Item · Dropped on Death</div>
+        <div class="equip-stats">
+          <span class="equip-stat">Controls Elder Brain</span>
+          <span class="equip-stat">Required for Ending</span>
+        </div>
+        <p class="equip-desc">The second Netherstone. Required to command the Netherbrain. Without Orin's stone, the final act cannot be resolved — and Bhaal's army continues its march. Her death is the price of the city's survival.</p>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="divider">✦ Final Verdict ✦</div>
+    <div class="verdict-block">
+      <p class="verdict-text">
+        Orin the Red is a <strong>20th-level Rogue (Arcane Trickster) 10 / Barbarian (Berserker) 6 / Cleric (Death Domain) 4</strong>. She is the purest embodiment of what happens when a divine mandate to murder is paired with supernatural social stealth and the raw physical power of Bhaalspawn heritage. Where Gortash engineers and Ketheric grinds, Orin <em>hunts</em>. The Unstoppable mechanic forces you to earn every point of damage against her. The cultist ritual mechanic makes you choose between eliminating her support and hardening her AC. Her Slayer form strips away the theatrical pretence of the shapeshifter and delivers Bhaal himself in her skin. She is the most chaotic, the most personal, and mechanically the most relentless of the three Chosen — because murder gods don't <em>stop</em>.
+      </p>
+      <span class="verdict-sig">— Character Analysis · Baldur's Gate III · Act III · Temple of Bhaal</span>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <svg class="footer-mark" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="25" cy="23" rx="8" ry="9" fill="none" stroke="#8b0000" stroke-width="1.5"/>
+      <circle cx="22" cy="20" r="2.5" fill="#3d0008"/>
+      <circle cx="28" cy="20" r="2.5" fill="#3d0008"/>
+      <path d="M25 12 Q27 8 25 5 Q23 8 25 12 Z" fill="#8b0000"/>
+      <path d="M14 20 Q10 19 8 22 Q12 23 14 20 Z" fill="#8b0000"/>
+      <path d="M36 20 Q40 19 42 22 Q38 23 36 20 Z" fill="#8b0000"/>
+    </svg>
+    <p class="footer-text">Bhaal · The Murder Lord · Blood · Fear · Inevitability</p>
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* BACKGROUND */
+(function() {
+  const c = document.getElementById('bg-canvas'), ctx = c.getContext('2d');
+  let W, H, t = 0;
+  function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#04030a'; ctx.fillRect(0, 0, W, H);
+    [
+      { x: W*0.3, y: H*0.4, r: 450, c: 'rgba(192,17,43,0.08)', dx: Math.sin(t*0.0003)*80, dy: Math.cos(t*0.0002)*60 },
+      { x: W*0.7, y: H*0.6, r: 350, c: 'rgba(61,0,8,0.1)',    dx: Math.cos(t*0.0004)*60, dy: Math.sin(t*0.0003)*80 },
+      { x: W*0.5, y: H*0.1, r: 280, c: 'rgba(139,0,0,0.06)',   dx: Math.sin(t*0.0002)*30, dy: 0 },
+    ].forEach(o => {
+      const g = ctx.createRadialGradient(o.x+o.dx, o.y+o.dy, 0, o.x+o.dx, o.y+o.dy, o.r);
+      g.addColorStop(0, o.c); g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    });
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* PARTICLES */
+(function() {
+  const c = document.getElementById('particle-canvas'), ctx = c.getContext('2d');
+  let W, H;
+  function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  const colors = ['rgba(192,17,43,', 'rgba(139,0,0,', 'rgba(240,48,80,', 'rgba(61,0,8,'];
+  class P {
+    constructor() { this.reset(true); }
+    reset(init) {
+      this.x = Math.random()*W; this.y = init ? Math.random()*H : H+10;
+      this.size = Math.random()*2+0.5; this.sy = -(Math.random()*0.5+0.2);
+      this.sx = (Math.random()-0.5)*0.4; this.op = Math.random()*0.5+0.1;
+      this.c = colors[Math.floor(Math.random()*colors.length)]; this.w = Math.random()*Math.PI*2; this.ws = (Math.random()-0.5)*0.02;
+    }
+    update() { this.w+=this.ws; this.x+=this.sx+Math.sin(this.w)*0.4; this.y+=this.sy; if(this.y<-10) this.reset(false); }
+    draw()   { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fillStyle=this.c+this.op+')'; ctx.fill(); }
+  }
+  const ps = Array.from({length:100},()=>new P());
+  function animate() { ctx.clearRect(0,0,W,H); ps.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
+  animate();
+})();
+
+/* THREE.JS */
+(function() {
+  const canvas = document.getElementById('three-canvas');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setSize(400,400); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(50,1,0.1,100);
+  camera.position.set(0,0,5);
+  scene.add(new THREE.AmbientLight(0x110008, 1));
+  const rL = new THREE.PointLight(0xc0112b, 4, 10); rL.position.set(2,1,2); scene.add(rL);
+  const dL = new THREE.PointLight(0x3d0008, 2, 8);  dL.position.set(-2,-1,1); scene.add(dL);
+
+  // Central skull-like sphere
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.5,32,32), new THREE.MeshStandardMaterial({color:0x1a0005, emissive:0xc0112b, emissiveIntensity:0.5, metalness:0.2, roughness:0.7}));
+  scene.add(core);
+
+  // Blood drop rings
+  const ringMat = new THREE.MeshStandardMaterial({color:0x8b0000, metalness:0.9, roughness:0.15});
+  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.3,0.04,12,100), ringMat); scene.add(ring1);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0,0.03,12,80), new THREE.MeshStandardMaterial({color:0xc0112b, metalness:0.85, roughness:0.2}));
+  ring2.rotation.x = Math.PI/3; scene.add(ring2);
+  const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.6,0.015,8,80), new THREE.MeshStandardMaterial({color:0x3d0008, metalness:0.8, roughness:0.3}));
+  ring3.rotation.y = Math.PI/4; scene.add(ring3);
+
+  // Orbiting blood drop tetrahedra
+  const drops = [];
+  for(let i=0;i<9;i++) {
+    const m = new THREE.Mesh(new THREE.TetrahedronGeometry(0.07), new THREE.MeshStandardMaterial({color: i%3===0?0xf03050:0x8b0000, emissive:i%3===0?0xf03050:0x8b0000, emissiveIntensity:0.4, metalness:0.9, roughness:0.1}));
+    drops.push({mesh:m, angle:i*(Math.PI*2/9), r:1.3+Math.sin(i)*0.1, plane:i%3});
+    scene.add(m);
+  }
+
+  // Sword silhouette lines
+  const lineMat = new THREE.LineBasicMaterial({color:0xc0112b, transparent:true, opacity:0.2});
+  [[0,1.6,0],[0,-1.6,0]].reduce((_,p,i,arr)=>i<arr.length-1?[scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...arr[i]),new THREE.Vector3(...arr[i+1])]),lineMat))]:_,[]);
+
+  let t=0;
+  function animate() {
+    requestAnimationFrame(animate); t+=0.009;
+    ring1.rotation.y=t*0.6; ring1.rotation.x=Math.sin(t*0.3)*0.2;
+    ring2.rotation.z=t*0.9; ring2.rotation.x=Math.PI/3+Math.sin(t*0.4)*0.1;
+    ring3.rotation.y=-t*0.4; ring3.rotation.z=t*0.2;
+    core.rotation.y=t*0.5; core.material.emissiveIntensity=0.4+Math.sin(t*2)*0.2;
+    rL.intensity=3+Math.sin(t*1.5)*1; rL.position.x=Math.cos(t*0.4)*3; rL.position.z=Math.sin(t*0.4)*3;
+    drops.forEach((d,i)=>{
+      const a=d.angle+t*(0.5+i*0.04);
+      if(d.plane===0) d.mesh.position.set(Math.cos(a)*d.r, Math.sin(a)*d.r, 0);
+      else if(d.plane===1) d.mesh.position.set(Math.cos(a)*d.r, 0, Math.sin(a)*d.r);
+      else d.mesh.position.set(0, Math.cos(a)*d.r, Math.sin(a)*d.r);
+      d.mesh.rotation.x=t*2+i; d.mesh.rotation.y=t*1.5+i;
+    });
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+
+/* CLICK BURST */
+document.addEventListener('click', e => {
+  const b = document.createElement('div'); b.className='glow-burst';
+  b.style.left=e.clientX+'px'; b.style.top=e.clientY+'px';
+  b.style.width='10px'; b.style.height='10px';
+  document.body.appendChild(b); setTimeout(()=>b.remove(),600);
+});
+
+/* SCROLL PARALLAX */
+addEventListener('scroll',()=>{
+  const y=scrollY, t=document.querySelector('.hero-title');
+  if(t){t.style.transform=`translateY(${y*0.3}px)`;t.style.opacity=Math.max(0,1-y/400);}
+});
+</script>
+</body>
+</html>

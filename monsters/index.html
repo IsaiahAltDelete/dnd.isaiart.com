@@ -258,6 +258,25 @@
     .conjure-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
     .conjure-btn .fa-dice-d20 { font-size: 0.85rem; }
 
+    .prefix-bar {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 6px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
+      background: rgba(0,0,0,0.02); position: relative; z-index: 2;
+    }
+    .prefix-bar label {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
+      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .prefix-bar label .fa-paintbrush { font-size: 0.6rem; }
+    .prefix-bar input {
+      flex: 1; padding: 5px 10px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
+      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
+      min-width: 0;
+    }
+    .prefix-bar input::placeholder { color: rgba(88,24,13,0.3); font-style: italic; font-size: 0.72rem; }
+    .prefix-bar input:focus { outline: none; border-color: var(--dnd-red); background: #FFF9F0; }
+
     /* STAT SCROLL */
     .stat-scroll {
       flex: 1; overflow-y: auto; overflow-x: hidden;
@@ -387,6 +406,9 @@
       .header-title { font-size: 1rem; letter-spacing: 1px; }
       .header-subtitle { display: none; }
       .controls-bar { padding: 6px 14px; gap: 5px; }
+      .prefix-bar { padding: 5px 14px; gap: 5px; }
+      .prefix-bar label { font-size: 0.5rem; }
+      .prefix-bar input { font-size: 0.72rem; padding: 4px 8px; }
       .control-group select { min-width: 65px; font-size: 0.72rem; padding: 2px 16px 2px 5px; }
       .control-group label { font-size: 0.5rem; }
       .stat-scroll { padding: 12px 14px 18px; }
@@ -455,6 +477,10 @@
         <i class="fas fa-dice-d20"></i><span>Conjure</span>
       </button>
     </div>
+    <div class="prefix-bar">
+      <label for="prefixInput"><i class="fas fa-paintbrush"></i> Prompt Prefix</label>
+      <input type="text" id="prefixInput" placeholder='e.g. "digital painterly art style, sweeping brush strokes"' spellcheck="false">
+    </div>
 
     <div class="stat-scroll" id="statScroll">
       <div id="monsterDisplay">
@@ -496,7 +522,7 @@ const xpByCR={"0":10,"1/8":25,"1/4":50,"1/2":100,"1":200,"2":450,"3":700,"4":110
 const crNumeric={"0":0,"1/8":0.125,"1/4":0.25,"1/2":0.5,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"10":10,"11":11,"12":12,"13":13,"14":14,"15":15,"16":16,"17":17,"18":18,"19":19,"20":20,"21":21,"22":22,"23":23,"24":24,"25":25,"26":26,"27":27,"28":28,"29":29,"30":30};
 
 const monsterStyles=[
-  "Skeletal","Armored","Fleshy","Gaseous","Crystalline","Shadowy","Ethereal","Mechanical","Plant-like","Insectoid","Aquatic","Avian","Reptilian","Fungal","Demonic","Angelic","Chaotic","Orderly","Primal","Ancient","Magical","Psionic","Mutated","Corrupted","Radiant","Abyssal","Celestial","Infernal","Feywild","Shadowfell","Astral","Elemental","Clockwork","Golemic","Spectral","Venomous","Bioluminescent","Chitinous","Scaly","Feathered","Furred","Spiked","Tendriled","Segmented","Amorphous","Runed","Storm-touched","Glacial","Sun-baked","Moonlit","Bloodstained","Void-touched","Molten","Coral-grown","Mire-soaked","Cinder-veined","Starborn","Bone-plated","Moss-draped"
+  "Skeletal","Armored","Fleshy","Gaseous","Crystalline","Shadowy","Ethereal","Mechanical","Plant-like","Insectoid","Aquatic","Avian","Reptilian","Fungal","Demonic","Angelic","Chaotic","Orderly","Primal","Ancient","Magical","Psionic","Mutated","Corrupted","Radiant","Abyssal","Celestial","Infernal","Feywild","Shadowfell","Astral","Elemental","Clockwork","Golemic","Spectral","Venomous","Bioluminescent","Chitinous","Scaly","Feathered","Furred","Spiked","Tendriled","Segmented","Amorphous","Runed","Storm-touched","Glacial","Sun-baked","Moonlit","Bloodstained","Void-touched","Molten","Coral-grown","Mire-soaked","Cinder-veined","Starborn","Bone-plated","Moss-draped","Gelatinous","Tar-coated","Petrified","Barnacled","Fossilized","Parasitic","Symbiotic","Calcified","Magnetized","Hollowed","Spore-laden","Amber-encased","Mercury-blooded","Thorn-wrapped","Silk-spun","Fungal-bloomed","Coral-armored","Glass-boned","Smoke-wreathed","Wax-sealed","Iron-veined","Salt-crusted","Volcanic","Frost-rimed","Dew-kissed","Sand-sculpted","Web-wrapped","Barnacle-plated","Lichen-skinned"
 ];
 
 const monsterColors=[
@@ -506,7 +532,54 @@ const monsterColors=[
   {name:"Bone White",hex:"#F0E68C"},{name:"Forest Green",hex:"#228B22"},{name:"Sky Blue",hex:"#87CEEB"},{name:"Rust Brown",hex:"#A0522D"},
   {name:"Midnight Black",hex:"#191970"},{name:"Coral Pink",hex:"#FF7F50"},{name:"Lavender",hex:"#E6E6FA"},{name:"Charcoal Gray",hex:"#36454F"},
   {name:"Lime Green",hex:"#32CD32"},{name:"Violet",hex:"#EE82EE"},{name:"Ash Gray",hex:"#B2BEB5"},{name:"Pearl",hex:"#FDEEF4"},
-  {name:"Verdigris",hex:"#43B3AE"},{name:"Copper",hex:"#B87333"},{name:"Ivory",hex:"#FFFFF0"},{name:"Dusk Blue",hex:"#4E5D94"}
+  {name:"Verdigris",hex:"#43B3AE"},{name:"Copper",hex:"#B87333"},{name:"Ivory",hex:"#FFFFF0"},{name:"Dusk Blue",hex:"#4E5D94"},
+  // Iridescent / Prismatic
+  {name:"Iridescent Opal",hex:"linear-gradient(135deg,#E0C3FC,#8EC5FC,#FFDEE9)",gradient:true},
+  {name:"Iridescent Green",hex:"linear-gradient(135deg,#11998E,#38EF7D,#0575E6)",gradient:true},
+  {name:"Iridescent Violet",hex:"linear-gradient(135deg,#A855F7,#EC4899,#6366F1)",gradient:true},
+  {name:"Prismatic Rainbow",hex:"linear-gradient(135deg,#FF0000,#FF7F00,#FFFF00,#00FF00,#0000FF,#8B00FF)",gradient:true},
+  {name:"Oil-slick Iridescent",hex:"linear-gradient(135deg,#1A1A2E,#16213E,#0F3460,#533483,#E94560)",gradient:true},
+  {name:"Beetle-shell Iridescent",hex:"linear-gradient(135deg,#004D40,#00897B,#26A69A,#80CBC4,#B2DFDB)",gradient:true},
+  {name:"Abalone Shimmer",hex:"linear-gradient(135deg,#F8BBD0,#CE93D8,#90CAF9,#80CBC4,#E6EE9C)",gradient:true},
+  // Metallic
+  {name:"Polished Steel",hex:"linear-gradient(135deg,#71797E,#B0B0B0,#71797E)",gradient:true},
+  {name:"Rose Gold",hex:"linear-gradient(135deg,#B76E79,#E8B4BC,#B76E79)",gradient:true},
+  {name:"Burnished Brass",hex:"linear-gradient(135deg,#936E3A,#D4A843,#936E3A)",gradient:true},
+  {name:"Platinum",hex:"linear-gradient(135deg,#C0C0C0,#E8E8E8,#C0C0C0)",gradient:true},
+  {name:"Dark Iron",hex:"linear-gradient(135deg,#2C2C2C,#5A5A5A,#2C2C2C)",gradient:true},
+  {name:"Electrum",hex:"linear-gradient(135deg,#CFB53B,#E8D5A3,#CFB53B)",gradient:true},
+  {name:"Mithral",hex:"linear-gradient(135deg,#7EC8E3,#C0E8F9,#7EC8E3)",gradient:true},
+  {name:"Adamantine",hex:"linear-gradient(135deg,#2E2E3A,#4A4A5A,#2E2E3A)",gradient:true},
+  {name:"Liquid Mercury",hex:"linear-gradient(135deg,#8C8C8C,#D4D4D4,#8C8C8C,#E8E8E8)",gradient:true},
+  // Glowing / Luminous
+  {name:"Glowing Amber",hex:"#FFBF00",glow:"#FFBF00"},
+  {name:"Glowing Cyan",hex:"#00FFFF",glow:"#00FFFF"},
+  {name:"Glowing Magenta",hex:"#FF00FF",glow:"#FF00FF"},
+  {name:"Glowing Green",hex:"#39FF14",glow:"#39FF14"},
+  {name:"Glowing Red",hex:"#FF3131",glow:"#FF3131"},
+  {name:"Glowing Blue",hex:"#4D4DFF",glow:"#4D4DFF"},
+  {name:"Glowing White",hex:"#F0F0FF",glow:"#F0F0FF"},
+  {name:"Glowing Violet",hex:"#BF40BF",glow:"#BF40BF"},
+  {name:"Bioluminescent Teal",hex:"#00CED1",glow:"#00CED1"},
+  {name:"Bioluminescent Pink",hex:"#FF69B4",glow:"#FF69B4"},
+  {name:"Ghostly Pale",hex:"#D6E4F0",glow:"#D6E4F0"},
+  // Ethereal / Translucent / Otherworldly
+  {name:"Ethereal Mist",hex:"linear-gradient(135deg,rgba(200,220,255,0.8),rgba(230,240,255,0.6),rgba(180,200,240,0.8))",gradient:true},
+  {name:"Spectral Blue",hex:"#5B9BD5",glow:"#5B9BD5"},
+  {name:"Void Black",hex:"linear-gradient(135deg,#000000,#1A0A2E,#000000)",gradient:true},
+  {name:"Astral Silver",hex:"linear-gradient(135deg,#BCC6CC,#E8EFF5,#BCC6CC)",gradient:true,glow:"#E8EFF5"},
+  {name:"Shadowfell Purple",hex:"linear-gradient(135deg,#2D1B4E,#4A2D6E,#2D1B4E)",gradient:true},
+  {name:"Feywild Gold",hex:"linear-gradient(135deg,#FFD700,#FFF8DC,#FFD700)",gradient:true,glow:"#FFD700"},
+  {name:"Eldritch Green",hex:"#00FF41",glow:"#00FF41"},
+  {name:"Starfire White",hex:"#FFFAF0",glow:"#FFFAF0"},
+  {name:"Moonsilver",hex:"linear-gradient(135deg,#C4CFD5,#E8EEF2,#C4CFD5)",gradient:true,glow:"#E8EEF2"},
+  {name:"Sunfire Orange",hex:"#FF6600",glow:"#FF4500"},
+  {name:"Necrotic Black-Green",hex:"linear-gradient(135deg,#1A1A0A,#3A4A0A,#1A1A0A)",gradient:true},
+  {name:"Radiant Gold-White",hex:"linear-gradient(135deg,#FFD700,#FFFFF0,#FFD700)",gradient:true,glow:"#FFD700"},
+  {name:"Frostfire Blue-White",hex:"linear-gradient(135deg,#00BFFF,#F0FFFF,#00BFFF)",gradient:true,glow:"#00BFFF"},
+  {name:"Hellfire Red-Black",hex:"linear-gradient(135deg,#8B0000,#FF4500,#8B0000)",gradient:true,glow:"#FF4500"},
+  {name:"Translucent",hex:"linear-gradient(135deg,rgba(220,220,220,0.5),rgba(255,255,255,0.3),rgba(220,220,220,0.5))",gradient:true},
+  {name:"Chromatic Shifting",hex:"linear-gradient(135deg,#FF6B6B,#FECA57,#48DBFB,#FF9FF3,#54A0FF)",gradient:true}
 ];
 
 const fantasyLanguages=[
@@ -531,8 +604,8 @@ const vulnerabilitiesList=["fire","cold","lightning","acid","necrotic","radiant"
 const damageResistances=["acid","cold","fire","lightning","necrotic","poison","psychic","radiant","thunder","bludgeoning, piercing, and slashing from nonmagical attacks"];
 const monsterLoot=["Coins","Magical Artifact","Potion of Healing","Ancient Scroll","Gemstone","Weapon","Armor","Ring","Cursed Item","Spellbook","Relic Fragment","Runestone","Rare Venom","Astral Chart","Sacred Idol"];
 const monsterBehavior=["Aggressive","Territorial","Solitary","Pack Hunter","Mischievous","Cunning","Lazy","Curious","Reclusive","Bloodthirsty","Guardian","Scheming","Predatory","Brooding","Nomadic","Parasitic","Hive-minded"];
-const monsterPatterns=["Striped hide","Spotted hide","Rosette pattern","Marbled skin","Iridescent scales","Mottled camouflage","Barbed plates","Velvet fur","Rough hide","Warty skin","Slick amphibian skin","Pebbled scales","Feather barring","Swirled runes","Cracked obsidian skin","Mossy growths","Luminous veins","Coral encrustation","Ash-caked skin","Glassy shell"];
-const bodyForms=["Serpentine","Quadrupedal","Bipedal","Hexapodal","Arachnid","Cephalopod","Avian","Feline","Canine","Ursine","Simian","Hooved","Amorphous","Humanoid","Insectile","Piscine","Crustacean","Toadlike","Lupine","Raptor-like","Staglike","Manta-like"];
+const monsterPatterns=["Striped hide","Spotted hide","Rosette pattern","Marbled skin","Iridescent scales","Mottled camouflage","Barbed plates","Velvet fur","Rough hide","Warty skin","Slick amphibian skin","Pebbled scales","Feather barring","Swirled runes","Cracked obsidian skin","Mossy growths","Luminous veins","Coral encrustation","Ash-caked skin","Glassy shell","Translucent membrane","Bioluminescent spots","Chitinous exoskeleton","Barnacle-encrusted hide","Oily slick skin","Metallic sheen","Crystalline facets","Gelatinous translucency","Oozing pores","Petrified bark skin","Lichen-covered stone","Spongey tissue","Prismatic refracting surface","Tar-like coating","Frosted rime coating","Ember-glowing cracks","Honeycombed surface","Fibrous muscle tissue","Polished ceramic plating","Fungal fruiting bodies","Stalagmite protrusions","Segmented carapace","Layered sediment bands","Bubbly foam texture","Wax-like smoothness","Parchment-thin skin","Sand-blasted roughness","Vine-wrapped surface","Pearlescent nacre","Rusted iron plating","Scab-like crusting","Molten magma veins","Glacial ice surface","Silk-smooth chitin","Thorny protrusions","Calcified armor plates","Quartz crystal growths","Oil-rainbow sheen","Blistered pustules","Dappled shadow markings","Feathered scales","Wet clay texture","Pumice-rough surface","Spider-silk wrapping","Acid-etched grooves","Layered fungal shelves","Barnacle clusters","Suction cup-covered skin","Electroplated surface","Fractal branching pattern","Tessellated tile pattern","Mirrored reflective surface","Resinous amber coating","Charcoal-dusted skin","Chalky white crust","Woven grass-fiber covering","Bone-shard protrusions","Leathery wrinkled hide","Slug-trail mucous coating","Phosphorescent dots"];
+const bodyForms=["Serpentine","Quadrupedal","Bipedal","Hexapodal","Arachnid","Cephalopod","Avian","Feline","Canine","Ursine","Simian","Hooved","Amorphous","Humanoid","Insectile","Piscine","Crustacean","Toadlike","Lupine","Raptor-like","Staglike","Manta-like","Pyramidal","Orbicular","Gelatinous","Blob-like","Globular","Crystalline Lattice","Centipedal","Worm-like","Starfish-like","Polyp-like","Fungoid","Coral-like","Tetrahedral","Cuboid","Spire-shaped","Disc-shaped","Toroidal","Tendril-mass","Bristle-cluster","Shell-encased","Slug-like","Nautiloid","Leech-like","Bat-like","Eel-like","Millipedal","Scarab-like","Praying Mantis-like","Jellyfish-like","Anemone-like","Hydra-headed","Chimeric","Centauroid","Dragonfly-like","Scorpion-like","Turtle-like","Armadillo-like","Pangolin-like"];
 const visionModes=[
   {label:"normal vision",detail:"normal vision"},
   {label:"darkvision 60 ft.",detail:"darkvision 60 ft."},
@@ -632,7 +705,63 @@ const familyCatalog=[
   {name:"Mimic",type:"Monstrosity",roles:["lurker"],sizes:["Medium","Large"],habitats:["Urban Ruins","Ruins","Cave"],forms:["Amorphous"],tags:["adhesive","bite","pseudopod"],moves:["walk"],origins:["Material Plane","The Far Realm"],mind:"mid",animal:["gecko","octopus"]},
   {name:"Homunculus",type:"Construct",roles:["skirmisher"],sizes:["Tiny","Small"],habitats:["Urban Ruins","Ruins"],forms:["Humanoid","Avian"],tags:["bite","flight","messenger"],moves:["walk","fly"],origins:["Material Plane"],mind:"mid",animal:["bat","gargoyle"]},
   {name:"Gargoyle",type:"Elemental",roles:["guardian"],sizes:["Medium","Large"],habitats:["Urban Ruins","Mountains","Ruins"],forms:["Humanoid"],tags:["claw","stone","flight"],moves:["walk","fly"],origins:["Plane of Earth","Ancient Ruins"],mind:"mid",animal:["bat","lion"]},
-  {name:"Blink Dog",type:"Fey",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Feywild","Grassland"],forms:["Canine"],tags:["teleport","bite","pack"],moves:["walk"],origins:["Feywild"],mind:"mid",animal:["dog","fox"]}
+  {name:"Blink Dog",type:"Fey",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Feywild","Grassland"],forms:["Canine"],tags:["teleport","bite","pack"],moves:["walk"],origins:["Feywild"],mind:"mid",animal:["dog","fox"]},
+  {name:"Living Spell",type:"Construct",roles:["controller"],sizes:["Medium","Large"],habitats:["Ruins","Urban Ruins","Astral"],forms:["Amorphous","Orbicular","Gelatinous"],tags:["spell","engulf","element"],moves:["float"],origins:["Ancient Ruins","Astral Sea"],mind:"low",animal:["jellyfish","plasma","aurora"]},
+  {name:"Gibbering Mouther",type:"Aberration",roles:["controller","brute"],sizes:["Medium"],habitats:["Cave","Underdark","Ruins"],forms:["Blob-like","Amorphous","Globular"],tags:["bite","psychic","engulf","amorphous"],moves:["walk","swim"],origins:["The Far Realm","Underdark"],mind:"low",animal:["amoeba","sea cucumber","hagfish"]},
+  {name:"Gelatinous Cube",type:"Ooze",roles:["lurker","brute"],sizes:["Large","Huge"],habitats:["Cave","Ruins","Underdark"],forms:["Cuboid","Gelatinous"],tags:["acid","engulf","amorphous"],moves:["walk"],origins:["Underdark","Ancient Ruins"],mind:"low",animal:["jellyfish","glass sponge"]},
+  {name:"Flumph",type:"Aberration",roles:["skirmisher"],sizes:["Small"],habitats:["Underdark","Cave"],forms:["Disc-shaped","Jellyfish-like"],tags:["acid","flight","telepathy"],moves:["float","fly"],origins:["The Far Realm"],mind:"mid",animal:["jellyfish","manta ray"]},
+  {name:"Intellect Devourer",type:"Aberration",roles:["controller","lurker"],sizes:["Tiny","Small"],habitats:["Underdark","Urban Ruins"],forms:["Blob-like","Worm-like"],tags:["psychic","possess","teleport"],moves:["walk"],origins:["The Far Realm","Underdark"],mind:"high",animal:["brain coral","hermit crab"]},
+  {name:"Otyugh",type:"Aberration",roles:["brute","controller"],sizes:["Large"],habitats:["Cave","Swamp","Urban Ruins"],forms:["Globular","Blob-like"],tags:["tentacle","bite","stench"],moves:["walk"],origins:["Material Plane","Underdark"],mind:"low",animal:["starfish","dung beetle","hagfish"]},
+  {name:"Roper",type:"Monstrosity",roles:["lurker","controller"],sizes:["Large","Huge"],habitats:["Cave","Underdark"],forms:["Spire-shaped","Polyp-like"],tags:["tentacle","bite","ambush"],moves:["walk"],origins:["Underdark"],mind:"mid",animal:["sea anemone","stalactite","barnacle"]},
+  {name:"Piercer",type:"Monstrosity",roles:["lurker"],sizes:["Small","Medium"],habitats:["Cave","Underdark"],forms:["Spire-shaped"],tags:["bite","ambush"],moves:["climb"],origins:["Underdark"],mind:"low",animal:["stalactite","cone snail","limpet"]},
+  {name:"Grick",type:"Monstrosity",roles:["skirmisher"],sizes:["Medium","Large"],habitats:["Cave","Underdark","Ruins"],forms:["Worm-like","Tentril-mass"],tags:["tentacle","bite","ambush"],moves:["walk","climb"],origins:["Material Plane","Underdark"],mind:"low",animal:["worm","lamprey","leech"]},
+  {name:"Carrion Crawler",type:"Monstrosity",roles:["controller"],sizes:["Large"],habitats:["Cave","Underdark","Ruins"],forms:["Centipedal","Worm-like"],tags:["tentacle","poison","climb"],moves:["walk","climb"],origins:["Underdark"],mind:"low",animal:["centipede","caterpillar","maggot"]},
+  {name:"Behir",type:"Monstrosity",roles:["brute"],sizes:["Huge"],habitats:["Cave","Mountains"],forms:["Centipedal","Serpentine"],tags:["bite","constrict","lightning","breath"],moves:["walk","climb"],origins:["Material Plane","Elemental Chaos"],mind:"mid",animal:["centipede","crocodile","electric eel"]},
+  {name:"Purple Worm",type:"Monstrosity",roles:["brute"],sizes:["Gargantuan"],habitats:["Underdark","Desert","Badlands"],forms:["Worm-like"],tags:["bite","sting","burrow","engulf"],moves:["walk","burrow"],origins:["Underdark","Elemental Chaos"],mind:"low",animal:["earthworm","bobbit worm","lamprey"]},
+  {name:"Ankheg",type:"Monstrosity",roles:["skirmisher"],sizes:["Large"],habitats:["Grassland","Forest","Desert"],forms:["Insectile","Scarab-like"],tags:["bite","acid","burrow"],moves:["walk","burrow"],origins:["Material Plane"],mind:"low",animal:["ant lion","beetle","mantis shrimp"]},
+  {name:"Bulette",type:"Monstrosity",roles:["brute"],sizes:["Large","Huge"],habitats:["Grassland","Badlands","Desert"],forms:["Armadillo-like","Turtle-like"],tags:["bite","charge","burrow"],moves:["walk","burrow"],origins:["Material Plane","Elemental Chaos"],mind:"low",animal:["shark","armadillo","mole"]},
+  {name:"Hydra",type:"Monstrosity",roles:["brute"],sizes:["Huge","Gargantuan"],habitats:["Swamp","Coast","Jungle"],forms:["Hydra-headed","Serpentine"],tags:["bite","regeneration"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["snake","lizard","eel"]},
+  {name:"Chuul",type:"Aberration",roles:["brute","controller"],sizes:["Large"],habitats:["Underwater","Swamp","Coast"],forms:["Crustacean"],tags:["claw","tentacle","swim","poison"],moves:["walk","swim"],origins:["Deep Ocean Trenches","The Far Realm"],mind:"mid",animal:["lobster","crab","horseshoe crab"]},
+  {name:"Froghemoth",type:"Monstrosity",roles:["brute","controller"],sizes:["Huge"],habitats:["Swamp","Jungle"],forms:["Toadlike","Blob-like"],tags:["tentacle","bite","swim","engulf"],moves:["walk","swim"],origins:["Material Plane","The Far Realm"],mind:"low",animal:["frog","salamander","axolotl"]},
+  {name:"Catoblepas",type:"Monstrosity",roles:["controller"],sizes:["Large"],habitats:["Swamp","Jungle"],forms:["Hooved","Quadrupedal"],tags:["gaze","tail","stench"],moves:["walk"],origins:["Material Plane","Feywild"],mind:"low",animal:["wildebeest","warthog","hippo"]},
+  {name:"Peryton",type:"Monstrosity",roles:["skirmisher"],sizes:["Medium"],habitats:["Mountains","Forest","Sky"],forms:["Staglike","Avian"],tags:["beak","talon","wing","charge"],moves:["walk","fly"],origins:["Feywild","Material Plane"],mind:"mid",animal:["elk","eagle","vulture"]},
+  {name:"Darkmantle",type:"Monstrosity",roles:["lurker"],sizes:["Small"],habitats:["Cave","Underdark"],forms:["Manta-like","Shell-encased"],tags:["engulf","darkness","ambush"],moves:["fly"],origins:["Underdark"],mind:"low",animal:["manta ray","octopus","bat"]},
+  {name:"Stirge",type:"Beast",roles:["skirmisher"],sizes:["Tiny"],habitats:["Swamp","Forest","Cave","Ruins"],forms:["Bat-like","Insectile"],tags:["bite","drain","wing"],moves:["fly"],origins:["Material Plane"],mind:"low",animal:["mosquito","bat","tick"]},
+  {name:"Death Dog",type:"Monstrosity",roles:["skirmisher"],sizes:["Medium"],habitats:["Desert","Badlands","Ruins"],forms:["Canine"],tags:["bite","disease","pack"],moves:["walk"],origins:["Shadowfell","Material Plane"],mind:"low",animal:["hyena","jackal","wild dog"]},
+  {name:"Phase Spider",type:"Monstrosity",roles:["lurker","skirmisher"],sizes:["Large"],habitats:["Forest","Cave","Feywild"],forms:["Arachnid"],tags:["bite","web","teleport","poison"],moves:["walk","climb"],origins:["Feywild","Ethereal Plane"],mind:"low",animal:["spider","trap-door spider"]},
+  {name:"Giant Scorpion",type:"Beast",roles:["brute"],sizes:["Large"],habitats:["Desert","Cave","Badlands"],forms:["Scorpion-like"],tags:["claw","sting","poison"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["emperor scorpion","bark scorpion"]},
+  {name:"Giant Centipede",type:"Beast",roles:["skirmisher"],sizes:["Small","Medium"],habitats:["Cave","Forest","Swamp"],forms:["Centipedal","Millipedal"],tags:["bite","poison","climb"],moves:["walk","climb"],origins:["Material Plane"],mind:"low",animal:["centipede","millipede"]},
+  {name:"Giant Crab",type:"Beast",roles:["guardian"],sizes:["Medium","Large"],habitats:["Coast","Underwater"],forms:["Crustacean"],tags:["claw","swim","armor"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["coconut crab","king crab","hermit crab"]},
+  {name:"Giant Wasp",type:"Beast",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Jungle","Grassland"],forms:["Insectile","Dragonfly-like"],tags:["sting","poison","wing"],moves:["fly","walk"],origins:["Material Plane"],mind:"low",animal:["wasp","hornet","tarantula hawk"]},
+  {name:"Giant Spider",type:"Beast",roles:["lurker","controller"],sizes:["Large"],habitats:["Forest","Cave","Underdark"],forms:["Arachnid"],tags:["bite","web","poison","climb"],moves:["walk","climb"],origins:["Material Plane","Underdark"],mind:"low",animal:["orb weaver","wolf spider","funnel web"]},
+  {name:"Giant Toad",type:"Beast",roles:["controller"],sizes:["Large"],habitats:["Swamp","Jungle","Forest"],forms:["Toadlike"],tags:["bite","tongue","swim","engulf"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["cane toad","horned frog","surinam toad"]},
+  {name:"Giant Elk",type:"Beast",roles:["brute"],sizes:["Huge"],habitats:["Forest","Grassland","Arctic"],forms:["Staglike","Hooved"],tags:["charge","hoof"],moves:["walk"],origins:["Material Plane","Feywild"],mind:"mid",animal:["elk","moose","caribou"]},
+  {name:"Giant Boar",type:"Beast",roles:["brute"],sizes:["Large"],habitats:["Forest","Grassland"],forms:["Hooved"],tags:["charge","tusk"],moves:["walk"],origins:["Material Plane"],mind:"low",animal:["boar","warthog","peccary"]},
+  {name:"Crocodilian",type:"Beast",roles:["brute","lurker"],sizes:["Large","Huge"],habitats:["Swamp","Coast","Jungle"],forms:["Quadrupedal"],tags:["bite","tail","swim","ambush"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["crocodile","alligator","caiman"]},
+  {name:"Giant Constrictor",type:"Beast",roles:["controller"],sizes:["Huge"],habitats:["Jungle","Swamp","Forest"],forms:["Serpentine"],tags:["bite","constrict"],moves:["walk","swim"],origins:["Material Plane"],mind:"low",animal:["anaconda","python","boa"]},
+  {name:"Ape",type:"Beast",roles:["brute"],sizes:["Medium","Large"],habitats:["Forest","Jungle","Mountains"],forms:["Simian"],tags:["claw","throw"],moves:["walk","climb"],origins:["Material Plane"],mind:"mid",animal:["gorilla","orangutan","chimpanzee"]},
+  {name:"Living Geometry",type:"Construct",roles:["guardian","controller"],sizes:["Small","Medium","Large"],habitats:["Ruins","Urban Ruins","Astral"],forms:["Pyramidal","Tetrahedral","Cuboid","Toroidal"],tags:["force","slam","levitate"],moves:["float"],origins:["Astral Sea","Ancient Ruins","The Far Realm"],mind:"low",animal:["crystal formation","geode","prism"]},
+  {name:"Orb Horror",type:"Aberration",roles:["controller","caster"],sizes:["Small","Medium","Large"],habitats:["Far Realm","Astral","Cave","Underdark"],forms:["Orbicular","Disc-shaped"],tags:["psychic","beam","levitate","eye"],moves:["float"],origins:["The Far Realm","Astral Sea"],mind:"high",animal:["pufferfish","sea urchin","dandelion seed"]},
+  {name:"Slime Colony",type:"Ooze",roles:["brute","controller"],sizes:["Medium","Large","Huge"],habitats:["Cave","Swamp","Underdark","Ruins"],forms:["Blob-like","Globular","Gelatinous"],tags:["acid","engulf","split","amorphous"],moves:["walk","climb"],origins:["Underdark","The Far Realm","Elemental Chaos"],mind:"low",animal:["slime mold","Portuguese man-o-war","sea slug"]},
+  {name:"Mold Horror",type:"Plant",roles:["controller"],sizes:["Small","Medium","Large"],habitats:["Cave","Underdark","Swamp","Ruins"],forms:["Fungoid","Blob-like","Bristle-cluster"],tags:["spores","poison","necrotic"],moves:["walk"],origins:["Underdark","Shadowfell"],mind:"low",animal:["black mold","cordyceps","slime mold"]},
+  {name:"Coral Beast",type:"Monstrosity",roles:["guardian","controller"],sizes:["Medium","Large","Huge"],habitats:["Underwater","Coast"],forms:["Coral-like","Polyp-like","Anemone-like"],tags:["slam","poison","swim","armor"],moves:["walk","swim"],origins:["Plane of Water","Deep Ocean Trenches"],mind:"low",animal:["brain coral","fire coral","sea anemone","tube worm"]},
+  {name:"Wight",type:"Undead",roles:["skirmisher","controller"],sizes:["Medium"],habitats:["Ruins","Shadowfell","Cave"],forms:["Humanoid"],tags:["weapon","drain","necrotic"],moves:["walk"],origins:["Shadowfell","Ruins"],mind:"mid",animal:["crow","wolf"]},
+  {name:"Banshee",type:"Undead",roles:["controller"],sizes:["Medium"],habitats:["Ruins","Shadowfell","Forest"],forms:["Humanoid"],tags:["incorporeal","fear","psychic","song"],moves:["float","fly"],origins:["Shadowfell"],mind:"high",animal:["owl","nightingale"]},
+  {name:"Revenant",type:"Undead",roles:["brute","skirmisher"],sizes:["Medium"],habitats:["Ruins","Urban Ruins","Swamp"],forms:["Humanoid"],tags:["slam","weapon","fear","regeneration"],moves:["walk"],origins:["Shadowfell","Ruins"],mind:"high",animal:["vulture","crow"]},
+  {name:"Shadow",type:"Undead",roles:["lurker"],sizes:["Medium"],habitats:["Shadowfell","Ruins","Urban Ruins"],forms:["Amorphous","Humanoid"],tags:["drain","incorporeal","ambush"],moves:["walk","fly"],origins:["Shadowfell"],mind:"mid",animal:["moth","shade"]},
+  {name:"Nightmare",type:"Fiend",roles:["skirmisher"],sizes:["Large"],habitats:["Shadowfell","Volcano","Badlands"],forms:["Hooved"],tags:["fire","hoof","wing"],moves:["walk","fly"],origins:["Nine Hells","Shadowfell"],mind:"mid",animal:["horse","stallion"]},
+  {name:"Will-o-Wisp",type:"Undead",roles:["lurker"],sizes:["Tiny"],habitats:["Swamp","Forest","Ruins"],forms:["Orbicular"],tags:["lightning","incorporeal","drain"],moves:["fly","float"],origins:["Shadowfell","Swamp"],mind:"mid",animal:["firefly","lightning bug"]},
+  {name:"Gas Spore",type:"Plant",roles:["lurker"],sizes:["Large"],habitats:["Cave","Underdark"],forms:["Orbicular","Globular"],tags:["spores","poison","engulf"],moves:["float"],origins:["Underdark"],mind:"low",animal:["puffball mushroom","blowfish"]},
+  {name:"Violet Fungus",type:"Plant",roles:["controller"],sizes:["Medium"],habitats:["Cave","Underdark"],forms:["Fungoid","Tendril-mass"],tags:["necrotic","vine","ambush"],moves:["walk"],origins:["Underdark"],mind:"low",animal:["sea anemone","sundew","pitcher plant"]},
+  {name:"Vegepygmy",type:"Plant",roles:["skirmisher"],sizes:["Small"],habitats:["Forest","Jungle","Swamp"],forms:["Humanoid","Fungoid"],tags:["claw","spores","pack"],moves:["walk"],origins:["Material Plane","Primeval Jungle"],mind:"low",animal:["mushroom","moss","lichen"]},
+  {name:"Needle Blight",type:"Plant",roles:["skirmisher"],sizes:["Medium"],habitats:["Forest","Ruins"],forms:["Humanoid","Bristle-cluster"],tags:["claw","spike"],moves:["walk"],origins:["Shadowfell","Forest"],mind:"low",animal:["pine tree","cactus","thorn bush"]},
+  {name:"Vine Blight",type:"Plant",roles:["controller"],sizes:["Medium"],habitats:["Forest","Swamp","Jungle"],forms:["Tendril-mass","Amorphous"],tags:["vine","constrict","ambush"],moves:["walk"],origins:["Shadowfell","Forest"],mind:"low",animal:["ivy","strangler fig","kudzu"]},
+  {name:"Modron",type:"Construct",roles:["guardian"],sizes:["Tiny","Small","Medium"],habitats:["Astral","Urban Ruins"],forms:["Pyramidal","Cuboid","Orbicular","Tetrahedral"],tags:["slam","force","armor"],moves:["walk","fly"],origins:["Acheron","Astral Sea"],mind:"mid",animal:["geode","crystal","polyhedron"]},
+  {name:"Shield Guardian",type:"Construct",roles:["guardian","brute"],sizes:["Large"],habitats:["Ruins","Urban Ruins"],forms:["Humanoid"],tags:["slam","armor","regeneration"],moves:["walk"],origins:["Ancient Ruins","Material Plane"],mind:"low",animal:["statue","golem","sentinel"]},
+  {name:"Helmed Horror",type:"Construct",roles:["guardian","skirmisher"],sizes:["Medium"],habitats:["Ruins","Urban Ruins"],forms:["Humanoid"],tags:["weapon","flight","magic resistance"],moves:["walk","fly"],origins:["Ancient Ruins","Material Plane"],mind:"low",animal:["suit of armor","hawk"]},
+  {name:"Magma Ooze",type:"Ooze",roles:["brute"],sizes:["Large","Huge"],habitats:["Volcano","Underdark","Cave"],forms:["Blob-like","Globular","Amorphous"],tags:["fire","engulf","acid"],moves:["walk","climb"],origins:["Plane of Fire","Elemental Chaos"],mind:"low",animal:["lava flow","magma","slug"]},
+  {name:"Frost Ooze",type:"Ooze",roles:["controller"],sizes:["Medium","Large"],habitats:["Arctic","Tundra","Cave"],forms:["Gelatinous","Blob-like"],tags:["cold","engulf","amorphous"],moves:["walk"],origins:["Plane of Water","Arctic"],mind:"low",animal:["glacier","ice crystal","slush"]},
+  {name:"Psychic Ooze",type:"Ooze",roles:["controller","caster"],sizes:["Medium","Large"],habitats:["Far Realm","Underdark","Astral"],forms:["Gelatinous","Orbicular","Globular"],tags:["psychic","engulf","teleport","amorphous"],moves:["walk","float"],origins:["The Far Realm","Astral Sea"],mind:"mid",animal:["brain coral","amoeba","neural tissue"]}
 ];
 
 const monsterTypes = ["Any", ...familyCatalog.map(f=>f.name)];
@@ -841,8 +970,8 @@ function sizeWeightRange(size, form, type){
     Tiny:[1,20], Small:[15,120], Medium:[80,450], Large:[500,3000], Huge:[4000,20000], Gargantuan:[22000,180000]
   };
   let [a,b]=map[size] || [50,200];
-  if(["Amorphous","Cephalopod","Piscine"].includes(form)) { a=Math.round(a*0.8); b=Math.round(b*0.9); }
-  if(type==="Construct" || type==="Elemental") { a=Math.round(a*1.3); b=Math.round(b*1.5); }
+  if(["Amorphous","Cephalopod","Piscine","Gelatinous","Blob-like","Globular","Slug-like","Jellyfish-like","Leech-like"].includes(form)) { a=Math.round(a*0.8); b=Math.round(b*0.9); }
+  if(type==="Construct" || type==="Elemental" || ["Pyramidal","Cuboid","Tetrahedral","Crystalline Lattice"].includes(form)) { a=Math.round(a*1.3); b=Math.round(b*1.5); }
   if(type==="Undead" && form==="Humanoid") { a=Math.round(a*0.75); b=Math.round(b*0.85); }
   return `${a.toLocaleString()}-${b.toLocaleString()} lb.`;
 }
@@ -969,7 +1098,7 @@ function generateSpeeds(profile, size, habitat){
   if(profile.moves.includes("fly")) fly = clamp(40+speedMod+(profile.roles.includes("skirmisher")?10:0), 30, 100);
   if(profile.moves.includes("swim") || habitat==="Underwater" || habitat==="Coast") swim = clamp(30+speedMod, 20, 80);
   if(profile.moves.includes("burrow")) burrow = clamp(20+speedMod, 10, 50);
-  if(profile.type==="Ooze" || profile.tags.includes("ambush") || profile.forms?.includes("Arachnid")) climb = clamp(20+speedMod, 10, 40);
+  if(profile.type==="Ooze" || profile.tags.includes("ambush") || profile.forms?.includes("Arachnid") || ["Slug-like","Worm-like","Centipedal","Millipedal","Leech-like"].includes(R(profile.forms||[]))) climb = clamp(20+speedMod, 10, 40);
   if(habitat==="Underwater" && !swim) swim = clamp(30+speedMod, 20, 70);
   if(profile.moves.length===1 && profile.moves[0]==="swim"){ land = clamp(10+Math.floor(speedMod/2), 5, 25); }
   return {land,fly,swim,burrow,climb};
@@ -984,12 +1113,12 @@ function speedString(s){
 }
 function choosePhysicalTraits(profile, form){
   const wings = profile.moves.includes("fly") ? weightedPick([{v:"Has Wings",weight:5},{v:"No Wings",weight:profile.forms?.includes("Avian")?1:2}],"weight").v : "No Wings";
-  const scales = ["Dragon","Monstrosity","Humanoid"].includes(profile.type) || ["Serpentine","Piscine","Quadrupedal"].includes(form) ? weightedPick([{v:"Has Scales",weight:4},{v:"No Scales",weight:2}],"weight").v : "No Scales";
-  const hair = ["Feline","Canine","Ursine","Humanoid","Hooved","Staglike","Simian"].includes(form) ? weightedPick([{v:"Has Hair",weight:4},{v:"Hairless",weight:2}],"weight").v : "Hairless";
+  const scales = ["Dragon","Monstrosity","Humanoid"].includes(profile.type) || ["Serpentine","Piscine","Quadrupedal","Eel-like","Pangolin-like","Turtle-like"].includes(form) ? weightedPick([{v:"Has Scales",weight:4},{v:"No Scales",weight:2}],"weight").v : "No Scales";
+  const hair = ["Feline","Canine","Ursine","Humanoid","Hooved","Staglike","Simian","Lupine","Bat-like"].includes(form) ? weightedPick([{v:"Has Hair",weight:4},{v:"Hairless",weight:2}],"weight").v : "Hairless";
   const horns = profile.tags.includes("horns") || ["Fiend","Monstrosity","Celestial"].includes(profile.type) ? weightedPick([{v:"Has Horns",weight:4},{v:"No Horns",weight:2}],"weight").v : "No Horns";
-  const tail = ["Serpentine","Quadrupedal","Feline","Canine","Piscine","Avian","Ursine","Staglike"].includes(form) ? "Has Tail" : weightedPick([{v:"Has Tail",weight:2},{v:"No Tail",weight:4}],"weight").v;
-  const extraLimbs = ["Arachnid","Insectile","Cephalopod","Crustacean","Hexapodal"].includes(form) ? "Has Extra Limbs" : weightedPick([{v:"Has Extra Limbs",weight:1},{v:"No Extra Limbs",weight:5}],"weight").v;
-  const eyes = profile.tags.includes("eye") ? "Multiple Eyes" : weightedPick([{v:"Multiple Eyes",weight:1},{v:"Two Eyes",weight:5},{v:"No Eyes",weight:1}],"weight").v;
+  const tail = ["Serpentine","Quadrupedal","Feline","Canine","Piscine","Avian","Ursine","Staglike","Scorpion-like","Eel-like","Worm-like","Centipedal","Lupine","Raptor-like","Pangolin-like","Armadillo-like","Turtle-like"].includes(form) ? "Has Tail" : weightedPick([{v:"Has Tail",weight:2},{v:"No Tail",weight:4}],"weight").v;
+  const extraLimbs = ["Arachnid","Insectile","Cephalopod","Crustacean","Hexapodal","Centipedal","Millipedal","Starfish-like","Hydra-headed","Scarab-like","Scorpion-like","Tentril-mass","Tendril-mass","Anemone-like"].includes(form) ? "Has Extra Limbs" : weightedPick([{v:"Has Extra Limbs",weight:1},{v:"No Extra Limbs",weight:5}],"weight").v;
+  const eyes = profile.tags.includes("eye") ? "Multiple Eyes" : ["Blob-like","Gelatinous","Globular","Amorphous","Worm-like","Fungoid"].includes(form) ? weightedPick([{v:"No Eyes",weight:3},{v:"Sensory Pits",weight:2},{v:"Multiple Eyes",weight:1}],"weight").v : ["Pyramidal","Cuboid","Tetrahedral","Toroidal","Orbicular","Spire-shaped","Disc-shaped"].includes(form) ? weightedPick([{v:"No Eyes",weight:2},{v:"Glowing Rune-eye",weight:2},{v:"Single Eye",weight:2},{v:"Multiple Eyes",weight:1}],"weight").v : weightedPick([{v:"Multiple Eyes",weight:1},{v:"Two Eyes",weight:5},{v:"No Eyes",weight:1}],"weight").v;
   return {wings,scales,hair,horns,tail,extraLimbs,eyes};
 }
 function damagePackages(total, count, primaryType){
@@ -1236,9 +1365,15 @@ function buildMonsterData(){
   let prompt=`${style} ${family.name}, ${family.type.toLowerCase()}, ${size}, ${form.toLowerCase()} body, ${mainColor.name.toLowerCase()} coloration`;
   if(accentColor) prompt+=`, ${accentColor.name.toLowerCase()} accents`;
   prompt+=`, ${pattern.toLowerCase()}, inspired by ${animalInfluence}, ${habitat.toLowerCase()} habitat, fantasy creature concept art, highly detailed`;
+  const prefix=(document.getElementById('prefixInput').value||'').trim();
+  if(prefix) prompt=prefix+'\n'+prompt;
 
-  const mainSwatch=`<span class="color-swatch" style="background:${mainColor.hex}"></span>${mainColor.name}`;
-  const accentSwatch=accentColor?`, <span class="color-swatch" style="background:${accentColor.hex}"></span>${accentColor.name}`:'';
+  const mainSwatchStyle=mainColor.gradient?`background:${mainColor.hex}`:`background:${mainColor.hex}`;
+  const mainGlow=mainColor.glow?`;box-shadow:0 0 6px ${mainColor.glow},0 0 2px ${mainColor.glow}`:'';
+  const mainSwatch=`<span class="color-swatch" style="${mainSwatchStyle}${mainGlow}"></span>${mainColor.name}`;
+  const accentSwatchStyle=accentColor?(accentColor.gradient?`background:${accentColor.hex}`:`background:${accentColor.hex}`):'';
+  const accentGlow=accentColor&&accentColor.glow?`;box-shadow:0 0 6px ${accentColor.glow},0 0 2px ${accentColor.glow}`:'';
+  const accentSwatch=accentColor?`, <span class="color-swatch" style="${accentSwatchStyle}${accentGlow}"></span>${accentColor.name}`:'';
   const actionHTML = actions.join("");
   const html=`<div class="stat-block">
     <div class="gradient-bar"></div>
