@@ -1,13 +1,16 @@
 /* ============================================================================
    dnd.isaiart.com — shared theme
-   A sibling of isaiart.com: hairline rules, a strict grid, condensed uppercase
-   labels. Warmed up into parchment and maroon, and built around a living
-   pixel-art band at the top of the page.
+
+   The pixel world is a fixed, full-viewport backdrop that is never covered
+   completely: the content rides over it as separate parchment cards with gaps
+   between them, so the scene stays visible while you read.
+
+   Every entry in the directory carries its own display face and ink colour,
+   supplied per-item as --f (font stack) and --c (ink), so a shelf of links
+   reads like a shelf of different books rather than a list.
    ========================================================================== */
 
-/* ── tokens ───────────────────────────────────────────────────────────── */
 :root {
-  /* the D&D sourcebook palette this site has always used */
   --ink:        #1E1A17;
   --maroon:     #58180D;
   --maroon-lt:  #8A2A1B;
@@ -16,23 +19,20 @@
   --parchment:  #F5EFE2;
   --callout:    #FDF1DC;
 
-  /* the dark shell the parchment sheet floats on */
   --void:       #14100E;
-  --void-2:     #1c1712;
   --rule:       rgba(201,173,106,0.18);
   --rule-hi:    rgba(201,173,106,0.40);
   --ink-rule:   rgba(30,26,23,0.14);
   --ink-rule-hi:rgba(30,26,23,0.30);
 
   --dim:        #8d8375;
-  --dim-warm:   #c9b998;
 
-  --sans: 'Barlow Condensed', 'Oswald', 'Arial Narrow', system-ui, sans-serif;
+  --sans: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
   --body: 'Crimson Text', Georgia, 'Times New Roman', serif;
-  --mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --mono: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
 
   --rail-h: 46px;
-  --sheet-w: 1180px;
+  --card-w: 820px;          /* deliberately narrow: the world shows either side */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,41 +49,13 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* a faint parchment-fibre tooth over the dark shell, drawn with gradients so
-   it costs nothing and needs no image */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg,   rgba(201,173,106,0.030) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg,  rgba(201,173,106,0.022) 0 1px, transparent 1px 4px);
-  opacity: .7;
 }
 
 ::selection { background: var(--maroon); color: var(--parchment); }
-
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--void); }
 ::-webkit-scrollbar-thumb { background: var(--maroon); }
 ::-webkit-scrollbar-thumb:hover { background: var(--maroon-lt); }
-
-/* ── shared type helpers ──────────────────────────────────────────────── */
-.label {
-  font-family: var(--sans);
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .26em;
-  text-transform: uppercase;
-}
-.num {
-  font-family: var(--mono);
-  font-size: .62rem;
-  letter-spacing: .1em;
-  font-variant-numeric: tabular-nums;
-}
 
 /* ── accessibility ────────────────────────────────────────────────────── */
 .skip {
@@ -94,439 +66,340 @@ body::before {
 }
 .skip:focus { left: 8px; top: 8px; }
 
-a:focus-visible,
-button:focus-visible,
-input:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--gold); outline-offset: 2px;
 }
-/* inside the parchment sheet the gold ring disappears — use maroon there */
-.sheet a:focus-visible, .sheet button:focus-visible, .sheet input:focus-visible {
+.card a:focus-visible, .card button:focus-visible, .card input:focus-visible {
   outline-color: var(--maroon);
+}
+
+/* ── the world: fixed behind everything, always on show ───────────────── */
+.world {
+  position: fixed; inset: 0; z-index: 0;
+  display: block; width: 100%; height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #0d0b09;
+}
+.world.scene-failed {
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, #1b2740 0%, #33405c 46%, #6d5740 62%, #2a1d14 100%);
+}
+/* All legibility shading lives HERE, in the fixed layer, never on a scrolling
+   element. A gradient that scrolls over a fixed backdrop drags a hard-edged
+   dark rectangle across the art — it looks broken. Fixed to the viewport, the
+   shading stays put and the world simply moves through it.
+   Bright through the middle where the sky is; darker at the top (under the
+   rail) and toward the bottom, which is where hero type and the first card
+   land at rest and where the title passes on the way up. */
+.veil {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(20,16,14,.62) 0%,
+    rgba(20,16,14,.18) 12%,
+    rgba(20,16,14,0)   32%,
+    rgba(20,16,14,.20) 55%,
+    rgba(20,16,14,.52) 78%,
+    rgba(20,16,14,.72) 100%);
 }
 
 /* ── top rail ─────────────────────────────────────────────────────────── */
 .rail {
   position: sticky; top: 0; z-index: 200;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: stretch;
-  height: var(--rail-h);
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: stretch; height: var(--rail-h);
   border-bottom: 1px solid var(--rule-hi);
-  background: rgba(20,16,14,0.92);
+  background: rgba(20,16,14,0.88);
   backdrop-filter: blur(10px);
 }
-
 .rail-brand {
   display: flex; align-items: center; gap: 16px;
-  padding: 0 22px;
-  border-right: 1px solid var(--rule);
-  text-decoration: none;
+  padding: 0 22px; border-right: 1px solid var(--rule); text-decoration: none;
 }
 .rail-brand b {
-  font-family: var(--sans);
-  font-size: 1rem; font-weight: 700;
-  letter-spacing: .28em; text-transform: uppercase;
-  color: var(--parchment);
+  font-family: var(--sans); font-size: 1rem; font-weight: 700;
+  letter-spacing: .28em; text-transform: uppercase; color: var(--parchment);
 }
 .rail-brand:hover b { color: var(--gold); }
 .rail-brand span {
-  font-family: var(--sans);
-  font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--dim);
-  border-left: 1px solid var(--rule);
-  padding-left: 16px;
+  font-family: var(--sans); font-size: .58rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--dim);
+  border-left: 1px solid var(--rule); padding-left: 16px;
 }
-
 .rail-ticker { overflow: hidden; display: flex; align-items: center; }
-.ticker-track {
-  display: flex; white-space: nowrap;
-  animation: ticker 46s linear infinite;
-  will-change: transform;
-}
+.ticker-track { display: flex; white-space: nowrap; animation: ticker 46s linear infinite; }
 .ticker-track span {
-  font-family: var(--sans);
-  font-size: .6rem; letter-spacing: .24em; text-transform: uppercase;
-  color: var(--dim);
-  padding: 0 26px;
-  border-right: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .6rem; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--dim);
+  padding: 0 26px; border-right: 1px solid var(--rule);
 }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
-
 .rail-out {
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 20px;
+  display: flex; align-items: center; padding: 0 20px;
   border-left: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: .6rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--dim); text-decoration: none;
+  font-family: var(--sans); font-size: .6rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--dim); text-decoration: none;
 }
 .rail-out:hover { color: var(--gold); }
 
-/* ── the living band ──────────────────────────────────────────────────── */
-.band {
-  position: relative;
-  width: 100%;
-  border-bottom: 1px solid var(--rule-hi);
-  background: var(--void-2);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* the pixel scene fills the band; .band-inner below sets the actual height so
-   the words sit ON the world rather than under it */
-.band-canvas {
-  position: absolute; inset: 0;
-  display: block;
-  width: 100%; height: 100%;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  background: #0d0b09;
-}
-/* if the engine fails to mount it flags itself and we fall back to a painted
-   sky so the band still looks deliberate rather than broken */
-.band-canvas.scene-failed {
-  background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 2px, transparent 2px 4px),
-    linear-gradient(180deg, #1b2740 0%, #33405c 46%, #6d5740 62%, #2a1d14 100%);
-}
-
-/* legibility scrim — the scene stays visible, the words stay readable */
-/* Just enough to hold the type. The earlier version was heavy enough that at
-   dawn and dusk it flattened the whole scene into mud — the text-shadows on
-   .band-title/.band-sub do most of the legibility work now. */
-.band-scrim {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(20,16,14,.42) 0%, rgba(20,16,14,0) 26%,
-                            rgba(20,16,14,0) 52%, rgba(20,16,14,.62) 100%),
-    linear-gradient(90deg,  rgba(20,16,14,.52) 0%, rgba(20,16,14,.06) 44%, rgba(20,16,14,0) 66%);
-}
-
-.band-inner {
+/* ── the opening view: type over open world, nothing boxed ────────────── */
+.hero {
   position: relative; z-index: 2;
-  max-width: var(--sheet-w);
-  margin: 0 auto;
-  padding: 84px 24px 0;
-  min-height: clamp(300px, 33vw, 430px);
+  max-width: var(--card-w); margin: 0 auto;
+  padding: 0 24px;
+  min-height: 76vh;
   display: flex; flex-direction: column; justify-content: flex-end;
-  pointer-events: none;
 }
-.band-inner > * { pointer-events: auto; }
-
-/* the JRPG-style region card, top-left */
-.chapter {
-  position: absolute; top: 18px; left: 24px;
-  display: inline-flex; align-items: baseline; gap: 12px;
-  padding: 7px 14px;
-  background: rgba(20,16,14,.78);
-  border: 1px solid var(--rule-hi);
-  border-left: 3px solid var(--gold);
-}
-.chapter i {
-  font-style: normal;
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .18em;
-  color: var(--gold-dim);
-}
-.chapter b {
-  font-family: var(--sans); font-weight: 600;
-  font-size: .78rem; letter-spacing: .22em; text-transform: uppercase;
+/* No scrim on .hero itself — see the note on .veil. The type carries its own
+   contrast so it stays readable at any scroll position. */
+.hero-title {
+  font-family: var(--sans); font-weight: 700;
+  font-size: clamp(2.4rem, 6.4vw, 5.2rem);
+  line-height: .92; letter-spacing: .01em; text-transform: uppercase;
   color: var(--parchment);
+  text-shadow: 0 3px 0 rgba(0,0,0,.72), 0 0 14px rgba(0,0,0,.95), 0 0 38px rgba(0,0,0,.85);
+  margin-bottom: 12px;
 }
-
-.band-title {
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: clamp(2.4rem, 6.2vw, 5rem);
-  line-height: .92;
-  letter-spacing: .01em;
-  text-transform: uppercase;
-  color: var(--parchment);
-  text-shadow: 0 3px 0 rgba(0,0,0,.55), 0 0 26px rgba(0,0,0,.7);
-  margin-bottom: 10px;
+.hero-title em { font-style: normal; color: var(--gold); }
+.hero-sub {
+  max-width: 46ch; font-size: 1.02rem; color: #ece3d0;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,.95);
+  margin-bottom: 18px;
 }
-.band-title em { font-style: normal; color: var(--gold); }
-
-.band-sub {
-  max-width: 44ch;
-  font-size: 1rem;
-  color: #ded2bb;
-  text-shadow: 0 1px 3px rgba(0,0,0,.85);
-  margin-bottom: 16px;
-}
-
-/* live readout strip — region / hour / moon / weather */
 .hud {
-  display: flex; flex-wrap: wrap; gap: 0;
-  border-top: 1px solid var(--rule);
-  margin-bottom: 14px;
+  display: flex; flex-wrap: wrap;
+  border-top: 1px solid var(--rule-hi); margin-bottom: 16px;
+  /* a contained plate rather than a full-bleed wash: small enough that it
+     reads as part of the type block, not as a band sliding over the art */
+  background: rgba(20,16,14,.52);
+  backdrop-filter: blur(2px);
+  padding: 0 14px;
 }
 .hud div {
   display: flex; align-items: baseline; gap: 9px;
-  padding: 9px 20px 9px 0;
-  margin-right: 20px;
+  padding: 9px 20px 9px 0; margin-right: 20px;
   border-right: 1px solid var(--rule);
 }
 .hud div:last-child { border-right: none; }
 .hud dt {
-  font-family: var(--sans);
-  font-size: .58rem; letter-spacing: .24em; text-transform: uppercase;
-  color: var(--gold-dim);
+  font-family: var(--sans); font-size: .58rem; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--gold-dim);
 }
 .hud dd {
   font-family: var(--mono); font-size: .68rem; letter-spacing: .08em;
-  color: var(--parchment);
+  color: var(--parchment); text-shadow: 0 1px 2px rgba(0,0,0,1);
 }
-
-.band-actions { display: flex; gap: 10px; padding-bottom: 20px; }
+.hero-actions { display: flex; gap: 10px; padding-bottom: 26px; }
 .btn {
-  font-family: var(--sans);
-  font-size: .64rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--parchment);
-  background: rgba(20,16,14,.7);
-  border: 1px solid var(--rule-hi);
-  padding: 9px 16px;
-  cursor: pointer;
+  font-family: var(--sans); font-size: .64rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--parchment);
+  background: rgba(20,16,14,.72); border: 1px solid var(--rule-hi);
+  padding: 9px 16px; cursor: pointer;
   transition: background .15s, color .15s, border-color .15s;
 }
 .btn:hover { background: var(--maroon); border-color: var(--maroon-lt); color: #fff; }
 .btn[aria-pressed="true"] { background: var(--gold); color: var(--ink); border-color: var(--gold); }
 
-/* ── the parchment sheet ──────────────────────────────────────────────── */
-.sheet {
-  position: relative; z-index: 5;
-  max-width: var(--sheet-w);
-  margin: 0 auto 72px;
-  background: var(--parchment);
-  color: var(--ink);
-  border-top: 10px solid var(--maroon);
-  box-shadow: 0 18px 60px rgba(0,0,0,.7);
+/* ── the shelf: separate cards, gaps letting the world through ────────── */
+.shelf {
+  position: relative; z-index: 2;
+  max-width: var(--card-w); margin: 0 auto;
+  padding: 0 24px 80px;
+  display: flex; flex-direction: column; gap: 30px;
+}
+.card {
+  background: var(--parchment); color: var(--ink);
+  border-top: 8px solid var(--maroon);
+  box-shadow: 0 14px 44px rgba(0,0,0,.62);
 }
 
-/* search */
-.find {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  border-bottom: 1px solid var(--ink-rule-hi);
-}
+.find { display: grid; grid-template-columns: 1fr auto; }
 .find input {
-  border: 0; outline: 0; background: transparent;
-  padding: 16px 22px;
-  font-family: var(--sans);
-  font-size: .86rem; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--ink);
-  width: 100%;
+  border: 0; outline: 0; background: transparent; padding: 15px 20px;
+  font-family: var(--sans); font-size: .84rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink); width: 100%;
 }
 .find input::placeholder { color: rgba(30,26,23,.38); }
 .find output {
-  display: flex; align-items: center;
-  padding: 0 22px;
+  display: flex; align-items: center; padding: 0 20px;
   border-left: 1px solid var(--ink-rule);
   font-family: var(--mono); font-size: .62rem; letter-spacing: .12em;
-  color: rgba(30,26,23,.55);
-  white-space: nowrap;
+  color: rgba(30,26,23,.55); white-space: nowrap;
 }
 
-/* section header bar */
 .sec-head {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 16px;
-  background: var(--maroon);
-  color: var(--parchment);
-  padding: 11px 22px;
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 16px;
+  background: var(--maroon); color: var(--parchment); padding: 11px 20px;
 }
 .sec-head h2 {
-  font-family: var(--sans); font-weight: 600;
-  font-size: .92rem; letter-spacing: .28em; text-transform: uppercase;
+  font-family: var(--sans); font-weight: 600; font-size: .92rem;
+  letter-spacing: .28em; text-transform: uppercase;
 }
-.sec-head .rn { font-family: var(--mono); font-size: .7rem; color: var(--gold); letter-spacing: .1em; }
-.sec-head .ct { font-family: var(--mono); font-size: .6rem; color: rgba(245,239,226,.7); letter-spacing: .14em; }
+.sec-head .rn { font-family: var(--mono); font-size: .7rem; color: var(--gold); }
+.sec-head .ct { font-family: var(--mono); font-size: .6rem; color: rgba(245,239,226,.7); }
 
 .sec-note {
-  padding: 12px 22px;
-  background: var(--callout);
+  padding: 11px 20px; background: var(--callout);
   border-bottom: 1px solid var(--ink-rule);
-  font-style: italic;
-  color: rgba(30,26,23,.78);
-  font-size: .98rem;
+  font-style: italic; color: rgba(30,26,23,.78); font-size: .96rem;
 }
 
-/* link grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background: var(--callout);
-  border-bottom: 1px solid var(--ink-rule-hi);
-}
-@media (min-width: 1000px) { .grid.g3 { grid-template-columns: repeat(3, 1fr); } }
+.grid { display: grid; grid-template-columns: 1fr; background: var(--callout); }
 
+/* ── an entry. --f is its display face, --c its ink. ──────────────────── */
 .item {
-  display: grid;
-  grid-template-columns: 42px 1fr auto;
-  align-items: start;
-  gap: 12px;
-  padding: 15px 20px;
-  border-right: 1px solid var(--ink-rule);
+  display: grid; grid-template-columns: 40px 1fr auto;
+  align-items: center; gap: 14px;
+  padding: 13px 20px;
   border-bottom: 1px solid var(--ink-rule);
-  text-decoration: none;
-  color: var(--ink);
-  position: relative;
-  transition: background .16s;
+  text-decoration: none; color: var(--ink);
+  position: relative; transition: background .16s;
 }
+.item:last-child { border-bottom: none; }
 .item:hover { background: rgba(88,24,13,.06); }
-/* the maroon reveal bar, echoing the old page's hover */
+.item:hover { background: color-mix(in srgb, var(--c, #58180D) 8%, transparent); }
 .item::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--maroon); transform: scaleY(0); transform-origin: top;
-  transition: transform .18s ease;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--c, var(--maroon));
+  transform: scaleY(0); transform-origin: top; transition: transform .18s ease;
 }
 .item:hover::before, .item:focus-visible::before { transform: scaleY(1); }
 
 .item .n {
-  font-family: var(--mono); font-size: .6rem; letter-spacing: .06em;
-  color: var(--maroon);
-  border: 1px solid rgba(88,24,13,.28);
-  padding: 2px 0; text-align: center;
-  margin-top: 2px;
+  font-family: var(--mono); font-size: .58rem;
+  color: var(--c, var(--maroon));
+  border: 1px solid rgba(30,26,23,.28);
+  border-color: color-mix(in srgb, var(--c, #58180D) 40%, transparent);
+  padding: 3px 0; text-align: center;
 }
 .item .t {
-  font-family: var(--sans); font-weight: 600;
-  font-size: 1.06rem; letter-spacing: .06em; text-transform: uppercase;
-  line-height: 1.15;
-}
-.item:hover .t { color: var(--maroon); }
-.item .d {
   display: block;
-  font-family: var(--sans); font-weight: 400;
-  font-size: .68rem; letter-spacing: .13em; text-transform: uppercase;
+  font-family: var(--f, var(--sans));
+  font-size: var(--fs, 1.18rem);
+  line-height: 1.18;
+  color: var(--c, var(--ink));
+  letter-spacing: var(--ls, .01em);
+}
+.item .d {
+  display: block; margin-top: 4px;
+  font-family: var(--sans); font-size: .68rem;
+  letter-spacing: .13em; text-transform: uppercase;
   color: rgba(30,26,23,.55);
-  margin-top: 3px;
 }
 .item .go {
-  font-family: var(--mono); font-size: .68rem;
-  color: rgba(30,26,23,.28);
+  font-family: var(--mono); font-size: .72rem;
+  color: rgba(30,26,23,.30);
+  color: color-mix(in srgb, var(--c, #58180D) 45%, transparent);
   transition: color .16s, transform .16s;
 }
-.item:hover .go { color: var(--maroon); transform: translate(2px,-2px); }
+.item:hover .go { color: var(--c, var(--maroon)); transform: translate(2px,-2px); }
 
-.item.ext .go::after { content: ''; }
-
-/* empty search state */
-.empty {
-  grid-column: 1 / -1;
-  padding: 54px 22px;
-  text-align: center;
-  background: var(--callout);
-  border-bottom: 1px solid var(--ink-rule);
-}
+.empty { padding: 44px 20px; text-align: center; background: var(--callout); }
 .empty b {
-  display: block;
-  font-family: var(--sans); font-weight: 700;
-  font-size: 3.4rem; color: rgba(30,26,23,.16); line-height: 1;
+  display: block; font-family: var(--sans); font-weight: 700;
+  font-size: 3rem; color: rgba(30,26,23,.16); line-height: 1;
 }
 .empty span {
-  font-family: var(--sans); font-size: .68rem;
-  letter-spacing: .26em; text-transform: uppercase; color: rgba(30,26,23,.45);
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .26em;
+  text-transform: uppercase; color: rgba(30,26,23,.45);
 }
 
-.sec[hidden] { display: none; }
+.card[hidden] { display: none; }
 
-/* sheet footer strip */
 .colophon {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;
-  padding: 16px 22px;
-  background: var(--parchment);
+  padding: 14px 20px; background: var(--parchment);
   border-top: 2px solid var(--maroon);
-  font-family: var(--sans);
-  font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(30,26,23,.55);
+  font-family: var(--sans); font-size: .62rem; letter-spacing: .22em;
+  text-transform: uppercase; color: rgba(30,26,23,.55);
 }
 
-/* ── page footer ──────────────────────────────────────────────────────── */
+/* ── footer ───────────────────────────────────────────────────────────── */
 .foot {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: stretch;
-  height: 46px;
-  max-width: var(--sheet-w);
-  margin: 0 auto 60px;
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: stretch;
+  height: 46px; max-width: var(--card-w); margin: 0 auto 60px;
   border-top: 1px solid var(--rule-hi);
 }
 .foot b {
   display: flex; align-items: center; padding: 0 20px;
   border-right: 1px solid var(--rule);
-  font-family: var(--sans); font-weight: 700;
-  font-size: .66rem; letter-spacing: .24em; text-transform: uppercase; color: var(--dim);
+  font-family: var(--sans); font-weight: 700; font-size: .66rem;
+  letter-spacing: .24em; text-transform: uppercase; color: var(--dim);
 }
 .foot nav { display: flex; }
 .foot nav a {
   display: flex; align-items: center; padding: 0 16px;
   border-right: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--dim); text-decoration: none;
+  font-family: var(--sans); font-size: .6rem; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--dim); text-decoration: none;
 }
 .foot nav a:hover { color: var(--gold); }
 .foot i {
   display: flex; align-items: center; padding: 0 20px;
-  border-left: 1px solid var(--rule);
-  font-style: normal;
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; color: var(--dim);
+  border-left: 1px solid var(--rule); font-style: normal;
+  font-family: var(--mono); font-size: .58rem; color: var(--dim);
 }
 
-/* ── 404 specifics ────────────────────────────────────────────────────── */
-.lost {
-  max-width: var(--sheet-w);
-  margin: 0 auto 60px;
-  background: var(--parchment);
-  color: var(--ink);
-  border-top: 10px solid var(--maroon);
-  box-shadow: 0 18px 60px rgba(0,0,0,.7);
-}
-.lost-head { padding: 30px 22px 22px; border-bottom: 1px solid var(--ink-rule-hi); }
-.lost-head p { max-width: 62ch; font-size: 1.06rem; color: rgba(30,26,23,.8); }
+/* ── 404 extras ───────────────────────────────────────────────────────── */
+.lost-head { padding: 24px 20px; border-bottom: 1px solid var(--ink-rule); }
+.lost-head p { max-width: 62ch; font-size: 1.04rem; color: rgba(30,26,23,.8); }
 .lost-head p + p { margin-top: 10px; }
 .roll-line {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
-  margin-top: 18px;
-  font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
-  color: rgba(30,26,23,.7);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 16px;
+  font-family: var(--mono); font-size: .72rem; color: rgba(30,26,23,.7);
 }
 .roll-line b { color: var(--maroon); font-size: 1.5rem; font-family: var(--sans); }
-.btn.dark {
-  color: var(--ink); background: transparent; border-color: var(--ink-rule-hi);
-}
+.btn.dark { color: var(--ink); background: transparent; border-color: var(--ink-rule-hi); }
 .btn.dark:hover { background: var(--maroon); color: var(--parchment); border-color: var(--maroon); }
-
 .wrongpath {
   font-family: var(--mono); font-size: .74rem;
-  background: rgba(88,24,13,.08);
-  border: 1px dashed rgba(88,24,13,.35);
-  padding: 8px 12px; margin-top: 16px;
-  color: var(--maroon);
-  word-break: break-all;
-  display: inline-block;
+  background: rgba(88,24,13,.08); border: 1px dashed rgba(88,24,13,.35);
+  padding: 7px 11px; margin-top: 14px; color: var(--maroon);
+  word-break: break-all; display: inline-block;
+}
+
+/* ── handbooks sub-page plate ─────────────────────────────────────────── */
+/* The engine draws its region card in the top-left of the canvas. Rather than
+   shade over it — which would drag a scrolling gradient across a fixed scene —
+   simply start the heading below where that card can reach. */
+.plate {
+  position: relative; z-index: 2;
+  max-width: var(--card-w); margin: 0 auto; padding: 200px 24px 34px;
+}
+.plate .crumb {
+  font-family: var(--sans); font-size: .62rem; letter-spacing: .24em;
+  text-transform: uppercase; color: #cdc2a9; margin-bottom: 14px;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,.95);
+}
+.plate .crumb a { color: #cdc2a9; text-decoration: none; }
+.plate .crumb a:hover { color: var(--gold); }
+.plate h1 {
+  font-family: var(--sans); font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 4.2rem); line-height: .95;
+  text-transform: uppercase; color: var(--parchment);
+  text-shadow: 0 3px 0 rgba(0,0,0,.72), 0 0 14px rgba(0,0,0,.95), 0 0 38px rgba(0,0,0,.85);
+}
+.plate h1 em { font-style: normal; color: var(--gold); }
+.plate p.lede {
+  max-width: 54ch; margin-top: 12px; color: #ece3d0;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,.95);
 }
 
 /* ── responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .grid, .grid.g3 { grid-template-columns: 1fr; }
   .rail-ticker { display: none; }
-  .sheet, .lost, .foot { margin-left: 0; margin-right: 0; }
 }
-
 @media (max-width: 620px) {
   :root { --rail-h: 42px; }
-  /* keep the band landscape on a phone — a tall band forces the engine to
-     show the whole 216-row world, dead underground included */
-  .band-inner { padding: 58px 16px 0; min-height: clamp(250px, 62vw, 320px); }
-  .chapter { left: 16px; top: 12px; padding: 5px 10px; gap: 8px; }
-  .chapter b { font-size: .66rem; letter-spacing: .16em; }
-  .band-sub { font-size: .94rem; }
-  /* four items in a row overflow a phone; pair them up instead */
+  .hero { padding: 0 14px; min-height: 62vh; }
+  .shelf { padding: 0 14px 60px; gap: 22px; }
+  .plate { padding: 128px 14px 26px; }
+  .rail-brand { padding: 0 14px; gap: 10px; }
+  .rail-brand span { display: none; }
   .hud { display: grid; grid-template-columns: 1fr 1fr; }
   .hud div {
     display: block; padding: 6px 10px 6px 0; margin: 0;
@@ -534,21 +407,17 @@ input:focus-visible {
   }
   .hud dt { font-size: .5rem; letter-spacing: .16em; display: block; }
   .hud dd { font-size: .62rem; overflow-wrap: anywhere; }
-  .find input { font-size: .74rem; letter-spacing: .1em; }
-  .rail-brand { padding: 0 14px; gap: 10px; }
-  .rail-brand span { display: none; }
-  .item { grid-template-columns: 34px 1fr auto; padding: 13px 15px; }
-  .sec-head { padding: 10px 15px; gap: 10px; }
+  .item { grid-template-columns: 32px 1fr auto; padding: 12px 14px; gap: 10px; }
+  .item .t { font-size: calc(var(--fs, 1.18rem) * .92); }
+  .sec-head { padding: 10px 14px; gap: 10px; }
   .sec-head h2 { font-size: .78rem; letter-spacing: .2em; }
-  .sec-note { padding: 10px 15px; font-size: .92rem; }
-  .find input { padding: 13px 15px; }
-  .foot { grid-template-columns: 1fr; height: auto; }
-  .foot b, .foot i { border: 0; padding: 10px 15px; }
+  .sec-note { padding: 10px 14px; font-size: .92rem; }
+  .find input { padding: 13px 14px; font-size: .74rem; letter-spacing: .1em; }
+  .foot { grid-template-columns: 1fr; height: auto; margin-bottom: 40px; }
+  .foot b, .foot i { border: 0; padding: 10px 14px; }
   .foot nav { flex-wrap: wrap; border-top: 1px solid var(--rule); }
 }
 
-/* the band is decorative motion; when motion is unwelcome the engine paints a
-   single static frame and we drop every page-level animation too */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; animation-iteration-count: 1 !important;
       transition-duration: .001ms !important; }

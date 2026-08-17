@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Isaiart's D&amp;D Resources">
 <meta property="og:title" content="Isaiart's D&amp;D Resources">
-<meta property="og:description" content="Character tools, generators, lore and handbooks for 5e — with a pixel world that follows your clock from dawn to the witching hour.">
+<meta property="og:description" content="Character tools, generators, lore and handbooks for 5e — over a pixel world that follows your clock from dawn to the witching hour.">
 <meta property="og:url" content="https://dnd.isaiart.com/">
 <meta name="twitter:card" content="summary">
 
@@ -20,16 +20,19 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/theme.css">
+<!-- one request: the UI faces, plus the sixteen display faces the entries wear -->
+<link href="https://fonts.googleapis.com/css2?family=Almendra:wght@400;700&family=Barlow+Condensed:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Eczar:wght@500;700&family=IM+Fell+English+SC&family=Italiana&family=Jolly+Lodger&family=Marcellus+SC&family=MedievalSharp&family=Metal+Mania&family=Nosifer&family=Pirata+One&family=Press+Start+2P&family=Rye&family=Special+Elite&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css?v=3">
 </head>
 <body>
 
 <a class="skip" href="#directory">Skip to the directory</a>
 
-<!-- ── top rail ─────────────────────────────────────────────────────── -->
+<canvas class="world" id="scene" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
 <div class="rail">
-  <a class="rail-brand" href="/"><b>DND.ISAIART</b><span>Resources</span></a>
+  <a class="rail-brand" href="./"><b>DND.ISAIART</b><span>Resources</span></a>
   <div class="rail-ticker" aria-hidden="true">
     <div class="ticker-track">
       <span>Roll for initiative</span><span>27 resources</span><span>Free forever</span>
@@ -43,144 +46,136 @@
   <a class="rail-out" href="https://isaiart.com">isaiart.com &#8599;</a>
 </div>
 
-<!-- ── the living band ──────────────────────────────────────────────── -->
-<header class="band">
-  <canvas class="band-canvas" id="scene" aria-hidden="true"></canvas>
-  <div class="band-scrim" aria-hidden="true"></div>
+<header class="hero">
+  <h1 class="hero-title">Isaiart's <em>D&amp;D</em> Resources</h1>
+  <p class="hero-sub">Everything I have built for the table — character tools, generators,
+    cosmology and a shelf of handbooks. All of it free, all of it in the browser.</p>
 
-  <!-- the region is announced by the pixel card the engine draws, and stays
-       readable in the HUD below, so there is no HTML card here -->
+  <dl class="hud" id="hud">
+    <div><dt>Region</dt><dd id="hud-region">&mdash;</dd></div>
+    <div><dt>Hour</dt><dd id="hud-phase">&mdash;</dd></div>
+    <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
+    <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
+  </dl>
 
-  <div class="band-inner">
-    <h1 class="band-title">Isaiart's <em>D&amp;D</em> Resources</h1>
-    <p class="band-sub">Everything I have built for the table — character tools, generators,
-      cosmology and a shelf of handbooks. All of it free, all of it in the browser.</p>
-
-    <dl class="hud" id="hud">
-      <div><dt>Region</dt><dd id="hud-region">&mdash;</dd></div>
-      <div><dt>Hour</dt><dd id="hud-phase">&mdash;</dd></div>
-      <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
-      <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
-    </dl>
-
-    <div class="band-actions" id="band-actions" hidden>
-      <button class="btn" type="button" id="btn-next">Travel on &#8594;</button>
-      <button class="btn" type="button" id="btn-freeze" aria-pressed="false">Freeze the scene</button>
-    </div>
+  <div class="hero-actions" id="hero-actions" hidden>
+    <button class="btn" type="button" id="btn-next">Travel on &#8594;</button>
+    <button class="btn" type="button" id="btn-freeze" aria-pressed="false">Freeze the scene</button>
   </div>
 </header>
 
-<!-- ── the directory ────────────────────────────────────────────────── -->
-<main class="sheet" id="directory">
+<main class="shelf" id="directory">
 
-  <div class="find">
-    <input id="q" type="search" autocomplete="off" placeholder="Search the shelf — sheets, generators, lore, handbooks…" aria-label="Search resources">
-    <output id="q-count" for="q">27 entries</output>
+  <div class="card">
+    <div class="find">
+      <input id="q" type="search" autocomplete="off" placeholder="Search the shelf…" aria-label="Search resources">
+      <output id="q-count" for="q">27 entries</output>
+    </div>
   </div>
 
   <!-- I ───────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="character tools players heroes">
+  <section class="card" data-sec="character tools players heroes">
     <div class="sec-head"><span class="rn">I</span><h2>Character Tools</h2><span class="ct">06</span></div>
     <p class="sec-note">From a blank page to a fully-statted hero — and the archive of everyone who came before.</p>
     <div class="grid">
-      <a class="item" href="/cs" data-k="character sheet digital record roll track level browser 5e stats">
+      <a class="item" href="cs/" style="--f:'Special Elite',monospace;--c:#2B3A44;--fs:1.02rem" data-k="character sheet digital record roll track level browser 5e stats">
         <span class="n">01</span><span><span class="t">Character Sheet</span><span class="d">Digital record &middot; roll and track in-browser</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/characters" data-k="archives forgotten character generator roster heroes party history">
+      <a class="item" href="characters/" style="--f:'IM Fell English SC',serif;--c:#4A1D5E;--fs:1.2rem" data-k="archives forgotten character generator roster heroes party history">
         <span class="n">02</span><span><span class="t">The Archives of the Forgotten</span><span class="d">Roster &middot; every hero we have played</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/npcs" data-k="npc codex generator faces voices motives names townsfolk">
+      <a class="item" href="npcs/" style="--f:'Almendra',serif;--c:#6A4A12;--fs:1.28rem" data-k="npc codex generator faces voices motives names townsfolk">
         <span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives for the table</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/character-forge" data-k="character forge builder ancestry feat class background creation">
+      <a class="item" href="character-forge/" style="--f:'Rye',serif;--c:#8A3A12;--fs:1.08rem" data-k="character forge builder ancestry feat class background creation">
         <span class="n">04</span><span><span class="t">Character Forge</span><span class="d">Ancestry to feat in a single pass</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/loom-of-fates" data-k="loom fates backstory bonds ideals flaws destiny backgrounds">
+      <a class="item" href="loom-of-fates/" style="--f:'Cinzel Decorative',serif;--c:#23306E;--fs:1.04rem" data-k="loom fates backstory bonds ideals flaws destiny backgrounds">
         <span class="n">05</span><span><span class="t">The Loom of Fates</span><span class="d">Backgrounds, bonds, ideals and flaws</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/newchar" data-k="d20 character forge quick roll new stats abilities">
+      <a class="item" href="newchar/" style="--f:'Press Start 2P',monospace;--c:#0E4F53;--fs:.7rem;--ls:.04em" data-k="d20 character forge quick roll new stats abilities">
         <span class="n">06</span><span><span class="t">D20 Character Forge</span><span class="d">Quick-roll a hero from nothing</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
   <!-- II ──────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="generators random rolls loot monsters cities">
+  <section class="card" data-sec="generators random rolls loot monsters cities">
     <div class="sec-head"><span class="rn">II</span><h2>Generators</h2><span class="ct">03</span></div>
     <p class="sec-note">Push the button. The dice do the rest.</p>
-    <div class="grid g3">
-      <a class="item" href="/artifacts" data-k="arcane artifacts legendary magic items loot treasure rarity">
+    <div class="grid">
+      <a class="item" href="artifacts/" style="--f:'Uncial Antiqua',serif;--c:#3D2A6B;--fs:1.12rem" data-k="arcane artifacts legendary magic items loot treasure rarity">
         <span class="n">07</span><span><span class="t">Arcane Artifacts</span><span class="d">Legendary items with a history attached</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/monsters" data-k="monster generator statblock cr challenge rating beasts encounters">
+      <a class="item" href="monsters/" style="--f:'Creepster',cursive;--c:#7A1215;--fs:1.42rem;--ls:.05em" data-k="monster generator statblock cr challenge rating beasts encounters">
         <span class="n">08</span><span><span class="t">Monster Generator</span><span class="d">CR-balanced statblocks on demand</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/cities" data-k="faerun city generator settlement town village districts sword coast">
+      <a class="item" href="cities/" style="--f:'Marcellus SC',serif;--c:#1E4620;--fs:1.08rem" data-k="faerun city generator settlement town village districts sword coast">
         <span class="n">09</span><span><span class="t">Faerûn City Generator</span><span class="d">Settlements, districts and the people in them</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
   <!-- III ─────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="lore rules reference cosmology planes">
+  <section class="card" data-sec="lore rules reference cosmology planes">
     <div class="sec-head"><span class="rn">III</span><h2>Lore &amp; Rules</h2><span class="ct">03</span></div>
     <p class="sec-note">The reference shelf — what the world is, and what it will let you do in it.</p>
-    <div class="grid g3">
-      <a class="item" href="/humans" data-k="humans faerun lorebook ethnography peoples cultures chondathan">
+    <div class="grid">
+      <a class="item" href="humans/" style="--f:'Eczar',serif;--c:#6B1839;--fs:1.16rem" data-k="humans faerun lorebook ethnography peoples cultures chondathan">
         <span class="n">10</span><span><span class="t">Humans of Faerûn</span><span class="d">A complete ethnographic lorebook</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/phb" data-k="players handbook phb rules core rulebook 5e 2024 pdf">
+      <a class="item" href="phb/" style="--f:'Cinzel Decorative',serif;--c:#58180D;--fs:1.04rem" data-k="players handbook phb rules core rulebook 5e 2024 pdf">
         <span class="n">11</span><span><span class="t">Player's Handbook</span><span class="d">The 2024 core rules, in five parts</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/planes" data-k="cosmology planes outer inner astral ethereal multiverse forgotten realms">
+      <a class="item" href="planes/" style="--f:'Italiana',serif;--c:#23306E;--fs:1.3rem;--ls:.06em" data-k="cosmology planes outer inner astral ethereal multiverse forgotten realms">
         <span class="n">12</span><span><span class="t">Cosmology</span><span class="d">The planes of the Forgotten Realms</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
   <!-- IV ──────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="handbooks codices tomes supplements">
-    <div class="sec-head"><span class="rn">IV</span><h2>The Handbooks</h2><span class="ct">09</span></div>
+  <section class="card" data-sec="handbooks codices tomes supplements">
+    <div class="sec-head"><span class="rn">IV</span><h2>The Handbooks</h2><span class="ct">10</span></div>
     <p class="sec-note">Hand-bound volumes — supplemental codices and forbidden tomes for the curious mage and the dedicated scholar.</p>
     <div class="grid">
-      <a class="item" href="/handbooks" data-k="handbooks index all volumes shelf library contents">
+      <a class="item" href="handbooks/" style="--f:'MedievalSharp',cursive;--c:#33302B;--fs:1.3rem" data-k="handbooks index all volumes shelf library contents">
         <span class="n">13</span><span><span class="t">The Whole Shelf</span><span class="d">Index &middot; every handbook in one place</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/archmage-handbook" data-k="archmage codex legendary wizards elminster mordenkainen vecna karsus">
+      <a class="item" href="handbooks/archmage-handbook/" style="--f:'Cinzel Decorative',serif;--c:#3D2A6B;--fs:1.04rem" data-k="archmage codex legendary wizards elminster mordenkainen vecna karsus">
         <span class="n">14</span><span><span class="t">The Archmage Codex</span><span class="d">Legendary wizards and their workings</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/grand-theologica" data-k="grand theologica gods faerun deities pantheon ao mystra divine faith">
+      <a class="item" href="handbooks/grand-theologica/" style="--f:'Uncial Antiqua',serif;--c:#7A5A10;--fs:1.12rem" data-k="grand theologica gods faerun deities pantheon ao mystra divine faith">
         <span class="n">15</span><span><span class="t">The Grand Theologica</span><span class="d">Gods, planes and sacred lore of Faerûn</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/arcanum-expanded" data-k="arcanum expanded weave wizards warlocks sorcerers artificers arcane roleplay">
+      <a class="item" href="handbooks/arcanum-expanded/" style="--f:'Italiana',serif;--c:#0E4F53;--fs:1.3rem;--ls:.06em" data-k="arcanum expanded weave wizards warlocks sorcerers artificers arcane roleplay">
         <span class="n">16</span><span><span class="t">The Weave &amp; Beyond</span><span class="d">Wizards, warlocks, sorcerers &amp; artificers</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/dnd-5e-megabook" data-k="megabook everything 5e complete reference tasha xanathar unified">
+      <a class="item" href="handbooks/dnd-5e-megabook/" style="--f:'IM Fell English SC',serif;--c:#58180D;--fs:1.2rem" data-k="megabook everything 5e complete reference tasha xanathar unified">
         <span class="n">17</span><span><span class="t">The 5e Megabook</span><span class="d">Core, Tasha's and Xanathar's in one tome</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/wizards" data-k="wizard handbook 2025 forgotten realms class subclass spells">
+      <a class="item" href="handbooks/wizards/" style="--f:'Almendra',serif;--c:#23306E;--fs:1.28rem" data-k="wizard handbook 2025 forgotten realms class subclass spells">
         <span class="n">18</span><span><span class="t">Forgotten Realms Wizard Handbook</span><span class="d">The 2025 wizard, in full</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/phb/wizard" data-k="wizard quick reference 2025 core features spell list subclasses cheatsheet">
+      <a class="item" href="phb/wizard/" style="--f:'Special Elite',monospace;--c:#2B3A44;--fs:1.02rem" data-k="wizard quick reference 2025 core features spell list subclasses cheatsheet">
         <span class="n">19</span><span><span class="t">Wizard Quick Reference</span><span class="d">The short version, for at the table</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/sims4" data-k="sim forgotten realms sims4 handbook needs skills aspiration crossover">
+      <a class="item" href="handbooks/sims4/" style="--f:'Press Start 2P',monospace;--c:#1E4620;--fs:.7rem;--ls:.04em" data-k="sim forgotten realms sims4 handbook needs skills aspiration crossover">
         <span class="n">20</span><span><span class="t">The Sim</span><span class="d">A Forgotten Realms handbook, sideways</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/crownofkarsus" data-k="crown karsus artifact netheril archwizard relic legendary">
+      <a class="item" href="handbooks/crownofkarsus/" style="--f:'Metal Mania',cursive;--c:#7A1215;--fs:1.34rem" data-k="crown karsus artifact netheril archwizard relic legendary">
         <span class="n">21</span><span><span class="t">Crown of Karsus</span><span class="d">Artifact dossier &middot; it has killed gods</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/artifacts" data-k="arcanist compendium arms artifice weapons magic items resonance gems">
+      <a class="item" href="handbooks/artifacts/" style="--f:'MedievalSharp',cursive;--c:#6A4A12;--fs:1.3rem" data-k="arcanist compendium arms artifice weapons magic items resonance gems">
         <span class="n">22</span><span><span class="t">The Arcanist's Compendium</span><span class="d">Of arms &amp; artifice</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
   <!-- V ───────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="dead three villains baldurs gate chosen bg3">
+  <section class="card" data-sec="dead three villains baldurs gate chosen bg3">
     <div class="sec-head"><span class="rn">V</span><h2>The Dead Three</h2><span class="ct">03</span></div>
     <p class="sec-note">Dossiers on the unholy trinity stalking Baldur's Gate — mortals raised as avatars of dead gods.</p>
-    <div class="grid g3">
-      <a class="item" href="/npcs/ketheric" data-k="ketheric thorm myrkul lord bones moonrise towers shadowcursed villain">
+    <div class="grid">
+      <a class="item" href="npcs/ketheric/" style="--f:'Jolly Lodger',cursive;--c:#14403A;--fs:1.62rem;--ls:.03em" data-k="ketheric thorm myrkul lord bones moonrise towers shadowcursed villain">
         <span class="n">23</span><span><span class="t">Ketheric Thorm</span><span class="d">Chosen of Myrkul, Lord of Bones</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/npcs/gortash" data-k="enver gortash bane tyranny steel watch archduke villain baldurs gate">
+      <a class="item" href="npcs/gortash/" style="--f:'Metal Mania',cursive;--c:#6A4A12;--fs:1.34rem" data-k="enver gortash bane tyranny steel watch archduke villain baldurs gate">
         <span class="n">24</span><span><span class="t">Lord Enver Gortash</span><span class="d">Chosen of Bane, Lord of Tyranny</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/npcs/orin" data-k="orin red bhaal murder slayer shapeshifter villain assassin">
+      <a class="item" href="npcs/orin/" style="--f:'Nosifer',cursive;--c:#7A1215;--fs:1rem" data-k="orin red bhaal murder slayer shapeshifter villain assassin">
         <span class="n">25</span><span><span class="t">Orin the Red</span><span class="d">Chosen of Bhaal, Lord of Murder</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
   <!-- VI ──────────────────────────────────────────────────────────── -->
-  <section class="sec" data-sec="external official rulebooks sourcebooks elsewhere">
+  <section class="card" data-sec="external official rulebooks sourcebooks elsewhere">
     <div class="sec-head"><span class="rn">VI</span><h2>Elsewhere on the Shelf</h2><span class="ct">02</span></div>
     <p class="sec-note">Books that live on somebody else's shelf. These open in a new tab.</p>
     <div class="grid">
-      <a class="item ext" href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank" rel="noopener" data-k="dungeon masters guide dmg external rulebook official">
+      <a class="item" href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank" rel="noopener" style="--f:'Pirata One',cursive;--c:#33302B;--fs:1.3rem" data-k="dungeon masters guide dmg external rulebook official">
         <span class="n">26</span><span><span class="t">Dungeon Master's Guide</span><span class="d">External &middot; anyflip</span></span><span class="go">&#8599;</span></a>
-      <a class="item ext" href="https://anyflip.com/eqxhe/cpgo" target="_blank" rel="noopener" data-k="tashas cauldron everything external rulebook official supplement">
+      <a class="item" href="https://anyflip.com/eqxhe/cpgo" target="_blank" rel="noopener" style="--f:'Pirata One',cursive;--c:#4A1D5E;--fs:1.3rem" data-k="tashas cauldron everything external rulebook official supplement">
         <span class="n">27</span><span><span class="t">Tasha's Cauldron of Everything</span><span class="d">External &middot; anyflip</span></span><span class="go">&#8599;</span></a>
     </div>
   </section>
 
-  <div class="colophon">
+  <div class="card colophon">
     <span>Compiled for the adventuring scholar</span>
     <span>dnd.isaiart.com</span>
   </div>
@@ -190,23 +185,21 @@
   <b>Isaiart</b>
   <nav>
     <a href="https://isaiart.com">Home</a>
-    <a href="/">D&amp;D</a>
+    <a href="./">D&amp;D</a>
     <a href="https://music.isaiart.com">Music</a>
   </nav>
   <i>Not affiliated with Wizards of the Coast</i>
 </footer>
 
-<script src="/assets/world.js" defer></script>
+<script src="assets/world.js?v=3" defer></script>
 <script>
-/* ── search ─────────────────────────────────────────────────────────────
-   Progressive enhancement only: every link above is real static HTML and
-   works with this script removed. */
+/* ── search ───────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
   var q = document.getElementById('q');
   var out = document.getElementById('q-count');
   if (!q || !out) return;
-  var secs = [].slice.call(document.querySelectorAll('.sec'));
+  var secs = [].slice.call(document.querySelectorAll('.card[data-sec]'));
   var total = document.querySelectorAll('.item').length;
 
   function run() {
@@ -226,15 +219,11 @@
       sec.hidden = vis === 0;
       shown += vis;
     });
-    out.textContent = !term
-      ? total + ' entries'
-      : shown + ' of ' + total + (shown === 1 ? ' entry' : ' entries');
-    var none = document.getElementById('none');
-    if (none) none.hidden = shown !== 0;
+    out.textContent = !term ? total + ' entries'
+                            : shown + ' of ' + total + (shown === 1 ? ' entry' : ' entries');
   }
 
   q.addEventListener('input', run);
-  /* "/" focuses search, the way the rest of the site behaves */
   document.addEventListener('keydown', function (e) {
     if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
     if (e.key === 'Escape' && document.activeElement === q) { q.value = ''; run(); q.blur(); }
@@ -242,7 +231,7 @@
   if (q.value) run();
 })();
 
-/* ── the world ──────────────────────────────────────────────────────── */
+/* ── the world ────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
   var cvs = document.getElementById('scene');
@@ -274,24 +263,18 @@
       return;
     }
     var ctl = window.IsaiWorld.mount(cvs, {
-      hourOverride: hour,
-      startAt: biome,
-      reduced: reduced,
-      onState: paint
+      hourOverride: hour, startAt: biome, reduced: reduced, onState: paint
     });
 
-    if (reduced) return;               // no controls for a frozen scene
+    if (reduced) return;
 
-    var actions = document.getElementById('band-actions');
+    var actions = document.getElementById('hero-actions');
     var next = document.getElementById('btn-next');
     var freeze = document.getElementById('btn-freeze');
     if (actions) actions.hidden = false;
 
     var at = biome == null ? 0 : biome;
-    if (next) next.addEventListener('click', function () {
-      at = (at + 1) % 6;
-      ctl.jumpTo(at);
-    });
+    if (next) next.addEventListener('click', function () { at = (at + 1) % 6; ctl.jumpTo(at); });
 
     var frozen = false;
     if (freeze) freeze.addEventListener('click', function () {
@@ -302,14 +285,11 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else { boot(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>
 
-<noscript>
-  <style>.find, .band-actions { display: none; }</style>
-</noscript>
+<noscript><style>.find, .hero-actions { display: none; }</style></noscript>
 </body>
 </html>
