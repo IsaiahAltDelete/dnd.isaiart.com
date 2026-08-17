@@ -1,475 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
-    <title>Isaiart's D&D Resources</title>
-    
-    <!-- Google Fonts: Marcellus (Headings), Crimson Text (Body), Poppins (Utility) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Google Material Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isaiart's D&amp;D Resources</title>
+<meta name="description" content="Hand-built Dungeons &amp; Dragons tools, generators and handbooks: character sheets, NPC and monster generators, a Faerûn city builder, cosmology, and a shelf of 5e handbooks. Free, no accounts, no ads.">
+<meta name="theme-color" content="#14100E">
+<meta name="color-scheme" content="dark">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        main: '#1E1A17',
-                        maroon: '#58180D', /* The classic D&D Red */
-                        maroonLight: '#8A2A1B',
-                        gold: '#C9AD6A',
-                        page: '#F5EFE2',
-                        callout: '#FDF1DC',
-                    },
-                    fontFamily: {
-                        heading: ['Marcellus', 'serif'],
-                        body: ['"Crimson Text"', 'serif'],
-                        utility: ['Poppins', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'page': '0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 100px rgba(201, 173, 106, 0.05)',
-                    }
-                }
-            }
-        }
-    </script>
+<link rel="canonical" href="https://dnd.isaiart.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Isaiart's D&amp;D Resources">
+<meta property="og:title" content="Isaiart's D&amp;D Resources">
+<meta property="og:description" content="Character tools, generators, lore and handbooks for 5e — with a pixel world that follows your clock from dawn to the witching hour.">
+<meta property="og:url" content="https://dnd.isaiart.com/">
+<meta name="twitter:card" content="summary">
 
-    <style>
-        /* Scrolling Background Animation */
-        body {
-            background-color: #1a1a1a;
-            background-image: url('https://i.imgur.com/B1kEKpW.png');
-            background-repeat: repeat;
-            animation: scrollBackground 100s linear infinite;
-        }
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 
-        @keyframes scrollBackground {
-            0% { background-position: 0 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        /* Tapered Gold Divider with Maroon Diamond */
-        .dnd-divider {
-            height: 2px;
-            background: linear-gradient(to right, transparent, #C9AD6A 15%, #C9AD6A 85%, transparent);
-            margin: 1.5rem 0;
-            position: relative;
-        }
-        
-        .dnd-divider::after {
-            content: '♦';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            color: #58180D; /* Maroon Diamond */
-            font-size: 14px;
-            background-color: #F5EFE2;
-            padding: 0 12px;
-        }
-
-        .callout-divider::after {
-            background-color: #FDF1DC;
-        }
-
-        /* Subtle entrance animation */
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-            transform: translateY(15px);
-        }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #58180D; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #8A2A1B; }
-    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/theme.css">
 </head>
-<body class="text-main font-body antialiased min-h-screen p-3 sm:p-6 md:p-8 flex justify-center items-start">
+<body>
 
-    <!-- Main Page Container (The "Sourcebook Page") -->
-    <!-- Added a thick maroon top border for that official book feel -->
-    <main class="bg-page max-w-6xl w-full shadow-page border border-maroon/20 border-t-[12px] border-t-maroon rounded-sm p-5 sm:p-8 md:p-10 relative overflow-hidden mt-2 mb-8">
-        
-        <!-- Subtle maroon corner ornaments -->
-        <div class="absolute top-4 left-4 w-4 h-4 border-t border-l border-maroon/30 hidden sm:block"></div>
-        <div class="absolute top-4 right-4 w-4 h-4 border-t border-r border-maroon/30 hidden sm:block"></div>
-        <div class="absolute bottom-4 left-4 w-4 h-4 border-b border-l border-maroon/30 hidden sm:block"></div>
-        <div class="absolute bottom-4 right-4 w-4 h-4 border-b border-r border-maroon/30 hidden sm:block"></div>
+<a class="skip" href="#directory">Skip to the directory</a>
 
-        <!-- Header Section (Character Sheet Style) -->
-        <header class="flex flex-col lg:flex-row gap-6 lg:gap-10 items-end mb-10 fade-in-up">
-            <!-- Title Block -->
-            <div class="w-full lg:w-1/3 border-b-2 border-gold pb-2">
-                <h1 class="font-heading text-maroon text-4xl sm:text-5xl md:text-6xl uppercase tracking-wider mb-1">
-                    <!-- Changed href to isaiart.com as requested -->
-                    <a href="https://isaiart.com" target="_blank" class="hover:text-maroonLight transition-colors duration-300">Isaiart's</a>
-                </h1>
-                <h2 class="font-heading text-main text-lg sm:text-xl md:text-2xl uppercase tracking-widest">D&D Resources</h2>
-            </div>
+<!-- ── top rail ─────────────────────────────────────────────────────── -->
+<div class="rail">
+  <a class="rail-brand" href="/"><b>DND.ISAIART</b><span>Resources</span></a>
+  <div class="rail-ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Roll for initiative</span><span>27 resources</span><span>Free forever</span>
+      <span>No accounts, no ads</span><span>The world outside runs on your clock</span>
+      <span>Natural 20</span>
+      <span>Roll for initiative</span><span>27 resources</span><span>Free forever</span>
+      <span>No accounts, no ads</span><span>The world outside runs on your clock</span>
+      <span>Natural 20</span>
+    </div>
+  </div>
+  <a class="rail-out" href="https://isaiart.com">isaiart.com &#8599;</a>
+</div>
 
-            <!-- Metadata Block (The "Stats") - Now uses a responsive grid -->
-            <div class="w-full lg:w-2/3 bg-callout border border-maroon/10 border-t-4 border-t-maroon rounded-b-sm p-4 sm:p-5 shadow-sm">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5">
-                    <div class="border-b border-gold/40 pb-1">
-                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Class & Level</div>
-                        <div class="font-body text-main text-base sm:text-lg leading-tight">Dungeon Master 20</div>
-                    </div>
-                    <div class="border-b border-gold/40 pb-1">
-                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Background</div>
-                        <div class="font-body text-main text-base sm:text-lg leading-tight">World Builder</div>
-                    </div>
-                    <div class="border-b border-gold/40 pb-1">
-                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Player Name</div>
-                        <div class="font-body text-main text-base sm:text-lg leading-tight">Isaiart</div>
-                    </div>
-                    <div class="border-b border-gold/40 pb-1">
-                        <div class="font-utility text-[10px] sm:text-[11px] uppercase text-maroon font-bold tracking-wider mb-0.5">Alignment</div>
-                        <div class="font-body text-main text-base sm:text-lg leading-tight">Chaotic Creative</div>
-                    </div>
-                </div>
-            </div>
-        </header>
+<!-- ── the living band ──────────────────────────────────────────────── -->
+<header class="band">
+  <canvas class="band-canvas" id="scene" aria-hidden="true"></canvas>
+  <div class="band-scrim" aria-hidden="true"></div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+  <div class="chapter" id="chapter" hidden>
+    <i id="chapter-num">Chapter I</i><b id="chapter-name">The Sleeping Hamlet</b>
+  </div>
 
-            <!-- Section 1: Character Tools -->
-            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-1">
-                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
-                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">person_book</span>
-                    Character Tools
-                </h3>
-                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
-                
-                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
-                    Essential instruments for forging heroes, villains, and the common folk who populate the realms.
-                </p>
+  <div class="band-inner">
+    <h1 class="band-title">Isaiart's <em>D&amp;D</em> Resources</h1>
+    <p class="band-sub">Everything I have built for the table — character tools, generators,
+      cosmology and a shelf of handbooks. All of it free, all of it in the browser.</p>
 
-                <div class="space-y-2">
-                    <!-- Link Item with Maroon Hover Effect -->
-                    <a href="https://dnd.isaiart.com/cs" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">assignment_ind</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Character Sheet</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Type:</strong> Digital Record
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+    <dl class="hud" id="hud">
+      <div><dt>Region</dt><dd id="hud-region">&mdash;</dd></div>
+      <div><dt>Hour</dt><dd id="hud-phase">&mdash;</dd></div>
+      <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
+      <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
+    </dl>
 
-                    <a href="https://dnd.isaiart.com/characters" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">psychology</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Character Generator</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Type:</strong> Creation Tool
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+    <div class="band-actions" id="band-actions" hidden>
+      <button class="btn" type="button" id="btn-next">Travel on &#8594;</button>
+      <button class="btn" type="button" id="btn-freeze" aria-pressed="false">Freeze the scene</button>
+    </div>
+  </div>
+</header>
 
-                    <a href="https://dnd.isaiart.com/npcs" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">groups</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">NPC Generator</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Type:</strong> World Building
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+<!-- ── the directory ────────────────────────────────────────────────── -->
+<main class="sheet" id="directory">
 
-                    <a href="https://dnd.isaiart.com/character-forge" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">construction</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Character Forge</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Type:</strong> Hero Smithy
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+  <div class="find">
+    <input id="q" type="search" autocomplete="off" placeholder="Search the shelf — sheets, generators, lore, handbooks…" aria-label="Search resources">
+    <output id="q-count" for="q">27 entries</output>
+  </div>
 
-                    <a href="https://dnd.isaiart.com/loom-of-fates" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">auto_awesome</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Loom of Fates</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Type:</strong> Destiny Weaver
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </section>
+  <!-- I ───────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="character tools players heroes">
+    <div class="sec-head"><span class="rn">I</span><h2>Character Tools</h2><span class="ct">06</span></div>
+    <p class="sec-note">From a blank page to a fully-statted hero — and the archive of everyone who came before.</p>
+    <div class="grid">
+      <a class="item" href="/cs" data-k="character sheet digital record roll track level browser 5e stats">
+        <span class="n">01</span><span><span class="t">Character Sheet</span><span class="d">Digital record &middot; roll and track in-browser</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/characters" data-k="archives forgotten character generator roster heroes party history">
+        <span class="n">02</span><span><span class="t">The Archives of the Forgotten</span><span class="d">Roster &middot; every hero we have played</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/npcs" data-k="npc codex generator faces voices motives names townsfolk">
+        <span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives for the table</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/character-forge" data-k="character forge builder ancestry feat class background creation">
+        <span class="n">04</span><span><span class="t">Character Forge</span><span class="d">Ancestry to feat in a single pass</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/loom-of-fates" data-k="loom fates backstory bonds ideals flaws destiny backgrounds">
+        <span class="n">05</span><span><span class="t">The Loom of Fates</span><span class="d">Backgrounds, bonds, ideals and flaws</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/newchar" data-k="d20 character forge quick roll new stats abilities">
+        <span class="n">06</span><span><span class="t">D20 Character Forge</span><span class="d">Quick-roll a hero from nothing</span></span><span class="go">&#8594;</span></a>
+    </div>
+  </section>
 
-            <!-- Section 2: Game Tools -->
-            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-2">
-                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
-                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">swords</span>
-                    Game Tools
-                </h3>
-                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
-                
-                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
-                    Arcane mechanisms to conjure legendary items, fearsome beasts, and sprawling metropolises.
-                </p>
+  <!-- II ──────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="generators random rolls loot monsters cities">
+    <div class="sec-head"><span class="rn">II</span><h2>Generators</h2><span class="ct">03</span></div>
+    <p class="sec-note">Push the button. The dice do the rest.</p>
+    <div class="grid g3">
+      <a class="item" href="/artifacts" data-k="arcane artifacts legendary magic items loot treasure rarity">
+        <span class="n">07</span><span><span class="t">Arcane Artifacts</span><span class="d">Legendary items with a history attached</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/monsters" data-k="monster generator statblock cr challenge rating beasts encounters">
+        <span class="n">08</span><span><span class="t">Monster Generator</span><span class="d">CR-balanced statblocks on demand</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/cities" data-k="faerun city generator settlement town village districts sword coast">
+        <span class="n">09</span><span><span class="t">Faerûn City Generator</span><span class="d">Settlements, districts and the people in them</span></span><span class="go">&#8594;</span></a>
+    </div>
+  </section>
 
-                <div class="space-y-2">
-                    <a href="https://dnd.isaiart.com/artifacts" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">diamond</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Artifact Generator</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Rarity:</strong> Legendary
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+  <!-- III ─────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="lore rules reference cosmology planes">
+    <div class="sec-head"><span class="rn">III</span><h2>Lore &amp; Rules</h2><span class="ct">03</span></div>
+    <p class="sec-note">The reference shelf — what the world is, and what it will let you do in it.</p>
+    <div class="grid g3">
+      <a class="item" href="/humans" data-k="humans faerun lorebook ethnography peoples cultures chondathan">
+        <span class="n">10</span><span><span class="t">Humans of Faerûn</span><span class="d">A complete ethnographic lorebook</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/phb" data-k="players handbook phb rules core rulebook 5e 2024 pdf">
+        <span class="n">11</span><span><span class="t">Player's Handbook</span><span class="d">The 2024 core rules, in five parts</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/planes" data-k="cosmology planes outer inner astral ethereal multiverse forgotten realms">
+        <span class="n">12</span><span><span class="t">Cosmology</span><span class="d">The planes of the Forgotten Realms</span></span><span class="go">&#8594;</span></a>
+    </div>
+  </section>
 
-                    <a href="https://dnd.isaiart.com/monsters" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">pets</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Monster Generator</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Challenge:</strong> Variable
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+  <!-- IV ──────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="handbooks codices tomes supplements">
+    <div class="sec-head"><span class="rn">IV</span><h2>The Handbooks</h2><span class="ct">09</span></div>
+    <p class="sec-note">Hand-bound volumes — supplemental codices and forbidden tomes for the curious mage and the dedicated scholar.</p>
+    <div class="grid">
+      <a class="item" href="/handbooks" data-k="handbooks index all volumes shelf library contents">
+        <span class="n">13</span><span><span class="t">The Whole Shelf</span><span class="d">Index &middot; every handbook in one place</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/archmage-handbook" data-k="archmage codex legendary wizards elminster mordenkainen vecna karsus">
+        <span class="n">14</span><span><span class="t">The Archmage Codex</span><span class="d">Legendary wizards and their workings</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/grand-theologica" data-k="grand theologica gods faerun deities pantheon ao mystra divine faith">
+        <span class="n">15</span><span><span class="t">The Grand Theologica</span><span class="d">Gods, planes and sacred lore of Faerûn</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/arcanum-expanded" data-k="arcanum expanded weave wizards warlocks sorcerers artificers arcane roleplay">
+        <span class="n">16</span><span><span class="t">The Weave &amp; Beyond</span><span class="d">Wizards, warlocks, sorcerers &amp; artificers</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/dnd-5e-megabook" data-k="megabook everything 5e complete reference tasha xanathar unified">
+        <span class="n">17</span><span><span class="t">The 5e Megabook</span><span class="d">Core, Tasha's and Xanathar's in one tome</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/wizards" data-k="wizard handbook 2025 forgotten realms class subclass spells">
+        <span class="n">18</span><span><span class="t">Forgotten Realms Wizard Handbook</span><span class="d">The 2025 wizard, in full</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/phb/wizard" data-k="wizard quick reference 2025 core features spell list subclasses cheatsheet">
+        <span class="n">19</span><span><span class="t">Wizard Quick Reference</span><span class="d">The short version, for at the table</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/sims4" data-k="sim forgotten realms sims4 handbook needs skills aspiration crossover">
+        <span class="n">20</span><span><span class="t">The Sim</span><span class="d">A Forgotten Realms handbook, sideways</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/crownofkarsus" data-k="crown karsus artifact netheril archwizard relic legendary">
+        <span class="n">21</span><span><span class="t">Crown of Karsus</span><span class="d">Artifact dossier &middot; it has killed gods</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/artifacts" data-k="arcanist compendium arms artifice weapons magic items resonance gems">
+        <span class="n">22</span><span><span class="t">The Arcanist's Compendium</span><span class="d">Of arms &amp; artifice</span></span><span class="go">&#8594;</span></a>
+    </div>
+  </section>
 
-                    <a href="https://dnd.isaiart.com/cities" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">location_city</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">City Generator</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Scale:</strong> Settlement
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </section>
+  <!-- V ───────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="dead three villains baldurs gate chosen bg3">
+    <div class="sec-head"><span class="rn">V</span><h2>The Dead Three</h2><span class="ct">03</span></div>
+    <p class="sec-note">Dossiers on the unholy trinity stalking Baldur's Gate — mortals raised as avatars of dead gods.</p>
+    <div class="grid g3">
+      <a class="item" href="/npcs/ketheric" data-k="ketheric thorm myrkul lord bones moonrise towers shadowcursed villain">
+        <span class="n">23</span><span><span class="t">Ketheric Thorm</span><span class="d">Chosen of Myrkul, Lord of Bones</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/npcs/gortash" data-k="enver gortash bane tyranny steel watch archduke villain baldurs gate">
+        <span class="n">24</span><span><span class="t">Lord Enver Gortash</span><span class="d">Chosen of Bane, Lord of Tyranny</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/npcs/orin" data-k="orin red bhaal murder slayer shapeshifter villain assassin">
+        <span class="n">25</span><span><span class="t">Orin the Red</span><span class="d">Chosen of Bhaal, Lord of Murder</span></span><span class="go">&#8594;</span></a>
+    </div>
+  </section>
 
-            <!-- Section 3: Rulebooks -->
-            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-3 md:col-span-2 lg:col-span-1">
-                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
-                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">menu_book</span>
-                    Rulebooks
-                </h3>
-                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
-                
-                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
-                    The sacred texts containing the laws of physics, magic, and society within the multiverse.
-                </p>
+  <!-- VI ──────────────────────────────────────────────────────────── -->
+  <section class="sec" data-sec="external official rulebooks sourcebooks elsewhere">
+    <div class="sec-head"><span class="rn">VI</span><h2>Elsewhere on the Shelf</h2><span class="ct">02</span></div>
+    <p class="sec-note">Books that live on somebody else's shelf. These open in a new tab.</p>
+    <div class="grid">
+      <a class="item ext" href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank" rel="noopener" data-k="dungeon masters guide dmg external rulebook official">
+        <span class="n">26</span><span><span class="t">Dungeon Master's Guide</span><span class="d">External &middot; anyflip</span></span><span class="go">&#8599;</span></a>
+      <a class="item ext" href="https://anyflip.com/eqxhe/cpgo" target="_blank" rel="noopener" data-k="tashas cauldron everything external rulebook official supplement">
+        <span class="n">27</span><span><span class="t">Tasha's Cauldron of Everything</span><span class="d">External &middot; anyflip</span></span><span class="go">&#8599;</span></a>
+    </div>
+  </section>
 
-                <div class="space-y-1">
-                    <a href="https://dnd.isaiart.com/humans" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Human Handbook</div>
-                        </div>
-                    </a>
+  <div class="colophon">
+    <span>Compiled for the adventuring scholar</span>
+    <span>dnd.isaiart.com</span>
+  </div>
+</main>
 
-                    <a href="https://dnd.isaiart.com/phb" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Player's Handbook</div>
-                        </div>
-                    </a>
+<footer class="foot">
+  <b>Isaiart</b>
+  <nav>
+    <a href="https://isaiart.com">Home</a>
+    <a href="/">D&amp;D</a>
+    <a href="https://music.isaiart.com">Music</a>
+  </nav>
+  <i>Not affiliated with Wizards of the Coast</i>
+</footer>
 
-                    <a href="https://dnd.isaiart.com/planes" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">public</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Forgotten Realms Planes</div>
-                        </div>
-                    </a>
+<script src="/assets/world.js" defer></script>
+<script>
+/* ── search ─────────────────────────────────────────────────────────────
+   Progressive enhancement only: every link above is real static HTML and
+   works with this script removed. */
+(function () {
+  'use strict';
+  var q = document.getElementById('q');
+  var out = document.getElementById('q-count');
+  if (!q || !out) return;
+  var secs = [].slice.call(document.querySelectorAll('.sec'));
+  var total = document.querySelectorAll('.item').length;
 
-                    <a href="https://online.anyflip.com/cqoic/yjtt/mobile/index.html" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Dungeon Master's Guide</div>
-                        </div>
-                    </a>
+  function run() {
+    var term = q.value.toLowerCase().trim();
+    var shown = 0;
+    secs.forEach(function (sec) {
+      var secHay = (sec.dataset.sec || '') + ' ' +
+                   (sec.querySelector('h2') ? sec.querySelector('h2').textContent.toLowerCase() : '');
+      var secHit = term && secHay.indexOf(term) > -1;
+      var vis = 0;
+      [].forEach.call(sec.querySelectorAll('.item'), function (it) {
+        var hay = (it.dataset.k || '') + ' ' + it.textContent.toLowerCase();
+        var hit = !term || secHit || hay.indexOf(term) > -1;
+        it.style.display = hit ? '' : 'none';
+        if (hit) vis++;
+      });
+      sec.hidden = vis === 0;
+      shown += vis;
+    });
+    out.textContent = !term
+      ? total + ' entries'
+      : shown + ' of ' + total + (shown === 1 ? ' entry' : ' entries');
+    var none = document.getElementById('none');
+    if (none) none.hidden = shown !== 0;
+  }
 
-                    <a href="https://online.anyflip.com/rmzy/oapq/mobile/index.html#p=1" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_stories</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Xanathar's Guide</div>
-                        </div>
-                    </a>
+  q.addEventListener('input', run);
+  /* "/" focuses search, the way the rest of the site behaves */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape' && document.activeElement === q) { q.value = ''; run(); q.blur(); }
+  });
+  if (q.value) run();
+})();
 
-                    <a href="https://anyflip.com/eqxhe/cpgo" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">science</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Tasha's Cauldron</div>
-                        </div>
-                    </a>
-                </div>
-            </section>
+/* ── the world ──────────────────────────────────────────────────────── */
+(function () {
+  'use strict';
+  var cvs = document.getElementById('scene');
+  if (!cvs) return;
 
-            <!-- Section 4: Handbooks -->
-            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-3">
-                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
-                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">library_books</span>
-                    Handbooks
-                </h3>
-                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
+  var params = new URLSearchParams(location.search);
+  var hour = params.has('hour') ? Math.max(0, Math.min(23, parseInt(params.get('hour'), 10) || 0)) : null;
+  var biome = params.has('biome') ? Math.max(0, Math.min(5, parseInt(params.get('biome'), 10) || 0)) : null;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
-                    Hand-bound volumes — supplemental codices and forbidden tomes for the curious mage and dedicated scholar.
-                </p>
+  var el = {
+    region: document.getElementById('hud-region'),
+    phase: document.getElementById('hud-phase'),
+    moon: document.getElementById('hud-moon'),
+    weather: document.getElementById('hud-weather'),
+    chapter: document.getElementById('chapter'),
+    chNum: document.getElementById('chapter-num'),
+    chName: document.getElementById('chapter-name')
+  };
 
-                <div class="space-y-1">
-                    <a href="https://dnd.isaiart.com/handbooks/archmage-handbook" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">workspace_premium</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Archmage Handbook</div>
-                        </div>
-                    </a>
+  function paint(s) {
+    if (!s) return;
+    if (el.region) el.region.textContent = s.region || '—';
+    if (el.phase) el.phase.textContent = s.phase || '—';
+    if (el.moon) el.moon.textContent = s.moon ? s.moon + (s.moonPct != null ? ' (' + s.moonPct + '%)' : '') : '—';
+    if (el.weather) el.weather.textContent = s.weather || '—';
+    if (s.region && el.chapter) {
+      el.chNum.textContent = s.chapter || '';
+      el.chName.textContent = s.region;
+      el.chapter.hidden = false;
+    }
+  }
 
-                    <a href="https://dnd.isaiart.com/handbooks/grand-theologica" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">church</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Grand Theologica of Faerûn</div>
-                        </div>
-                    </a>
+  function boot() {
+    if (!window.IsaiWorld || typeof window.IsaiWorld.mount !== 'function') {
+      cvs.classList.add('scene-failed');
+      return;
+    }
+    var ctl = window.IsaiWorld.mount(cvs, {
+      hourOverride: hour,
+      startAt: biome,
+      reduced: reduced,
+      onState: paint
+    });
 
-                    <a href="https://dnd.isaiart.com/handbooks/arcanum-expanded" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">auto_fix_high</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Arcanum Expanded</div>
-                        </div>
-                    </a>
+    if (reduced) return;               // no controls for a frozen scene
 
-                    <a href="https://dnd.isaiart.com/handbooks/dnd-5e-megabook" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">menu_book</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">D&D 5e Megabook</div>
-                        </div>
-                    </a>
+    var actions = document.getElementById('band-actions');
+    var next = document.getElementById('btn-next');
+    var freeze = document.getElementById('btn-freeze');
+    if (actions) actions.hidden = false;
 
-                    <a href="https://dnd.isaiart.com/handbooks/wizards" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">stars</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Wizard Handbook</div>
-                        </div>
-                    </a>
+    var at = biome == null ? 0 : biome;
+    if (next) next.addEventListener('click', function () {
+      at = (at + 1) % 6;
+      ctl.jumpTo(at);
+    });
 
-                    <a href="https://dnd.isaiart.com/handbooks/sims4" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">videogame_asset</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">The Sim — Forgotten Realms</div>
-                        </div>
-                    </a>
+    var frozen = false;
+    if (freeze) freeze.addEventListener('click', function () {
+      frozen = !frozen;
+      if (frozen) { ctl.pause(); } else { ctl.resume(); }
+      freeze.setAttribute('aria-pressed', String(frozen));
+      freeze.textContent = frozen ? 'Wake the world' : 'Freeze the scene';
+    });
+  }
 
-                    <a href="https://dnd.isaiart.com/handbooks/crownofkarsus" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">whatshot</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Crown of Karsus</div>
-                        </div>
-                    </a>
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else { boot(); }
+})();
+</script>
 
-                    <a href="https://dnd.isaiart.com/handbooks/artifacts" target="_blank" class="group block p-2.5 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors text-lg">diamond</span>
-                            <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Artifact Compendium</div>
-                        </div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Section 5: Notable NPCs (BG3 Chosen of the Dead Three) -->
-            <section class="bg-callout border border-maroon/10 rounded-sm p-5 sm:p-6 shadow-sm fade-in-up delay-3 md:col-span-2 lg:col-span-1">
-                <h3 class="font-heading text-maroon text-xl sm:text-2xl uppercase tracking-wide flex items-center gap-2 mb-2">
-                    <span class="material-symbols-rounded text-maroon text-2xl sm:text-3xl">skull</span>
-                    Chosen of the Dead Three
-                </h3>
-                <div class="dnd-divider callout-divider mt-2 mb-4"></div>
-
-                <p class="font-body text-main/80 text-sm sm:text-base mb-5 italic leading-relaxed">
-                    Dossiers on the unholy trinity stalking Baldur's Gate — chosen mortals raised as avatars of the dead gods.
-                </p>
-
-                <div class="space-y-2">
-                    <a href="https://dnd.isaiart.com/npcs/ketheric" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">cruelty_free</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Ketheric Thorm</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Patron:</strong> Myrkul, Lord of Bones
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://dnd.isaiart.com/npcs/gortash" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">gavel</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Lord Enver Gortash</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Patron:</strong> Bane, Lord of Tyranny
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="https://dnd.isaiart.com/npcs/orin" target="_blank" class="group block p-3 -mx-3 rounded-r-sm border-l-4 border-transparent hover:border-maroon hover:bg-maroon/5 transition-all duration-300">
-                        <div class="flex items-start gap-3 group-hover:translate-x-1 transition-transform duration-300">
-                            <span class="material-symbols-rounded text-maroon/60 group-hover:text-maroon transition-colors mt-0.5">bloodtype</span>
-                            <div>
-                                <div class="font-utility font-semibold text-main group-hover:text-maroon text-sm tracking-wide transition-colors">Orin the Red</div>
-                                <div class="font-utility text-[11px] sm:text-[12px] text-main/60 mt-0.5">
-                                    <strong class="text-maroon/80">Patron:</strong> Bhaal, Lord of Murder
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </section>
-
-        </div>
-        
-        <!-- Bottom Page Decoration -->
-        <div class="mt-10 sm:mt-14 text-center fade-in-up delay-3">
-            <div class="dnd-divider"></div>
-            <p class="font-utility text-[10px] sm:text-xs text-maroon/70 font-semibold uppercase tracking-widest mt-4">
-                Compiled for the Adventuring Scholar • Edition 2024
-            </p>
-        </div>
-
-    </main>
-
+<noscript>
+  <style>.find, .band-actions { display: none; }</style>
+</noscript>
 </body>
 </html>

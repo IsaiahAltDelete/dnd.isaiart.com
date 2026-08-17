@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://dnd.isaiart.com/</loc><priority>1.0</priority></url>
+
+  <url><loc>https://dnd.isaiart.com/cs</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/characters</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/character-forge</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/loom-of-fates</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/newchar</loc><priority>0.6</priority></url>
+
+  <url><loc>https://dnd.isaiart.com/artifacts</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/monsters</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/cities</loc><priority>0.8</priority></url>
+
+  <url><loc>https://dnd.isaiart.com/humans</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/phb</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/phb/wizard</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/planes</loc><priority>0.7</priority></url>
+
+  <url><loc>https://dnd.isaiart.com/handbooks/</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/archmage-handbook</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/grand-theologica</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/arcanum-expanded</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/dnd-5e-megabook</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/wizards</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/sims4</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/crownofkarsus</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/artifacts</loc><priority>0.7</priority></url>
+
+  <url><loc>https://dnd.isaiart.com/npcs/ketheric</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/gortash</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/orin</loc><priority>0.6</priority></url>
+</urlset>
