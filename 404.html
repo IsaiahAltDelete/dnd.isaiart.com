@@ -11,19 +11,23 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Isaiart's D&amp;D Resources">
-<meta property="og:title" content="404 — This room isn't on the map">
+<meta property="og:title" content="404 — Off the map">
 <meta property="og:description" content="The party has walked past the last drawn room. Here is the way back.">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/theme.css">
+<link href="https://fonts.googleapis.com/css2?family=Almendra:wght@400;700&family=Barlow+Condensed:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Italiana&family=Marcellus+SC&family=MedievalSharp&family=Press+Start+2P&family=Rye&family=Special+Elite&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<!-- absolute: GitHub Pages serves this file from arbitrary URLs -->
+<link rel="stylesheet" href="/assets/theme.css?v=3">
 </head>
 <body>
 
 <a class="skip" href="#ways-back">Skip to the ways back</a>
+
+<canvas class="world" id="scene" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
 
 <div class="rail">
   <a class="rail-brand" href="/"><b>DND.ISAIART</b><span>Resources</span></a>
@@ -38,66 +42,69 @@
   <a class="rail-out" href="https://isaiart.com">isaiart.com &#8599;</a>
 </div>
 
-<header class="band">
-  <canvas class="band-canvas" id="scene" aria-hidden="true"></canvas>
-  <div class="band-scrim" aria-hidden="true"></div>
+<header class="hero">
+  <h1 class="hero-title">404 &mdash; <em>Off the map</em></h1>
+  <p class="hero-sub">The party walked past the last drawn room. There is only blank paper
+    out here, and the DM is stalling.</p>
 
-  <div class="chapter" id="chapter">
-    <i>Session 14</i><b id="chapter-name">Off the edge of the paper</b>
-  </div>
+  <dl class="hud" id="hud">
+    <div><dt>Light</dt><dd id="hud-phase">&mdash;</dd></div>
+    <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
+    <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
+    <div><dt>Initiative</dt><dd id="hud-extra">&mdash;</dd></div>
+  </dl>
 
-  <div class="band-inner">
-    <h1 class="band-title">404 &mdash; <em>Off the map</em></h1>
-    <p class="band-sub">The party walked past the last drawn room. There is only blank paper
-      out here, and the DM is stalling.</p>
-
-    <dl class="hud" id="hud">
-      <div><dt>Light</dt><dd id="hud-phase">&mdash;</dd></div>
-      <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
-      <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
-      <div><dt>Initiative</dt><dd id="hud-extra">&mdash;</dd></div>
-    </dl>
-
-    <div class="band-actions" id="band-actions" hidden>
-      <button class="btn" type="button" id="btn-roll">Throw the dice</button>
-    </div>
+  <div class="hero-actions" id="hero-actions" hidden>
+    <button class="btn" type="button" id="btn-roll">Throw the dice</button>
   </div>
 </header>
 
-<main class="lost" id="ways-back">
+<main class="shelf" id="ways-back">
 
-  <div class="lost-head">
-    <p>Whatever you were looking for, it isn't here. Either it was never drawn,
-      or it has been moved somewhere the map remembers better.</p>
-    <p id="asked" hidden>You asked for <span class="wrongpath" id="wrongpath"></span></p>
-    <p id="guess" hidden></p>
+  <div class="card">
+    <div class="lost-head">
+      <p>Whatever you were looking for, it isn't here. Either it was never drawn,
+        or it has been moved somewhere the map remembers better.</p>
+      <p id="asked" hidden>You asked for <span class="wrongpath" id="wrongpath"></span></p>
+      <p id="guess" hidden></p>
 
-    <div class="roll-line" id="roll-line" hidden>
-      <span>Survival check:</span>
-      <b id="d20">—</b>
-      <span id="verdict"></span>
-      <button class="btn dark" type="button" id="btn-reroll">Roll again</button>
+      <div class="roll-line" id="roll-line" hidden>
+        <span>Survival check:</span>
+        <b id="d20">—</b>
+        <span id="verdict"></span>
+        <button class="btn dark" type="button" id="btn-reroll">Roll again</button>
+      </div>
     </div>
   </div>
 
-  <section class="sec">
+  <section class="card">
     <div class="sec-head"><span class="rn">&#9670;</span><h2>Ways back</h2><span class="ct">10</span></div>
     <p class="sec-note">The places most people were actually trying to reach.</p>
     <div class="grid">
-      <a class="item" href="/"><span class="n">00</span><span><span class="t">The Front Page</span><span class="d">Everything, indexed</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/cs"><span class="n">01</span><span><span class="t">Character Sheet</span><span class="d">Digital record &middot; roll and track</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/characters"><span class="n">02</span><span><span class="t">The Archives of the Forgotten</span><span class="d">Every hero we have played</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/npcs"><span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/monsters"><span class="n">04</span><span><span class="t">Monster Generator</span><span class="d">CR-balanced statblocks</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/artifacts"><span class="n">05</span><span><span class="t">Arcane Artifacts</span><span class="d">Legendary items with a history</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/cities"><span class="n">06</span><span><span class="t">Faerûn City Generator</span><span class="d">Settlements and the people in them</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks"><span class="n">07</span><span><span class="t">The Handbooks</span><span class="d">The whole shelf</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/planes"><span class="n">08</span><span><span class="t">Cosmology</span><span class="d">The planes of the Realms</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/phb"><span class="n">09</span><span><span class="t">Player's Handbook</span><span class="d">The 2024 core rules</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/" style="--f:'Cinzel Decorative',serif;--c:#58180D;--fs:1.04rem">
+        <span class="n">00</span><span><span class="t">The Front Page</span><span class="d">Everything, indexed</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/cs/" style="--f:'Special Elite',monospace;--c:#2B3A44;--fs:1.02rem">
+        <span class="n">01</span><span><span class="t">Character Sheet</span><span class="d">Digital record &middot; roll and track</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/characters/" style="--f:'IM Fell English SC',serif;--c:#4A1D5E;--fs:1.2rem">
+        <span class="n">02</span><span><span class="t">The Archives of the Forgotten</span><span class="d">Every hero we have played</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/npcs/" style="--f:'Almendra',serif;--c:#6A4A12;--fs:1.28rem">
+        <span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/monsters/" style="--f:'Creepster',cursive;--c:#7A1215;--fs:1.42rem;--ls:.05em">
+        <span class="n">04</span><span><span class="t">Monster Generator</span><span class="d">CR-balanced statblocks</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/artifacts/" style="--f:'Uncial Antiqua',serif;--c:#3D2A6B;--fs:1.12rem">
+        <span class="n">05</span><span><span class="t">Arcane Artifacts</span><span class="d">Legendary items with a history</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/cities/" style="--f:'Marcellus SC',serif;--c:#1E4620;--fs:1.08rem">
+        <span class="n">06</span><span><span class="t">Faerûn City Generator</span><span class="d">Settlements and the people in them</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/handbooks/" style="--f:'MedievalSharp',cursive;--c:#33302B;--fs:1.3rem">
+        <span class="n">07</span><span><span class="t">The Handbooks</span><span class="d">The whole shelf</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/planes/" style="--f:'Italiana',serif;--c:#23306E;--fs:1.3rem;--ls:.06em">
+        <span class="n">08</span><span><span class="t">Cosmology</span><span class="d">The planes of the Realms</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/phb/" style="--f:'Rye',serif;--c:#8A3A12;--fs:1.08rem">
+        <span class="n">09</span><span><span class="t">Player's Handbook</span><span class="d">The 2024 core rules</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
-  <div class="colophon">
+  <div class="card colophon">
     <span>Nothing was lost that a pencil cannot fix</span>
     <span>dnd.isaiart.com</span>
   </div>
@@ -113,19 +120,18 @@
   <i>Not affiliated with Wizards of the Coast</i>
 </footer>
 
-<script src="/assets/table.js" defer></script>
+<script src="/assets/table.js?v=3" defer></script>
 <script>
-/* ── what did they actually ask for, and did they nearly get it right? ── */
+/* ── what did they ask for, and did they nearly get it right? ─────────── */
 (function () {
   'use strict';
   var path = location.pathname.replace(/\/+$/, '');
-  if (path && path !== '/404.html') {
-    var asked = document.getElementById('asked');
-    var wrong = document.getElementById('wrongpath');
-    if (asked && wrong) { wrong.textContent = path; asked.hidden = false; }
-  }
+  if (!path || path === '/404.html') return;
 
-  /* every real destination on this subdomain */
+  var asked = document.getElementById('asked');
+  var wrong = document.getElementById('wrongpath');
+  if (asked && wrong) { wrong.textContent = path; asked.hidden = false; }
+
   var KNOWN = [
     ['/cs', 'Character Sheet'], ['/characters', 'The Archives of the Forgotten'],
     ['/npcs', 'NPC Codex'], ['/character-forge', 'Character Forge'],
@@ -145,7 +151,6 @@
     ['/npcs/orin', 'Orin the Red']
   ];
 
-  /* plain Levenshtein — small inputs, runs once */
   function dist(a, b) {
     var m = a.length, n = b.length, i, j, prev = [], cur = [];
     if (!m) return n;
@@ -162,28 +167,25 @@
     return prev[n];
   }
 
-  if (path && path !== '/404.html') {
-    var want = path.toLowerCase(), best = null, bestD = 1e9;
-    for (var i = 0; i < KNOWN.length; i++) {
-      var d = dist(want, KNOWN[i][0].toLowerCase());
-      /* a containment match is worth more than raw edit distance */
-      if (KNOWN[i][0].toLowerCase().indexOf(want.replace(/^\//, '')) > -1) d -= 3;
-      if (d < bestD) { bestD = d; best = KNOWN[i]; }
-    }
-    /* Only offer a guess when it is genuinely close. A loose threshold made
-       /xyz suggest "Character Sheet", which is worse than saying nothing. */
-    if (best && want.length >= 4 && bestD <= Math.max(2, Math.floor(want.length * 0.34))) {
-      var g = document.getElementById('guess');
-      if (g) {
-        g.innerHTML = 'Did you mean <a href="' + best[0] + '" style="color:#58180D">' +
-                      best[1] + '</a>?';
-        g.hidden = false;
-      }
+  var want = path.toLowerCase(), best = null, bestD = 1e9;
+  for (var i = 0; i < KNOWN.length; i++) {
+    var d = dist(want, KNOWN[i][0].toLowerCase());
+    if (KNOWN[i][0].toLowerCase().indexOf(want.replace(/^\//, '')) > -1) d -= 3;
+    if (d < bestD) { bestD = d; best = KNOWN[i]; }
+  }
+  /* only guess when it is genuinely close — a loose threshold made /xyz
+     suggest "Character Sheet", which is worse than saying nothing */
+  if (best && want.length >= 4 && bestD <= Math.max(2, Math.floor(want.length * 0.34))) {
+    var g = document.getElementById('guess');
+    if (g) {
+      g.innerHTML = 'Did you mean <a href="' + best[0] + '/" style="color:#58180D">' +
+                    best[1] + '</a>?';
+      g.hidden = false;
     }
   }
 })();
 
-/* ── the survival check ─────────────────────────────────────────────── */
+/* ── the survival check ───────────────────────────────────────────────── */
 (function () {
   'use strict';
   var VERDICTS = [
@@ -214,7 +216,7 @@
   roll();
 })();
 
-/* ── the table ──────────────────────────────────────────────────────── */
+/* ── the table ────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
   var cvs = document.getElementById('scene');
@@ -244,21 +246,17 @@
       cvs.classList.add('scene-failed');
       return;
     }
-    var ctl = window.IsaiTable.mount(cvs, {
-      hourOverride: hour, reduced: reduced, onState: paint
-    });
+    var ctl = window.IsaiTable.mount(cvs, { hourOverride: hour, reduced: reduced, onState: paint });
     window.__table = ctl;
-
     if (reduced) return;
-    var actions = document.getElementById('band-actions');
+    var actions = document.getElementById('hero-actions');
     var roll = document.getElementById('btn-roll');
     if (actions) actions.hidden = false;
     if (roll) roll.addEventListener('click', function () { ctl.roll(); });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else { boot(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>
 </body>

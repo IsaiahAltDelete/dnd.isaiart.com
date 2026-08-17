@@ -2008,7 +2008,11 @@ function resize(){
   var ch = cvs.clientHeight || 220;
   if (cw < 8 || ch < 8) return;
 
-  VW = cw >= 760 ? 320 : 232;   // chunkier pixels; props read larger in a short band
+  /* The scene is a full-viewport backdrop, so pick chunky pixels and then cap
+     VW so that VH can never exceed the 216-row world — otherwise a tall phone
+     screen would stretch every pixel vertically. */
+  var want = cw >= 1100 ? 256 : cw >= 700 ? 224 : 176;
+  VW = Math.max(96, Math.min(want, Math.floor(WORLD_H * cw / ch)));
   if (VW & 1) VW++;                                  // even, so the dither reads evenly
   VH = clamp(Math.round(VW * ch / cw), 88, WORLD_H);
 
@@ -2016,7 +2020,8 @@ function resize(){
   ctx = cvs.getContext('2d', { alpha: false });
   ctx.imageSmoothingEnabled = false;
 
-  VOFF = clamp(Math.round(GROUND_REF - VH * 0.64), 0, WORLD_H - VH);
+  /* horizon about three-quarters down, leaving a modest band of earth */
+  VOFF = clamp(Math.round(GROUND_REF - VH * 0.72), 0, WORLD_H - VH);
   bakeSky();
 }
 
