@@ -193,12 +193,15 @@ input:focus-visible {
 }
 
 /* legibility scrim — the scene stays visible, the words stay readable */
+/* Just enough to hold the type. The earlier version was heavy enough that at
+   dawn and dusk it flattened the whole scene into mud — the text-shadows on
+   .band-title/.band-sub do most of the legibility work now. */
 .band-scrim {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(20,16,14,.72) 0%, rgba(20,16,14,0) 30%,
-                            rgba(20,16,14,0) 46%, rgba(20,16,14,.88) 100%),
-    linear-gradient(90deg,  rgba(20,16,14,.80) 0%, rgba(20,16,14,.10) 46%, rgba(20,16,14,0) 70%);
+    linear-gradient(180deg, rgba(20,16,14,.42) 0%, rgba(20,16,14,0) 26%,
+                            rgba(20,16,14,0) 52%, rgba(20,16,14,.62) 100%),
+    linear-gradient(90deg,  rgba(20,16,14,.52) 0%, rgba(20,16,14,.06) 44%, rgba(20,16,14,0) 66%);
 }
 
 .band-inner {
@@ -517,13 +520,21 @@ input:focus-visible {
 
 @media (max-width: 620px) {
   :root { --rail-h: 42px; }
-  .band-inner { padding: 62px 16px 0; min-height: clamp(320px, 88vw, 430px); }
+  /* keep the band landscape on a phone — a tall band forces the engine to
+     show the whole 216-row world, dead underground included */
+  .band-inner { padding: 58px 16px 0; min-height: clamp(250px, 62vw, 320px); }
   .chapter { left: 16px; top: 12px; padding: 5px 10px; gap: 8px; }
   .chapter b { font-size: .66rem; letter-spacing: .16em; }
   .band-sub { font-size: .94rem; }
-  .hud div { padding-right: 12px; margin-right: 12px; }
-  .hud dt { font-size: .52rem; letter-spacing: .18em; }
-  .hud dd { font-size: .6rem; }
+  /* four items in a row overflow a phone; pair them up instead */
+  .hud { display: grid; grid-template-columns: 1fr 1fr; }
+  .hud div {
+    display: block; padding: 6px 10px 6px 0; margin: 0;
+    border-right: none; min-width: 0;
+  }
+  .hud dt { font-size: .5rem; letter-spacing: .16em; display: block; }
+  .hud dd { font-size: .62rem; overflow-wrap: anywhere; }
+  .find input { font-size: .74rem; letter-spacing: .1em; }
   .rail-brand { padding: 0 14px; gap: 10px; }
   .rail-brand span { display: none; }
   .item { grid-template-columns: 34px 1fr auto; padding: 13px 15px; }

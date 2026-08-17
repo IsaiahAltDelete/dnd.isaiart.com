@@ -1,402 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Isaiart's D&amp;D Resources — The Dungeon Master's Table</title>
-<meta name="description" content="Character tools, generators, lore and handbooks for Dungeons &amp; Dragons 5e. A hand-made resource directory from Isaiart.">
-<meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#1b120b">
-<style>
-/* ==========================================================================
-   ISAIART'S D&D RESOURCES — CONCEPT B: THE DUNGEON MASTER'S TABLE
-   Single file. No network requests. All art generated in <canvas>.
-   ========================================================================== */
+/* ============================================================================
+ * dnd.isaiart.com — THE DUNGEON MASTER'S TABLE
+ *
+ * A top-down pixel diorama of a session in progress, seen from above a table
+ * that is larger than the band showing it. Backs the site's 404 page: the map
+ * has run out of drawn rooms and the party is standing on blank paper.
+ *
+ *     IsaiTable.mount(canvasEl, { hourOverride, reduced, onState })
+ *
+ * Everything is drawn in code — no images, no fonts, no network.
+ * ========================================================================== */
+(function () {
+'use strict';
 
-:root{
-  --maroon:#58180D;
-  --maroon-lt:#8A2A1B;
-  --gold:#C9AD6A;
-  --gold-dk:#8B7433;
-  --parch:#F5EFE2;
-  --cream:#FDF1DC;
-  --ink:#1E1A17;
-  --ink-soft:rgba(30,26,23,.62);
-  --rule:rgba(30,26,23,.22);
-
-  --sans:"Barlow Condensed","Oswald","Arial Narrow","Helvetica Neue Condensed",
-         "Roboto Condensed",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
-
-  --card-pad:clamp(16px,2.4vw,26px);
-}
-
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0;
-  /* fallback if canvas fails: still a warm table */
-  background:#1b120b;
-  background-image:
-    repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 2px,transparent 2px 46px),
-    radial-gradient(120% 80% at 18% 34%, #6b4429 0%, #3d2717 42%, #1b120b 78%);
-  color:var(--parch);
-  font-family:var(--sans);
-  font-size:16px;
-  line-height:1.45;
-  min-height:100%;
-  overflow-x:hidden;
-}
-
-/* ---------- pixel scene ---------------------------------------------- */
-#scene{
-  position:fixed; inset:0;
-  width:100%; height:100%;
-  display:block;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
-  z-index:0;
-  pointer-events:none;
-  /* the scene is decorative; content always sits above it */
-}
-#vig{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:
-    radial-gradient(115% 92% at 22% 40%, rgba(0,0,0,0) 34%, rgba(6,4,2,.42) 74%, rgba(4,2,1,.72) 100%);
-  mix-blend-mode:multiply;
-  transition:opacity .8s linear;
-}
-
-/* ---------- skip link -------------------------------------------------- */
-.skip{
-  position:absolute; left:-9999px; top:0; z-index:99;
-  background:var(--gold); color:#1a1005; padding:10px 18px;
-  font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-}
-.skip:focus{left:8px; top:8px}
-
-/* ---------- shell ------------------------------------------------------ */
-.shell{
-  position:relative; z-index:2;
-  max-width:1180px;
-  margin:0 auto;
-  padding:0 clamp(12px,3vw,32px) 96px;
-}
-
-/* ---------- ticker (sibling-site nod) ---------------------------------- */
-.ticker{
-  position:relative; z-index:3;
-  border-bottom:1px solid rgba(201,173,106,.32);
-  background:rgba(12,8,5,.82);
-  backdrop-filter:blur(2px);
-  overflow:hidden;
-  font-family:var(--mono);
-  font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
-  color:rgba(201,173,106,.85);
-  padding:6px 0;
-  white-space:nowrap;
-}
-.ticker__row{display:inline-block; animation:tick 54s linear infinite;}
-.ticker__row span{padding:0 1.6em}
-.ticker__row b{color:var(--parch); font-weight:600}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* ---------- masthead --------------------------------------------------- */
-.mast{
-  margin:clamp(22px,4vw,54px) 0 clamp(20px,3vw,38px);
-  border:1px solid rgba(201,173,106,.42);
-  background:linear-gradient(180deg,rgba(88,24,13,.94),rgba(46,11,6,.94));
-  box-shadow:0 18px 42px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,235,190,.18);
-  padding:clamp(18px,3vw,30px) clamp(16px,3vw,34px);
-  position:relative;
-}
-.mast::after{
-  content:""; position:absolute; inset:5px; border:1px solid rgba(201,173,106,.28);
-  pointer-events:none;
-}
-.mast__kick{
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.34em;
-  text-transform:uppercase; color:var(--gold); margin:0 0 10px;
-}
-.mast h1{
-  margin:0;
-  font-size:clamp(30px,7.2vw,74px);
-  line-height:.92;
-  letter-spacing:.045em;
-  text-transform:uppercase;
-  font-weight:700;
-  color:var(--parch);
-  text-shadow:0 2px 0 rgba(0,0,0,.5);
-}
-.mast h1 em{font-style:normal; color:var(--gold)}
-.mast__sub{
-  margin:14px 0 0; max-width:62ch;
-  color:rgba(245,239,226,.82);
-  font-size:clamp(14px,1.6vw,18px);
-  letter-spacing:.03em;
-}
-.statbar{
-  margin-top:18px; padding-top:14px;
-  border-top:1px solid rgba(201,173,106,.3);
-  display:flex; flex-wrap:wrap; gap:6px 26px;
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.2em;
-  text-transform:uppercase; color:rgba(201,173,106,.92);
-}
-.statbar b{color:var(--parch); font-weight:600}
-
-.controls{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
-.btn{
-  font-family:var(--mono); font-size:11px; letter-spacing:.2em;
-  text-transform:uppercase;
-  background:transparent; color:var(--gold);
-  border:1px solid rgba(201,173,106,.55);
-  padding:9px 16px; cursor:pointer;
-}
-.btn:hover{background:var(--gold); color:#22150a}
-.btn:focus-visible{outline:3px solid var(--gold); outline-offset:3px}
-
-/* ---------- the paper cards ------------------------------------------- */
-.spread{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(302px,1fr));
-  gap:clamp(22px,3.2vw,44px);
-  align-items:start;
-}
-.card{
-  position:relative;
-  color:var(--ink);
-  padding:var(--card-pad) var(--card-pad) calc(var(--card-pad) - 6px);
-  padding-left:calc(var(--card-pad) + 22px);
-  transform:rotate(var(--rot,-.8deg));
-  background-color:#F3E7CB;
-  background-image:
-    repeating-linear-gradient(0deg,transparent 0 25px,rgba(58,90,120,.13) 25px 26px),
-    radial-gradient(120% 130% at 12% 6%, #FDF3DF 0%, #F1E3C3 46%, #E2D0AB 100%);
-  border:1px solid rgba(30,26,23,.34);
-  border-radius:2px;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    inset 0 -14px 22px rgba(120,92,52,.16),
-    0 2px 3px rgba(0,0,0,.45),
-    0 16px 30px rgba(0,0,0,.55);
-}
-/* index-card red margin rule */
-.card::after{
-  content:""; position:absolute; top:0; bottom:0;
-  left:calc(var(--card-pad) + 4px); width:1px;
-  background:rgba(138,42,27,.34); pointer-events:none;
-}
-/* tape */
-.card::before{
-  content:""; position:absolute; top:-11px; left:34px;
-  width:76px; height:22px;
-  background:linear-gradient(180deg,rgba(238,225,190,.72),rgba(206,186,140,.62));
-  border:1px solid rgba(0,0,0,.14);
-  box-shadow:0 3px 6px rgba(0,0,0,.35);
-  transform:rotate(-3.5deg);
-  pointer-events:none;
-}
-.card--b{--rot:1.1deg}
-.card--c{--rot:-1.4deg}
-.card--d{--rot:.7deg}
-.card--e{--rot:-1.1deg}
-.card--d::before{left:auto; right:30px; transform:rotate(4deg)}
-.card--c::before{width:58px; left:52px; transform:rotate(2deg)}
-
-.card h2{
-  margin:0 0 4px;
-  font-size:clamp(19px,2.2vw,25px);
-  letter-spacing:.19em; text-transform:uppercase;
-  color:var(--maroon); font-weight:700;
-}
-.card__note{
-  margin:0 0 12px;
-  font-family:var(--mono); font-size:10px; letter-spacing:.2em;
-  text-transform:uppercase; color:rgba(88,24,13,.62);
-  border-bottom:2px solid rgba(88,24,13,.55);
-  padding-bottom:9px;
-}
-.links{list-style:none; margin:0; padding:0}
-.links li{border-top:1px dashed rgba(30,26,23,.28)}
-.links li:first-child{border-top:0}
-.links a{
-  display:grid; grid-template-columns:1fr auto; gap:12px; align-items:baseline;
-  padding:9px 8px 9px 10px;
-  text-decoration:none; color:var(--ink);
-  letter-spacing:.1em; text-transform:uppercase;
-  font-size:clamp(14px,1.5vw,16.5px); font-weight:600;
-  position:relative;
-}
-.links a::before{
-  content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px;
-  background:transparent;
-}
-.links a .m{
-  font-family:var(--mono); font-size:9.5px; letter-spacing:.16em;
-  color:rgba(88,24,13,.6); font-weight:400; white-space:nowrap;
-}
-.links a:hover,.links a:focus-visible{
-  background:var(--maroon); color:var(--cream);
-}
-.links a:hover::before,.links a:focus-visible::before{background:var(--gold)}
-.links a:hover .m,.links a:focus-visible .m{color:var(--gold)}
-.links a:focus-visible{outline:3px solid #7a4a00; outline-offset:-3px; box-shadow:0 0 0 3px var(--gold)}
-
-/* dead three card gets a darker, grimmer treatment */
-.card--dead{
-  background-color:#E8D7B4;
-  background-image:
-    repeating-linear-gradient(0deg,transparent 0 25px,rgba(88,24,13,.16) 25px 26px),
-    radial-gradient(120% 130% at 80% 8%, #F0DFBD 0%, #DCC49A 52%, #C6A97F 100%);
-}
-.card--dead h2{color:#3A0E07}
-
-/* ---------- footer ----------------------------------------------------- */
-.foot{
-  margin-top:clamp(34px,5vw,64px);
-  border-top:1px solid rgba(201,173,106,.3);
-  padding-top:20px;
-  display:flex; flex-wrap:wrap; gap:14px 30px; align-items:center;
-  justify-content:space-between;
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.2em;
-  text-transform:uppercase; color:rgba(245,239,226,.6);
-}
-.foot a{color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(201,173,106,.4)}
-.foot a:hover{color:var(--parch)}
-.foot a:focus-visible{outline:3px solid var(--gold); outline-offset:3px}
-
-.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-
-/* ---------- roll readout ---------------------------------------------- */
-.roll{
-  position:fixed; z-index:4; left:50%; bottom:14px; transform:translateX(-50%);
-  font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
-  background:rgba(10,7,4,.86); color:var(--gold);
-  border:1px solid rgba(201,173,106,.42);
-  padding:8px 16px; pointer-events:none;
-  opacity:0; transition:opacity .35s linear;
-  max-width:92vw; text-align:center;
-}
-.roll.on{opacity:1}
-.roll.nat{color:#FFE9A8; border-color:#FFE9A8; background:rgba(60,32,4,.92)}
-
-/* ---------- responsive ------------------------------------------------- */
-@media (max-width:760px){
-  .card{transform:none; padding-left:calc(var(--card-pad) + 16px)}
-  .card::before{left:22px; width:60px}
-  .spread{grid-template-columns:1fr; gap:26px}
-  #vig{background:radial-gradient(140% 100% at 50% 40%, rgba(0,0,0,0) 30%, rgba(6,4,2,.5) 78%, rgba(4,2,1,.8) 100%)}
-}
-
-/* ---------- reduced motion --------------------------------------------- */
-@media (prefers-reduced-motion:reduce){
-  .ticker__row{animation:none}
-  .roll{transition:none}
-  *{scroll-behavior:auto!important}
-}
-</style>
-</head>
-<body>
-
-<a class="skip" href="#main">Skip to the link directory</a>
-
-<canvas id="scene" aria-hidden="true"></canvas>
-<div id="vig" aria-hidden="true"></div>
-
-<div class="ticker" aria-hidden="true">
-  <div class="ticker__row" id="tickrow"></div>
-</div>
-
-<div class="shell">
-
-  <header class="mast">
-    <p class="mast__kick">dnd.isaiart.com &nbsp;/&nbsp; est. at the table</p>
-    <h1>Isaiart's<br><em>D&amp;D</em> Resources</h1>
-    <p class="mast__sub">Everything I have built for the table: character tools, generators,
-       cosmology, and a shelf of handbooks. Roll for initiative — or just click anywhere
-       and roll the dice.</p>
-    <p class="statbar" id="statbar">
-      <span>Light: <b id="st-phase">—</b></span>
-      <span>Weather: <b id="st-weather">—</b></span>
-      <span>Moon: <b id="st-moon">—</b></span>
-      <span>Initiative: <b id="st-init">—</b></span>
-    </p>
-    <div class="controls">
-      <button class="btn" id="btn-roll" type="button">Roll the dice</button>
-      <button class="btn" id="btn-motion" type="button" aria-pressed="false">Freeze the scene</button>
-    </div>
-  </header>
-
-  <main id="main" class="spread">
-
-    <section class="card" aria-labelledby="h-char">
-      <h2 id="h-char">Character Tools</h2>
-      <p class="card__note">Handout I · for players</p>
-      <ul class="links">
-        <li><a href="/cs">Character Sheet <span class="m">interactive</span></a></li>
-        <li><a href="/characters">The Archives of the Forgotten <span class="m">roster</span></a></li>
-        <li><a href="/npcs">NPC Codex <span class="m">codex</span></a></li>
-        <li><a href="/character-forge">Character Forge <span class="m">builder</span></a></li>
-        <li><a href="/loom-of-fates">Loom of Fates <span class="m">backstory</span></a></li>
-      </ul>
-    </section>
-
-    <section class="card card--b" aria-labelledby="h-gen">
-      <h2 id="h-gen">Generators</h2>
-      <p class="card__note">Handout II · roll &amp; take</p>
-      <ul class="links">
-        <li><a href="/artifacts">Arcane Artifacts <span class="m">d100 loot</span></a></li>
-        <li><a href="/monsters">Monster Generator <span class="m">stat block</span></a></li>
-        <li><a href="/cities">Faerûn City Generator <span class="m">settlement</span></a></li>
-      </ul>
-    </section>
-
-    <section class="card card--c" aria-labelledby="h-lore">
-      <h2 id="h-lore">Lore &amp; Rules</h2>
-      <p class="card__note">Handout III · read before session</p>
-      <ul class="links">
-        <li><a href="/humans">Humans of Faerûn <span class="m">ethnography</span></a></li>
-        <li><a href="/phb">Player's Handbook <span class="m">rules</span></a></li>
-        <li><a href="/planes">Cosmology <span class="m">the planes</span></a></li>
-      </ul>
-    </section>
-
-    <section class="card card--d" aria-labelledby="h-hand">
-      <h2 id="h-hand">Handbooks</h2>
-      <p class="card__note">Handout IV · the long shelf</p>
-      <ul class="links">
-        <li><a href="/handbooks/archmage-handbook">The Archmage's Handbook <span class="m">arcane</span></a></li>
-        <li><a href="/handbooks/grand-theologica">Grand Theologica <span class="m">divine</span></a></li>
-        <li><a href="/handbooks/arcanum-expanded">Arcanum Expanded <span class="m">spells</span></a></li>
-        <li><a href="/handbooks/dnd-5e-megabook">D&amp;D 5e Megabook <span class="m">omnibus</span></a></li>
-        <li><a href="/handbooks/wizards">Wizards <span class="m">class</span></a></li>
-        <li><a href="/handbooks/sims4">Sims 4 <span class="m">side quest</span></a></li>
-        <li><a href="/handbooks/crownofkarsus">Crown of Karsus <span class="m">netheril</span></a></li>
-        <li><a href="/handbooks/artifacts">Artifacts <span class="m">relics</span></a></li>
-      </ul>
-    </section>
-
-    <section class="card card--e card--dead" aria-labelledby="h-dead">
-      <h2 id="h-dead">The Dead Three</h2>
-      <p class="card__note">Handout V · chosen of Bane, Bhaal, Myrkul</p>
-      <ul class="links">
-        <li><a href="/npcs/ketheric">Ketheric Thorm <span class="m">myrkul</span></a></li>
-        <li><a href="/npcs/gortash">Enver Gortash <span class="m">bane</span></a></li>
-        <li><a href="/npcs/orin">Orin the Red <span class="m">bhaal</span></a></li>
-      </ul>
-    </section>
-
-  </main>
-
-  <footer class="foot">
-    <span>Isaiart · Dungeons &amp; Dragons resources · hand-built, no trackers</span>
-    <span><a href="https://isaiart.com">← Back to isaiart.com</a></span>
-  </footer>
-</div>
-
-<div class="roll" id="rollout" role="status" aria-live="polite"></div>
-
-<script>
 "use strict";
 /* ==========================================================================
    THE DUNGEON MASTER'S TABLE — procedural pixel diorama
@@ -967,12 +582,12 @@ var REVEAL_MAX=62;
 
 /* ------------------------------------------------- 6. TIME, PHASE, WEATHER */
 var PHASES=[
-  {id:"witching", name:"Witching Hour", tint:"#0C1026", amt:.50, dark:1.00, darkCol:"#05060F", warm:1.00, beam:"moon", beamA:.30},
+  {id:"witching", name:"Witching Hour", tint:"#2A1A12", amt:.46, dark:.94, darkCol:"#080604", warm:1.00, beam:"moon", beamA:.26},
   {id:"dawn",     name:"Dawn",          tint:"#4A2E3C", amt:.30, dark:.62, darkCol:"#160E14", warm:.85, beam:"sun",  beamA:.34},
   {id:"morning",  name:"Morning",       tint:"#DCE6F0", amt:.14, dark:.20, darkCol:"#241D18", warm:.42, beam:"sun",  beamA:.60},
   {id:"noon",     name:"High Noon",     tint:"#FFF6E0", amt:.17, dark:.10, darkCol:"#2A2118", warm:.30, beam:"sun",  beamA:.72},
   {id:"dusk",     name:"Dusk",          tint:"#7A3418", amt:.30, dark:.52, darkCol:"#1A0C08", warm:.92, beam:"sun",  beamA:.40},
-  {id:"night",    name:"Candlelight",   tint:"#101A32", amt:.44, dark:.88, darkCol:"#080A16", warm:1.00, beam:"moon", beamA:.24}
+  {id:"night",    name:"Candlelight",   tint:"#3A1E08", amt:.42, dark:.84, darkCol:"#0C0703", warm:1.00, beam:"moon", beamA:.20}
 ];
 function phaseForHour(h){
   if(h<5)  return PHASES[0];
@@ -1582,27 +1197,14 @@ function startEvent(){
 }
 
 /* ================================================== 11. THE RENDER TARGET */
-var cv=document.getElementById("scene");
-var ctx=cv.getContext("2d",{alpha:false});
+var cv=null, ctx=null;
 var VW=384, VH=216, SCALE=4;
-var reduce=window.matchMedia("(prefers-reduced-motion: reduce)");
-var frozen=reduce.matches;
+var frozen=false;
 
-function resize(){
-  var w=window.innerWidth, h=window.innerHeight;
-  SCALE=Math.max(2, Math.ceil(Math.max(w/440, h/460)));
-  VW=Math.min(WORLD_W, Math.ceil(w/SCALE));
-  VH=Math.min(WORLD_H, Math.ceil(h/SCALE));
-  cv.width=VW; cv.height=VH;
-  cv.style.width=w+"px"; cv.style.height=h+"px";
-  ctx=cv.getContext("2d",{alpha:false});
-  ctx.imageSmoothingEnabled=false;
-  draw(true);
-}
 
 /* ------------------------------------------------ 12. PALETTE / PHASE BAKE */
 function retint(){
-  var now=new Date();
+  var now=nowDate();
   var pb=phaseBlend(now);
   TIME.ph=mixPhase(pb);
   TIME.moon=moonInfo(now);
@@ -1612,17 +1214,7 @@ function retint(){
   bakeTable(); bakeFog(); bakeBeam(); bakeLight();
   updateStats();
 }
-function setStat(id,v){var e=document.getElementById(id); if(e) e.textContent=v;}
-function updateStats(){
-  setStat("st-phase", TIME.ph.name);
-  setStat("st-weather", TIME.weather==="clear"?"Clear":
-                        TIME.weather==="rain"?"Rain on the window":
-                        TIME.weather==="snow"?"Snow":"Fog");
-  setStat("st-moon", TIME.moon.name+" ("+Math.round(TIME.moon.illum*100)+"%)");
-  setStat("st-init", COMBAT[turnIdx].name+" ("+COMBAT[turnIdx].init+")  RD "+roundNo);
-  var vig=document.getElementById("vig");
-  vig.style.opacity = String(clamp(TIME.ph.dark*0.9,0.12,1));
-}
+function updateStats(){ /* see publish() */ }
 
 /* ================================================== 13. THE ANIMATION LOOP */
 var tick=0, last=0, acc=0, STEP=1000/30;
@@ -1631,12 +1223,12 @@ var visible=true;
 
 function viewOffset(){
   var maxY=Math.max(0, WORLD_H-VH), maxX=Math.max(0, WORLD_W-VW);
-  var doc=Math.max(1, document.documentElement.scrollHeight-window.innerHeight);
-  var sp=clamp(window.scrollY/doc,0,1);
   var by=Math.sin(breath*0.0031)*7;
   var bx=Math.cos(breath*0.0023)*9;
-  var vy=clamp(maxY*(0.10+sp*0.80)+by, 0, maxY);
-  var vx=clamp(maxX*0.5+bx, 0, maxX);
+  /* framed so the candle — the scene's actual light source, at x68 y286 —
+     is always in shot, with the inked map running off to the right */
+  var vy=clamp(maxY*0.52+by, 0, maxY);
+  var vx=clamp(maxX*0.12+bx, 0, maxX);
   return {x:Math.floor(vx), y:Math.floor(vy)};
 }
 
@@ -1929,85 +1521,165 @@ function drawMoonInMug(g,ox,oy){
   }
 }
 
-/* ------------------------------------------------------------- 15. DRIVER */
+/* ------------------------------------------------------------- 15. DRIVER
+   The table is drawn once into a 640x560 world; the band shows a window onto
+   it that drifts slowly, as if you were sitting at the table breathing. The
+   backing store IS the low-resolution buffer — devicePixelRatio is ignored on
+   purpose, because CSS scales it up with image-rendering:pixelated.
+   -------------------------------------------------------------------------- */
+
+var onState=null, lastStateJSON="";
+var hourOverride=null;
+var running=false, rafId=0, phaseTimer=0, rzTimer=0;
+var ro=null, io=null, onVis=null;
+
+function nowDate(){
+  var d=new Date();
+  if(hourOverride!=null) d.setHours(hourOverride,0,0,0);
+  return d;
+}
+
+function resize(){
+  if(!cv) return;
+  var cw=cv.clientWidth||640, ch=cv.clientHeight||240;
+  if(cw<8||ch<8) return;
+  var target = cw>=760 ? 520 : 300;   // wide enough to hold candle, map and table edge
+  VW=Math.min(WORLD_W, target);
+  VH=Math.min(WORLD_H, Math.max(80, Math.round(VW*ch/cw)));
+  cv.width=VW; cv.height=VH;
+  ctx=cv.getContext("2d",{alpha:false});
+  ctx.imageSmoothingEnabled=false;
+}
+
+function publish(){
+  if(!onState) return;
+  var s={
+    region:null, chapter:null,
+    phase:TIME.ph.name,
+    moon:TIME.moon.name,
+    moonPct:Math.round(TIME.moon.illum*100),
+    weather:TIME.weather==="clear"?"Clear":
+            TIME.weather==="rain"?"Rain on the window":
+            TIME.weather==="snow"?"Snow":"Fog",
+    extra:COMBAT[turnIdx].name+" ("+COMBAT[turnIdx].init+") · Round "+roundNo
+  };
+  var j=JSON.stringify(s);
+  if(j===lastStateJSON) return;
+  lastStateJSON=j;
+  try{ onState(s); }catch(e){}
+}
+
 function frame(ts){
+  if(!running) return;
+  rafId=requestAnimationFrame(frame);
   if(!last) last=ts;
   var dt=ts-last; last=ts;
-  if(!frozen && visible && !document.hidden){
-    acc+=dt;
-    if(acc>250) acc=250;                       /* never spiral after a stall */
-    var steps=0;
-    while(acc>=STEP && steps<3){ update(); acc-=STEP; steps++; }
-    if(steps>0) draw();
-  }
-  requestAnimationFrame(frame);
+  if(frozen || !visible || document.hidden) return;
+  acc+=dt;
+  if(acc>250) acc=250;
+  var steps=0;
+  while(acc>=STEP && steps<3){ update(); acc-=STEP; steps++; }
+  if(steps>0){ draw(); publish(); }
 }
+
+function start(){
+  if(running||frozen) return;
+  running=true; last=0; acc=0;
+  rafId=requestAnimationFrame(frame);
+}
+function stop(){
+  running=false;
+  if(rafId) cancelAnimationFrame(rafId);
+  rafId=0;
+}
+
+function teardown(){
+  stop();
+  if(ro&&ro.disconnect) ro.disconnect();
+  if(io&&io.disconnect) io.disconnect();
+  if(onVis) document.removeEventListener("visibilitychange",onVis);
+  if(phaseTimer) clearInterval(phaseTimer);
+  if(rzTimer) clearTimeout(rzTimer);
+  ro=io=onVis=null; phaseTimer=0; rzTimer=0;
+  cv=null; ctx=null; onState=null;
+}
+
+var NOOP={setHour:function(){},jumpTo:function(){},roll:function(){},
+          pause:function(){},resume:function(){},destroy:function(){}};
 
 /* ------------------------------------------------------------ 16. WIRE-UP */
-function boot(){
-  retint();
-  resize();
-  turnTimer=100;
-  requestAnimationFrame(frame);
-  if(frozen){ update(); draw(true); }
+function mount(canvasEl, opts){
+  try{
+    if(!canvasEl||!canvasEl.getContext) return NOOP;
+    teardown();
+    opts=opts||{};
+
+    cv=canvasEl;
+    onState=typeof opts.onState==="function"?opts.onState:null;
+    frozen=!!opts.reduced;
+    hourOverride=(opts.hourOverride==null)?null
+                :clamp(parseInt(opts.hourOverride,10)||0,0,23);
+
+    lastStateJSON="";
+    tick=0; breath=0; acc=0; last=0; visible=true;
+    turnTimer=100;
+
+    resize();
+    retint();
+    update();
+    draw(true);
+    publish();
+
+    if(!frozen){
+      if(window.ResizeObserver){
+        ro=new ResizeObserver(function(){
+          clearTimeout(rzTimer);
+          rzTimer=setTimeout(function(){
+            try{ resize(); draw(true); }catch(e){}
+          },150);
+        });
+        ro.observe(cv);
+      }
+      onVis=function(){ last=0; };
+      document.addEventListener("visibilitychange",onVis);
+      if(window.IntersectionObserver){
+        io=new IntersectionObserver(function(es){
+          visible=es[0].isIntersecting; last=0;
+        },{threshold:0});
+        io.observe(cv);
+      }
+      phaseTimer=setInterval(function(){
+        try{ retint(); publish(); }catch(e){}
+      },60000);
+      start();
+    }
+
+    return {
+      setHour:function(h){
+        hourOverride=(h==null)?null:clamp(parseInt(h,10)||0,0,23);
+        try{ retint(); draw(true); publish(); }catch(e){}
+      },
+      jumpTo:function(){},
+      roll:function(){
+        try{
+          if(frozen){
+            DICE.forEach(function(d){ d.face=1+Math.floor(Math.random()*d.s); });
+            draw(true); settleReport();
+          } else rollDice();
+        }catch(e){}
+      },
+      pause:stop,
+      resume:function(){ last=0; start(); },
+      destroy:teardown
+    };
+
+  }catch(err){
+    if(canvasEl&&canvasEl.classList) canvasEl.classList.add("scene-failed");
+    if(window.console&&console.warn) console.warn("IsaiTable disabled:",err);
+    return NOOP;
+  }
 }
 
-window.addEventListener("resize", function(){
-  clearTimeout(window.__rt);
-  window.__rt=setTimeout(resize,150);
-});
-document.addEventListener("visibilitychange",function(){ last=0; });
-window.addEventListener("scroll", function(){ if(frozen) draw(true); }, {passive:true});
+window.IsaiTable={ mount:mount };
 
-/* click anywhere → the dice roll */
-window.addEventListener("pointerdown", function(e){
-  if(frozen) return;
-  rollDice();
-},{passive:true});
-
-document.getElementById("btn-roll").addEventListener("click",function(e){
-  e.stopPropagation();
-  if(frozen){ DICE.forEach(function(d){ d.face=1+Math.floor(Math.random()*d.s); }); draw(true); settleReport(); }
-  else rollDice();
-});
-var mbtn=document.getElementById("btn-motion");
-mbtn.addEventListener("click",function(e){
-  e.stopPropagation();
-  frozen=!frozen;
-  mbtn.setAttribute("aria-pressed",String(frozen));
-  mbtn.textContent=frozen?"Wake the scene":"Freeze the scene";
-  if(frozen) draw(true); else last=0;
-});
-if(reduce.addEventListener) reduce.addEventListener("change",function(){
-  frozen=reduce.matches;
-  mbtn.setAttribute("aria-pressed",String(frozen));
-  mbtn.textContent=frozen?"Wake the scene":"Freeze the scene";
-  if(frozen) draw(true);
-});
-
-/* pause when the canvas is off-screen (it is fixed, but be safe on mobile) */
-if("IntersectionObserver" in window){
-  new IntersectionObserver(function(es){ visible=es[0].isIntersecting; },{threshold:0})
-    .observe(cv);
-}
-
-/* the ticker text, echoing the sister site's rhythm */
-(function(){
-  var bits=["Roll for initiative","d20 + proficiency","Advantage on stealth",
-            "The candle is guttering","Session 14 · The Vault of Karsus",
-            "Passive perception 16","Fog of war receding","Natural 20",
-            "dnd.isaiart.com","Bane · Bhaal · Myrkul","Concentration check"];
-  var row="";
-  for(var i=0;i<bits.length;i++) row+="<span>"+bits[i]+"</span>";
-  document.getElementById("tickrow").innerHTML=row+row;
 })();
-
-/* if anything at all goes wrong, the page is still a perfectly good directory */
-try{ boot(); }catch(err){
-  cv.style.display="none";
-  document.getElementById("vig").style.display="none";
-  if(window.console) console.error("scene failed, falling back:",err);
-}
-</script>
-</body>
-</html>

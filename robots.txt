@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /_proto/
 
 Sitemap: https://dnd.isaiart.com/sitemap.xml
