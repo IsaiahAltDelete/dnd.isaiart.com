@@ -1,287 +1,23 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Isaiart's D&amp;D Resources — The Endless Road</title>
-<meta name="description" content="Character tools, generators, lore and handbooks for Dungeons &amp; Dragons 5e. A hand-made resource directory by Isaiart.">
-<meta name="theme-color" content="#14100e">
-<style>
-/* ═══════════════════════════════════════════════════════════════════════════
-   ISAIART'S D&D RESOURCES — CONCEPT A: THE ENDLESS ROAD
-   Single file. No network requests. All art generated in code.
-   ─── CSS is for the DOCUMENT chrome only. All pixel art lives in <canvas>.
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ============================================================================
+ * dnd.isaiart.com — THE ENDLESS ROAD
+ *
+ * An infinitely side-scrolling pixel world that loops through six regions and
+ * follows the visitor's own clock from dawn to the witching hour. Everything
+ * here is drawn in code: no images, no fonts, no network. Mount it with
+ *
+ *     IsaiWorld.mount(canvasEl, { hourOverride, startAt, reduced, onState })
+ *
+ * Contents
+ *   §0  PRNG, math, pixel helpers        §6  Sky bake, true moon phase
+ *   §1  Palette + day/night tinting      §7  Parallax layer bakes
+ *   §2  Ordered dither (4x4 Bayer)       §8  Dynamic props
+ *   §3  Hand-authored sprites + font     §9  Party, weather, rare events
+ *   §4  Sprite / text blitters           §10 Mount contract + main loop
+ *   §5  Terrain + biome definitions
+ * ========================================================================== */
+(function () {
+'use strict';
 
-:root{
-  --maroon:#58180D; --maroon-lt:#8A2A1B; --gold:#C9AD6A; --gold-dk:#8a7440;
-  --parch:#F5EFE2;  --cream:#FDF1DC;    --ink:#1E1A17;   --void:#14100e;
-  --rule:rgba(88,24,13,.34);
-  --sans:"Barlow Condensed","Oswald","Roboto Condensed","Arial Narrow",
-         "Helvetica Neue Condensed",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:ui-monospace,"SF Mono","Cascadia Mono","JetBrains Mono",Menlo,Consolas,monospace;
-}
-
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{
-  background:var(--void); color:var(--parch);
-  font-family:var(--sans); font-size:17px; line-height:1.45;
-  min-height:100%; overflow-x:hidden;
-}
-
-/* ── the world ─────────────────────────────────────────────────────────── */
-#scene{
-  position:fixed; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:50% 62%;
-  image-rendering:pixelated; image-rendering:crisp-edges;
-  z-index:0; background:#14100e; display:block;
-}
-/* volumetric chrome over the world: vignette + faint scanline weave.
-   Deliberately OUTSIDE the pixel canvas so it never pollutes the pixel grid. */
-#veil{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:
-    radial-gradient(120% 90% at 50% 40%, rgba(0,0,0,0) 42%, rgba(10,6,4,.55) 100%),
-    repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, rgba(0,0,0,0) 1px 3px);
-  mix-blend-mode:multiply;
-}
-#noscript-note{position:relative;z-index:3}
-
-/* ── page shell ───────────────────────────────────────────────────────── */
-.wrap{position:relative; z-index:2; max-width:1040px; margin:0 auto; padding:0 16px 80px}
-
-/* Masthead — brutalist rules, echoing isaiart.com, but warm. */
-header.mast{
-  margin-top:min(16vh,120px); padding:22px 20px 18px;
-  background:rgba(20,16,14,.72);
-  border:1px solid var(--gold-dk);
-  box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 18px 60px rgba(0,0,0,.55);
-  backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px);
-}
-.kicker{
-  font-size:12px; letter-spacing:.42em; text-transform:uppercase;
-  color:var(--gold); margin:0 0 10px; font-weight:600;
-}
-h1{
-  margin:0; font-size:clamp(30px,7.2vw,66px); line-height:.94;
-  letter-spacing:.10em; text-transform:uppercase; font-weight:700;
-  color:var(--parch); text-shadow:0 2px 0 #000, 0 0 22px rgba(201,173,106,.18);
-}
-h1 .amp{color:var(--gold)}
-.tagline{
-  margin:12px 0 0; max-width:56ch; font-size:16px; letter-spacing:.05em;
-  color:#e7ddc9;
-}
-.mast-rule{height:1px;background:var(--gold-dk);margin:16px 0 12px;opacity:.65}
-.statline{
-  display:flex; flex-wrap:wrap; gap:8px 22px;
-  font-family:var(--mono); font-size:11px; letter-spacing:.16em;
-  text-transform:uppercase; color:var(--gold);
-}
-.statline b{color:var(--parch); font-weight:600}
-
-/* Ticker — the sibling-site nod. */
-.ticker{
-  margin-top:14px; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
-  overflow:hidden; white-space:nowrap; padding:6px 0;
-  font-family:var(--mono); font-size:11px; letter-spacing:.26em;
-  text-transform:uppercase; color:#c9b998;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-          mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-}
-.ticker span{display:inline-block; padding-right:2.5em; animation:roll 46s linear infinite}
-@keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* ── the DM screen: content column ────────────────────────────────────── */
-section.panel{
-  margin-top:26px; padding:0 0 8px;
-  background:
-    linear-gradient(180deg, rgba(245,239,226,.945), rgba(240,232,214,.915));
-  color:var(--ink);
-  border:1px solid var(--maroon);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.5),
-    inset 0 0 44px rgba(138,116,64,.20),
-    0 16px 46px rgba(0,0,0,.5);
-}
-.panel > h2{
-  margin:0; padding:11px 16px 9px;
-  font-size:15px; letter-spacing:.34em; text-transform:uppercase; font-weight:700;
-  color:var(--cream); background:var(--maroon);
-  border-bottom:2px solid var(--gold);
-  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-}
-.panel > h2 .cnt{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--gold)}
-.panel > p.blurb{
-  margin:0; padding:10px 16px 4px; font-size:14.5px; letter-spacing:.03em;
-  color:#4a3d31; border-bottom:1px solid var(--rule);
-}
-
-/* Link grid — initiative order. */
-ul.links{list-style:none; margin:0; padding:0; display:grid; gap:0}
-@media (min-width:720px){ ul.links{grid-template-columns:1fr 1fr} }
-ul.links li{border-bottom:1px solid var(--rule)}
-@media (min-width:720px){
-  ul.links li:nth-child(odd){border-right:1px solid var(--rule)}
-}
-a.lnk{
-  display:grid; grid-template-columns:2.6em 1fr auto; align-items:baseline;
-  gap:0 12px; padding:11px 16px 10px; text-decoration:none; color:var(--ink);
-  transition:none;
-}
-a.lnk .init{
-  font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--maroon-lt);
-  border:1px solid var(--rule); text-align:center; padding:2px 0; align-self:center;
-  background:rgba(255,255,255,.42);
-}
-a.lnk .name{
-  font-size:19px; letter-spacing:.10em; text-transform:uppercase; font-weight:600;
-  line-height:1.15;
-}
-a.lnk .sub{
-  grid-column:2/4; font-size:12.5px; letter-spacing:.08em; color:#6a5647;
-  text-transform:uppercase; margin-top:2px;
-}
-a.lnk .arw{font-family:var(--mono); font-size:13px; color:var(--maroon); opacity:.55}
-a.lnk:hover,a.lnk:focus-visible{background:rgba(88,24,13,.09)}
-a.lnk:hover .name,a.lnk:focus-visible .name{color:var(--maroon)}
-a.lnk:hover .arw,a.lnk:focus-visible .arw{opacity:1}
-a.lnk:hover .init,a.lnk:focus-visible .init{background:var(--gold);color:var(--maroon);border-color:var(--maroon)}
-a:focus-visible{outline:3px solid var(--maroon); outline-offset:-3px}
-header a:focus-visible,footer a:focus-visible{outline-color:var(--gold)}
-
-/* Dead Three gets its own colour treatment. */
-.panel.dead{background:linear-gradient(180deg,rgba(30,22,20,.93),rgba(20,14,12,.93));color:#e8dcc6;border-color:var(--gold-dk)}
-.panel.dead > h2{background:#2a0d07;color:var(--gold);border-bottom-color:var(--maroon-lt)}
-.panel.dead > p.blurb{color:#b6a189;border-bottom-color:rgba(201,173,106,.24)}
-.panel.dead li{border-color:rgba(201,173,106,.20)}
-@media (min-width:720px){.panel.dead li:nth-child(odd){border-right-color:rgba(201,173,106,.20)}}
-.panel.dead a.lnk{color:#e8dcc6}
-.panel.dead a.lnk .init{color:var(--gold);border-color:rgba(201,173,106,.3);background:rgba(0,0,0,.3)}
-.panel.dead a.lnk .sub{color:#9c8974}
-.panel.dead a.lnk .arw{color:var(--gold)}
-.panel.dead a.lnk:hover,.panel.dead a.lnk:focus-visible{background:rgba(201,173,106,.12)}
-.panel.dead a.lnk:hover .name,.panel.dead a.lnk:focus-visible .name{color:var(--gold)}
-.panel.dead a.lnk:hover .init,.panel.dead a.lnk:focus-visible .init{background:var(--maroon);color:var(--gold)}
-
-/* Footer */
-footer.foot{
-  margin-top:30px; padding:18px 20px; border:1px solid var(--gold-dk);
-  background:rgba(20,16,14,.72);
-  display:flex; flex-wrap:wrap; gap:14px 26px; align-items:center; justify-content:space-between;
-  font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
-  color:#b0a084;
-}
-footer.foot a{color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(201,173,106,.4); padding-bottom:1px}
-footer.foot a:hover{color:var(--parch); border-bottom-color:var(--parch)}
-
-/* Region readout (accessible mirror of the in-canvas chapter card) */
-.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-
-/* Reduced motion: freeze everything. */
-@media (prefers-reduced-motion:reduce){
-  .ticker span{animation:none}
-}
-</style>
-<script>
-(function(){var H=6;var gh=Date.prototype.getHours;Date.prototype.getHours=function(){return H;};})();
-</script><style>
-body>*:not(canvas){visibility:hidden!important;}
-canvas{visibility:visible!important;}
-</style>
-</head>
-<body>
-
-<canvas id="scene" aria-hidden="true"></canvas>
-<div id="veil" aria-hidden="true"></div>
-<p id="region-live" class="sr" aria-live="polite"></p>
-
-<div class="wrap">
-
-  <header class="mast">
-    <p class="kicker">dnd.isaiart.com</p>
-    <h1>Isaiart's D<span class="amp">&amp;</span>D Resources</h1>
-    <p class="tagline">A hoard of hand-built tools, generators and handbooks for the world's
-      greatest roleplaying game. Everything here is free, everything here is ours, and
-      everything here rolls in the open.</p>
-    <div class="mast-rule"></div>
-    <div class="statline">
-      <span>Region <b id="hud-region">—</b></span>
-      <span>Hour <b id="hud-phase">—</b></span>
-      <span>Moon <b id="hud-moon">—</b></span>
-      <span>Weather <b id="hud-weather">—</b></span>
-      <span>Links <b>22</b></span>
-    </div>
-    <div class="ticker" aria-hidden="true"><span id="tick"></span></div>
-  </header>
-
-  <section class="panel">
-    <h2>I. Character Tools <span class="cnt">05 entries</span></h2>
-    <p class="blurb">From blank page to fully-statted hero, and the archive of everyone who came before.</p>
-    <ul class="links">
-      <li><a class="lnk" href="/cs"><span class="init">01</span><span class="name">Character Sheet</span><span class="arw">&#9656;</span><span class="sub">Roll, track and level in the browser</span></a></li>
-      <li><a class="lnk" href="/characters"><span class="init">02</span><span class="name">The Archives of the Forgotten</span><span class="arw">&#9656;</span><span class="sub">Every hero we have ever played</span></a></li>
-      <li><a class="lnk" href="/npcs"><span class="init">03</span><span class="name">NPC Codex</span><span class="arw">&#9656;</span><span class="sub">Faces, voices and motives for the table</span></a></li>
-      <li><a class="lnk" href="/character-forge"><span class="init">04</span><span class="name">Character Forge</span><span class="arw">&#9656;</span><span class="sub">Ancestry to feat in one pass</span></a></li>
-      <li><a class="lnk" href="/loom-of-fates"><span class="init">05</span><span class="name">Loom of Fates</span><span class="arw">&#9656;</span><span class="sub">Backgrounds, bonds, ideals and flaws</span></a></li>
-    </ul>
-  </section>
-
-  <section class="panel">
-    <h2>II. Generators <span class="cnt">03 entries</span></h2>
-    <p class="blurb">Push the button. The dice do the rest.</p>
-    <ul class="links">
-      <li><a class="lnk" href="/artifacts"><span class="init">06</span><span class="name">Arcane Artifacts</span><span class="arw">&#9656;</span><span class="sub">Legendary items with a history attached</span></a></li>
-      <li><a class="lnk" href="/monsters"><span class="init">07</span><span class="name">Monster Generator</span><span class="arw">&#9656;</span><span class="sub">CR-balanced statblocks on demand</span></a></li>
-      <li><a class="lnk" href="/cities"><span class="init">08</span><span class="name">Faer&#251;n City Generator</span><span class="arw">&#9656;</span><span class="sub">Wards, guilds, rumours and a map</span></a></li>
-    </ul>
-  </section>
-
-  <section class="panel">
-    <h2>III. Lore &amp; Rules <span class="cnt">03 entries</span></h2>
-    <p class="blurb">The setting, the system, and the shape of the multiverse.</p>
-    <ul class="links">
-      <li><a class="lnk" href="/humans"><span class="init">09</span><span class="name">Humans of Faer&#251;n</span><span class="arw">&#9656;</span><span class="sub">Ethnicities, cultures and homelands</span></a></li>
-      <li><a class="lnk" href="/phb"><span class="init">10</span><span class="name">Player's Handbook</span><span class="arw">&#9656;</span><span class="sub">The rules, searchable and quick</span></a></li>
-      <li><a class="lnk" href="/planes"><span class="init">11</span><span class="name">Cosmology</span><span class="arw">&#9656;</span><span class="sub">The Great Wheel, plane by plane</span></a></li>
-    </ul>
-  </section>
-
-  <section class="panel">
-    <h2>IV. Handbooks <span class="cnt">08 entries</span></h2>
-    <p class="blurb">Long-form supplements. Read them, steal from them, break them.</p>
-    <ul class="links">
-      <li><a class="lnk" href="/handbooks/archmage-handbook"><span class="init">12</span><span class="name">The Archmage's Handbook</span><span class="arw">&#9656;</span><span class="sub">High wizardry beyond 9th level</span></a></li>
-      <li><a class="lnk" href="/handbooks/grand-theologica"><span class="init">13</span><span class="name">Grand Theologica</span><span class="arw">&#9656;</span><span class="sub">Gods, domains and their demands</span></a></li>
-      <li><a class="lnk" href="/handbooks/arcanum-expanded"><span class="init">14</span><span class="name">Arcanum Expanded</span><span class="arw">&#9656;</span><span class="sub">New spells and schools</span></a></li>
-      <li><a class="lnk" href="/handbooks/dnd-5e-megabook"><span class="init">15</span><span class="name">D&amp;D 5e Megabook</span><span class="arw">&#9656;</span><span class="sub">Everything, in one very long scroll</span></a></li>
-      <li><a class="lnk" href="/handbooks/wizards"><span class="init">16</span><span class="name">Wizards</span><span class="arw">&#9656;</span><span class="sub">Subclass-by-subclass deep dive</span></a></li>
-      <li><a class="lnk" href="/handbooks/sims4"><span class="init">17</span><span class="name">Sims 4 Handbook</span><span class="arw">&#9656;</span><span class="sub">The other campaign we run</span></a></li>
-      <li><a class="lnk" href="/handbooks/crownofkarsus"><span class="init">18</span><span class="name">Crown of Karsus</span><span class="arw">&#9656;</span><span class="sub">Netheril, hubris and the fall</span></a></li>
-      <li><a class="lnk" href="/handbooks/artifacts"><span class="init">19</span><span class="name">Artifacts Compendium</span><span class="arw">&#9656;</span><span class="sub">The catalogued and the cursed</span></a></li>
-    </ul>
-  </section>
-
-  <section class="panel dead">
-    <h2>V. The Dead Three <span class="cnt">03 entries</span></h2>
-    <p class="blurb">Chosen of Myrkul, Bane and Bhaal. Dossiers, tactics, and how to run them.</p>
-    <ul class="links">
-      <li><a class="lnk" href="/npcs/ketheric"><span class="init">20</span><span class="name">Ketheric Thorm</span><span class="arw">&#9656;</span><span class="sub">Chosen of Myrkul &#183; Lord of Bones</span></a></li>
-      <li><a class="lnk" href="/npcs/gortash"><span class="init">21</span><span class="name">Enver Gortash</span><span class="arw">&#9656;</span><span class="sub">Chosen of Bane &#183; The Black Hand</span></a></li>
-      <li><a class="lnk" href="/npcs/orin"><span class="init">22</span><span class="name">Orin the Red</span><span class="arw">&#9656;</span><span class="sub">Chosen of Bhaal &#183; Lord of Murder</span></a></li>
-    </ul>
-  </section>
-
-  <footer class="foot">
-    <span>Isaiart &#183; Dungeons &amp; Dragons 5th Edition &#183; Unofficial fan resources</span>
-    <span><a href="https://isaiart.com">&#8592; isaiart.com</a></span>
-  </footer>
-
-</div>
-
-<script>
 "use strict";
 /* ═══════════════════════════════════════════════════════════════════════════
    THE ENDLESS ROAD — a procedurally-generated, infinitely side-scrolling
@@ -396,29 +132,39 @@ var PAL = [
   '#e9f1f9', // 36 snow
   '#8a5cf0', // 37 faerzress  ┐ underdark glow pair
   '#c9a6ff', // 38 faerzress2 ┘
-  '#9beccf'  // 39 wisp       — will-o-wisp / ghostlight
+  '#9beccf',  // 39 wisp       — will-o-wisp / ghostlight
+  '#2f6bbf', // 40 day sky 1  ┐
+  '#4a86c8', // 41 day sky 2  │ bright-daylight ramp. Noon used to reuse the
+  '#7fb8e8', // 42 day sky 3  │ night ramp, which is why midday read as dusk.
+  '#a9cdf0', // 43 day sky 4  │
+  '#dcecf8', // 44 day sky 5  ┘
+  '#5d3a6b'  // 45 twilight   — the violet a sky actually passes through
 ];
 var C = { ink:0, st1:1, st2:2, st3:3, st4:4, fo1:5, fo2:6, fo3:7, fo4:8, fo5:9,
           wd1:10, wd2:11, wd3:12, wd4:13, skin:14, sy1:15, sy2:16, sy3:17, sy4:18,
           sy5:19, dt1:20, dt2:21, dt3:22, dt4:23, mar:24, mar2:25, gld:26, gld2:27,
           par:28, fl1:29, fl2:30, fl3:31, wa1:32, wa2:33, wa3:34, foam:35, snw:36,
-          fae:37, fae2:38, wsp:39 };
+          fae:37, fae2:38, wsp:39,
+          dy1:40, dy2:41, dy3:42, dy4:43, dy5:44, tw:45 };
 
 /* ACT = the palette after the current day-phase tint is baked in. */
 var ACT = PAL.slice();
+/* Set to PAL while drawing viewport furniture (the region card), so UI does
+   not get dimmed along with the world it sits on top of. */
+var PALSRC = null;
 
 /* Six named phases. `bands` are palette indices, zenith first. */
 var PHASES = [
   { id:'witching', name:'THE WITCHING HOUR',
     bands:[C.ink,C.ink,C.sy1,C.sy1,C.sy2], tint:C.fae,  amt:.30, mul:.30, night:1.0 },
   { id:'dawn',     name:'DAWN',
-    bands:[C.sy2,C.sy3,C.mar2,C.fl3,C.fl2], tint:C.fl3, amt:.20, mul:.80, night:0.35 },
+    bands:[C.sy3,C.tw,C.mar2,C.fl3,C.fl2],  tint:C.fl3, amt:.18, mul:.92, night:0.26 },
   { id:'morning',  name:'MORNING',
-    bands:[C.sy2,C.sy3,C.sy4,C.sy5,C.par],  tint:C.sy5, amt:.07, mul:1.00, night:0.0 },
+    bands:[C.sy2,C.dy1,C.dy2,C.dy3,C.dy5], tint:C.dy5, amt:.06, mul:1.03, night:0.0 },
   { id:'noon',     name:'HIGH SUN',
-    bands:[C.sy1,C.sy2,C.sy3,C.sy4,C.sy5],  tint:C.par, amt:.05, mul:1.06, night:0.0 },
+    bands:[C.dy1,C.dy2,C.dy2,C.dy3,C.dy5], tint:C.par, amt:.04, mul:1.10, night:0.0 },
   { id:'dusk',     name:'DUSK',
-    bands:[C.sy1,C.sy2,C.mar,C.fl3,C.fl2],  tint:C.mar2,amt:.24, mul:.74, night:0.45 },
+    bands:[C.sy2,C.tw,C.mar2,C.fl3,C.fl2],  tint:C.mar2,amt:.22, mul:.84, night:0.40 },
   { id:'night',    name:'NIGHT',
     bands:[C.ink,C.sy1,C.sy1,C.sy2,C.sy2],  tint:C.sy1, amt:.40, mul:.44, night:1.0 }
 ];
@@ -426,13 +172,13 @@ var PHASES = [
 function phaseForHour(h){
   if (h < 5) return 0;      // 00-04 witching
   if (h < 7) return 1;      // 05-06 dawn
-  if (h < 12) return 2;     // 07-11 morning
-  if (h < 17) return 3;     // 12-16 noon
-  if (h < 20) return 4;     // 17-19 dusk
+  if (h < 11) return 2;     // 07-10 morning
+  if (h < 16) return 3;     // 11-15 high sun
+  if (h < 19) return 4;     // 16-18 dusk
   return 5;                 // 20-23 night
 }
 /* continuous position inside the current phase, for cross-fading */
-var PHASE_EDGES = [0,5,7,12,17,20,24];
+var PHASE_EDGES = [0,5,7,11,16,19,24];
 function phaseBlend(date){
   var h = date.getHours() + date.getMinutes()/60;
   var pi = phaseForHour(date.getHours());
@@ -449,6 +195,10 @@ function phaseBlend(date){
 }
 
 var LIGHT = 1, NIGHTNESS = 0, PHASE_NAME = 'MORNING';
+/* Emissive palette entries — flame, faerzress, wisp. A lit window is only
+   "lit" if it stays bright while everything around it goes dark, so these
+   are exempt from the phase multiplier. */
+var EMISSIVE = { 29:1, 30:1, 31:1, 37:1, 38:1, 39:1 };
 function bakePalette(pb){
   var A = PHASES[pb.a], B = PHASES[pb.b], t = pb.t;
   var tintHex = mixHex(PAL[A.tint], PAL[B.tint], t);
@@ -457,6 +207,7 @@ function bakePalette(pb){
   LIGHT = mul; NIGHTNESS = lerp(A.night, B.night, t);
   PHASE_NAME = t > .5 ? B.name : A.name;
   for (var i = 0; i < PAL.length; i++){
+    if (EMISSIVE[i]){ ACT[i] = PAL[i]; continue; }
     ACT[i] = scaleHex(mixHex(PAL[i], tintHex, amt), mul);
   }
   // sky bands (lerped between the two phases' ramps, then tinted like everything else)
@@ -494,7 +245,7 @@ function ditherRow(g, x, y, w, ca, cb, t){ ditherRect(g, x, y, w, 1, ca, cb, t);
 
 /* px() — every draw call in this file goes through a floored fillRect */
 function px(g, c, x, y, w, h){
-  g.fillStyle = ACT[c];
+  g.fillStyle = (PALSRC || ACT)[c];
   g.fillRect(F(x), F(y), F(w === undefined ? 1 : w), F(h === undefined ? 1 : h));
 }
 function pxHex(g, hex, x, y, w, h){
@@ -504,7 +255,7 @@ function pxHex(g, hex, x, y, w, h){
 /* midpoint filled circle, scanline-snapped */
 function disc(g, cx, cy, r, c){
   cx = F(cx); cy = F(cy); r = F(r);
-  g.fillStyle = ACT[c];
+  g.fillStyle = (PALSRC || ACT)[c];
   for (var y = -r; y <= r; y++){
     var dx = F(Math.sqrt(r * r - y * y));
     g.fillRect(cx - dx, cy + y, dx * 2 + 1, 1);
@@ -1096,7 +847,7 @@ function drawSprite(g, spr, key, x, y, flip, tint){
       if (typeof v === 'object'){ if (((c + r) & 1) === 1) continue; ci = v[0]; }
       else ci = v;
       if (tint !== undefined && tint !== null) ci = tint;
-      var col = ACT[ci];
+      var col = (PALSRC || ACT)[ci];
       if (col !== last){ g.fillStyle = col; last = col; }
       g.fillRect(flip ? x + w - 1 - c : x + c, y + r, 1, 1);
     }
@@ -1107,7 +858,7 @@ function sprH(s){ return s.length; }
 
 function drawText(g, str, x, y, cidx, spacing){
   x = F(x); y = F(y); spacing = spacing === undefined ? 1 : spacing;
-  g.fillStyle = ACT[cidx];
+  g.fillStyle = (PALSRC || ACT)[cidx];
   str = String(str).toUpperCase();
   var cx = x;
   for (var i = 0; i < str.length; i++){
@@ -1227,78 +978,85 @@ function moonName(p){
 }
 
 function bakeSky(){
-  skyBuf = mkCanvas(VW, VH);
+  skyBuf = mkCanvas(VW, WORLD_H);
   var g = skyBuf.g;
-  /* 5 solid bands, top to bottom, with 5-row ordered-dither seams. */
-  var horizon = 150;
-  var edges = [0, F(horizon * .26), F(horizon * .48), F(horizon * .68), F(horizon * .86), VH];
+  g.imageSmoothingEnabled = false;
+
+  /* Five bands squeezed into whatever sky the band height leaves above the
+     horizon, with ordered-dither seams between them. Never a gradient. */
+  var horizon = GROUND_REF;
+  var top = VOFF;
+  var hv = Math.max(24, horizon - top);
+  var edges = [top, top + F(hv * .26), top + F(hv * .48),
+               top + F(hv * .68), top + F(hv * .86), WORLD_H];
+
+  if (top > 0) pxHex(g, SKYBANDS[0], 0, 0, VW, top + 1);
   for (var b = 0; b < 5; b++){
-    pxHex(g, SKYBANDS[b], 0, edges[b], VW, edges[b+1] - edges[b]);
+    pxHex(g, SKYBANDS[b], 0, edges[b], VW, edges[b + 1] - edges[b]);
   }
-  /* dither seams: 5 rows straddling each edge, coverage ramping 0 -> 1 */
   for (var s = 1; s < 5; s++){
     var ey = edges[s];
-    for (var r = -2; r <= 2; r++){
-      var t = (r + 2.5) / 5;
-      var y = ey + r; if (y < 0 || y >= VH) continue;
-      var A = SKYBANDS[s-1], B = SKYBANDS[s], last = null;
+    for (var r = -3; r <= 3; r++){
+      var t = (r + 3.5) / 7;
+      var y = ey + r; if (y < 0 || y >= WORLD_H) continue;
+      var A = SKYBANDS[s - 1], B = SKYBANDS[s], lastC = null;
+      /* 7 rows, not 5: at a 3.75x upscale a narrow seam reads as a ruled
+         dotted line instead of a dither */
       for (var x = 0; x < VW; x++){
         var col = dpick(x, y, t) ? B : A;
-        if (col !== last){ g.fillStyle = col; last = col; }
+        if (col !== lastC){ g.fillStyle = col; lastC = col; }
         g.fillRect(x, y, 1, 1);
       }
     }
   }
 
-  var now = new Date();
+  var now = nowDate();
 
   /* ── STARS: seeded, brighter with NIGHTNESS. Deterministic forever. ── */
   if (NIGHTNESS > 0.08){
     var rs = mulberry32(0xC0FFEE);
-    for (var i = 0; i < 150; i++){
-      var sx = F(rs() * VW), sy = F(rs() * 128), mag = rs();
-      if (sy > 118 && mag < .6) continue;
+    var span = Math.max(8, hv - 6);
+    for (var i = 0; i < 170; i++){
+      var sx = F(rs() * VW), sy = top + F(rs() * span), mag = rs();
+      if (sy > horizon - 14 && mag < .6) continue;
       var cidx = mag > .93 ? C.par : mag > .6 ? C.sy5 : C.sy4;
       var a = NIGHTNESS * (0.35 + mag * 0.65);
       if (!dpick(sx, sy, a)) continue;
       g.fillStyle = ACT[cidx];
       g.fillRect(sx, sy, 1, 1);
-      if (mag > .975){ // the four brightest get a cross-flare
-        g.fillRect(sx-1, sy, 1, 1); g.fillRect(sx+1, sy, 1, 1);
-        g.fillRect(sx, sy-1, 1, 1); g.fillRect(sx, sy+1, 1, 1);
+      if (mag > .975){
+        g.fillRect(sx - 1, sy, 1, 1); g.fillRect(sx + 1, sy, 1, 1);
+        g.fillRect(sx, sy - 1, 1, 1); g.fillRect(sx, sy + 1, 1, 1);
       }
     }
   }
 
   /* ── MOON with the correct current phase ── */
   if (NIGHTNESS > 0.05){
-    MOON.x = F(VW * 0.74); MOON.y = 42; MOON.r = 11;
+    MOON.x = F(VW * 0.74); MOON.y = SKYY(0.30); MOON.r = 11;
     var p = moonPhase(now);
     var cx = MOON.x, cy = MOON.y, r = MOON.r;
-    // lit disc
     disc(g, cx, cy, r, C.par);
-    // maria: three dark craters, hand-placed for character
     px(g, C.sy5, cx - 4, cy - 3, 3, 2);
     px(g, C.sy5, cx + 2, cy + 1, 4, 3);
     px(g, C.sy5, cx - 2, cy + 4, 2, 2);
-    // shadow the unlit part with the sky behind it
     var term = Math.cos(2 * Math.PI * p);
-    for (var y = -r; y <= r; y++){
-      var dx = F(Math.sqrt(r * r - y * y));
-      for (var x = -dx; x <= dx; x++){
-        var lit = (p <= .5) ? (x >= dx * term) : (x <= -dx * term);
+    for (var y2 = -r; y2 <= r; y2++){
+      var dx = F(Math.sqrt(r * r - y2 * y2));
+      for (var x2 = -dx; x2 <= dx; x2++){
+        var lit = (p <= .5) ? (x2 >= dx * term) : (x2 <= -dx * term);
         if (!lit){
-          var yy = cy + y;
+          var yy = cy + y2;
           var bandIdx = 0;
           for (var e = 0; e < 5; e++) if (yy >= edges[e]) bandIdx = e;
           g.fillStyle = SKYBANDS[bandIdx];
-          g.fillRect(cx + x, yy, 1, 1);
+          g.fillRect(cx + x2, yy, 1, 1);
         }
       }
     }
   } else {
     /* ── SUN: a flat disc with a 1-step corona, never a gradient ── */
-    SUN.x = F(VW * 0.70); SUN.y = 34; SUN.r = 8;
+    SUN.x = F(VW * 0.70); SUN.y = SKYY(0.24); SUN.r = 8;
     disc(g, SUN.x, SUN.y, SUN.r + 2, C.fl2);
     disc(g, SUN.x, SUN.y, SUN.r, C.fl1);
     MOON.x = -999;
@@ -1322,8 +1080,9 @@ function paintFar(g, k, sp, dyn){
     var b = biomeAt(rx);
     var y = farSil(b.a, lx, rx);
     if (b.mix > 0) y = F(lerp(y, farSil(b.b, lx, rx), b.mix));
-    var col = (b.mix > .5 ? b.b : b.a) === 2 ? C.st2 : C.fo1;
-    if ((b.mix > .5 ? b.b : b.a) === 5) col = C.st2;
+    var cA = (b.a === 2 || b.a === 5) ? C.st2 : C.fo1;
+    var cB = (b.b === 2 || b.b === 5) ? C.st2 : C.fo1;
+    var col = (b.mix > 0 && cA !== cB && dpick(lx, y, b.mix)) ? cB : cA;
     px(g, col, x, y, 1, CHUNK_H - y);
     // snow caps on mountains
     if ((b.mix > .5 ? b.b : b.a) === 2 && y < 96) px(g, C.st4, x, y, 1, F(2 + h1(lx, 5) * 3));
@@ -1983,7 +1742,7 @@ var PARTY = [
   { body:WIZARD,  key:K_WIZARD,  gear:'staff'  }
 ];
 function drawParty(g, camX, tick, moving){
-  var baseX = F(VW * 0.11);
+  var baseX = F(VW * 0.56);
   var frame = moving ? F(tick / 5) % 4 : 1;
   for (var i = 0; i < 4; i++){
     var m = PARTY[i];
@@ -2020,14 +1779,15 @@ function drawParty(g, camX, tick, moving){
 /* ── weather ─────────────────────────────────────────────────────────── */
 var WEATHER = 'clear', weatherName = 'CLEAR';
 var rainSeed = mulberry32(0x8A1D);
+var WSALT = 0;
 function pickWeather(bid, camX){
-  var slot = F(camX / 700);
+  var slot = F(camX / 700) + WSALT;
   var r = h1(slot, 909);
   var natural = BIOMES[bid].weather;
   if (natural === 'snow') return 'snow';
   if (natural === 'spores') return r < .3 ? 'fog' : 'spores';
-  if (r < .34) return natural === 'rain' ? 'rain' : 'clear';
-  if (r < .5) return 'fog';
+  if (r < .40) return natural === 'rain' ? 'rain' : 'clear';
+  if (r < .50) return 'fog';
   return 'clear';
 }
 function drawWeather(g, camX, tick){
@@ -2067,9 +1827,13 @@ function drawWeather(g, camX, tick){
       g.fillRect(fx - 220, fy, 200, 8);
     }
     g.restore();
-    // dithered fog edge so it still reads as pixels
-    for (i = 0; i < VW; i += 1){
-      if (dpick(i + F(tick * .3), 130, .18)) px(g, C.sy5, i, 128 + (F(tick / 20) % 2), 1, 1);
+    // a thin dithered bank hugging the horizon, rather than a ruled line
+    var fTop = GROUND_REF - 14, fRows = 9, fDrift = F(tick * .3);
+    for (var fr = 0; fr < fRows; fr++){
+      var fyy = fTop + fr, cov = 0.02 + 0.06 * (fr / fRows);
+      for (i = 0; i < VW; i++){
+        if (dpick(i + fDrift, fyy, cov)) px(g, C.sy5, i, fyy, 1, 1);
+      }
     }
   }
   /* fireflies / dust motes — always something moving */
@@ -2089,12 +1853,12 @@ var EVENT_DEFS = [
   { id:'dragon',  night:1, dur:30,
     draw:function(g, camX, tick, u){
       var x = F(lerp(VW + 34, -34, u));
-      var y = F(38 + Math.sin(u * Math.PI) * -10);
+      var y = F(SKYY(0.20) + Math.sin(u * Math.PI) * -10);
       drawSprite(g, DRAGON[F(tick / 9) % 2], K_DRAGON, x, y, true);
     } },
   { id:'star',    night:1, dur:2.6,
     draw:function(g, camX, tick, u){
-      var x = F(lerp(VW * .15, VW * .75, u)), y = F(lerp(12, 74, u));
+      var x = F(lerp(VW * .15, VW * .75, u)), y = F(lerp(SKYY(0.04), SKYY(0.66), u));
       for (var i = 0; i < 8; i++) px(g, i < 3 ? C.par : C.sy5, x - i * 3, y - i * 2, 2, 1);
       px(g, C.par, x, y, 2, 2);
     } },
@@ -2117,8 +1881,8 @@ var EVENT_DEFS = [
     } },
   { id:'beholder',night:-1, dur:20,
     draw:function(g, camX, tick, u){
-      var y = F(lerp(VH + 10, 66, Math.min(1, u * 3)) + Math.sin(tick * .04) * 2);
-      if (u > .78) y = F(lerp(66, VH + 10, (u - .78) / .22));
+      var y = F(lerp(VOFF + VH + 10, SKYY(0.56), Math.min(1, u * 3)) + Math.sin(tick * .04) * 2);
+      if (u > .78) y = F(lerp(SKYY(0.56), VOFF + VH + 10, (u - .78) / .22));
       var x = F(VW * .62);
       drawSprite(g, BEHOLDER, K_BEHOLDER, x, y);
       for (var i = 0; i < 5; i++)
@@ -2129,7 +1893,7 @@ var EVENT_DEFS = [
       var x0 = F(lerp(-30, VW + 30, u));
       for (var i = 0; i < 7; i++){
         var ox = i * 9, oy = F(Math.sin(i * 1.4 + tick * .05) * 5);
-        drawSprite(g, CROW_FLY[(F(tick / 5) + i) % 2], K_CROW, x0 + ox, 44 + i * 3 + oy);
+        drawSprite(g, CROW_FLY[(F(tick / 5) + i) % 2], K_CROW, x0 + ox, SKYY(0.26) + i * 3 + oy);
       }
     } }
 ];
@@ -2160,6 +1924,7 @@ function drawCard(g, tick, sec){
   if (age > 6.5) { card.x = -140; return; }
   var b = BIOMES[card.biome];
   if (!b) return;
+  PALSRC = PAL;
   var w = Math.max(textW(b.name, 1), textW(b.sub, 1)) + 22;
   var h = 24;
   var target = 6;
@@ -2178,66 +1943,133 @@ function drawCard(g, tick, sec){
   drawText(g, b.sub, x + 5, y + 6, C.mar2, 1);
   drawText(g, b.name, x + 5, y + 14, C.mar, 1);
   drawSprite(g, D20, K_D20, x + w - 13, y + 6);
+  PALSRC = null;
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────
-   §10  MAIN
+   §10  MAIN — the mount contract
+
+   Composition note: every painter above is authored in a fixed 216-row world
+   space with the ground at y≈150. The band this scene lives in is short and
+   wide, so rather than re-tune every painter we crop a window out of that
+   world (VOFF..VOFF+VH) and put the horizon about three-quarters down it.
+   The sky is baked to fill whatever is left above the horizon, so no matter
+   how short the band gets you still see a full five-band sky ramp.
+
+   The backing store is deliberately the low-resolution pixel buffer itself —
+   devicePixelRatio is ignored on purpose. CSS scales it up with
+   image-rendering:pixelated, which is the whole point of the technique.
    ───────────────────────────────────────────────────────────────────────── */
-var cvs = document.getElementById('scene');
-var ctx = cvs.getContext('2d', { alpha:false });
-var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var WORLD_H = 216;                // the coordinate space the painters assume
+var GROUND_REF = 150;             // where the horizon sits in that space
+
+var cvs = null, ctx = null;
+var REDUCED = false;
+var VOFF = 0;
 
 var camX = 240;                   // world scroll position, in road pixels
-var camSpeed = 0;                 // current px/sec
-var CAM_TARGET = 21;              // cruising speed
+var camSpeed = 0;
+var CAM_TARGET = 21;              // cruising speed, px/sec
 var tick = 0, secs = 0;
 var restUntil = -1, nextRestAt = 42, resting = false;
 var lastPhaseKey = '';
-var visible = true, running = true;
+var visible = true, running = false;
 
+var hourOverride = null;
+var onState = null;
+var lastStateJSON = '';
+
+var rafId = 0, phaseTimer = 0, rzTimer = 0;
+var ro = null, io = null;
+var acc = 0, last = 0;
+var STEP = 1 / 30;
+
+/* a y inside the visible sky, as a fraction of it — used by anything that
+   hangs in the air, so it stays on screen at any band height */
+function SKYY(f){ return F(VOFF + f * Math.max(24, GROUND_REF - VOFF)); }
+
+function titleCase(s){
+  return String(s).toLowerCase().replace(/(^|[\s'\-])([a-z])/g,
+    function (m, a, b){ return a + b.toUpperCase(); });
+}
+
+function nowDate(){
+  var d = new Date();
+  if (hourOverride != null) d.setHours(hourOverride, 0, 0, 0);
+  return d;
+}
+
+/* ── sizing ──────────────────────────────────────────────────────────── */
 function resize(){
-  var aw = window.innerWidth, ah = window.innerHeight;
-  VH = 216;
-  VW = clamp(Math.round(VH * (aw / ah)), 176, 480);
-  // keep the internal width even so the dither reads consistently
-  if (VW & 1) VW++;
+  if (!cvs) return;
+  var cw = cvs.clientWidth || 640;
+  var ch = cvs.clientHeight || 220;
+  if (cw < 8 || ch < 8) return;
+
+  VW = cw >= 760 ? 320 : 232;   // chunkier pixels; props read larger in a short band
+  if (VW & 1) VW++;                                  // even, so the dither reads evenly
+  VH = clamp(Math.round(VW * ch / cw), 88, WORLD_H);
+
   cvs.width = VW; cvs.height = VH;
-  ctx = cvs.getContext('2d', { alpha:false });
+  ctx = cvs.getContext('2d', { alpha: false });
   ctx.imageSmoothingEnabled = false;
+
+  VOFF = clamp(Math.round(GROUND_REF - VH * 0.64), 0, WORLD_H - VH);
   bakeSky();
 }
 
+/* ── phase ───────────────────────────────────────────────────────────── */
 function refreshPhase(force){
-  var now = new Date();
+  var now = nowDate();
   var pb = phaseBlend(now);
   var key = pb.a + ':' + pb.b + ':' + Math.round(pb.t * 8);
   if (!force && key === lastPhaseKey) return;
   lastPhaseKey = key;
   bakePalette(pb);
-  LAMPS = NIGHTNESS > 0.30;
-  flushWorld();
+  LAMPS = NIGHTNESS > 0.30;      // windows, lanterns, the lighthouse
+  flushWorld();                  // re-bake chunks against the new palette
   bakeSky();
-  // HUD
-  var mp = moonPhase(now);
-  var el;
-  el = document.getElementById('hud-phase');   if (el) el.textContent = PHASE_NAME;
-  el = document.getElementById('hud-moon');    if (el) el.textContent = moonName(mp);
+  publish();
+}
+
+/* ── state out to the page ───────────────────────────────────────────── */
+function publish(){
+  if (!onState) return;
+  var b = BIOMES[card.biome] || BIOMES[0];
+  var mp = moonPhase(nowDate());
+  var s = {
+    region: titleCase(b.name),
+    chapter: titleCase(b.sub),
+    phase: titleCase(PHASE_NAME),
+    moon: titleCase(moonName(mp)),
+    moonPct: Math.round((1 - Math.abs(mp - 0.5) * 2) * 100),
+    weather: titleCase(weatherName),
+    extra: null
+  };
+  var j = JSON.stringify(s);
+  if (j === lastStateJSON) return;
+  lastStateJSON = j;
+  try { onState(s); } catch (e) {}
 }
 
 /* ── the frame ───────────────────────────────────────────────────────── */
 function drawFrame(){
   var g = ctx;
+  if (!g) return;
   g.imageSmoothingEnabled = false;
 
-  /* sky */
+  g.setTransform(1, 0, 0, 1, 0, -VOFF);   // world space -> the visible window
+
   g.drawImage(skyBuf.c, 0, 0);
 
-  /* clouds — three slow pixel blobs, only above ground */
+  /* clouds — slow pixel blobs, always inside the visible sky */
   if (NIGHTNESS < .85){
     for (var ci = 0; ci < 3; ci++){
       var cw = 40 + ci * 12;
       var cx = F(mod(h1(ci, 88) * VW * 2 - tick * (0.09 + ci * .04) - camX * .05, VW + 120)) - 60;
-      var cy = 22 + ci * 17;
+      var cy = SKYY(0.30 + ci * 0.17);
       for (var q = 0; q < cw; q++){
         var hh = F(4 + Math.sin(q * .22 + ci) * 3 + Math.sin(q * .07) * 2);
         if (hh < 1) continue;
@@ -2267,7 +2099,7 @@ function drawFrame(){
     /* the party walks between the ground and the foreground */
     if (L.id === 'ground'){
       if (resting){
-        var fx = F(VW * 0.11) + 56;
+        var fx = F(VW * 0.56) + 56;
         var fgy = groundY(camX + fx) + 4;
         drawSprite(g, CAMPFIRE[F(tick / 6) % 3], K_FIRE, fx, fgy - sprH(CAMPFIRE[0]) + 1);
         if (LAMPS){
@@ -2280,7 +2112,7 @@ function drawFrame(){
     }
   }
 
-  /* weather + motes */
+  /* weather */
   if (!REDUCED) drawWeather(g, camX, tick);
   else if (WEATHER === 'snow' || WEATHER === 'rain') drawWeather(g, camX, 0);
 
@@ -2288,10 +2120,11 @@ function drawFrame(){
   var dd = depthAt(camX + VW / 2);
   if (dd > .15){
     g.save(); g.globalAlpha = .10 * dd; g.fillStyle = ACT[C.fae];
-    g.fillRect(0, 40, VW, VH - 40); g.restore();
+    g.fillRect(0, VOFF, VW, VH); g.restore();
   }
 
-  /* chapter card last, above the world */
+  /* the chapter card is viewport furniture, not world content */
+  g.setTransform(1, 0, 0, 1, 0, 0);
   drawCard(g, tick, secs);
 }
 
@@ -2300,7 +2133,6 @@ function update(dt){
   secs += dt;
   tick += dt * 30;
 
-  /* the party occasionally makes camp */
   if (!REDUCED){
     if (!resting && secs > nextRestAt){ resting = true; restUntil = secs + 9; }
     if (resting && secs > restUntil){ resting = false; nextRestAt = secs + 50 + h1(F(secs), 313) * 40; }
@@ -2310,31 +2142,23 @@ function update(dt){
   if (REDUCED) camSpeed = 0;
   camX += camSpeed * dt;
 
-  /* biome bookkeeping */
   var here = biomeAt(camX + VW * 0.4);
   var cur = here.mix > .5 ? here.b : here.a;
   if (cur !== card.biome){
     card.biome = cur; card.shown = secs;
-    var live = document.getElementById('region-live');
-    if (live) live.textContent = 'Now entering ' + BIOMES[cur].name;
-    var hr = document.getElementById('hud-region');
-    if (hr) hr.textContent = BIOMES[cur].name;
     WEATHER = pickWeather(cur, camX);
     weatherName = WEATHER.toUpperCase();
-    var hw = document.getElementById('hud-weather');
-    if (hw) hw.textContent = weatherName;
+    publish();
   }
 
   if (!REDUCED) tickEvents(secs, camX);
   evictChunks(camX);
 }
 
-/* ── loop @30fps with an accumulator ─────────────────────────────────── */
-var acc = 0, last = 0;
-var STEP = 1 / 30;
+/* ── loop @30fps ─────────────────────────────────────────────────────── */
 function loop(now){
   if (!running) return;
-  requestAnimationFrame(loop);
+  rafId = requestAnimationFrame(loop);
   if (!last) last = now;
   var dt = Math.min(0.25, (now - last) / 1000);
   last = now;
@@ -2346,77 +2170,137 @@ function loop(now){
   drawFrame();
 }
 
-/* ── boot ────────────────────────────────────────────────────────────── */
-function boot(){
+function start(){
+  if (running || REDUCED) return;
+  running = true; last = 0; acc = 0;
+  rafId = requestAnimationFrame(loop);
+}
+function stop(){
+  running = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = 0;
+}
+
+/* ── teardown ────────────────────────────────────────────────────────── */
+var onVis = null;
+function teardown(){
+  stop();
+  if (ro && ro.disconnect) ro.disconnect();
+  if (io && io.disconnect) io.disconnect();
+  if (onVis) document.removeEventListener('visibilitychange', onVis);
+  if (phaseTimer) clearInterval(phaseTimer);
+  if (rzTimer) clearTimeout(rzTimer);
+  ro = io = onVis = null; phaseTimer = 0; rzTimer = 0;
+  cvs = null; ctx = null; onState = null;
+}
+
+var NOOP = { setHour: function(){}, jumpTo: function(){}, roll: function(){},
+             pause: function(){}, resume: function(){}, destroy: function(){} };
+
+/* One scene at a time: a second mount replaces the first. The engine keeps its
+   world in module state, which is what makes the chunk cache cheap. */
+function mount(canvasEl, opts){
   try {
+    if (!canvasEl || !canvasEl.getContext) return NOOP;
+    teardown();
+    opts = opts || {};
+
+    cvs = canvasEl;
+    onState = typeof opts.onState === 'function' ? opts.onState : null;
+    REDUCED = !!opts.reduced;
+    hourOverride = (opts.hourOverride == null) ? null
+                 : clamp(parseInt(opts.hourOverride, 10) || 0, 0, 23);
+
+    /* pick an opening region: the caller's, else one that rotates by the day
+       so a repeat visitor does not always arrive in the same place */
+    var startBiome = (opts.startAt == null)
+      ? F(mod(Math.floor(nowDate().getTime() / 86400000), 6))
+      : clamp(parseInt(opts.startAt, 10) || 0, 0, 5);
+    camX = startBiome * BLEN + 200;
+
+    /* weather varies by day, so the same region is not always foggy */
+    WSALT = F(mod(Math.floor(nowDate().getTime() / 86400000), 977));
+
+    lastStateJSON = '';
+    lastPhaseKey = '';
+    card.biome = -1; card.shown = -999;
+    tick = 0; secs = 0; camSpeed = 0;
+    resting = false; nextRestAt = 42;
+    evt = null; nextEvtAt = 12;
+    visible = true;
+
     resize();
     refreshPhase(true);
     update(0.001);
     drawFrame();
-    if (REDUCED){
-      // one beautiful, day/night-correct static frame; nothing animates.
-      camX += 0; drawFrame();
-    } else {
-      requestAnimationFrame(loop);
+
+    if (!REDUCED){
+      /* resize */
+      if (window.ResizeObserver){
+        ro = new ResizeObserver(function (){
+          clearTimeout(rzTimer);
+          rzTimer = setTimeout(function (){
+            try { resize(); drawFrame(); } catch (e) {}
+          }, 150);
+        });
+        ro.observe(cvs);
+      }
+      /* pause when out of sight */
+      onVis = function (){ visible = !document.hidden; last = 0; };
+      document.addEventListener('visibilitychange', onVis);
+      if (window.IntersectionObserver){
+        io = new IntersectionObserver(function (ents){
+          visible = ents[0].isIntersecting && !document.hidden;
+          last = 0;
+        }, { threshold: 0 });
+        io.observe(cvs);
+      }
+      phaseTimer = setInterval(function (){
+        try { refreshPhase(false); } catch (e) {}
+      }, 60000);
+      start();
     }
-  } catch (e){
-    // canvas failed: the document is fully usable without it
-    if (cvs) cvs.style.display = 'none';
-    document.body.style.background =
-      'linear-gradient(180deg,#14100e,#231a14 60%,#14100e)';
-    if (window.console) console.warn('scene disabled:', e);
+
+    return {
+      setHour: function (h){
+        hourOverride = (h == null) ? null : clamp(parseInt(h, 10) || 0, 0, 23);
+        try { refreshPhase(true); drawFrame(); } catch (e) {}
+      },
+      jumpTo: function (i){
+        try {
+          i = clamp(parseInt(i, 10) || 0, 0, 5);
+          camX = i * BLEN + 200;
+          card.biome = -1;              // force the region card to announce it
+          flushWorld();
+          update(0.001);
+          drawFrame();
+        } catch (e) {}
+      },
+      roll: function (){
+        try {
+          var pool = EVENT_DEFS.filter(function (d){
+            if (d.night === 1) return NIGHTNESS > .5;
+            if (d.night === 0) return NIGHTNESS < .5;
+            return true;
+          });
+          if (!pool.length) pool = EVENT_DEFS;
+          evt = { def: pool[F(Math.random() * pool.length) % pool.length], t: 0 };
+          nextEvtAt = secs + 26;
+          drawFrame();
+        } catch (e) {}
+      },
+      pause: stop,
+      resume: function (){ last = 0; start(); },
+      destroy: teardown
+    };
+
+  } catch (err){
+    if (canvasEl && canvasEl.classList) canvasEl.classList.add('scene-failed');
+    if (window.console && console.warn) console.warn('IsaiWorld disabled:', err);
+    return NOOP;
   }
 }
 
-/* housekeeping */
-var rzT = null;
-window.addEventListener('resize', function(){
-  clearTimeout(rzT);
-  rzT = setTimeout(function(){ try { resize(); drawFrame(); } catch (e){} }, 220);
-});
-document.addEventListener('visibilitychange', function(){
-  visible = !document.hidden;
-  last = 0;
-});
-if (window.IntersectionObserver){
-  var io = new IntersectionObserver(function(ents){
-    visible = ents[0].isIntersecting && !document.hidden;
-    last = 0;
-  }, { threshold: 0 });
-  io.observe(cvs);
-}
-setInterval(function(){ try { refreshPhase(false); } catch (e){} }, 60000);
+window.IsaiWorld = { mount: mount };
 
-/* the ticker copy — doubled so the CSS marquee loops seamlessly */
-(function(){
-  var t = document.getElementById('tick');
-  if (!t) return;
-  var line = 'Roll for initiative · 22 resources · Character sheet · Monster generator · ' +
-             'Faerûn city generator · The Dead Three · Cosmology · Handbooks · ' +
-             'Natural 20 · Free forever · ';
-  t.textContent = line + line;
 })();
-
-boot();
-</script>
-
-<noscript>
-  <p id="noscript-note" style="max-width:1040px;margin:0 auto;padding:12px 16px;color:#c9b998;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;">
-    The animated world requires JavaScript. Every link below works without it.
-  </p>
-</noscript>
-<script>
-(function(){
-  try{
-    if(true && typeof camX!=='undefined'){ camX=420; }
-    if(typeof update==='function'){ try{update(0.001);}catch(e){} }
-    if(typeof refreshPhase==='function'){ try{refreshPhase(true);}catch(e){} }
-    for(var i=0;i<40;i++){ if(typeof update==='function'){ try{update(1/30);}catch(e){} } }
-    if(true && typeof camX!=='undefined'){ camX=420; }
-    window.update=function(){};              /* freeze the world for a clean plate */
-    if(typeof drawFrame==='function'){ drawFrame(); }
-  }catch(e){ document.title='INJECT-ERR '+e.message; }
-})();
-</script>
-</body>
-</html>

@@ -48,9 +48,8 @@
   <canvas class="band-canvas" id="scene" aria-hidden="true"></canvas>
   <div class="band-scrim" aria-hidden="true"></div>
 
-  <div class="chapter" id="chapter" hidden>
-    <i id="chapter-num">Chapter I</i><b id="chapter-name">The Sleeping Hamlet</b>
-  </div>
+  <!-- the region is announced by the pixel card the engine draws, and stays
+       readable in the HUD below, so there is no HTML card here -->
 
   <div class="band-inner">
     <h1 class="band-title">Isaiart's <em>D&amp;D</em> Resources</h1>
@@ -258,10 +257,7 @@
     region: document.getElementById('hud-region'),
     phase: document.getElementById('hud-phase'),
     moon: document.getElementById('hud-moon'),
-    weather: document.getElementById('hud-weather'),
-    chapter: document.getElementById('chapter'),
-    chNum: document.getElementById('chapter-num'),
-    chName: document.getElementById('chapter-name')
+    weather: document.getElementById('hud-weather')
   };
 
   function paint(s) {
@@ -270,11 +266,6 @@
     if (el.phase) el.phase.textContent = s.phase || '—';
     if (el.moon) el.moon.textContent = s.moon ? s.moon + (s.moonPct != null ? ' (' + s.moonPct + '%)' : '') : '—';
     if (el.weather) el.weather.textContent = s.weather || '—';
-    if (s.region && el.chapter) {
-      el.chNum.textContent = s.chapter || '';
-      el.chName.textContent = s.region;
-      el.chapter.hidden = false;
-    }
   }
 
   function boot() {

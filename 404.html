@@ -170,8 +170,9 @@
       if (KNOWN[i][0].toLowerCase().indexOf(want.replace(/^\//, '')) > -1) d -= 3;
       if (d < bestD) { bestD = d; best = KNOWN[i]; }
     }
-    /* only offer a guess when it is genuinely close */
-    if (best && bestD <= Math.max(4, Math.floor(want.length * 0.5))) {
+    /* Only offer a guess when it is genuinely close. A loose threshold made
+       /xyz suggest "Character Sheet", which is worse than saying nothing. */
+    if (best && want.length >= 4 && bestD <= Math.max(2, Math.floor(want.length * 0.34))) {
       var g = document.getElementById('guess');
       if (g) {
         g.innerHTML = 'Did you mean <a href="' + best[0] + '" style="color:#58180D">' +
