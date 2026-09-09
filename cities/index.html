@@ -232,29 +232,6 @@
             opacity: 0.9;
         }
 
-        .city-emblem {
-            width: 90px; height: 90px;
-            flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .emblem-ring {
-            width: 90px; height: 90px;
-            border-radius: 50%;
-            border: 2px solid var(--gold-dark);
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-            background: radial-gradient(circle, rgba(197,160,89,0.12) 0%, transparent 70%);
-            box-shadow: 0 0 0 4px rgba(197,160,89,0.15), inset 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        .emblem-ring::before {
-            content: '';
-            position: absolute; inset: 4px;
-            border-radius: 50%;
-            border: 1px solid rgba(197,160,89,0.4);
-        }
-
         /* ── TAB NAVIGATION ── */
         .tabs-bar {
             display: flex;
@@ -262,7 +239,7 @@
             background: linear-gradient(180deg, var(--parchment-light), var(--parchment));
             overflow-x: auto;
             scrollbar-width: none;
-            position: sticky; top: 53px; z-index: 50;
+            position: sticky; top: var(--header-h, 53px); z-index: 50;
             box-shadow: 0 2px 8px rgba(62,43,31,0.15);
         }
         .tabs-bar::-webkit-scrollbar { display: none; }
@@ -632,7 +609,7 @@
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
         @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } .city-hero-inner { flex-direction: column; } .city-emblem { display: none; } }
+        @media (max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } .city-hero-inner { flex-direction: column; } }
 
         /* ── SCROLL PROGRESS BAR ── */
         #scroll-progress {
@@ -668,6 +645,179 @@
         /* Loading skeleton */
         .skeleton { animation: pulse 1.5s ease-in-out infinite; background: rgba(62,43,31,0.08); border-radius: 3px; }
         @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
+
+        /* ══ HERALDRY ══ */
+        .hero-arms {
+            width: 122px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
+            animation: armsRise 0.6s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        .hero-arms:hover { transform: translateY(-3px) scale(1.03); }
+        .hero-arms svg { width: 100%; height: auto; display: block; }
+        @keyframes armsRise { from { opacity: 0; transform: translateY(14px) scale(0.94); } to { opacity: 1; transform: none; } }
+
+        .arms-stage {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr);
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+        .arms-side { display: grid; grid-template-rows: 1.35fr 1fr; gap: 0.75rem; min-width: 0; }
+
+        .plate {
+            border: 1.5px solid rgba(93,64,55,0.4);
+            background:
+                radial-gradient(ellipse at 50% 22%, rgba(255,250,235,0.65) 0%, transparent 62%),
+                rgba(255,255,255,0.16);
+            padding: 0.9rem 0.9rem 0.7rem;
+            position: relative;
+            display: flex; flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .plate::before {
+            content: '';
+            position: absolute; inset: 3px;
+            border: 1px solid rgba(93,64,55,0.2);
+            pointer-events: none;
+        }
+        .plate-label {
+            font-family: 'IM Fell English SC', serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-faded);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            position: relative; z-index: 1;
+        }
+        .plate-art {
+            flex: 1;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 0;
+            position: relative; z-index: 1;
+        }
+        .plate-art svg { width: 100%; height: 100%; max-height: 100%; display: block; }
+        .plate-main .plate-art svg { max-height: 460px; }
+        .plate-banner .plate-art svg { max-height: 220px; }
+        .plate-seal .plate-art svg { max-width: 172px; }
+
+        .plate-note {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 0.72rem;
+            color: var(--ink-faded);
+            text-align: center;
+            margin-top: 0.4rem;
+            position: relative; z-index: 1;
+        }
+
+        /* Chip rows for shape / flag pickers */
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; margin-top: 0.55rem; position: relative; z-index: 1; }
+        .chip {
+            font-family: 'IM Fell English SC', serif;
+            font-size: 0.63rem;
+            letter-spacing: 0.05em;
+            padding: 0.18rem 0.5rem;
+            border: 1px solid rgba(93,64,55,0.4);
+            background: rgba(62,43,31,0.05);
+            color: var(--ink-faded);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .chip:hover { background: rgba(138,28,28,0.1); color: var(--ink); }
+        .chip.active { background: var(--ink); color: var(--parchment); border-color: var(--gold-dark); }
+
+        /* Blazon */
+        .blazon {
+            font-family: 'IM Fell English', serif;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--ink);
+            text-align: justify;
+        }
+        .blazon::first-letter {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.1rem;
+            float: left;
+            line-height: 0.86;
+            padding: 0.1rem 0.35rem 0 0;
+            color: var(--crimson);
+        }
+        .motto-line {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            color: var(--crimson);
+        }
+        .motto-gloss { font-style: italic; font-size: 0.8rem; color: var(--ink-faded); }
+
+        /* Livery swatches */
+        .livery-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .livery-chip { display: flex; align-items: center; gap: 0.35rem; }
+        .livery-swatch {
+            width: 26px; height: 26px;
+            border: 1.5px solid var(--ink);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.3);
+        }
+        .livery-name { font-family: 'IM Fell English SC', serif; font-size: 0.7rem; color: var(--ink-faded); }
+
+        /* Symbolism list */
+        .symbol-item {
+            display: flex; gap: 0.5rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px dotted rgba(93,64,55,0.28);
+            font-size: 0.82rem;
+        }
+        .symbol-item:last-child { border-bottom: none; }
+        .symbol-what { font-family: 'Cinzel', serif; font-weight: 600; color: var(--ink); white-space: nowrap; }
+        .symbol-why { font-style: italic; color: var(--ink-faded); }
+
+        /* Workshop button row */
+        .workshop { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .workshop .btn { font-size: 0.72rem; padding: 0.42rem 0.9rem; }
+
+        /* Seed strip in the header */
+        .seed-strip {
+            display: flex; align-items: center; gap: 0.35rem;
+            font-family: 'IM Fell English SC', serif;
+            font-size: 0.68rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.08em;
+        }
+        .seed-strip input {
+            width: 92px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--gold-dark);
+            color: var(--gold-light);
+            font-family: inherit; font-size: 0.68rem;
+            padding: 0.22rem 0.4rem;
+            letter-spacing: 0.06em;
+        }
+        .seed-strip input:focus { outline: none; border-color: var(--gold-light); }
+
+        @media (max-width: 900px) { .arms-stage { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) {
+            .hero-arms { width: 96px; margin-top: 1rem; }
+            .plate-main .plate-art svg { max-height: 360px; }
+        }
+
+        /* ══ NARROW HEADER ══
+           The header wraps on small screens; the tabs bar follows its real
+           height through --header-h rather than a hard-coded offset. */
+        @media (max-width: 700px) {
+            .site-header { flex-wrap: wrap; padding: 0.5rem 0.7rem; gap: 0.5rem; }
+            .header-title { font-size: 0.9rem; letter-spacing: 0.02em; }
+            .header-controls { width: 100%; gap: 0.4rem; }
+            .header-controls .btn { font-size: 0.68rem; padding: 0.4rem 0.7rem; flex: 1 1 auto; justify-content: center; }
+            .seed-strip { order: 3; }
+            .seed-strip input { width: 74px; }
+        }
+        @media (max-width: 380px) {
+            .header-title { font-size: 0.78rem; }
+        }
     </style>
 </head>
 <body>
@@ -684,6 +834,10 @@
         Faerûn City Generator
     </div>
     <div class="header-controls">
+        <label class="seed-strip" title="Every settlement is built from a seed. Type one in and press Enter to summon that exact place again.">
+            <span class="material-symbols-outlined" style="font-size:0.95rem">tag</span>
+            <input id="seedInput" type="text" spellcheck="false" aria-label="Settlement seed">
+        </label>
         <button id="generateBtn" class="btn btn-dark">
             <span class="material-symbols-outlined icon-gen" style="font-size:1rem">auto_awesome</span>
             <span id="generateBtnText">Conjure Settlement</span>
@@ -706,13 +860,7 @@
                     <span id="cityTagline">Awaiting conjuration...</span>
                     <div class="hero-badges" id="heroBadges"></div>
                 </div>
-                <div class="city-emblem">
-                    <div class="emblem-ring">
-                        <svg width="44" height="44" viewBox="0 0 24 24" fill="var(--gold-dark)" style="opacity:0.8" id="emblemIcon">
-                            <path d="M12 2C10 6 10 8 12 10C14 8 14 6 12 2M12 22C10.5 19 10.5 17.5 12 15.5C13.5 17.5 13.5 19 12 22M7.5 14C6.5 15.4 6.5 17 6.5 17C8 16.5 9.5 16.5 10.5 16.5C11 16 11.5 15.5 12 15.5C12.5 15.5 13 16 13.5 16.5C14.5 16.5 16 16.5 17.5 17C17.5 17 17.5 15.4 16.5 14C15.5 12.6 13.9 11.5 12 11.5C10.1 11.5 8.5 12.6 7.5 14M4.5 6.5C5.6 6.5 6.5 7.4 6.5 8.5C6.5 9.6 5.6 10.5 4.5 10.5C3.4 10.5 2.5 9.6 2.5 8.5C2.5 7.4 3.4 6.5 4.5 6.5M19.5 6.5C20.6 6.5 21.5 7.4 21.5 8.5C21.5 9.6 20.6 10.5 19.5 10.5C18.4 10.5 17.5 9.6 17.5 8.5C17.5 7.4 18.4 6.5 19.5 6.5Z"/>
-                        </svg>
-                    </div>
-                </div>
+                <div class="hero-arms" id="heroArms" title="Open the Arms roll"></div>
             </div>
         </div>
 
@@ -729,6 +877,9 @@
             </button>
             <button class="tab-btn" data-tab="places">
                 <span class="material-symbols-outlined">explore</span> Places
+            </button>
+            <button class="tab-btn" data-tab="arms">
+                <span class="material-symbols-outlined">shield_with_heart</span> Arms
             </button>
             <button class="tab-btn" data-tab="lore">
                 <span class="material-symbols-outlined">history_edu</span> Lore
@@ -751,6 +902,7 @@
                     <div class="stat-row"><span class="stat-label">Size</span><span class="stat-value" id="citySize">—</span></div>
                     <div class="stat-row"><span class="stat-label">Density</span><span class="stat-value" id="density">—</span></div>
                     <div class="stat-row"><span class="stat-label">Government</span><span class="stat-value" id="government">—</span></div>
+                    <div class="stat-row"><span class="stat-label">Ruler</span><span class="stat-value" id="ruler">—</span></div>
                     <div class="stat-row"><span class="stat-label">Location</span><span class="stat-value" id="location">—</span></div>
                 </div>
                 <!-- Geography -->
@@ -859,6 +1011,71 @@
             </div>
         </div>
 
+        <!-- ═══ ARMS TAB ═══ -->
+        <div class="tab-panel" id="tab-arms">
+            <div class="arms-stage">
+                <div class="plate plate-main animate-in" style="animation-delay:0.04s">
+                    <div class="plate-label">Arms of the City</div>
+                    <div class="plate-art" id="armsAchievement"></div>
+                    <div class="chip-row" id="shapePicker"></div>
+                </div>
+                <div class="arms-side">
+                    <div class="plate plate-banner animate-in" style="animation-delay:0.08s">
+                        <div class="plate-label">Banner &amp; Livery</div>
+                        <div class="plate-art" id="armsBanner"></div>
+                        <div class="chip-row" id="flagPicker"></div>
+                    </div>
+                    <div class="plate plate-seal animate-in" style="animation-delay:0.12s">
+                        <div class="plate-label">Seal of the Council</div>
+                        <div class="plate-art" id="armsSeal"></div>
+                        <div class="plate-note" id="sealNote"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:0.75rem">
+                <div class="card animate-in" style="animation-delay:0.16s">
+                    <div class="card-title"><span class="material-symbols-outlined">history_edu</span> Blazon</div>
+                    <p class="blazon" id="blazonText"></p>
+                    <div class="divider"><span>&#10087;</span></div>
+                    <div style="text-align:center;margin-bottom:0.6rem">
+                        <div class="motto-line" id="mottoText"></div>
+                        <div class="motto-gloss" id="mottoGloss"></div>
+                    </div>
+                    <div class="stat-row"><span class="stat-label">Shield</span><span class="stat-value" id="armsShapeName">—</span></div>
+                    <div class="stat-row"><span class="stat-label">Crest</span><span class="stat-value" id="armsCrestName">—</span></div>
+                    <div class="stat-row"><span class="stat-label">Supporters</span><span class="stat-value" id="armsSupporters">—</span></div>
+                    <div class="stat-row"><span class="stat-label">Granted</span><span class="stat-value" id="armsGranted">—</span></div>
+                </div>
+                <div class="card animate-in" style="animation-delay:0.20s">
+                    <div class="card-title"><span class="material-symbols-outlined">palette</span> Livery &amp; Meaning</div>
+                    <div class="livery-row" id="liveryRow"></div>
+                    <div id="symbolismList"></div>
+                </div>
+            </div>
+
+            <div class="card animate-in" style="animation-delay:0.24s; margin-top:0.75rem">
+                <div class="card-title"><span class="material-symbols-outlined">draw</span> Herald's Workshop</div>
+                <div class="workshop">
+                    <button class="btn btn-dark" id="rerollArmsBtn">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">autorenew</span> Re-emblazon
+                    </button>
+                    <button class="btn btn-dark" id="downloadArmsBtn">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">download</span> Arms SVG
+                    </button>
+                    <button class="btn btn-dark" id="downloadBannerBtn">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">flag</span> Banner SVG
+                    </button>
+                    <button class="btn btn-dark" id="downloadSealBtn">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">approval</span> Seal SVG
+                    </button>
+                    <button class="btn btn-gold" id="copyBlazonBtn">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">content_copy</span> Copy Blazon
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- ═══ LORE TAB ═══ -->
         <div class="tab-panel" id="tab-lore">
             <div class="chronicle-block animate-in" style="animation-delay:0.04s; margin-bottom:0.75rem">
@@ -868,6 +1085,7 @@
                 <div class="card animate-in" style="animation-delay:0.08s">
                     <div class="card-title"><span class="material-symbols-outlined">history</span> History</div>
                     <div class="stat-row"><span class="stat-label">Founding</span><span class="stat-value" id="historyEvent">—</span></div>
+                    <div class="stat-row"><span class="stat-label">Founded</span><span class="stat-value" id="foundedYear">—</span></div>
                     <div class="stat-row"><span class="stat-label">Heraldry</span><span class="stat-value" id="heraldry">—</span></div>
                     <div class="divider"><span>⚖</span></div>
                     <div class="law-block">
@@ -917,6 +1135,10 @@
 <!-- Toast notification -->
 <div class="toast" id="toast">✦ Transcribed to scroll!</div>
 
+<script src="../assets/heraldry.js"></script>
+<script src="../assets/heraldry-charges.js"></script>
+<script src="../assets/heraldry-arms.js"></script>
+<script src="../assets/heraldry-render.js"></script>
 <script>
 // ─── DATA ARRAYS ─────────────────────────────────────────────────────────────
 const prefixes=["Al","Bar","Cal","Dor","El","Fal","Gor","Har","Il","Jor","Kel","Lor","Mor","Nor","Oth","Pel","Quar","Riv","Sel","Tor","Ul","Val","Wes","Xan","Yar","Zor","Thal","Shar","Bel","Cyr"];
@@ -970,8 +1192,6 @@ const politicalIntrigues=["Two noble houses competing for royal favor","Secret h
 const rumors=["Hidden treasure beneath the old temple","The mayor is actually a doppelganger","Secret tunnels connect all noble houses","Ghost of the former ruler haunts the castle","Drinking from the north fountain grants visions","The blacksmith's sword can kill demons","Strange lights seen in abandoned tower","Children disappearing near the old forest","Merchant selling potions that cause mutations","Wizard's apprentice accidentally summoned something","Ancient dragon sleeps beneath the city","Local wine contains truth serum","Foreign spies infiltrated the city guard","Statues in the park move at midnight","Strange illness caused by cursed jewelry","Secret fighting pits in the warehouse district","Certain city officials are undead","Time moves differently in the old library","Famous relic in the temple is actually fake","Noble heir practicing forbidden magic","Talking animals spotted at the city outskirts","Local cook uses questionable meat sources","Wealthy merchant made pact with fiend","Music from nowhere heard in empty alleyways","Someone selling maps to a parallel world","Wells in the east side have healing properties","City built on ancient burial ground","Specific constellation causes strange magic when visible"];
 const quests=["Retrieve stolen artifact from thieves' guild","Investigate disappearances in the merchant quarter","Clear monsters from the sewers","Protect visiting dignitary from assassination","Find cure for noble's strange illness","Resolve dispute between rival families","Break curse affecting city landmark","Uncover spy network operating in the city","Escort important shipment to neighboring town","Participate in tournament for valuable prize","Stop ritual being performed by hidden cult","Find missing person last seen at the docks","Deliver secret message to undercover agent","Track down escaped magical creature","Investigate haunting at prestigious inn","Recover family heirloom from dangerous ruins","Gather rare ingredients for master alchemist","Prove accused citizen's innocence","Infiltrate noble's mansion to find evidence","Stop magical experiment threatening city","Mediate conflict between guilds","Hunt notorious criminal hiding in city","Protect endangered magical species","Recover cargo from shipwreck in harbor","Map unexplored catacombs beneath city","Translate ancient text in forgotten language","Escort refugees safely through city","Sabotage rival city's trade negotiations","Investigate strange weather phenomena affecting crops"];
 const cityHistoryEvents=["Founded by a legendary hero after a great battle","Built around a mysterious magical artifact","Survived a devastating plague that reshaped its society","Was once the capital of a fallen empire","Established as a neutral trading post between warring nations","Magically transported from another plane long ago","Grew from a humble pilgrimage site into a metropolis","Liberated from a dragon's tyranny within living memory","Built on the back of a colossal, slumbering creature","The site of a divine intervention that blessed the land"];
-const heraldrySymbols=["Dragon","Lion","Griffon","Sword","Shield","Tower","Tree","Star","Hammer","Anvil","Ship","Kraken","Book","Key","Crown","Hawk","Wolf","Sun","Moon","Scales"];
-const heraldryColors=["Azure (blue)","Gules (red)","Sable (black)","Vert (green)","Purpure (purple)","Argent (silver)","Or (gold)"];
 const cityAtmospheres=["Hopeful and bustling","Suspicious and tense","Oppressive and grim","Lively and chaotic","Scholarly and quiet","Decadent and lazy","Pious and orderly","Wild and dangerous","Mysterious and magical","Welcoming and diverse"];
 const notableLaws=[
     {law:"All acts of arcane magic must be registered with the Mages' Guild.",punishment:"A hefty fine and mandatory 're-education'."},
@@ -985,98 +1205,298 @@ const notableLaws=[
 ];
 const npcAvatarColors=["bg-blue-800","bg-red-800","bg-green-800","bg-purple-800","bg-yellow-800","bg-pink-800","bg-indigo-800","bg-teal-800","bg-orange-800","bg-cyan-800"];
 
+// ─── EXTRA NAME + RULER STOCK ────────────────────────────────────────────────
+const wordFirsts=["Iron","Raven","Storm","Ash","Thorn","Grey","Amber","Cinder","Frost","Hollow","Bright","Gloom","Wolf","Stone","Silver","Salt","Copper","Elder","Wynd","Bram","Kestrel","Marrow","Oak","Rook","Tide","Vault","Char","Gilt","Moss","Pale"];
+const wordSeconds=["fell","march","hollow","barrow","reach","scar","mere","hearth","gate","cairn","spire","warren","bourne","stand","fen","hold","span","drift","vale","cross","watch","kiln","ford","rest","wick","quay","light","forge","bell","brook"];
+const rulerTitles={
+    "Monarchy":["King","Queen","Sovereign"],"Council of Merchants":["First Factor","Purse-Warden","Chair of the Ledger"],
+    "Mageocracy":["Archmage","High Weaver","Speaker of the Circle"],"Theocracy":["Hierarch","High Priest","Voice of the God"],
+    "Military Dictatorship":["Lord Marshal","Warden-General","Castellan"],"Oligarchy":["First Among Houses","Prime Peer"],
+    "Democracy":["Elected Speaker","Consul","Moot-Chair"],"Feudal System":["Lord","Lady","Baron"],
+    "Guild-run":["Guildmaster Primus","Warden of Trades"],"Tribal Council":["Chieftain","Clan-Speaker","Elder-of-Elders"],
+    "Magistrate Rule":["Chief Magistrate","Justiciar"],"Undead Overlord":["Deathless Lord","The Interred King"],
+    "Dragon Rule":["Wyrm-Tyrant","The Scaled Sovereign"],"Plutocracy":["Coin-Lord","Master of the Vault"],
+    "Anarchy":["No One (the streets rule)","the loudest voice in the square"],"Matriarchy":["Matriarch","Grandmother of the City"],
+    "Patriarchy":["Patriarch","Grandfather of the City"],"Elder Council":["Eldest","Speaker of Years"],
+    "Divine Mandate":["Chosen","Hand of the God"],"Secret Society Control":["(officially) the Mayor","a name nobody says aloud"],
+    "Merchant Consortium":["Consortium Chair","Master of Contracts"]
+};
+const defaultTitles=["Warden","Governor","Lord Protector","Steward","Overseer","Burgomaster"];
+const rulerTraits=["ageing and cautious","newly raised and untested","ruthlessly competent","adored and utterly corrupt","absent for two years now","far too young for the seat","widely believed to be dying","kept in place by the guilds","a hero of the last war","not who they claim to be"];
+
+// ─── SEEDED RANDOMNESS ───────────────────────────────────────────────────────
+// One seed drives the whole settlement, so any city can be shared by its number.
+let RNG = Math.random;
+let currentSeed = 0;
+
+function setSeed(seed){
+    currentSeed = seed >>> 0;
+    RNG = Heraldry.makeRng(currentSeed);
+}
+function randomSeed(){ return Math.floor(Math.random()*0xFFFFFFFF) >>> 0; }
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-function getRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-function pickMany(arr,min=1,max=4){ const c=Math.floor(Math.random()*(max-min+1))+min; return [...arr].sort(()=>0.5-Math.random()).slice(0,c); }
+function getRandom(arr){ return arr[Math.floor(RNG()*arr.length)]; }
+function chance(p){ return RNG() < p; }
+function randInt(min,max){ return min + Math.floor(RNG()*(max-min+1)); }
+function shuffled(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(RNG()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+}
+function pickMany(arr,min=1,max=4){ return shuffled(arr).slice(0, randInt(min,max)); }
 function pickManyStr(arr,min=1,max=4){ return pickMany(arr,min,max).join(', '); }
+// Weighted pick over [[value, weight], ...]
+function weighted(pairs){
+    let total=0; for(const p of pairs) total+=p[1];
+    let roll=RNG()*total;
+    for(const p of pairs){ roll-=p[1]; if(roll<=0) return p[0]; }
+    return pairs[pairs.length-1][0];
+}
+// Pull entries out of `arr` that match any keyword, falling back to the whole list.
+function preferring(arr,keywords,min,max){
+    const hits=arr.filter(v=>keywords.some(k=>v.toLowerCase().includes(k)));
+    const rest=arr.filter(v=>!hits.includes(v));
+    const want=randInt(min,max);
+    const out=shuffled(hits).slice(0, Math.min(hits.length, Math.max(1, Math.ceil(want/2))));
+    for(const v of shuffled(rest)){ if(out.length>=want) break; out.push(v); }
+    return out;
+}
 
 function generateCityName(){
-    if(Math.random()<0.3) return getRandom(standalone);
-    let n=getRandom(prefixes);
-    if(Math.random()<0.5) n+=getRandom(middles);
-    n+=getRandom(suffixes);
-    return n;
+    return chance(0.18) ? getRandom(standalone) : buildName();
 }
+function buildName(){
+    const style = weighted([['compound',26],['syllabic',30],['twoWord',12],['possessive',9],['definite',5]]);
+    const syllabic = () => {
+        let n=getRandom(prefixes);
+        if(chance(0.5)) n+=getRandom(middles);
+        return n+getRandom(suffixes);
+    };
+    switch(style){
+        case 'compound':   return getRandom(wordFirsts)+getRandom(wordSeconds);
+        case 'twoWord':    return getRandom(wordFirsts)+' '+capitalise(getRandom(wordSeconds));
+        case 'possessive': return getRandom(prefixes)+getRandom(middles)+"'s "+capitalise(getRandom(wordSeconds));
+        case 'definite':   return 'The '+capitalise(getRandom(wordSeconds))+' of '+getRandom(prefixes)+getRandom(middles);
+        default:           return syllabic();
+    }
+}
+function capitalise(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 
+// A settlement is mostly its dominant people plus a long tail of everyone else.
 function generateRacePercentages(dominantRace=null){
-    let p=new Array(races.length).fill(0);
+    const p=new Array(races.length).fill(0);
     let rem=100;
+    let order=shuffled(races.map((r,i)=>i));
     if(dominantRace){
         const i=races.findIndex(r=>r.name===dominantRace);
-        if(i!==-1){const boost=20+Math.floor(Math.random()*20);p[i]=boost;rem-=boost;}
+        if(i!==-1){
+            const boost=randInt(38,64);
+            p[i]=boost; rem-=boost;
+            order=order.filter(x=>x!==i);
+        }
+    }else{
+        const i=order.shift();
+        const boost=randInt(28,48);
+        p[i]=boost; rem-=boost;
     }
-    for(let i=0;i<races.length-1;i++){
-        if(rem<=0)break;
-        const a=Math.floor(Math.random()*(rem/2));
-        p[i]+=a; rem-=a;
+    // Everyone else gets a shrinking share, so the tail looks like a real census.
+    for(const i of order){
+        if(rem<=0) break;
+        const share=Math.floor(rem*(0.18+RNG()*0.42));
+        p[i]+=share; rem-=share;
     }
-    p[races.length-1]+=rem;
-    const tot=p.reduce((a,b)=>a+b,0);
-    if(tot!==100) p[0]+=100-tot;
-    return p.map(x=>Math.max(0,x));
+    if(rem>0) p[order[0] ?? 0]+=rem;
+    // Drop the dust so the list is not forty entries of 0–1%.
+    let swept=0;
+    for(let i=0;i<p.length;i++){ if(p[i]>0 && p[i]<2){ swept+=p[i]; p[i]=0; } }
+    if(swept){ const top=p.indexOf(Math.max(...p)); p[top]+=swept; }
+    return p;
 }
 
-function generateNPC(){
+function generateNPC(dominantRace){
     const fn=getRandom(npcFirstNames);
-    return{name:`${fn} ${getRandom(npcLastNames)}`,race:getRandom(npcRaces),occupation:getRandom(npcOccupations),personality:getRandom(npcPersonalities),color:getRandom(npcAvatarColors),initial:fn.charAt(0)};
+    // Locals mostly look like the locals.
+    const race=(dominantRace && chance(0.45))
+        ? dominantRace.replace(/s$/,'').replace('Halfling','Halfling')
+        : getRandom(npcRaces);
+    return{
+        name:`${fn} ${getRandom(npcLastNames)}`,
+        race: npcRaces.includes(race) ? race : getRandom(npcRaces),
+        occupation:getRandom(npcOccupations),
+        personality:getRandom(npcPersonalities),
+        color:getRandom(npcAvatarColors),
+        initial:fn.charAt(0)
+    };
 }
 
-function generateDistricts(){
-    const count=3+Math.floor(Math.random()*3);
-    return [...districtTypes].sort(()=>0.5-Math.random()).slice(0,count).map(t=>({name:t.name,color:t.color,desc:getRandom(districtDescriptions)}));
+// Districts now carry their own description instead of a random mismatched one,
+// and bigger settlements sprawl into more of them.
+function generateDistricts(sizeIndex, tagWords){
+    const count=Math.min(districtTypes.length, 2+Math.round(sizeIndex*0.9)+randInt(0,1));
+    const scored=districtTypes.map((t,i)=>{
+        let w=1+RNG()*2;
+        if(tagWords.some(k=>t.name.toLowerCase().includes(k))) w+=4;
+        return {t,i,w};
+    }).sort((a,b)=>b.w-a.w).slice(0,count);
+    return scored.map(({t,i})=>({name:t.name,color:t.color,desc:districtDescriptions[i]||''}));
 }
+
+// Population as an actual head-count, drawn from the band the size implies.
+const sizeRanges=[[80,1000],[1000,5000],[5000,10000],[10000,25000],[25000,50000],[50000,100000],[100000,320000]];
+function populationNumber(sizeIndex){
+    const [lo,hi]=sizeRanges[sizeIndex];
+    // Skewed low: most towns sit near the bottom of their band.
+    const t=Math.pow(RNG(),1.7);
+    const raw=lo+(hi-lo)*t;
+    const round=raw>50000?1000:raw>5000?100:raw>1000?50:10;
+    return Math.round(raw/round)*round;
+}
+function formatNumber(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
 // ─── GENERATE ─────────────────────────────────────────────────────────────────
 let city={};
 
-function generate(){
-    const c={};
+// ─── TERRAIN PROFILES ────────────────────────────────────────────────────────
+// Each terrain nudges the rest of the settlement so a mountain hold does not end
+// up exporting fish while drawing its water from a coral aquifer.
+const terrainProfiles={
+    "Coastal":   {water:["Tidal","Wells","Aqueducts","Rain","Desalination"], elev:["Sea level","Lowlands","Cliffside"], climate:["Temperate","Humid","Mediterranean","Rainy","Windy","Storm-wracked"], work:["fish","ship","salt","trade","pearl"], keys:["harbor","market","foreign"]},
+    "Island":    {water:["Rain","Wells","Desalination","Spring"], elev:["Sea level","Cliffside","Hills"], climate:["Tropical","Temperate","Windy","Storm-wracked"], work:["fish","ship","piracy","pearl"], keys:["harbor","foreign"]},
+    "Mountains": {water:["Ice melt","Glacial","Spring","Wells"], elev:["Mountainous","Plateau","Cliffside"], climate:["Cold","Frigid","Windy","Temperate"], work:["min","ore","stone","metal","fur"], keys:["military","artisan","under"]},
+    "Underground":{water:["Underground springs","Wells","Condensation","Magical creation"], elev:["Underground"], climate:["Variable","Fog-shrouded","Dusty","Magically altered"], work:["min","ore","fung","gem","metal"], keys:["under","artisan","mage"]},
+    "Forest":    {water:["River","Wells","Spring","Rain"], elev:["Lowlands","Hills","Suspended in trees"], climate:["Temperate","Humid","Rainy","Eternal spring"], work:["lumber","hunt","fur","trap","herb"], keys:["garden","artisan"]},
+    "Jungle":    {water:["River","Rain","Spring"], elev:["Lowlands","Plateau","Suspended in trees"], climate:["Tropical","Humid","Rainy"], work:["spice","herb","hunt","exotic"], keys:["foreign","garden"]},
+    "Desert":    {water:["Oasis","Wells","Aqueducts","Condensation","Magical creation"], elev:["Lowlands","Plateau","Canyon"], climate:["Arid","Dusty","Warm"], work:["spice","trade","glass","gem","caravan"], keys:["market","merchant","foreign"]},
+    "Tundra":    {water:["Ice melt","Glacial","Wells"], elev:["Lowlands","Hills","On a glacier"], climate:["Frigid","Cold","Windy"], work:["fur","hunt","trap","fish"], keys:["military"]},
+    "Swamp":     {water:["Wells","Rain","River","Alchemical"], elev:["Lowlands","Sea level"], climate:["Humid","Misty","Fog-shrouded","Rainy"], work:["herb","alchem","fish","smuggl"], keys:["slums","under"]},
+    "Plains":    {water:["River","Wells","Aqueducts","Artesian springs"], elev:["Lowlands","Hills"], climate:["Temperate","Warm","Windy"], work:["agri","livestock","textile","horse","grain"], keys:["market","merchant","garden"]},
+    "Hills":     {water:["Spring","Wells","River"], elev:["Hills","Plateau"], climate:["Temperate","Cold","Windy"], work:["agri","min","livestock","wine","stone"], keys:["noble","artisan"]},
+    "River delta":{water:["River","Aqueducts","Artesian springs"], elev:["Sea level","Lowlands"], climate:["Humid","Temperate","Rainy"], work:["fish","agri","trade","ship","textile"], keys:["harbor","market"]},
+    "Volcanic":  {water:["Steam vents","Wells","Geothermal","Ice melt"], elev:["Mountainous","In a crater","Inside a dormant volcano"], climate:["Warm","Dusty","Storm-wracked","Elemental fire dominant"], work:["metal","forge","weapon","armor","gem","min"], keys:["factory","artisan","military"]},
+    "Floating":  {water:["Cloud siphoning","Magical creation","Portals","Condensation"], elev:["Floating","Flying","On a floating island"], climate:["Windy","Elemental air dominant","Variable"], work:["magic","spell","planar","teleport"], keys:["mage","planar","floating"]}
+};
+const defaultProfile={water:["Wells","River","Spring","Rain"], elev:["Lowlands","Hills"], climate:["Temperate","Variable"], work:[], keys:[]};
+
+function profileFor(terrain){ return terrainProfiles[terrain]||defaultProfile; }
+// Prefer entries from a list whose text matches any of the profile keywords.
+function biasedPick(list, keys, fallbackChance=0.35){
+    const hits=list.filter(v=>keys.some(k=>v.toLowerCase().includes(k)));
+    return (hits.length && !chance(fallbackChance)) ? getRandom(hits) : getRandom(list);
+}
+
+function generate(seed){
+    setSeed(seed===undefined ? randomSeed() : seed);
+    const c={seed:currentSeed};
+
+    // ── Bones: size drives almost everything downstream ──
+    const sizeIndex=weighted(citySizes.map((s,i)=>[i,[9,14,15,16,14,10,6][i]]));
+    const sz=citySizes[sizeIndex];
+    c.sizeIndex=sizeIndex; c.size=sz.name; c.sizeBand=sz.population;
+    c.populationNumber=populationNumber(sizeIndex);
+    c.population=`${formatNumber(c.populationNumber)} souls`;
+
+    c.terrain=getRandom(terrains);
+    const prof=profileFor(c.terrain);
     c.name=generateCityName();
     c.tagline=getRandom(taglines);
     c.description=getRandom(cityDescriptions);
-    const sz=getRandom(citySizes);
-    c.size=sz.name; c.population=sz.population;
-    c.density=getRandom(densities);
     c.location=getRandom(locations);
-    c.government=getRandom(governments);
-    c.architectureStyle=getRandom(architectureStyles);
-    c.architectureFeatures=pickManyStr(architectureFeatures);
-    c.buildingMaterials=pickManyStr(buildingMaterials,1,3);
-    c.fortifications=getRandom(fortifications);
-    c.terrain=getRandom(terrains);
-    c.climate=getRandom(climates);
-    c.waterSource=getRandom(waterSources);
-    c.elevation=getRandom(elevations);
+
+    // ── Geography follows the terrain ──
+    c.climate=biasedPick(climates, prof.climate.map(s=>s.toLowerCase()), 0.25);
+    c.waterSource=biasedPick(waterSources, prof.water.map(s=>s.toLowerCase()), 0.25);
+    c.elevation=biasedPick(elevations, prof.elev.map(s=>s.toLowerCase()), 0.2);
     c.atmosphere=getRandom(cityAtmospheres);
+    // Denser as it grows; caves and cliffs squeeze people together.
+    // Crowding tracks size: hamlets sprawl, metropolises stack.
+    const densityTarget=0.4+sizeIndex*0.78;
+    c.density=weighted(densities.map((d,i)=>{
+        let w=0.6+Math.max(0, 4-Math.abs(i-densityTarget))*2.2;
+        if(c.terrain==="Underground"&&/subterranean|layered|clustered/i.test(d)) w+=8;
+        if(c.terrain==="Floating"&&/layered|clustered|variable/i.test(d)) w+=7;
+        if(c.elevation==="Suspended in trees"&&/clustered|layered/i.test(d)) w+=5;
+        return [d,w];
+    }));
+
+    c.government=getRandom(governments);
+    const titles=rulerTitles[c.government]||defaultTitles;
+    c.ruler=`${getRandom(titles)} ${getRandom(npcFirstNames)} ${getRandom(npcLastNames)} — ${getRandom(rulerTraits)}`;
+    // Dalereckoning-flavoured founding date; big places are usually older.
+    c.foundedYear=`${1492 - randInt(20+sizeIndex*40, 120+sizeIndex*260)} DR`;
+
+    // ── People ──
     let dom=null;
-    if(c.architectureStyle==="Dwarven Stonework") dom="Dwarves";
-    if(c.architectureStyle==="Elven Elegance") dom="Elves";
+    c.architectureStyle=getRandom(architectureStyles);
+    if(c.architectureStyle==="Dwarven Stonework"||c.terrain==="Underground") dom=chance(0.7)?"Dwarves":null;
+    if(c.architectureStyle==="Elven Elegance"||c.terrain==="Fey-touched") dom=chance(0.7)?"Elves":null;
+    if(c.architectureStyle==="Halfling Burrows") dom="Halflings";
+    if(c.architectureStyle==="Gnomish Invention") dom="Gnomes";
+    if(c.architectureStyle==="Dragonborn Scaled") dom="Dragonborn";
+    if(c.architectureStyle==="Tiefling Infernal") dom="Tieflings";
+    if(!dom && chance(0.5)) dom=getRandom(races).name;
     c.racePercentages=generateRacePercentages(dom);
+    const topIdx=c.racePercentages.indexOf(Math.max(...c.racePercentages));
+    c.dominantRace=races[topIdx].name;
     c.languages=pickManyStr(languages,2,5);
-    let inds=pickMany(industries,2,4);
-    if((c.terrain==="Coastal"||c.terrain==="Island")&&!inds.includes("Shipbuilding")) inds.push("Shipbuilding");
+
+    c.architectureFeatures=pickManyStr(architectureFeatures,2,4);
+    c.buildingMaterials=pickManyStr(buildingMaterials,1,3);
+    // Only settlements worth attacking build serious walls.
+    c.fortifications=weighted(fortifications.map((f,i)=>{
+        let w=2;
+        if(/^none|palisade/i.test(f)) w+=Math.max(0,4-sizeIndex)*3;
+        if(/massive|layered|citadel|magical/i.test(f)) w+=Math.max(0,sizeIndex-2)*2;
+        return [f,w];
+    }));
+
+    // ── Trade follows terrain, and exports follow trade ──
+    let inds=preferring(industries, prof.work, 2, 4);
+    if((c.terrain==="Coastal"||c.terrain==="Island"||c.terrain==="River delta")&&!inds.includes("Shipbuilding")&&chance(0.6)) inds.push("Shipbuilding");
     c.industries=inds.join(', ');
-    c.exports=pickManyStr(exports,1,4);
+    const exportKeys=inds.map(i=>i.toLowerCase().slice(0,4));
+    c.exports=preferring(exports, exportKeys.concat(prof.work), 2, 4).join(', ');
     c.tradePartners=pickManyStr(tradePartners,2,4);
-    c.wealth=getRandom(wealthLevels);
-    c.wealthValue=wealthLevels.indexOf(c.wealth)+1;
+
+    // ── Wealth, crime and magic pull on each other ──
+    const wealthIndex=weighted(wealthLevels.map((w,i)=>{
+        let weight=2+Math.max(0,4-Math.abs(i-(2+sizeIndex*0.6)));
+        if(i>=8) weight*=0.25;   // planar/divine treasuries stay rare
+        return [i,weight];
+    }));
+    c.wealth=wealthLevels[wealthIndex]; c.wealthValue=wealthIndex+1;
+    const crimeIndex=weighted(crimeLevels.map((cr,i)=>{
+        let weight=2+Math.max(0,3-Math.abs(i-(1+sizeIndex*0.7)));
+        if(c.government==="Anarchy"&&i>=5) weight+=8;
+        if(wealthIndex<=1&&i>=4) weight+=3;                 // poverty breeds it
+        if(wealthIndex>=6&&i>=3&&i<=6) weight+=2;           // so does easy money
+        if(/magistrate|theocracy|dictator/i.test(c.government)&&i<=3) weight+=4;
+        return [cr,weight];
+    }));
+    c.crime=crimeIndex; c.crimeValue=crimeLevels.indexOf(crimeIndex)+1;
+    let mIdx=weighted(magicLevels.map((m,i)=>[i, 2+Math.max(0,4-Math.abs(i-(1+sizeIndex*0.7)))]));
+    if(c.government==="Mageocracy") mIdx=Math.max(mIdx,magicLevels.indexOf("Widespread"));
+    if(c.terrain==="Magical wastes"||c.terrain==="Planar convergence") mIdx=Math.max(mIdx,magicLevels.indexOf("Very common"));
+    c.magic=magicLevels[mIdx]; c.magicValue=mIdx+1;
+
     c.popularClasses=pickManyStr(popularClasses,2,4);
     c.religions=pickManyStr(religions,1,3);
-    c.crime=getRandom(crimeLevels);
-    c.crimeValue=crimeLevels.indexOf(c.crime)+1;
-    let mIdx=Math.floor(Math.random()*magicLevels.length);
-    if(c.government==="Mageocracy") mIdx=Math.max(mIdx,magicLevels.indexOf("Widespread"));
-    c.magic=magicLevels[mIdx]; c.magicValue=mIdx+1;
+
+    // ── Powers ──
     c.majorFaction=getRandom(factions);
-    c.guilds=pickManyStr(guilds,2,4);
+    c.guilds=preferring(guilds, exportKeys.concat(prof.work), 2, 4).join(', ');
     c.secretSocieties=pickManyStr(secretSocieties,1,2);
-    c.criminalOrgs=pickManyStr(criminalOrganizations,1,2);
-    c.districts=generateDistricts();
+    c.criminalOrgs=pickManyStr(criminalOrganizations, 1, c.crimeValue>=6?3:2);
+
+    // ── Places ──
+    c.districts=generateDistricts(sizeIndex, prof.keys);
     c.taverns=pickManyStr(tavernNames,1,3);
     c.shops=pickManyStr(shopNames,1,3);
     c.landmarks=pickManyStr(landmarks,2,4);
-    c.magicalLocations=pickManyStr(magicalLocations,1,3);
-    c.npcs=Array.from({length:3+Math.floor(Math.random()*3)},generateNPC);
+    c.magicalLocations=pickManyStr(magicalLocations, 1, c.magicValue>=7?3:2);
+    c.npcs=Array.from({length:Math.min(6, 3+Math.floor(sizeIndex/2))},()=>generateNPC(c.dominantRace));
+
+    // ── Colour and trouble ──
     c.festival=getRandom(festivals);
     c.tradition=getRandom(traditions);
     c.cuisine=pickManyStr(cuisines,1,3);
@@ -1085,9 +1505,13 @@ function generate(){
     c.rumors=pickManyStr(rumors,1,3);
     c.quest=getRandom(quests);
     c.historyEvent=getRandom(cityHistoryEvents);
-    c.heraldry=`A ${getRandom(heraldrySymbols)} on a field of ${getRandom(heraldryColors)}.`;
     const law=getRandom(notableLaws);
     c.notableLaw=`${law.law} The punishment: ${law.punishment}`;
+
+    // ── Arms: derived from everything above, with their own sub-seed ──
+    c.armsSeed=(currentSeed ^ 0x9E3779B9) >>> 0;
+    c.arms=Heraldry.generateArms(c, c.armsSeed);
+    c.heraldry=c.arms.blazon;
     return c;
 }
 
@@ -1109,11 +1533,14 @@ function displayCity(c){
     set('cityName',c.name);
     set('cityTagline',c.tagline);
     const badges=document.getElementById('heroBadges');
-    badges.innerHTML=`<span class="hero-badge">${c.size}</span><span class="hero-badge">${c.government}</span><span class="hero-badge">${c.terrain}</span><span class="hero-badge">${c.wealth}</span>`;
+    badges.innerHTML=`<span class="hero-badge">${c.size}</span><span class="hero-badge">${c.government}</span><span class="hero-badge">${c.terrain}</span><span class="hero-badge">${c.wealth}</span><span class="hero-badge">${c.dominantRace}</span>`;
+    renderArms(c);
+    const seedField=document.getElementById('seedInput');
+    if(seedField && document.activeElement!==seedField) seedField.value=c.seed;
 
     // Overview tab
     set('population',c.population); set('citySize',c.size); set('density',c.density);
-    set('government',c.government); set('location',c.location);
+    set('government',c.government); set('ruler',c.ruler); set('location',c.location);
     set('terrain',c.terrain); set('climate',c.climate); set('waterSource',c.waterSource);
     set('elevation',c.elevation); set('atmosphere',c.atmosphere);
     set('wealth',c.wealth); set('industries',c.industries); set('exports',c.exports);
@@ -1183,7 +1610,7 @@ function displayCity(c){
 
     // Lore tab
     set('cityDescription',c.description);
-    set('historyEvent',c.historyEvent); set('heraldry',c.heraldry);
+    set('historyEvent',c.historyEvent); set('foundedYear',c.foundedYear); set('heraldry',c.heraldry);
     set('notableLaw',c.notableLaw);
     set('atmosphereLore',c.atmosphere); set('festivalLore',c.festival);
     set('traditionLore',c.tradition);
@@ -1217,6 +1644,81 @@ function displayCity(c){
     triggerCardAnimations();
 }
 
+// ─── ARMS ─────────────────────────────────────────────────────────────────────
+const FLAG_LABELS={banner:'Banner',rect:'Standard flag',gonfalon:'Gonfalon',pennon:'Pennon',swallowtail:'Swallowtail',guidon:'Guidon',standard:'Long standard'};
+
+function renderArms(c){
+    const a=c.arms;
+    if(!a) return;
+    const H=Heraldry;
+
+    document.getElementById('armsAchievement').innerHTML=H.renderAchievement(a,{label:`Arms of ${c.name}`});
+    document.getElementById('armsBanner').innerHTML=H.renderBanner(a,a.flagKind,{label:`Banner of ${c.name}`});
+    document.getElementById('armsSeal').innerHTML=H.renderSeal(a,c.name,{label:`Seal of ${c.name}`});
+    document.getElementById('heroArms').innerHTML=H.renderShield(a,{label:`Arms of ${c.name}`});
+
+    set('blazonText',a.blazon);
+    set('mottoText',a.motto.text);
+    set('mottoGloss',a.motto.tongue==='Common' ? 'in the Common tongue' : `${a.motto.tongue} — “${a.motto.en}”`);
+    set('armsShapeName',capitalise(H.SHAPES[a.shape].name));
+    set('armsCrestName',capitalise(H.CRESTS[a.crest].name));
+    set('armsSupporters', a.supporters ? `Two ${H.CHARGES[a.supporters.key].plural} ${H.TINCTURE[a.supporters.t].name}` : 'None borne');
+    set('armsGranted', c.foundedYear ? `Registered ${c.foundedYear}` : '—');
+    set('sealNote', `Pressed in ${H.TINCTURE[H.waxTincture(a)].mood} wax`);
+
+    // Livery swatches
+    const lr=document.getElementById('liveryRow');
+    lr.innerHTML=a.livery.map(t=>{
+        const tc=H.TINCTURE[t];
+        const bg=tc.fur ? `repeating-linear-gradient(45deg, ${tc.hex} 0 6px, ${tc.spot} 6px 9px)` : tc.hex;
+        return `<div class="livery-chip"><span class="livery-swatch" style="background:${bg}"></span><span class="livery-name">${tc.name}</span></div>`;
+    }).join('');
+
+    // Why each element is there — one line per reason, no repeats
+    const seenWhy=new Set();
+    document.getElementById('symbolismList').innerHTML=a.symbolism.filter(s=>{
+        if(seenWhy.has(s.why)) return false;
+        seenWhy.add(s.why); return true;
+    }).map(s=>
+        `<div class="symbol-item"><span class="symbol-what">${s.what}</span><span class="symbol-why">${s.why}</span></div>`
+    ).join('');
+
+    buildChipRow('shapePicker', Object.keys(H.SHAPES), a.shape, k=>capitalise(H.SHAPES[k].name.replace(/ shield$/,'')), k=>{
+        a.shape=k; renderArms(c);
+    });
+    buildChipRow('flagPicker', H.FLAG_KINDS, a.flagKind, k=>FLAG_LABELS[k]||k, k=>{
+        a.flagKind=k; renderArms(c);
+    });
+}
+
+function buildChipRow(id, keys, active, label, onPick){
+    const row=document.getElementById(id);
+    if(!row) return;
+    row.innerHTML=keys.map(k=>`<button class="chip${k===active?' active':''}" data-key="${k}">${label(k)}</button>`).join('');
+    row.querySelectorAll('.chip').forEach(btn=>{
+        btn.addEventListener('click',()=>onPick(btn.dataset.key));
+    });
+}
+
+function downloadSvg(markup, filename){
+    const doc='<?xml version="1.0" encoding="UTF-8"?>\n'+markup;
+    const blob=new Blob([doc],{type:'image/svg+xml;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.href=url; link.download=filename;
+    document.body.appendChild(link); link.click();
+    document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function slug(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'arms'; }
+function copyText(t){
+    const ta=document.createElement('textarea');
+    ta.value=t; ta.style.position='fixed'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+}
+
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
@@ -1229,30 +1731,89 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     });
 });
 
+function openTab(name){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    const btn=document.querySelector(`[data-tab="${name}"]`);
+    const panel=document.getElementById('tab-'+name);
+    if(btn) btn.classList.add('active');
+    if(panel) panel.classList.add('active');
+    triggerCardAnimations();
+}
+
 // ─── GENERATE BUTTON ──────────────────────────────────────────────────────────
+function conjure(seed){
+    displayCity(generate(seed));
+    writeSeedToUrl(city.seed);
+    openTab('overview');
+    document.getElementById('mainSheet').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function writeSeedToUrl(seed){
+    try{ history.replaceState(null,'',`${location.pathname}?seed=${seed}`); }catch(e){}
+}
+
 document.getElementById('generateBtn').addEventListener('click',()=>{
     const btn=document.getElementById('generateBtn');
     btn.classList.add('btn-generating');
     setTimeout(()=>btn.classList.remove('btn-generating'),600);
-    displayCity(generate());
-    // Snap to overview tab
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    document.querySelector('[data-tab="overview"]').classList.add('active');
-    document.getElementById('tab-overview').classList.add('active');
-    // Smooth scroll to top of sheet
-    document.getElementById('mainSheet').scrollIntoView({behavior:'smooth',block:'start'});
+    conjure();
+});
+
+// Seed box: type a number, get that exact settlement back.
+document.getElementById('seedInput').addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    const raw=e.target.value.trim();
+    if(!raw) return;
+    const seed=/^\d+$/.test(raw) ? (parseInt(raw,10)>>>0) : Heraldry.hashStr(raw);
+    conjure(seed);
+    showToast('✦ Settlement recalled from seed');
+});
+
+// Clicking the hero arms jumps to the roll of arms.
+document.getElementById('heroArms').addEventListener('click',()=>{
+    openTab('arms');
+    document.getElementById('tab-arms').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+// ─── HERALD'S WORKSHOP ────────────────────────────────────────────────────────
+document.getElementById('rerollArmsBtn').addEventListener('click',()=>{
+    city.armsSeed=Math.floor(Math.random()*0xFFFFFFFF)>>>0;
+    city.arms=Heraldry.generateArms(city, city.armsSeed);
+    city.heraldry=city.arms.blazon;
+    set('heraldry',city.heraldry);
+    renderArms(city);
+    showToast('✦ The heralds have redrawn the arms');
+});
+document.getElementById('downloadArmsBtn').addEventListener('click',()=>{
+    downloadSvg(Heraldry.renderAchievement(city.arms,{label:`Arms of ${city.name}`}), `${slug(city.name)}-arms.svg`);
+});
+document.getElementById('downloadBannerBtn').addEventListener('click',()=>{
+    downloadSvg(Heraldry.renderBanner(city.arms, city.arms.flagKind,{label:`Banner of ${city.name}`}), `${slug(city.name)}-banner.svg`);
+});
+document.getElementById('downloadSealBtn').addEventListener('click',()=>{
+    downloadSvg(Heraldry.renderSeal(city.arms, city.name,{label:`Seal of ${city.name}`}), `${slug(city.name)}-seal.svg`);
+});
+document.getElementById('copyBlazonBtn').addEventListener('click',()=>{
+    copyText(`${city.name}\n${city.arms.blazon}\nMotto: ${city.arms.text||city.arms.motto.text}${city.arms.motto.tongue==='Common'?'':` (${city.arms.motto.tongue}) — “${city.arms.motto.en}”`}`);
+    showToast('✦ Blazon copied');
 });
 
 // ─── COPY BUTTON ──────────────────────────────────────────────────────────────
 document.getElementById('copyBtn').addEventListener('click',()=>{
     if(!city.name) return;
-    const t=`# ${city.name}\n*${city.tagline}*\n\n## Overview\n- Population: ${city.population} (${city.size})\n- Location: ${city.location}\n- Government: ${city.government}\n- Terrain: ${city.terrain}, ${city.climate}\n- Wealth: ${city.wealth}\n\n## Society\n- Religions: ${city.religions}\n- Crime: ${city.crime}\n- Magic: ${city.magic}\n\n## Powers\n- Ruling Faction: ${city.majorFaction}\n- Guilds: ${city.guilds}\n\n## Threats\n- ${city.majorThreat}\n- Quest: ${city.quest}\n- Rumors: ${city.rumors}\n\n## Description\n${city.description}`;
-    const ta=document.createElement('textarea');
-    ta.value=t; ta.style.position='fixed'; ta.style.left='-9999px';
-    document.body.appendChild(ta); ta.focus(); ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    const a=city.arms;
+    const mottoLine=a.motto.tongue==='Common'
+        ? a.motto.text
+        : `${a.motto.text} (${a.motto.tongue}) — “${a.motto.en}”`;
+    const t=`# ${city.name}\n*${city.tagline}*\n\n`+
+`## Overview\n- Seed: ${city.seed}\n- Population: ${city.population} (${city.size})\n- Founded: ${city.foundedYear}\n- Location: ${city.location}\n- Government: ${city.government}\n- Ruler: ${city.ruler}\n- Terrain: ${city.terrain}, ${city.climate}\n- Wealth: ${city.wealth}\n- Majority: ${city.dominantRace}\n\n`+
+`## Arms\n- Blazon: ${a.blazon}\n- Motto: ${mottoLine}\n- Livery: ${a.livery.map(k=>Heraldry.TINCTURE[k].name).join(', ')}\n- Banner: ${FLAG_LABELS[a.flagKind]||a.flagKind}\n${a.symbolism.map(s=>`- ${s.what}: ${s.why}`).join('\n')}\n\n`+
+`## Society\n- Religions: ${city.religions}\n- Crime: ${city.crime}\n- Magic: ${city.magic}\n- Languages: ${city.languages}\n\n`+
+`## Powers\n- Ruling Faction: ${city.majorFaction}\n- Guilds: ${city.guilds}\n- Secret societies: ${city.secretSocieties}\n- Criminal element: ${city.criminalOrgs}\n\n`+
+`## Districts\n${city.districts.map(d=>`- **${d.name}** — ${d.desc}`).join('\n')}\n\n`+
+`## Threats\n- ${city.majorThreat}\n- Quest: ${city.quest}\n- Rumors: ${city.rumors}\n- Intrigue: ${city.politicalIntrigue}\n\n`+
+`## Description\n${city.description}`;
+    copyText(t);
     showToast('✦ Transcribed to scroll!');
 });
 
@@ -1263,6 +1824,19 @@ function showToast(msg){
     setTimeout(()=>t.classList.remove('show'),2400);
 }
 
+// ─── STICKY OFFSET ────────────────────────────────────────────────────────────
+// The header wraps on narrow screens, so the tab bar tracks its measured height.
+function syncHeaderHeight(){
+    const h=document.querySelector('.site-header');
+    if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
+}
+if(window.ResizeObserver){
+    new ResizeObserver(syncHeaderHeight).observe(document.querySelector('.site-header'));
+}else{
+    window.addEventListener('resize',syncHeaderHeight);
+}
+syncHeaderHeight();
+
 // ─── SCROLL PROGRESS ──────────────────────────────────────────────────────────
 window.addEventListener('scroll',()=>{
     const s=document.documentElement;
@@ -1271,7 +1845,15 @@ window.addEventListener('scroll',()=>{
 });
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('load',()=>{ displayCity(generate()); });
+window.addEventListener('load',()=>{
+    // ?seed=… lets a settlement be linked to and rebuilt exactly.
+    const param=new URLSearchParams(location.search).get('seed');
+    const seed=param && /^\d+$/.test(param) ? (parseInt(param,10)>>>0)
+             : param ? Heraldry.hashStr(param)
+             : undefined;
+    displayCity(generate(seed));
+    writeSeedToUrl(city.seed);
+});
 </script>
 </body>
 </html>
