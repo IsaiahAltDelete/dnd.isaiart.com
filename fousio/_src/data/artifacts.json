@@ -1,0 +1,469 @@
+{
+ "staff": {
+  "id": "SOP_FixedStar",
+  "name": "Staff of the Fixed Star",
+  "desc": "Gold beaten thin and bent to a point five times over. Isaiah's Staff, reforged: it wakes with its bearer, Awakened at level 5 and Legendary at level 9.",
+  "tech": null,
+  "rarity": "Legendary",
+  "type": "Weapon",
+  "weight": "1.8",
+  "value": "6200",
+  "properties": [
+   "+1 weapon enchantment",
+   "+1 weapon enchantment from level 9"
+  ],
+  "passives": [
+   {
+    "id": "ART_ISS_Dormant_Passive",
+    "name": "Grows With You",
+    "desc": "+1 staff, and Shield once per Long Rest.\nLevel 5: +1 Spell Save DC; Counterspell (1 charge) refunds the countered spell's level.\nLevel 9: +2 staff, +2 Spell Attack, Retributive Strike.",
+    "hidden": false,
+    "boosts": null
+   },
+   {
+    "id": "ART_ISS_ResonantWard_Passive",
+    "name": "Resonant Ward",
+    "desc": "A 2nd-level+ spell or any Abjuration spell adds 1 charge to your Arcane Ward (the spell's level from level 9).",
+    "hidden": false,
+    "boosts": null
+   },
+   {
+    "id": "ART_ISS_Charges_Passive",
+    "name": "Soul Charges",
+    "desc": "10 Soul Charges (20 at level 5, 30 at level 9), partly regained each Long Rest. On the last charge: 5% surge, 5% grief.",
+    "hidden": false,
+    "boosts": null
+   }
+  ],
+  "spells": [
+   {
+    "id": "Shout_MAG_Shield",
+    "name": "Shield",
+    "level": 1,
+    "school": "Abjuration",
+    "desc": "When you are about to be hit by an enemy, increase your Armour Class by 5. You take no damage from Magic Missile.",
+    "cost": "Reaction",
+    "concentration": false,
+    "ritual": false,
+    "src": "vanilla",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Shout_ART_ISS_ReinforceWard",
+    "name": "Reinforce Ward (2 charges)",
+    "level": 0,
+    "school": "Abjuration",
+    "desc": "Bonus action. Feed 2 Soul Charges into your Arcane Ward: it gains 3 charges.",
+    "cost": "Bonus action, 2 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Interrupt_ART_ISS_AbsorbElements",
+    "name": "Absorb Elements (1 charge)",
+    "desc": "Absorb elemental damage once per Short Rest. Take half damage from the next elemental attack targetting you, and deal an additional 1d6 of that element type on your next attack.",
+    "level": null,
+    "school": null,
+    "cost": "Reaction, 1 charge",
+    "unlock": "always",
+    "kind": "reaction"
+   },
+   {
+    "id": "Target_ART_ISS_MageArmor",
+    "name": "Mage Armour (1 charge)",
+    "level": 1,
+    "school": "Abjuration",
+    "desc": "Protect a target from attacks: increase its Armour Class to 13 + its Dexterity modifier.",
+    "cost": "Action, 1 charge",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_ProtectionFromEvilAndGood",
+    "name": "Protection from Evil and Good (1 charge)",
+    "level": 1,
+    "school": "Abjuration",
+    "desc": "Protect an ally against the attacks and powers of aberrations, celestials, elementals, fey, fiends, and undead.",
+    "cost": "Action, 1 charge",
+    "concentration": true,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_MistyStep",
+    "name": "Misty Step (2 charges)",
+    "level": 2,
+    "school": "Conjuration",
+    "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+    "cost": "Bonus action, 2 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Shout_ART_ISS_SeeInvisibility",
+    "name": "See Invisibility (2 charges)",
+    "level": 2,
+    "school": "Divination",
+    "desc": "Become able to see Invisible creatures, and possibly reveal them to others.",
+    "cost": "Action, 2 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "always",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_Counterspell",
+    "name": "Counterspell (1 charge, refunds the spell's level)",
+    "level": 5,
+    "school": "Abjuration",
+    "desc": "Try to stop a spell being cast.",
+    "cost": "Reaction, 1 charge",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 5",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_RemoveCurse",
+    "name": "Remove Curse (3 charges)",
+    "level": 3,
+    "school": "Abjuration",
+    "desc": "Touch a creature or object to remove all Curses and Hexes affecting it.",
+    "cost": "Action, 3 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 5",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_FreedomOfMovement",
+    "name": "Freedom of Movement (4 charges)",
+    "level": 4,
+    "school": "Abjuration",
+    "desc": "Snap an ally out of any Stun. Difficult Terrain can't slow them down, and they can't be magically Paralysed or Restrained.",
+    "cost": "Action, 4 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 5",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_Banishment",
+    "name": "Banishment (4 charges)",
+    "level": 4,
+    "school": "Abjuration",
+    "desc": "Temporarily Banish your target to another plane of existence.",
+    "cost": "Action, 4 charges",
+    "concentration": true,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 9",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_DeathWard",
+    "name": "Death Ward (4 charges)",
+    "level": 4,
+    "school": "Abjuration",
+    "desc": "Protect a creature from death. The next time damage would reduce it to 0 hit points, it remains conscious with 1 hit point left.",
+    "cost": "Action, 4 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 9",
+    "kind": "spell"
+   },
+   {
+    "id": "Wall_ART_ISS_WallOfForce",
+    "name": "Wall of Force (5 charges)",
+    "level": 5,
+    "school": "Evocation",
+    "desc": "Conjure a shimmering line of pure arcane force. Creatures that begin their turn within or pass through the wall make a Dexterity save: on failure, 5d8 Force damage; on success, half. The wall persists for 10 turns. Concentration.",
+    "cost": "Action, 5 charges",
+    "concentration": true,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 9",
+    "kind": "spell"
+   },
+   {
+    "id": "Target_ART_ISS_GlobeOfInvulnerability",
+    "name": "Globe of Invulnerability (6 charges)",
+    "level": 6,
+    "school": "Abjuration",
+    "desc": "Create a barrier that makes creatures and objects inside it Immune to all damage.",
+    "cost": "Action, 6 charges",
+    "concentration": true,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 9",
+    "kind": "spell"
+   },
+   {
+    "id": "Shout_ART_ISS_SoulRupture",
+    "name": "Retributive Strike",
+    "level": 0,
+    "school": "Evocation",
+    "desc": "Break Isaiah's Staff. Every Soul Charge you pour in becomes a wave of Force around you (4 damage per charge, Dexterity save for half). The staff shatters for good and the backlash may take you with it - or throw you across the planes.",
+    "cost": "Action, 5 charges",
+    "concentration": false,
+    "ritual": false,
+    "src": "FousiosTomeOfItems",
+    "unlock": "from level 9",
+    "kind": "spell"
+   }
+  ],
+  "src": "FousiosTomeOfItems",
+  "icon": "Item_WPN_HUM_Quarterstaff_A_1",
+  "damage": "1d6",
+  "damage_type": "Bludgeoning",
+  "versatile": "1d8",
+  "weapon_props": [
+   "Melee",
+   "Versatile"
+  ],
+  "proficiency": "Quarterstaffs",
+  "enchant": [
+   "+1 weapon enchantment",
+   "+1 weapon enchantment from level 9"
+  ],
+  "extra": {
+   "surge": {
+    "name": "Isaiah Remembers",
+    "desc": "The staff surges: it regains 1d10+2 Soul Charges."
+   },
+   "grief": {
+    "name": "Isaiah's Grief",
+    "desc": "The heartwood ruptured (3d8 Force). No charge spells until the next Long Rest."
+   },
+   "shattered": {
+    "name": "Shattered",
+    "desc": "Isaiah's Staff is spent. Its wards, charges and spells are gone; only the wood remains."
+   },
+   "last": {
+    "name": "Last Charge",
+    "desc": "The last Soul Charge has been spent. The soul in the heartwood decides."
+   },
+   "escape": {
+    "name": "Planar Escape",
+    "desc": "You slipped between the planes an instant before the staff exploded and took no damage from it."
+   }
+  },
+  "rupture": [
+   {
+    "charges": 5,
+    "damage": 20,
+    "backlash": 80
+   },
+   {
+    "charges": 10,
+    "damage": 40,
+    "backlash": 160
+   },
+   {
+    "charges": 15,
+    "damage": 60,
+    "backlash": 240
+   },
+   {
+    "charges": 20,
+    "damage": 80,
+    "backlash": 320
+   }
+  ],
+  "rupture_desc": "Break Isaiah's Staff. Every Soul Charge you pour in becomes a wave of Force around you (4 damage per charge, Dexterity save for half). The staff shatters for good and the backlash may take you with it - or throw you across the planes."
+ },
+ "circlet": {
+  "id": "ART_CircletOfNous_Evolving",
+  "name": "Circlet of Nous A",
+  "desc": "A thin band that keeps the mind in one piece. It evolves with its bearer: the next tier wakes at level 5, the last at level 9, and each keeps what came before. Focus: +1 Spell Attack while concentrating. Restored (5): +1 Spell Attack always, Sharp Mind. Legendary (9): +1 Spell Save DC, Unshakable Mind.",
+  "tech": null,
+  "rarity": "Legendary",
+  "type": "Armor",
+  "weight": "0.5",
+  "value": "1900",
+  "properties": [],
+  "passives": [
+   {
+    "id": "ART_CN_Focus_Passive",
+    "name": "Measured Focus",
+    "desc": "+1 to Spell Attack Rolls while you are concentrating; from level 5 the bonus is permanent; from level 9 also +1 Spell Save DC.",
+    "hidden": false,
+    "boosts": "IF(IsConcentrating(context.Source) and not CharacterLevelGreaterThan(4)):RollBonus(MeleeSpellAttack, 1);IF(IsConcentrating(context.Source) and not CharacterLevelGreaterThan(4)):RollBonus(RangedSpellAttack, 1);IF(CharacterLevelGreaterThan(4)):RollBonus(MeleeSpellAttack, 1);IF(CharacterLevelGreaterThan(4)):RollBonus(RangedSpellAttack, 1);IF(CharacterLevelGreaterThan(8)):SpellSaveDC(1)"
+   },
+   {
+    "id": "ART_CN_SharpMind_Passive",
+    "name": "Sharp Mind",
+    "desc": "From level 5: +1 to Constitution Saving Throws.",
+    "hidden": false,
+    "boosts": "IF(CharacterLevelGreaterThan(4)):RollBonus(SavingThrow,1,Constitution)"
+   },
+   {
+    "id": "ART_CN_UnshakableMind_Passive",
+    "name": "Unshakable Mind",
+    "desc": "From level 9: Advantage on Concentration Saving Throws.",
+    "hidden": false,
+    "boosts": "IF(CharacterLevelGreaterThan(8)):Advantage(Concentration)"
+   }
+  ],
+  "spells": [],
+  "src": "FousiosTomeOfItems",
+  "icon": "Item_ARM_Circlet",
+  "ac": null,
+  "armor_type": "Cloth",
+  "variants": [
+   {
+    "id": "ART_CircletOfNous_Evolving",
+    "name": "Circlet of Nous A",
+    "desc": "A thin band that keeps the mind in one piece. It evolves with its bearer: the next tier wakes at level 5, the last at level 9, and each keeps what came before. Focus: +1 Spell Attack while concentrating. Restored (5): +1 Spell Attack always, Sharp Mind. Legendary (9): +1 Spell Save DC, Unshakable Mind."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_B",
+    "name": "Circlet of Nous B",
+    "desc": "Three ribbons that loop the head together, the top one parting into a low lens over the brow. Polished. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_C",
+    "name": "Circlet of Nous C",
+    "desc": "Three ribbons that loop the head together, parting widest over the brow and merging behind the ears. Matte gold. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_D",
+    "name": "Circlet of Nous D",
+    "desc": "Matte gold that leaves the forehead bare: the ribbons sweep round the sides and back and end at the temples in two soft wings. The matte twin of E. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_D_Polished",
+    "name": "Circlet of Nous E",
+    "desc": "Polished gold that leaves the forehead bare: the ribbons sweep round the sides and back and end at the temples in two soft wings. The polished twin of D. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_F",
+    "name": "Circlet of Nous F",
+    "desc": "Three straight ribbons round the head, the middle one broad and lettered in braille, polished gold. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_G",
+    "name": "Circlet of Nous G",
+    "desc": "The straight triple band with the forehead left bare: three ribbons round the sides and back, ending at the temples. Polished gold. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_H",
+    "name": "Circlet of Nous H",
+    "desc": "One ribbon, no end: it runs round the back as the upper band, turns at each temple and comes back as the lower one, the forehead left bare. Matte gold, braille on the upper run. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   },
+   {
+    "id": "ART_CircletOfNous_Evolving_I",
+    "name": "Circlet of Nous I",
+    "desc": "One ribbon, no end: it runs round the back as the upper band, turns at each temple and comes back as the lower one, the forehead left bare. Polished gold, braille on the upper run. Same wards as Circlet of Nous A; wakes at levels 5 and 9."
+   }
+  ],
+  "forms": [
+   {
+    "id": "ART_CircletOfNous_Restored",
+    "name": "Circlet of Nous (Restored)",
+    "desc": "The fractured band has been made whole, and every repaired line points thought toward purpose.",
+    "tech": null,
+    "rarity": "Rare",
+    "type": "Armor",
+    "weight": "0.5",
+    "value": "700",
+    "properties": [],
+    "passives": [
+     {
+      "id": "ART_CircletOfNous_Restored_Passive",
+      "name": "Measured Focus",
+      "desc": "Gain +1 to Spell Attack Rolls.",
+      "hidden": false,
+      "boosts": "RollBonus(MeleeSpellAttack, 1);RollBonus(RangedSpellAttack, 1)"
+     },
+     {
+      "id": "ART_CircletOfNous_SharpMind_Passive",
+      "name": "Sharp Mind",
+      "desc": "Gain +1 to Constitution Saving Throws, helping you maintain Concentration.",
+      "hidden": false,
+      "boosts": "RollBonus(SavingThrow,1,Constitution)"
+     }
+    ],
+    "spells": [],
+    "src": "FousiosTomeOfItems",
+    "icon": "Item_ARM_Circlet",
+    "ac": null,
+    "armor_type": "Cloth"
+   },
+   {
+    "id": "ART_CircletOfNous_Legendary",
+    "name": "Circlet of Nous (Legendary)",
+    "desc": "The crown of a finished theorem: light, severe, and almost impossible to distract.",
+    "tech": null,
+    "rarity": "Very Rare",
+    "type": "Armor",
+    "weight": "0.5",
+    "value": "1900",
+    "properties": [],
+    "passives": [
+     {
+      "id": "ART_CircletOfNous_Legendary_Passive",
+      "name": "Measured Focus",
+      "desc": "Gain +1 to Spell Attack Rolls and +1 to Spell Save DC.",
+      "hidden": false,
+      "boosts": "RollBonus(MeleeSpellAttack, 1);RollBonus(RangedSpellAttack, 1);SpellSaveDC(1)"
+     },
+     {
+      "id": "ART_CircletOfNous_UnshakableMind_Passive",
+      "name": "Unshakable Mind",
+      "desc": "Gain Advantage on Saving Throws to maintain Concentration.",
+      "hidden": false,
+      "boosts": "Advantage(Concentration)"
+     }
+    ],
+    "spells": [],
+    "src": "FousiosTomeOfItems",
+    "icon": "Item_ARM_Circlet",
+    "ac": null,
+    "armor_type": "Cloth"
+   },
+   {
+    "id": "HAI_FocusCirclet",
+    "name": "Circlet of Nous (Fragmented)",
+    "desc": "A thin study circlet set with a small brass flower to draw wandering thoughts into line.",
+    "tech": null,
+    "rarity": "Uncommon",
+    "type": "Armor",
+    "weight": "0.5",
+    "value": "180",
+    "properties": [],
+    "passives": [
+     {
+      "id": "HAI_FocusCirclet_Passive",
+      "name": "Measured Focus",
+      "desc": "Gain +1 to Spell Attack Rolls while actively Concentrating on a spell.",
+      "hidden": false,
+      "boosts": "IF(IsConcentrating(context.Source)):RollBonus(MeleeSpellAttack, 1);IF(IsConcentrating(context.Source)):RollBonus(RangedSpellAttack, 1)"
+     }
+    ],
+    "spells": [],
+    "src": "FousiosTomeOfItems",
+    "icon": "Item_ARM_Circlet",
+    "ac": null,
+    "armor_type": "Cloth"
+   }
+  ]
+ }
+}

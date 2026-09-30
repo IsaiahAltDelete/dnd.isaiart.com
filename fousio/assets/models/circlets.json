@@ -1,0 +1,198 @@
+{
+  "about": "Circlet of Nous looks from Fousio's Tome of Items (BG3 mod): one entry per stats entry, one GLB per distinct mesh. Variants sharing a mesh differ only in finish; when a variant's finish is not the one baked into its file, apply that finish's factors from \"finishes\".",
+  "space": "Y up, metres, bbox centred on the origin, front of the head at +Z, as worn: the ring rises wornTiltDeg toward the brow, like vanilla circlets (rotate about X by +wornTiltDeg to level it; three.js rotation.x = wornTiltDeg * Math.PI / 180). wornCentre is where the bbox centre sat on the vanilla human-male head (same axes, feet at y 0).",
+  "variants": [
+    {
+      "letter": "A",
+      "stats": "ART_CircletOfNous_Evolving",
+      "displayName": "Circlet of Nous A",
+      "file": "circlet-a.glb",
+      "mesh": "Braille_Crown_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "66885ebc-3dda-5ec1-bc07-2e3e6ddf13f9",
+      "visual": "HUM_M_Braille_Crown"
+    },
+    {
+      "letter": "B",
+      "stats": "ART_CircletOfNous_Evolving_B",
+      "displayName": "Circlet of Nous B",
+      "file": "circlet-b.glb",
+      "mesh": "Braille_Crown_Peak_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "2630203b-867e-5e08-9d76-c5990b728bc3",
+      "visual": "HUM_M_Braille_Crown_Peak"
+    },
+    {
+      "letter": "C",
+      "stats": "ART_CircletOfNous_Evolving_C",
+      "displayName": "Circlet of Nous C",
+      "file": "circlet-c.glb",
+      "mesh": "Braille_Crown_Lens_HUM_M.GR2",
+      "finish": "matte",
+      "rootTemplate": "f46c8e67-4553-586b-b6c7-508c7c5e9a19",
+      "visual": "HUM_M_Braille_Crown_Lens"
+    },
+    {
+      "letter": "D",
+      "stats": "ART_CircletOfNous_Evolving_D",
+      "displayName": "Circlet of Nous D",
+      "file": "circlet-e.glb",
+      "mesh": "Braille_Crown_Open_HUM_M.GR2",
+      "finish": "matte",
+      "rootTemplate": "2124d245-4e89-57c3-846a-9d2d0db9e238",
+      "visual": "HUM_M_Braille_Crown_Open"
+    },
+    {
+      "letter": "E",
+      "stats": "ART_CircletOfNous_Evolving_D_Polished",
+      "displayName": "Circlet of Nous E",
+      "file": "circlet-e.glb",
+      "mesh": "Braille_Crown_Open_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "96a4132d-3d07-5049-b71e-82cccf2bf651",
+      "visual": "HUM_M_Braille_Crown_Open_Polished"
+    },
+    {
+      "letter": "F",
+      "stats": "ART_CircletOfNous_Evolving_F",
+      "displayName": "Circlet of Nous F",
+      "file": "circlet-f.glb",
+      "mesh": "Braille_Crown_Straight_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "da940e6d-9e2e-5d6f-a33d-1dd9988cada2",
+      "visual": "HUM_M_Braille_Crown_Straight"
+    },
+    {
+      "letter": "G",
+      "stats": "ART_CircletOfNous_Evolving_G",
+      "displayName": "Circlet of Nous G",
+      "file": "circlet-g.glb",
+      "mesh": "Braille_Crown_StraightOpen_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "35e79959-177a-5e51-ae49-070bf8f923bb",
+      "visual": "HUM_M_Braille_Crown_StraightOpen"
+    },
+    {
+      "letter": "H",
+      "stats": "ART_CircletOfNous_Evolving_H",
+      "displayName": "Circlet of Nous H",
+      "file": "circlet-i.glb",
+      "mesh": "Braille_Crown_Loop_HUM_M.GR2",
+      "finish": "matte",
+      "rootTemplate": "b1c482af-617e-57a4-a6cd-f7ac930f059f",
+      "visual": "HUM_M_Braille_Crown_Loop"
+    },
+    {
+      "letter": "I",
+      "stats": "ART_CircletOfNous_Evolving_I",
+      "displayName": "Circlet of Nous I",
+      "file": "circlet-i.glb",
+      "mesh": "Braille_Crown_Loop_HUM_M.GR2",
+      "finish": "polished",
+      "rootTemplate": "bf3a76e6-9664-5b11-9f22-0bb41f23d365",
+      "visual": "HUM_M_Braille_Crown_Loop_Polished"
+    }
+  ],
+  "files": {
+    "circlet-a.glb": {
+      "mesh": "Braille_Crown_HUM_M.GR2",
+      "design": "wide: four ribbons (9/14/10 mm, a 7 mm one at the back) that merge and part, lens-shaped openings at the temples",
+      "material": "gold-polished",
+      "tris": 21009,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1749, 0.1168, 0.2299],
+      "wornCentre": [-0.001, 1.8513, 0.0258],
+      "wornTiltDeg": 16.1,
+      "normalsRepaired": 301,
+      "bytes": 450512
+    },
+    "circlet-b.glb": {
+      "mesh": "Braille_Crown_Peak_HUM_M.GR2",
+      "design": "peak: triple band, the top ribbon parts into a low arch over the brow",
+      "material": "gold-polished",
+      "tris": 26766,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1744, 0.0992, 0.2303],
+      "wornCentre": [-0.001, 1.8523, 0.0263],
+      "wornTiltDeg": 13.7,
+      "normalsRepaired": 444,
+      "bytes": 517216
+    },
+    "circlet-c.glb": {
+      "mesh": "Braille_Crown_Lens_HUM_M.GR2",
+      "design": "lens: triple band, parts widest at the brow, merges behind the ears",
+      "material": "gold-matte",
+      "tris": 20425,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.172, 0.0791, 0.2285],
+      "wornCentre": [-0.0012, 1.8601, 0.0254],
+      "wornTiltDeg": 11.7,
+      "normalsRepaired": 384,
+      "bytes": 394828
+    },
+    "circlet-e.glb": {
+      "mesh": "Braille_Crown_Open_HUM_M.GR2",
+      "design": "open: the wide crown with nothing on the forehead, ribbons end at the temples",
+      "material": "gold-polished",
+      "tris": 39437,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1746, 0.1106, 0.1866],
+      "wornCentre": [-0.001, 1.8466, 0.0044],
+      "wornTiltDeg": 20.7,
+      "normalsRepaired": 965,
+      "bytes": 831300
+    },
+    "circlet-f.glb": {
+      "mesh": "Braille_Crown_Straight_HUM_M.GR2",
+      "design": "straight: three parallel ribbons (7/14/7 mm), constant 2.5 mm gap",
+      "material": "gold-polished",
+      "tris": 31518,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1741, 0.1063, 0.2246],
+      "wornCentre": [-0.0007, 1.8567, 0.0236],
+      "wornTiltDeg": 17.7,
+      "normalsRepaired": 642,
+      "bytes": 596536
+    },
+    "circlet-g.glb": {
+      "mesh": "Braille_Crown_StraightOpen_HUM_M.GR2",
+      "design": "straight-open: the straight triple band with an open front",
+      "material": "gold-polished",
+      "tris": 26024,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1748, 0.1063, 0.1857],
+      "wornCentre": [-0.0007, 1.8567, 0.0042],
+      "wornTiltDeg": 22.0,
+      "normalsRepaired": 206,
+      "bytes": 492780
+    },
+    "circlet-i.glb": {
+      "mesh": "Braille_Crown_Loop_HUM_M.GR2",
+      "design": "loop: one ribbon round the back, hairpins at the temples, returns as a lower band",
+      "material": "gold-polished",
+      "tris": 16860,
+      "parts": ["crown-body", "braille-dots"],
+      "sizeMetres": [0.1754, 0.0905, 0.203],
+      "wornCentre": [-0.001, 1.8476, 0.0126],
+      "wornTiltDeg": 16.6,
+      "normalsRepaired": 272,
+      "bytes": 320828
+    }
+  },
+  "finishes": {
+    "polished": {
+      "material": "gold-polished",
+      "bg3Material": "Crown_Gold",
+      "baseColorFactor": [0.8595, 0.5274, 0.2674, 1.0],
+      "metallicFactor": 1.0,
+      "roughnessFactor": 0.254
+    },
+    "matte": {
+      "material": "gold-matte",
+      "bg3Material": "Crown_Gold_Matte",
+      "baseColorFactor": [0.8595, 0.5274, 0.2674, 1.0],
+      "metallicFactor": 1.0,
+      "roughnessFactor": 0.651
+    }
+  }
+}

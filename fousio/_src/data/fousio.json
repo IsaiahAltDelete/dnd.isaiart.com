@@ -1,0 +1,4972 @@
+{
+ "name": "Fousio",
+ "race": "High Half-Elf",
+ "race_desc": "A touch of the Feywild remains in half-elves with this bloodline, and even those untrained in magic possess a hint of wild power.",
+ "class": "Wizard",
+ "subclass": "Abjuration",
+ "class_desc": "You twist and harden the Weave into arcane wards to protect yourself and others. Learning Abjuration spells from scrolls only costs you 25g per spell level, not 50.",
+ "classes": [
+  {
+   "class": "Wizard",
+   "subclass": "Abjuration",
+   "level": 12
+  }
+ ],
+ "level": 12,
+ "xp": 200000,
+ "prof": 4,
+ "background": "Sage",
+ "background_desc": "You are curious and well-read, with an unending thirst for knowledge. Learning about rare lore of the world will inspire you to put this knowledge to greater purpose.",
+ "hp": {
+  "current": 74,
+  "max": 74
+ },
+ "abilities": {
+  "Strength": 8,
+  "Dexterity": 18,
+  "Constitution": 15,
+  "Intelligence": 24,
+  "Wisdom": 10,
+  "Charisma": 12
+ },
+ "base_points": {
+  "Strength": 0,
+  "Dexterity": 6,
+  "Constitution": 5,
+  "Intelligence": 7,
+  "Wisdom": 2,
+  "Charisma": 4
+ },
+ "racial_bonus": [
+  "Intelligence",
+  "Constitution"
+ ],
+ "asi": [
+  "Intelligence",
+  "Intelligence"
+ ],
+ "skills_chosen": [
+  "Insight",
+  "Investigation"
+ ],
+ "appearance": {
+  "skin": "Warm Tone 11",
+  "eyes": "Brown 1",
+  "hair": "Blonde Ash 1"
+ },
+ "timeline": [
+  {
+   "level": 1,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_Light",
+     "name": "Light",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Infuse an object with an aura of light.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Projectile_RayOfFrost",
+     "name": "Ray of Frost",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Reduces the target's movement speed by 3m.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_MageHand",
+     "name": "Mage Hand",
+     "level": 0,
+     "school": "Conjuration",
+     "desc": "Create a spectral hand that can manipulate and interact with objects.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Projectile_FireBolt",
+     "name": "Fire Bolt",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Hurl a mote of fire.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_MageArmor",
+     "name": "Mage Armour",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "Protect a target from attacks: increase its Armour Class to 13 + its Dexterity modifier.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Shout_Shield_Wizard",
+     "name": "Shield",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "When you are about to be hit by an enemy, increase your Armour Class by 5. You take no damage from Magic Missile.",
+     "cost": "Reaction, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_FindFamiliar",
+     "name": "Find Familiar",
+     "level": 1,
+     "school": "Conjuration",
+     "desc": "Summon a familiar, a fey spirit that takes an animal form of your choosing.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Projectile_WitchBolt",
+     "name": "Witch Bolt",
+     "level": 1,
+     "school": "Evocation",
+     "desc": "Link yourself to a target with a bolt of lightning. Deal an additional 1d12 Lightning damage each turn by activating it.",
+     "cost": "Action, Level 1 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Projectile_MagicMissile",
+     "name": "Magic Missile",
+     "level": 1,
+     "school": "Evocation",
+     "desc": "Shoot 3 magical darts, each dealing 1d4+1 Force damage. They always hit their target.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_MagnifyGravity",
+     "name": "Magnify Gravity",
+     "level": 1,
+     "school": "Transmutation",
+     "desc": "Increase gravity within a 3m radius of the chosen point. Affected creatures are crushed into the ground reducing their movement speed by half.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+    }
+   ],
+   "passives": [],
+   "abilities": [
+    "Intelligence",
+    "Constitution"
+   ],
+   "skills": [
+    "Insight",
+    "Investigation"
+   ],
+   "feat": null,
+   "feat_desc": null,
+   "features": [
+    "Arcane Recovery"
+   ]
+  },
+  {
+   "level": 2,
+   "class": "Wizard",
+   "subclass": "Abjuration",
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Projectile_ChromaticOrb",
+     "name": "Chromatic Orb",
+     "level": 1,
+     "school": "Evocation",
+     "desc": "Hurl an elemental sphere that deals damage to the target and possibly bounces onto an extra target on impact.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Shout_AbsorbElementsSpell",
+     "name": "Absorb Elements",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "Take half damage from the next elemental attack targetting you, and deal an additional 1d6 of that element type on your next attack.",
+     "cost": "Reaction, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": [
+    "Arcane Ward"
+   ]
+  },
+  {
+   "level": 3,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_MistyStep",
+     "name": "Misty Step",
+     "level": 2,
+     "school": "Conjuration",
+     "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+     "cost": "Bonus action, Level 2 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_HoldPerson",
+     "name": "Hold Person",
+     "level": 2,
+     "school": "Enchantment",
+     "desc": "Hold a humanoid enemy still. They can't move, act or react. Attacks from within 3m are always Critical Hits.",
+     "cost": "Action, Level 2 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": []
+  },
+  {
+   "level": 4,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": "d215b9ad-9753-4d74-8ff9-24bf1dce53d6",
+   "spells": [
+    {
+     "id": "Target_BoomingBladeMove",
+     "name": "Mystra's Booming Blade",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Strike the target dealing a bonus LevelMapValue(D8GreenFlameBlade) Thunder damage. If the attack lands, the target is sheathed in booming energy that deals LevelMapValue(D8Cantrip) Thunder damage to them if they willingly move.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+    },
+    {
+     "id": "Target_GiftOfAlacrity",
+     "name": "Gift of Alacrity",
+     "level": 1,
+     "school": "Divination",
+     "desc": "Grant creature a +2 bonus to Initiative.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+    },
+    {
+     "id": "Zone_Thunderwave",
+     "name": "Thunderwave",
+     "level": 1,
+     "school": "Evocation",
+     "desc": "Release a wave of thunderous force that pushes away all creatures and objects.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [
+    "Intelligence",
+    "Intelligence"
+   ],
+   "skills": [],
+   "feat": "Ability Improvement (+2 Intelligence)",
+   "feat_desc": "You increase one Ability by 2, or two Abilities by 1, to a maximum of 20.",
+   "features": []
+  },
+  {
+   "level": 5,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_Counterspell",
+     "name": "Counterspell",
+     "level": 3,
+     "school": "Abjuration",
+     "desc": "Try to stop a spell being cast.",
+     "cost": "Reaction, Level 3 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Target_GlyphOfWarding",
+     "name": "Glyph of Warding",
+     "level": 3,
+     "school": "Abjuration",
+     "desc": "Inscribe a circle of arcane glyphs on the ground. When stepped on by an enemy, the selected magical effect will trigger.",
+     "cost": "Action, Level 3 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": []
+  },
+  {
+   "level": 6,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_SleetStorm",
+     "name": "Sleet Storm",
+     "level": 3,
+     "school": "Conjuration",
+     "desc": "Call forth a storm that disrupts the Concentration of spellcasters, douses fires, and creates an ice surface.",
+     "cost": "Action, Level 3 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Projectile_Fireball",
+     "name": "Fireball",
+     "level": 3,
+     "school": "Evocation",
+     "desc": "Shoot a bright flame from your fingers that explodes upon contact, torching everything in the vicinity.",
+     "cost": "Action, Level 3 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": [
+    "Projected Ward"
+   ]
+  },
+  {
+   "level": 7,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_IceStorm",
+     "name": "Ice Storm",
+     "level": 4,
+     "school": "Evocation",
+     "desc": "Impel a storm of hail and ice to crash from the sky, covering the ground and striking all objects and creatures within range.",
+     "cost": "Action, Level 4 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    },
+    {
+     "id": "Target_ConjureElementals_Minor_Container",
+     "name": "Conjure Minor Elemental",
+     "level": 4,
+     "school": "Conjuration",
+     "desc": "Conjure a minor elemental to fight alongside you.",
+     "cost": "Action, Level 4 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": []
+  },
+  {
+   "level": 8,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": "ed4e367d-d136-4285-abac-077147e84cf2",
+   "spells": [
+    {
+     "id": "Target_Invisibility_Greater",
+     "name": "Greater Invisibility",
+     "level": 4,
+     "school": "Illusion",
+     "desc": "Turn a creature Invisible. Attacks against it have Disadvantage. It attacks with Advantage.",
+     "cost": "Action, Level 4 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_Slow",
+     "name": "Slow",
+     "level": 3,
+     "school": "Transmutation",
+     "desc": "Target up to 6 creatures and Slow them. Movement and actions are affected, and their AC and Dexterity saves are reduced by 2.",
+     "cost": "Action, Level 3 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": "War Caster",
+   "feat_desc": "You gain Advantage on Saving Throws to maintain Concentration on a spell.\n\nYou can also use a reaction to cast Shocking Grasp at a target moving out of melee range.",
+   "features": []
+  },
+  {
+   "level": 9,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Throw_Telekinesis",
+     "name": "Telekinesis",
+     "level": 5,
+     "school": "Transmutation",
+     "desc": "Throw a creature or object up to 18m with a thought. Once per turn, you can use Telekinesis again without expending a spell slot.",
+     "cost": "Action, Level 5 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_ConjureElemental_Container",
+     "name": "Conjure Elemental",
+     "level": 5,
+     "school": "Conjuration",
+     "desc": "Bend the barrier between the Planes until they disgorge an elemental ally to follow and fight for you.",
+     "cost": "Action, Level 5 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": []
+  },
+  {
+   "level": 10,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Target_MinorIllusion",
+     "name": "Minor Illusion",
+     "level": 0,
+     "school": "Illusion",
+     "desc": "Create an illusion that compels nearby creatures to investigate.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_Longstrider",
+     "name": "Longstrider",
+     "level": 1,
+     "school": "Transmutation",
+     "desc": "Increase a creature's movement speed by 3m.",
+     "cost": "Action, Level 1 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_HoldMonster",
+     "name": "Hold Monster",
+     "level": 5,
+     "school": "Enchantment",
+     "desc": "Paralyse a creature. It can't move, act or react. Attacks from within 3m are always Critical Hits.",
+     "cost": "Action, Level 5 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": [
+    "Improved Abjuration"
+   ]
+  },
+  {
+   "level": 11,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": null,
+   "spells": [
+    {
+     "id": "Projectile_ChainLightning",
+     "name": "Chain Lightning",
+     "level": 6,
+     "school": "Evocation",
+     "desc": "Strike an enemy with lightning. Three more bolts will leap from the target, electrifying as many as three other enemies within 18m.",
+     "cost": "Action, Level 6 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Target_IrresistibleDance",
+     "name": "Otto's Irresistible Dance",
+     "level": 6,
+     "school": "Enchantment",
+     "desc": "Cause a creature to start dancing, making it unable to take actions or move. Its attackers have Advantage on Attack Rolls.",
+     "cost": "Action, Level 6 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "spellupdate_9fa6010f-f970-a812-6dug"
+    }
+   ],
+   "passives": [],
+   "abilities": [],
+   "skills": [],
+   "feat": null,
+   "feat_desc": null,
+   "features": []
+  },
+  {
+   "level": 12,
+   "class": "Wizard",
+   "subclass": null,
+   "feat_id": "b13c4744-1d45-42da-b92c-e09f598ab1c3",
+   "spells": [
+    {
+     "id": "Target_Knock",
+     "name": "Knock",
+     "level": 2,
+     "school": "Transmutation",
+     "desc": "Unlock an object that is held shut by a mundane lock.",
+     "cost": "Action, Level 2 slot",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla"
+    },
+    {
+     "id": "Teleportation_ArcaneGate",
+     "name": "Arcane Gate",
+     "level": 6,
+     "school": "Conjuration",
+     "desc": "Create two linked teleportation portals.",
+     "cost": "Action, Level 6 slot",
+     "concentration": true,
+     "ritual": false,
+     "src": "vanilla"
+    }
+   ],
+   "passives": [
+    {
+     "id": "Resilient_Constitution",
+     "name": "Resilient: Constitution",
+     "desc": "Increase your Constitution by 1 and gain Proficiency in Constitution Saving Throws.",
+     "hidden": false,
+     "boosts": "Ability(Constitution,1,20);ProficiencyBonus(SavingThrow,Constitution)"
+    }
+   ],
+   "abilities": [],
+   "skills": [],
+   "feat": "Resilient",
+   "feat_desc": "You increase an Ability by 1, to a maximum of 20, and gain Proficiency in that Ability's Saving Throws.",
+   "features": []
+  }
+ ],
+ "cantrips": [
+  {
+   "id": "Target_Light",
+   "name": "Light",
+   "level": 0,
+   "school": "Evocation",
+   "desc": "Infuse an object with an aura of light.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_RayOfFrost",
+   "name": "Ray of Frost",
+   "level": 0,
+   "school": "Evocation",
+   "desc": "Reduces the target's movement speed by 3m.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_MageHand",
+   "name": "Mage Hand",
+   "level": 0,
+   "school": "Conjuration",
+   "desc": "Create a spectral hand that can manipulate and interact with objects.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_FireBolt",
+   "name": "Fire Bolt",
+   "level": 0,
+   "school": "Evocation",
+   "desc": "Hurl a mote of fire.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_BoomingBladeMove",
+   "name": "Mystra's Booming Blade",
+   "level": 0,
+   "school": "Evocation",
+   "desc": "Strike the target dealing a bonus LevelMapValue(D8GreenFlameBlade) Thunder damage. If the attack lands, the target is sheathed in booming energy that deals LevelMapValue(D8Cantrip) Thunder damage to them if they willingly move.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_MinorIllusion",
+   "name": "Minor Illusion",
+   "level": 0,
+   "school": "Illusion",
+   "desc": "Create an illusion that compels nearby creatures to investigate.",
+   "cost": "Action",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  }
+ ],
+ "prepared": [
+  {
+   "id": "Target_MageArmor",
+   "name": "Mage Armour",
+   "level": 1,
+   "school": "Abjuration",
+   "desc": "Protect a target from attacks: increase its Armour Class to 13 + its Dexterity modifier.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_MagicMissile",
+   "name": "Magic Missile",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Shoot 3 magical darts, each dealing 1d4+1 Force damage. They always hit their target.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_WitchBolt",
+   "name": "Witch Bolt",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Link yourself to a target with a bolt of lightning. Deal an additional 1d12 Lightning damage each turn by activating it.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_CloudOfDaggers",
+   "name": "Cloud of Daggers",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Conjure a cloud of spinning daggers that attack anyone inside.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_MistyStep",
+   "name": "Misty Step",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+   "cost": "Bonus action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_ScorchingRay",
+   "name": "Scorching Ray",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Hurl 3 rays of fire. Each ray deals 2d6 Fire damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Counterspell",
+   "name": "Counterspell",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Try to stop a spell being cast.",
+   "cost": "Reaction, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_Fireball",
+   "name": "Fireball",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Shoot a bright flame from your fingers that explodes upon contact, torching everything in the vicinity.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_GlyphOfWarding",
+   "name": "Glyph of Warding",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Inscribe a circle of arcane glyphs on the ground. When stepped on by an enemy, the selected magical effect will trigger.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Haste",
+   "name": "Haste",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Target yourself or an ally to become Hastened: gain an action, become faster and gain +2 to Armour Class.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_SleetStorm",
+   "name": "Sleet Storm",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Call forth a storm that disrupts the Concentration of spellcasters, douses fires, and creates an ice surface.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Slow",
+   "name": "Slow",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Target up to 6 creatures and Slow them. Movement and actions are affected, and their AC and Dexterity saves are reduced by 2.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Invisibility_Greater",
+   "name": "Greater Invisibility",
+   "level": 4,
+   "school": "Illusion",
+   "desc": "Turn a creature Invisible. Attacks against it have Disadvantage. It attacks with Advantage.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_CursedTome_CurriculumofStrategy",
+   "name": "Curriculum of Strategy: Artistry of War",
+   "level": 5,
+   "school": "Evocation",
+   "desc": "Summon the apparitions of 6 master strategists. Each apparition strikes a target of your choosing, dealing 2d6+6 Force damage on a hit.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_HoldMonster",
+   "name": "Hold Monster",
+   "level": 5,
+   "school": "Enchantment",
+   "desc": "Paralyse a creature. It can't move, act or react. Attacks from within 3m are always Critical Hits.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Throw_Telekinesis",
+   "name": "Telekinesis",
+   "level": 5,
+   "school": "Transmutation",
+   "desc": "Throw a creature or object up to 18m with a thought. Once per turn, you can use Telekinesis again without expending a spell slot.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_ChainLightning",
+   "name": "Chain Lightning",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "Strike an enemy with lightning. Three more bolts will leap from the target, electrifying as many as three other enemies within 18m.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_GlobeOfInvulnerability",
+   "name": "Globe of Invulnerability",
+   "level": 6,
+   "school": "Abjuration",
+   "desc": "Create a barrier that makes creatures and objects inside it Immune to all damage.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IrresistibleDance",
+   "name": "Otto's Irresistible Dance",
+   "level": 6,
+   "school": "Enchantment",
+   "desc": "Cause a creature to start dancing, making it unable to take actions or move. Its attackers have Advantage on Attack Rolls.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  }
+ ],
+ "spellbook": [
+  {
+   "id": "Target_MageArmor",
+   "name": "Mage Armour",
+   "level": 1,
+   "school": "Abjuration",
+   "desc": "Protect a target from attacks: increase its Armour Class to 13 + its Dexterity modifier.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_Shield_Wizard",
+   "name": "Shield",
+   "level": 1,
+   "school": "Abjuration",
+   "desc": "When you are about to be hit by an enemy, increase your Armour Class by 5. You take no damage from Magic Missile.",
+   "cost": "Reaction, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_FindFamiliar",
+   "name": "Find Familiar",
+   "level": 1,
+   "school": "Conjuration",
+   "desc": "Summon a familiar, a fey spirit that takes an animal form of your choosing.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_WitchBolt",
+   "name": "Witch Bolt",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Link yourself to a target with a bolt of lightning. Deal an additional 1d12 Lightning damage each turn by activating it.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_MagicMissile",
+   "name": "Magic Missile",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Shoot 3 magical darts, each dealing 1d4+1 Force damage. They always hit their target.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_MagnifyGravity",
+   "name": "Magnify Gravity",
+   "level": 1,
+   "school": "Transmutation",
+   "desc": "Increase gravity within a 3m radius of the chosen point. Affected creatures are crushed into the ground reducing their movement speed by half.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_ChromaticOrb",
+   "name": "Chromatic Orb",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Hurl an elemental sphere that deals damage to the target and possibly bounces onto an extra target on impact.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Shout_AbsorbElementsSpell",
+   "name": "Absorb Elements",
+   "level": 1,
+   "school": "Abjuration",
+   "desc": "Take half damage from the next elemental attack targetting you, and deal an additional 1d6 of that element type on your next attack.",
+   "cost": "Reaction, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_MistyStep",
+   "name": "Misty Step",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+   "cost": "Bonus action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_HoldPerson",
+   "name": "Hold Person",
+   "level": 2,
+   "school": "Enchantment",
+   "desc": "Hold a humanoid enemy still. They can't move, act or react. Attacks from within 3m are always Critical Hits.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_GiftOfAlacrity",
+   "name": "Gift of Alacrity",
+   "level": 1,
+   "school": "Divination",
+   "desc": "Grant creature a +2 bonus to Initiative.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_Thunderwave",
+   "name": "Thunderwave",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Release a wave of thunderous force that pushes away all creatures and objects.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Counterspell",
+   "name": "Counterspell",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Try to stop a spell being cast.",
+   "cost": "Reaction, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_GlyphOfWarding",
+   "name": "Glyph of Warding",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Inscribe a circle of arcane glyphs on the ground. When stepped on by an enemy, the selected magical effect will trigger.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_SleetStorm",
+   "name": "Sleet Storm",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Call forth a storm that disrupts the Concentration of spellcasters, douses fires, and creates an ice surface.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_Fireball",
+   "name": "Fireball",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Shoot a bright flame from your fingers that explodes upon contact, torching everything in the vicinity.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IceStorm",
+   "name": "Ice Storm",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Impel a storm of hail and ice to crash from the sky, covering the ground and striking all objects and creatures within range.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_ConjureElementals_Minor_Container",
+   "name": "Conjure Minor Elemental",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Conjure a minor elemental to fight alongside you.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Invisibility_Greater",
+   "name": "Greater Invisibility",
+   "level": 4,
+   "school": "Illusion",
+   "desc": "Turn a creature Invisible. Attacks against it have Disadvantage. It attacks with Advantage.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Slow",
+   "name": "Slow",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Target up to 6 creatures and Slow them. Movement and actions are affected, and their AC and Dexterity saves are reduced by 2.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Throw_Telekinesis",
+   "name": "Telekinesis",
+   "level": 5,
+   "school": "Transmutation",
+   "desc": "Throw a creature or object up to 18m with a thought. Once per turn, you can use Telekinesis again without expending a spell slot.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_ConjureElemental_Container",
+   "name": "Conjure Elemental",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Bend the barrier between the Planes until they disgorge an elemental ally to follow and fight for you.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Longstrider",
+   "name": "Longstrider",
+   "level": 1,
+   "school": "Transmutation",
+   "desc": "Increase a creature's movement speed by 3m.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_HoldMonster",
+   "name": "Hold Monster",
+   "level": 5,
+   "school": "Enchantment",
+   "desc": "Paralyse a creature. It can't move, act or react. Attacks from within 3m are always Critical Hits.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_ChainLightning",
+   "name": "Chain Lightning",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "Strike an enemy with lightning. Three more bolts will leap from the target, electrifying as many as three other enemies within 18m.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IrresistibleDance",
+   "name": "Otto's Irresistible Dance",
+   "level": 6,
+   "school": "Enchantment",
+   "desc": "Cause a creature to start dancing, making it unable to take actions or move. Its attackers have Advantage on Attack Rolls.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Knock",
+   "name": "Knock",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Unlock an object that is held shut by a mundane lock.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Teleportation_ArcaneGate",
+   "name": "Arcane Gate",
+   "level": 6,
+   "school": "Conjuration",
+   "desc": "Create two linked teleportation portals.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_RayOfEnfeeblement",
+   "name": "Ray of Enfeeblement",
+   "level": 2,
+   "school": "Necromancy",
+   "desc": "Weaken a foe: on a successful save, the target has disadvantage on their next attack. On a failed save, the target has Disadvantage on Strength rolls, as well as dealing less damage on its attacks for the duration.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_ProtectionFromEvilAndGood",
+   "name": "Protection from Evil and Good",
+   "level": 1,
+   "school": "Abjuration",
+   "desc": "Protect an ally against the attacks and powers of aberrations, celestials, elementals, fey, fiends, and undead.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_MirrorImage",
+   "name": "Mirror Image",
+   "level": 2,
+   "school": "Illusion",
+   "desc": "Create 3 illusory duplicates of yourself that distract attackers. Each duplicate increases your Armour Class by 3.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_AcidArrow",
+   "name": "Melf's Acid Arrow",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Shoot a green arrow that covers the target and the ground with acid. Deals 4d4 Acid damage immediately and 2d4 Acid damage at the end of the target's turn.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_GlowingCoin_Jim",
+   "name": "Jim's Glowing Coin",
+   "level": 2,
+   "school": "Enchantment",
+   "desc": "Throw a coin to distract enemies. They have Disadvantage on Wisdom Ability Checks and suffer a -3 penalty to Initiative rolls.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_ForceWeapon",
+   "name": "Force Weapon",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Infuse a weapon with arcane force. The weapon becomes magical, receiving a +1 bonus to Attack and Damage Rolls and deals a bonus 1d4 Force damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_FlockOfFamiliars",
+   "name": "Flock of Familiars",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Summon 3 familiars, that take an animal form of your choosing.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_FeatherFall",
+   "name": "Feather Fall",
+   "level": 1,
+   "school": "Transmutation",
+   "desc": "You and nearby allies gain Immunity to Falling damage.",
+   "cost": "Bonus action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_ExpeditiousRetreat",
+   "name": "Expeditious Retreat",
+   "level": 1,
+   "school": "Transmutation",
+   "desc": "Gain Dash immediately and as a bonus action on each of your turns until this spell ends.",
+   "cost": "Bonus action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_DetectThoughts",
+   "name": "Detect Thoughts",
+   "level": 2,
+   "school": "Divination",
+   "desc": "Focus your mind to read the thoughts of certain creatures while talking to them.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Darkness",
+   "name": "Darkness",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Create a dark shroud that Heavily Obscures and Blinds creatures within. Creatures cannot make ranged attacks into or out of it.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_CauseFear",
+   "name": "Cause Fear",
+   "level": 1,
+   "school": "Necromancy",
+   "desc": "Possibly Frighten your target. They'll have Disadvantage on Ability Checks and Attack Rolls and be unable to move.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_BurningHands",
+   "name": "Burning Hands",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Each flammable target is hit with 3d6 Fire damage.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_BorrowedKnowledge",
+   "name": "Borrowed Knowledge",
+   "level": 2,
+   "school": "Divination",
+   "desc": "Gain Proficiency in one skill.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Blindness",
+   "name": "Blindness",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Blind a creature. Attack Rolls against it have Advantage and the foe attacks with Disadvantage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Shout_MelfsMinuteMeteors",
+   "name": "Melf's Minute Meteors",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Conjure 6 flaming meteors that can be thrown at enemies to explode in a 2m radius dealing 2d6 Fire damage.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_AnimateDead",
+   "name": "Animate Dead",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Create an undead servant from a corpse.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_Blink",
+   "name": "Blink",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "At the end of your turn, roll a d20. On 11 or higher, you vanish into the Ethereal Plane. While there, you can't be harmed or seen in this world.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Throw_Catapult",
+   "name": "Catapult",
+   "level": 1,
+   "school": "Transmutation",
+   "desc": "Throws a light object at the target.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_Blur",
+   "name": "Blur",
+   "level": 2,
+   "school": "Illusion",
+   "desc": "Attackers have Disadvantage on Attack Rolls against you.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Catnap",
+   "name": "Catnap",
+   "level": 3,
+   "school": "Enchantment",
+   "desc": "Put up to 3 allies to sleep. Upon waking, they receive the effects of a Short Rest and all 1st, 2nd, and 3rd level spell slots are restored.\n\nTargets can only be affected once per long rest.\n\nIf interrupted before the duration expires, the effects will not apply.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_CharmPerson",
+   "name": "Charm Person",
+   "level": 1,
+   "school": "Enchantment",
+   "desc": "Charm a humanoid to prevent it from attacking you. You gain Advantage on Charisma Checks in dialogue.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_CloudOfDaggers",
+   "name": "Cloud of Daggers",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Conjure a cloud of spinning daggers that attack anyone inside.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_EruptingEarth",
+   "name": "Erupting Earth",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Churned earth bursts from the ground, slowing creatures within.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_EnlargeReduce",
+   "name": "Enlarge/Reduce",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Make a creature larger or smaller to affect their weapon damage and Strength Checks and Saving Throws.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_EnemiesAbound",
+   "name": "Enemies Abound",
+   "level": 3,
+   "school": "Enchantment",
+   "desc": "Confuse an enemy, causing them to attack at random and possibly wander around aimlessly.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_DustDevil",
+   "name": "Dust Devil",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Surround yourself with whirling dust that deals 1d8 Bludgeoning damage to all other creatures within 2m.\n\nAt the end of each turn, create a cloud of fog around yourself that Blinds and Heavily Obscures creatures within it.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_DragonsBreath",
+   "name": "Dragon's Breath",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Grant one creature the ability to spew forth the breath of a chromatic dragon.",
+   "cost": "Bonus action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_FalseLife",
+   "name": "False Life",
+   "level": 1,
+   "school": "Necromancy",
+   "desc": "Gain 9 temporary hit points.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_FeignDeath",
+   "name": "Feign Death",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Put an ally in a protective coma. They become Resistant to all damage except Psychic damage. Disease and poison have no effect.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_FlameArrows",
+   "name": "Flame Arrows",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Imbue 6 pieces of ammunition with fiery might. They deal an additional 2d6 Fire damage.",
+   "cost": "Bonus action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_FlamingSphere",
+   "name": "Flaming Sphere",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Summon a flaming sphere that damages nearby enemies and objects. You can move the sphere. It emits a bright light.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Zone_FrostFingers",
+   "name": "Frost Fingers",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Freezing cold air blasts from your fingertips.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_GaseousForm",
+   "name": "Gaseous Form",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Transform yourself or an ally into a tiny gas cloud. It can't fall, and fits through small openings. It is very hard to damage.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Fly",
+   "name": "Grant Flight",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Bestow the ability to Fly upon yourself or an ally.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Grease",
+   "name": "Grease",
+   "level": 1,
+   "school": "Conjuration",
+   "desc": "Cover the ground in grease, slowing creatures within and possibly making them fall Prone.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IdInsinuation",
+   "name": "Id Insinuation",
+   "level": 1,
+   "school": "Enchantment",
+   "desc": "Impair a creature with a torrent of conflicting desires leaving them Incapacitated.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_HypnoticPattern",
+   "name": "Hypnotic Pattern",
+   "level": 3,
+   "school": "Illusion",
+   "desc": "Hypnotise creatures that can see the pattern. They cannot attack you. They cannot move or act.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Invisibility",
+   "name": "Invisibility",
+   "level": 2,
+   "school": "Illusion",
+   "desc": "Touch a creature to turn it Invisible. Attacks against it have Disadvantage. It attacks with Advantage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_MagicMissile_Jim",
+   "name": "Jim's Magic Missile",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Prepare to launch 3 twisting, whistling, hypoallergenic, gluten-free magical darts, each dealing 2d4 Force damage.\n\nYou must roll a D20 for each missile and if any of them roll a 1 then all the missiles fizzle and backfire in your face dealing 3 Force damage.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_KineticJaunt",
+   "name": "Kinetic Jaunt",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Movement speed increased by 3m and moving no longer provokes Opportunity Attacks.",
+   "cost": "Bonus action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_LifeTransference",
+   "name": "Life Transference",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Sacrifice your health to mend another creature's injuries. Deals 4d8 Necrotic damage to yourself.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_MentalBarrier",
+   "name": "Mental Barrier",
+   "level": 2,
+   "school": "Abjuration",
+   "desc": "When you fail an Intelligence, Wisdom or Charisma Saving Throws, gain Advantage on those saving throws and Resistance to psychic damage until the start of your next turn.",
+   "cost": "Reaction, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_MindSpike",
+   "name": "Mind Spike",
+   "level": 2,
+   "school": "Divination",
+   "desc": "Invade the mind of the target and prevent them from turning invisible.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_PulseWave",
+   "name": "Pulse Wave",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Create intense pressure that pushes or pulls creatures and objects in the area.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_PsionicBlast",
+   "name": "Psionic Blast",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Unleash a destructive wave of mental power that pushes away all creatures and objects, knocking them Prone.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_RayOfSickness",
+   "name": "Ray of Sickness",
+   "level": 1,
+   "school": "Necromancy",
+   "desc": "Poisons the target on hit.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_ScorchingRay",
+   "name": "Scorching Ray",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Hurl 3 rays of fire. Each ray deals 2d6 Fire damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_SeeInvisibility",
+   "name": "See Invisibility",
+   "level": 2,
+   "school": "Divination",
+   "desc": "Become able to see Invisible creatures, and possibly reveal them to others.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_ShadowBlade",
+   "name": "Shadow Blade",
+   "level": 2,
+   "school": "Illusion",
+   "desc": "Weave a shadowy shortsword in your hand that deals 2d8 Psychic damage.",
+   "cost": "Bonus action",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Shatter",
+   "name": "Shatter",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Damages all nearby creatures and objects. Creatures made of inorganic material such as stone have Disadvantage on their Saving Throw.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_SilveryBarbs",
+   "name": "Silvery Barbs",
+   "level": 2,
+   "school": "Enchantment",
+   "desc": "Force an enemy to reroll their Attack Roll or Saving Throw.\n\nUntil the end of your next turn you gain Silvery Luck allowing you to give a friendly creature Advantage on their next Attack Roll or Saving Throw.",
+   "cost": "Reaction, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Sleep",
+   "name": "Sleep",
+   "level": 1,
+   "school": "Enchantment",
+   "desc": "Possibly put creatures into a magical slumber in a 2m radius sphere, incapacitating them and possibly making them fall asleep.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Shout_SpiritShroud",
+   "name": "Spirit Shroud",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Call forth spirits to fight. Nearby enemies have 3m of reduced movement speed.\n\nWhen you attack a nearby enemy deal an extra 1d8 Radiant damage or 1d8 Necrotic damage or 1d8 Cold damage and prevent them from regaining hit points until your next turn.",
+   "cost": "Bonus action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_SprayOfCards",
+   "name": "Spray of Cards",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Spray a cone of spectral cards that Blinds.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_VolleyOfArrows",
+   "name": "Volley of Arrows",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Fire 5 arrows that each deal 1d6 Piercing damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Teleportation_ThunderStep",
+   "name": "Thunder Step",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Teleport yourself and up to 1 adjacent ally to a place you can see. A thunderous boom damages all creatures within 3m of the space you left.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_MindWhip",
+   "name": "Tasha's Mind Whip",
+   "level": 2,
+   "school": "Enchantment",
+   "desc": "Psychically lash out at the target to prevent them from moving and taking bonus actions or reactions for 1 turn.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_CausticBrew",
+   "name": "Tasha's Caustic Brew",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Summon a stream of acid that corrodes enemies for 3d4 Acid damage.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonShadowspawn",
+   "name": "Summon Shadowspawn",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Summons a shadow spirit of Fury, Despair, or Fear.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_BlackTentacles",
+   "name": "Evard's Black Tentacles",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Tentacles sprout from the ground, turning the area into Difficult Terrain, attacking and Smothering creatures within.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Earthbind",
+   "name": "Earthbind",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Bind a creature, preventing it from moving. Each turn it takes 2d8 Bludgeoning damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Teleportation_DimensionDoor",
+   "name": "Dimension Door",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Teleport yourself and up to 1 adjacent ally to a place you can see.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Darkvision",
+   "name": "Darkvision",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Grant a creature the ability to see in the dark out to a range of 24m.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_CrownOfMadness",
+   "name": "Crown of Madness",
+   "level": 2,
+   "school": "Enchantment",
+   "desc": "Instil madness in a humanoid enemy, making them attack the creature closest to them (other than you), even if it's allied.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_ArcaneEyeNew",
+   "name": "Arcane Eye",
+   "level": 4,
+   "school": "Divination",
+   "desc": "Create an invisible, magical eye that can scout the path ahead for you.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_GravitySinkhole",
+   "name": "Gravity Sinkhole",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Create a sphere of crushing force that pulls enemies towards it.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_GustOfWind",
+   "name": "Gust of Wind",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Summon a strong wind that clears all clouds and pushes creatures back 5m, forcing them Off Balance.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Shout_InciteGreed",
+   "name": "Incite Greed",
+   "level": 3,
+   "school": "Enchantment",
+   "desc": "Charm creatures into walking peacefully towards you.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_LightningBolt",
+   "name": "Lightning Bolt",
+   "level": 3,
+   "school": "Evocation",
+   "desc": "Call forth a blast of lightning that hits all creatures in the line of the eruption.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IntellectFortress",
+   "name": "Intellect Fortress",
+   "level": 3,
+   "school": "Enchantment",
+   "desc": "Grant yourself or a target Resistance to psychic damage as well as Advantage on Intelligence, Wisdom and Charisma Saving Throws.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonElemental",
+   "name": "Summon Elemental",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Call forth an Elemental Spirit of Air, Earth, Fire, or Water.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonConstruct",
+   "name": "Summon Construct",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Call forth the spirit of a Clay, Metal, or Stone construct.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonAberration",
+   "name": "Summon Aberration",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Call forth the spirit of a Beholderkin or Cloaker aberration.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_StormSphere",
+   "name": "Storm Sphere",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Summon a sphere of electricity. On each of your turns you can shock an enemy standing within 18m of the sphere for 4d6 Lightning damage with a bonus action.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_StoneShape_Container",
+   "name": "Stone Shape",
+   "level": 4,
+   "school": "Transmutation",
+   "desc": "Sculpt stone into a form of your choosing. You can: create Stone Armour, Crumble petrified creatures, or Seal doors and containers.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SnowballStorm",
+   "name": "Snilloc's Snowball Storm",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "A flurry of magical snowballs erupt around a 2m radius of the targeted point.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_WebOfFire",
+   "name": "Web of Fire",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "5 streaks of fire snake towards different enemies. Each streak deals 8d6 Fire damage.\n\nCan focus all streaks on one enemy for 12d6 Fire damage instead.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Web",
+   "name": "Web",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Cover an area in thick, flammable webbing that slows creatures within and possibly Enwebs them.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Wall_WallOfFire",
+   "name": "Wall of Fire",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Create a blazing wall of fire, burning anyone who dares stand too close.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_VitriolicSphere",
+   "name": "Vitriolic Sphere",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Shoot a glowing ball of emerald acid that explodes upon contact, corroding targets for 5d4 Acid damage at the end of their next turn.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_PsychicLance",
+   "name": "Raulothim's Psychic Lance",
+   "level": 4,
+   "school": "Enchantment",
+   "desc": "Psychically attack the target's mind and Incapacitate them.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_EarthenGrasp",
+   "name": "Maximillian's Earthen Grasp",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Summon an earthen hand made of compacted soil to grab and crush your enemies.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_BigbyHand",
+   "name": "Bigby's Hand",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Create a magical hand of translucent force that can strike, push, and grapple with enemies.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_AganazzarScorcher",
+   "name": "Aganazzar's Scorcher",
+   "level": 2,
+   "school": "Evocation",
+   "desc": "Summon a stream of fire that burns enemies for 3d8 Fire damage.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_CharmMonster",
+   "name": "Charm Monster",
+   "level": 4,
+   "school": "Enchantment",
+   "desc": "Charm a creature to prevent it from attacking you. You gain Advantage on Charisma Checks in dialogue.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_ConeOfCold",
+   "name": "Cone of Cold",
+   "level": 5,
+   "school": "Evocation",
+   "desc": "Make a flurry of frost, crisp air, and condensed snow crystals erupt from your hands.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Cloudkill",
+   "name": "Cloudkill",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Craft a large cloud that inflicts 5d8 Poison damage per turn. You can reposition the cloud every turn.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_DanseMacabre_Container",
+   "name": "Danse Macabre",
+   "level": 5,
+   "school": "Necromancy",
+   "desc": "Threads of dark power leap from your fingers to reanimate multiple undead Zombies or Skeletons.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_DisguiseSelf",
+   "name": "Disguise Self",
+   "level": 1,
+   "school": "Illusion",
+   "desc": "Magically change all aspects of your appearance.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_DominatePerson",
+   "name": "Dominate Person",
+   "level": 5,
+   "school": "Enchantment",
+   "desc": "Make a humanoid fight alongside you. Every time the creature takes damage, it makes a Wisdom Saving Throw against your domination. Allies cannot be dominated.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_Enervation",
+   "name": "Enervation",
+   "level": 5,
+   "school": "Necromancy",
+   "desc": "Link yourself to a target with a tendril of darkness. Deal an additional 6d8 Necrotic damage each turn by activating it and regain hit points equal to half the damage dealt.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_FarStep",
+   "name": "Far Step",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Teleport to an unoccupied space you can see.",
+   "cost": "Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_Fear",
+   "name": "Fear",
+   "level": 3,
+   "school": "Illusion",
+   "desc": "Hostile targets drop everything and become Fearful: they have Disadvantage on Ability Checks and Attack Rolls.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Immolation",
+   "name": "Immolation",
+   "level": 5,
+   "school": "Evocation",
+   "desc": "Point at the target and set them alight dealing 8d6 Fire damage and Immolating every turn.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_HealingElixir",
+   "name": "Healing Elixir",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Create 1 potion of healing in your or a companion's inventory.",
+   "cost": "Action, Bonus action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Haste",
+   "name": "Haste",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Target yourself or an ally to become Hastened: gain an action, become faster and gain +2 to Armour Class.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_PhantasmalKiller",
+   "name": "Phantasmal Killer",
+   "level": 4,
+   "school": "Illusion",
+   "desc": "Haunt a creature with its worst nightmares. It takes 4d10 Psychic damage per turn, and has Disadvantage on Ability Checks and Attack Rolls.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_SummonFey_Container",
+   "name": "Summon Fey",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Summons a fey spirit embodying a particular mood: Fuming, Mirthful, or Tricksy.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonDragon",
+   "name": "Summon Draconic Spirit",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Call forth the spirit of a powerful chromatic dragon to assist you. While within 18m you gain Resistance to the dragon's primary element.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Stoneskin",
+   "name": "Stoneskin",
+   "level": 4,
+   "school": "Transmutation",
+   "desc": "Turn a creature's flesh hard as stone. It takes only half the damage of all Bludgeoning, Piercing, and Slashing damage.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_SummonGreaterDemon",
+   "name": "Summon Greater Demon",
+   "level": 4,
+   "school": "Conjuration",
+   "desc": "Summon a powerful demon from the Abyss.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Wall_WallOfStone",
+   "name": "Wall of Stone",
+   "level": 5,
+   "school": "Evocation",
+   "desc": "Raise a wall of non-magical, solid stone.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Zone_ColorSpray",
+   "name": "Colour Spray",
+   "level": 1,
+   "school": "Illusion",
+   "desc": "Possibly blind enemies",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Confusion",
+   "name": "Confusion",
+   "level": 4,
+   "school": "Enchantment",
+   "desc": "Confuse a group of creatures, causing them to attack at random, wander around aimlessly, and occasionally skip turns in the stupor.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_ArcaneLock",
+   "name": "Arcane Lock",
+   "level": 2,
+   "school": "Abjuration",
+   "desc": "Close a door or container with a magical lock. It can no longer be lockpicked or opened with Knock.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_NathairsMischief",
+   "name": "Nathair's Mischief",
+   "level": 2,
+   "school": "Illusion",
+   "desc": "Enchant all creatures within 6m of the target location with a random debilitating effect at the start of each turn.",
+   "cost": "Action, Level 2 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_NegativeEnergyFlood",
+   "name": "Negative Energy Flood",
+   "level": 5,
+   "school": "Necromancy",
+   "desc": "Send ribbons of negative energy at the target creature. A creature killed by this spell rises up as a zombie under your control at the start of your next turn.\n\nUndead creatures take no damage and will instead gain half of 5d12 temporary hit points.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_CircleOfDeath",
+   "name": "Circle of Death",
+   "level": 6,
+   "school": "Necromancy",
+   "desc": "Sculpt a massive sphere of entropic energy around a creature. Devastate the target and all surrounding creatures.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Projectile_Disintegrate",
+   "name": "Disintegrate",
+   "level": 6,
+   "school": "Transmutation",
+   "desc": "If the target fails a Dexterity Saving Throw, and the 10d6+40 Force damage reduces it to 0 hit points, it disintegrates into a crumbly ash.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_ElementalInvestiture",
+   "name": "Elemental Investiture",
+   "level": 6,
+   "school": "Transmutation",
+   "desc": "Embody yourself with an element of your choice, gaining Immunities, Resistances and other elemental abilities.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Eyebite",
+   "name": "Eyebite",
+   "level": 6,
+   "school": "Necromancy",
+   "desc": "Your eyes become black corridors walled in teeth, your gaze capable of inflicting dread, sickness, or putting creatures to sleep.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Zone_Fissure",
+   "name": "Fissure",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "Sunder the earth, knocking creatures Prone.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_FleshToStone",
+   "name": "Flesh to Stone",
+   "level": 6,
+   "school": "Transmutation",
+   "desc": "Atrophy a foe, Restraining them until they temporarily turn to stone.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_IllusoryWeapon",
+   "name": "Illusory Weapon",
+   "level": 4,
+   "school": "Illusion",
+   "desc": "Turn an ally's weapon into an Illusory Weapon.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_PsychicCrush",
+   "name": "Psychic Crush",
+   "level": 6,
+   "school": "Enchantment",
+   "desc": "Overload a creature's mind.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_RemoveCurse",
+   "name": "Remove Curse",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Touch a creature or object to remove all Curses and Hexes affecting it.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_FreezingSphere",
+   "name": "Otiluke's Freezing Sphere",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "Create a ball of churning ice that can be launched instantly to generate a frosty explosion or stored for later use.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Wall_WallOfIce",
+   "name": "Wall of Ice",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "Raise a wall of solid ice that deals 10d6 Cold damage to anyone standing in its way.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_TrueSeeing",
+   "name": "True Seeing",
+   "level": 6,
+   "school": "Transmutation",
+   "desc": "Allow the target to see everything within 18m as it actually is. They also gain a +20 bonus to Perception Checks.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_TensersTransformation",
+   "name": "Tenser's Transformation",
+   "level": 6,
+   "school": "Transmutation",
+   "desc": "Transform yourself into the perfect warrior.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Zone_Sunbeam",
+   "name": "Sunbeam",
+   "level": 6,
+   "school": "Evocation",
+   "desc": "A beam of brilliant light sears and Blinds all creatures in its path.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_SynapticStatic",
+   "name": "Synaptic Static",
+   "level": 5,
+   "school": "Enchantment",
+   "desc": "Detonate psychic energy that inflicts targets with a -1d6 penalty to Attack Rolls, Ability Checks and Constitution Saving Throws.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_GlobeOfInvulnerability",
+   "name": "Globe of Invulnerability",
+   "level": 6,
+   "school": "Abjuration",
+   "desc": "Create a barrier that makes creatures and objects inside it Immune to all damage.",
+   "cost": "Action, Level 6 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_DreamSleep",
+   "name": "Dream",
+   "level": 4,
+   "school": "Enchantment",
+   "desc": "Lash out at the target's mind and place them in a magical slumber which deals psychic damage to them upon waking.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_EgoWhip",
+   "name": "Ego Whip",
+   "level": 4,
+   "school": "Enchantment",
+   "desc": "Invade a target's mind and fill it with despair. The target has Disadvantage on Attack Rolls, Ability Checks, and Saving Throws and it can't cast spells.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_ElementalBane",
+   "name": "Elemental Bane",
+   "level": 4,
+   "school": "Transmutation",
+   "desc": "The first time each turn the target takes damage of the chosen type they take an extra 2d6 of that type.\n\nThe target loses Resistance to the chosen damage type.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Shout_FireShield",
+   "name": "Fire Shield",
+   "level": 4,
+   "school": "Evocation",
+   "desc": "Wreathe your body in flames that shed light in a 3m radius, provide Resistance to Fire or Cold damage, and retaliate against melee attacks.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Banishment",
+   "name": "Banishment",
+   "level": 4,
+   "school": "Abjuration",
+   "desc": "Temporarily Banish your target to another plane of existence.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_AstralDisjunction",
+   "name": "Astral Disjunction",
+   "level": 5,
+   "school": "Abjuration",
+   "desc": "Prevent an enemy attack or spell by temporarily Banishing them to another plane of existence.",
+   "cost": "Reaction, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SummonLesserDemons",
+   "name": "Summon Lesser Demons",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Summons an Imp and a Quasit.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_SteelWindStrikeNew",
+   "name": "Steel Wind Strike",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Vanish into the wind and strike 5 different targets.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_SuddenAwakening",
+   "name": "Sudden Awakening",
+   "level": 1,
+   "school": "Enchantment",
+   "desc": "Awaken friendly creatures from Sleep and lift up Prone creatures without expending their movement.",
+   "cost": "Bonus action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_TidalWave",
+   "name": "Tidal Wave",
+   "level": 3,
+   "school": "Conjuration",
+   "desc": "Conjure a wave of water that knocks enemies Prone within a 9m radius of the target location.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_VampiricTouch",
+   "name": "Vampiric Touch",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Touch an enemy to siphon their life force and regain half as many hit points.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_VortexWarp",
+   "name": "Vortex Warp",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Mark another creature for teleportation. While you remain stationary, you can open a portal to teleport the Vortex Warped target up to 18m away.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_InfernalCalling",
+   "name": "Infernal Calling",
+   "level": 5,
+   "school": "Conjuration",
+   "desc": "Utter a dark incantation to summon forth a devil from the Nine Hells.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_PlanarBinding",
+   "name": "Planar Binding",
+   "level": 5,
+   "school": "Abjuration",
+   "desc": "Target an otherworldly creature and attach its consciousness to your own. It will follow and fight for you as an ally.",
+   "cost": "Action, Level 5 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_MacabreExplosion",
+   "name": "Macabre Explosion",
+   "level": 5,
+   "school": "Necromancy",
+   "desc": "Necrotic energy bursts forth from a corpse or undead body.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Projectile_CursedTome_CurriculumofStrategy",
+   "name": "Curriculum of Strategy: Artistry of War",
+   "level": 5,
+   "school": "Evocation",
+   "desc": "Summon the apparitions of 6 master strategists. Each apparition strikes a target of your choosing, dealing 2d6+6 Force damage on a hit.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Projectile_CursedTome_Dethrone",
+   "name": "Dethrone",
+   "level": 5,
+   "school": "Necromancy",
+   "desc": "Shred a foe's very essence by pulling on strands of the Weave.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_CursedTome_Seelie_Summon",
+   "name": "Sights of the Seelie: Summon Deva",
+   "level": 6,
+   "school": "Conjuration",
+   "desc": "The deva can cast Wrathful Smite, Revivify, and Concussive Smash.",
+   "cost": "Action, Level 6 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_ProtectionFromEnergy",
+   "name": "Protection from Energy",
+   "level": 3,
+   "school": "Abjuration",
+   "desc": "Touch a creature to grant it Resistance to Acid, Cold, Fire, Lightning, or Thunder damage.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_Polymorph",
+   "name": "Polymorph",
+   "level": 4,
+   "school": "Transmutation",
+   "desc": "Transform a creature into a harmless sheep.",
+   "cost": "Action, Level 4 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Target_FogCloud",
+   "name": "Fog Cloud",
+   "level": 1,
+   "school": "Conjuration",
+   "desc": "The cloud Blinds and Heavily Obscures creatures within it.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Shout_EarthTremor",
+   "name": "Earth Tremor",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Cause a tremor in the ground, miring the area around yourself in thick mud and possibly knocking nearby creatures Prone.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_BestowCurse",
+   "name": "Bestow Curse",
+   "level": 3,
+   "school": "Necromancy",
+   "desc": "Curse a creature with your touch. The curse either bestows Disadvantage on checks and Saving Throws or attacks, lets you deal additional damage to the target, or robs it of its actions.",
+   "cost": "Action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "vanilla"
+  },
+  {
+   "id": "Zone_AcidStream",
+   "name": "Acid Stream",
+   "level": 1,
+   "school": "Evocation",
+   "desc": "Summon a stream of acid that corrodes enemies for 2d4 Acid damage over 2 turns.",
+   "cost": "Action, Level 1 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Seeming",
+   "name": "Seeming",
+   "level": 5,
+   "school": "Illusion",
+   "desc": "Disguise up to 4 members of your adventuring party.",
+   "cost": "Action, Level 5 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "configurablepartylimit_33c1de8-bwds"
+  },
+  {
+   "id": "Shout_SummonMoonblade_Container",
+   "name": "Summon Moonblade",
+   "level": 2,
+   "school": "Conjuration",
+   "desc": "Summon a +1 magical flaming or chilling shortsword.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_HideousLaughter",
+   "name": "Tasha's Hideous Laughter",
+   "level": 1,
+   "school": "Enchantment",
+   "desc": "Leave a creature Prone with laughter, without the ability to get up.",
+   "cost": "Action, Level 1 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_MagicWeapon",
+   "name": "Magic Weapon",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Infuse a weapon with arcane energy. The weapon becomes magical, receiving a +1 bonus to Attack and Damage Rolls.",
+   "cost": "Bonus action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Target_Blight",
+   "name": "Blight",
+   "level": 4,
+   "school": "Necromancy",
+   "desc": "Plants always fail the Saving Throw against this spell.",
+   "cost": "Action, Level 4 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "spellupdate_9fa6010f-f970-a812-6dug"
+  },
+  {
+   "id": "Shout_AshardalonsStride",
+   "name": "Ashardalon's Stride",
+   "level": 3,
+   "school": "Transmutation",
+   "desc": "Surround yourself billowing flames that burn creatures within 2m for 1d6 Fire damage.\n\nIncreases movement speed by 6m and moving no longer provokes Opportunity Attacks.",
+   "cost": "Bonus action, Level 3 slot",
+   "concentration": true,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Antagonize",
+   "name": "Antagonize",
+   "level": 3,
+   "school": "Enchantment",
+   "desc": "Antagonize a creature: they'll have Disadvantage on Attack Rolls and can't take reactions.",
+   "cost": "Action, Level 3 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_Pyrotechnics",
+   "name": "Pyrotechnics",
+   "level": 2,
+   "school": "Transmutation",
+   "desc": "Choose to create fireworks that Blind or smoke that Heavily Obscures.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  },
+  {
+   "id": "Target_WitherAndBloom",
+   "name": "Wither and Bloom",
+   "level": 2,
+   "school": "Necromancy",
+   "desc": "Drain life from a 3m radius to heal yourself for 1 hit points per target. Plants take maximum damage from this spell.",
+   "cost": "Action, Level 2 slot",
+   "concentration": false,
+   "ritual": false,
+   "src": "test_4b516620-9c56-aa18-96ae-a-dk21"
+  }
+ ],
+ "equipment": [
+  {
+   "id": "ART_IsaiahsStaff",
+   "name": "Isaiah's Staff",
+   "desc": "Isaiah Thorne poured his soul into the heartwood. The staff wakes with its bearer: Awakened at level 5, Legendary at level 9.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Weapon",
+   "weight": "1.8",
+   "value": "6200",
+   "properties": [
+    "+1 weapon enchantment",
+    "+1 weapon enchantment from level 9"
+   ],
+   "passives": [
+    {
+     "id": "ART_ISS_Dormant_Passive",
+     "name": "Grows With You",
+     "desc": "+1 staff, and Shield once per Long Rest.\nLevel 5: +1 Spell Save DC; Counterspell (1 charge) refunds the countered spell's level.\nLevel 9: +2 staff, +2 Spell Attack, Retributive Strike.",
+     "hidden": false,
+     "boosts": null
+    },
+    {
+     "id": "ART_ISS_ResonantWard_Passive",
+     "name": "Resonant Ward",
+     "desc": "A 2nd-level+ spell or any Abjuration spell adds 1 charge to your Arcane Ward (the spell's level from level 9).",
+     "hidden": false,
+     "boosts": null
+    },
+    {
+     "id": "ART_ISS_Charges_Passive",
+     "name": "Soul Charges",
+     "desc": "10 Soul Charges (20 at level 5, 30 at level 9), partly regained each Long Rest. On the last charge: 5% surge, 5% grief.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [
+    {
+     "id": "Shout_MAG_Shield",
+     "name": "Shield",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "When you are about to be hit by an enemy, increase your Armour Class by 5. You take no damage from Magic Missile.",
+     "cost": "Reaction",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_ISS_ReinforceWard",
+     "name": "Reinforce Ward (2 charges)",
+     "level": 0,
+     "school": "Abjuration",
+     "desc": "Bonus action. Feed 2 Soul Charges into your Arcane Ward: it gains 3 charges.",
+     "cost": "Bonus action, 2 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Interrupt_ART_ISS_AbsorbElements",
+     "name": "Absorb Elements (1 charge)",
+     "desc": "Absorb elemental damage once per Short Rest. Take half damage from the next elemental attack targetting you, and deal an additional 1d6 of that element type on your next attack.",
+     "level": null,
+     "school": null,
+     "cost": "Reaction, 1 charge",
+     "unlock": "always",
+     "kind": "reaction"
+    },
+    {
+     "id": "Target_ART_ISS_MageArmor",
+     "name": "Mage Armour (1 charge)",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "Protect a target from attacks: increase its Armour Class to 13 + its Dexterity modifier.",
+     "cost": "Action, 1 charge",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_ProtectionFromEvilAndGood",
+     "name": "Protection from Evil and Good (1 charge)",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "Protect an ally against the attacks and powers of aberrations, celestials, elementals, fey, fiends, and undead.",
+     "cost": "Action, 1 charge",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_MistyStep",
+     "name": "Misty Step (2 charges)",
+     "level": 2,
+     "school": "Conjuration",
+     "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+     "cost": "Bonus action, 2 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_ISS_SeeInvisibility",
+     "name": "See Invisibility (2 charges)",
+     "level": 2,
+     "school": "Divination",
+     "desc": "Become able to see Invisible creatures, and possibly reveal them to others.",
+     "cost": "Action, 2 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_Counterspell",
+     "name": "Counterspell (1 charge, refunds the spell's level)",
+     "level": 5,
+     "school": "Abjuration",
+     "desc": "Try to stop a spell being cast.",
+     "cost": "Reaction, 1 charge",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_RemoveCurse",
+     "name": "Remove Curse (3 charges)",
+     "level": 3,
+     "school": "Abjuration",
+     "desc": "Touch a creature or object to remove all Curses and Hexes affecting it.",
+     "cost": "Action, 3 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_FreedomOfMovement",
+     "name": "Freedom of Movement (4 charges)",
+     "level": 4,
+     "school": "Abjuration",
+     "desc": "Snap an ally out of any Stun. Difficult Terrain can't slow them down, and they can't be magically Paralysed or Restrained.",
+     "cost": "Action, 4 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_Banishment",
+     "name": "Banishment (4 charges)",
+     "level": 4,
+     "school": "Abjuration",
+     "desc": "Temporarily Banish your target to another plane of existence.",
+     "cost": "Action, 4 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_DeathWard",
+     "name": "Death Ward (4 charges)",
+     "level": 4,
+     "school": "Abjuration",
+     "desc": "Protect a creature from death. The next time damage would reduce it to 0 hit points, it remains conscious with 1 hit point left.",
+     "cost": "Action, 4 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Wall_ART_ISS_WallOfForce",
+     "name": "Wall of Force (5 charges)",
+     "level": 5,
+     "school": "Evocation",
+     "desc": "Conjure a shimmering line of pure arcane force. Creatures that begin their turn within or pass through the wall make a Dexterity save: on failure, 5d8 Force damage; on success, half. The wall persists for 10 turns. Concentration.",
+     "cost": "Action, 5 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_ISS_GlobeOfInvulnerability",
+     "name": "Globe of Invulnerability (6 charges)",
+     "level": 6,
+     "school": "Abjuration",
+     "desc": "Create a barrier that makes creatures and objects inside it Immune to all damage.",
+     "cost": "Action, 6 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_ISS_SoulRupture",
+     "name": "Retributive Strike",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Break Isaiah's Staff. Every Soul Charge you pour in becomes a wave of Force around you (4 damage per charge, Dexterity save for half). The staff shatters for good and the backlash may take you with it - or throw you across the planes.",
+     "cost": "Action, 5 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Item_MAG_TheChromatic_Staff",
+   "damage": "1d6",
+   "damage_type": "Bludgeoning",
+   "versatile": "1d8",
+   "weapon_props": [
+    "Melee",
+    "Versatile"
+   ],
+   "proficiency": "Quarterstaffs",
+   "enchant": [
+    "+1 weapon enchantment",
+    "+1 weapon enchantment from level 9"
+   ],
+   "slot": "MeleeMainHand",
+   "slot_label": "Main hand"
+  },
+  {
+   "id": "ART_TurtleShell",
+   "name": "Turtle Shell",
+   "desc": "A shield of hammered bronze plates layered like the carapace of an old, patient creature. It hums faintly under blows, as if the metal itself is refusing to be the first to give way.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Armor",
+   "weight": "2.7",
+   "value": "4800",
+   "properties": [],
+   "passives": [
+    {
+     "id": "MAG_Legendary_ShieldRiposte_Passive",
+     "name": "Rebuke of the Mighty",
+     "desc": "When a foe hits you with a melee attack, you can use your reaction, dealing it 2d4 Force damage and knock it Prone unless they succeed a Dexterity Saving Throw.",
+     "hidden": false,
+     "boosts": "UnlockInterrupt(Interrupt_Legendary_ShieldBlow)"
+    },
+    {
+     "id": "MAG_Legendary_Spellguard_Passive",
+     "name": "Spellguard",
+     "desc": "You gain Advantage on Saving Throws against spells. Spell Attack Rolls against you have Disadvantage.",
+     "hidden": false,
+     "boosts": "IF(IsSpell()):Advantage(AllSavingThrows);IF(IsSpell()):Disadvantage(AttackTarget)"
+    },
+    {
+     "id": "ART_TurtleShell_Carapace_Passive",
+     "name": "Carapace",
+     "desc": "Attackers cannot land Critical Hits on the wearer.",
+     "hidden": false,
+     "boosts": "CriticalHit(AttackTarget,Success,Never)"
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_ART_TurtleShell_GlobeOfInvulnerability",
+     "name": "Globe of Invulnerability",
+     "level": 6,
+     "school": "Abjuration",
+     "desc": "Create a barrier that makes creatures and objects inside it Immune to all damage.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Item_MAG_TheBulwark_Shield",
+   "ac": "3",
+   "armor_type": "None",
+   "slot": "MeleeOffHand",
+   "slot_label": "Off hand"
+  },
+  {
+   "id": "WW_Wizard_Equipment_Arcanum_Repeater",
+   "name": "Arcanum Repeater",
+   "desc": "Crafted from polished darkwood and gleaming silver, this crossbow hums with subtle magic. Intricate runes etched into the stock pulse with an energy when a spell is cast.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Weapon",
+   "weight": "2.25",
+   "value": null,
+   "properties": [
+    "+2 weapon enchantment"
+   ],
+   "passives": [
+    {
+     "id": "WW_ArcRepeater_Crit_Passive",
+     "name": "Arcane Repercussion",
+     "desc": "When you score a Critical Hit with a spell, the target takes an extra 1d8 Force damage. You also gain 1d8 temporary hit points.",
+     "hidden": false,
+     "boosts": null
+    },
+    {
+     "id": "WW_ArcRepeater_SpellAttkBonus_Passive",
+     "name": "Arcane Attunement",
+     "desc": "You gain a +1 bonus to Spell Attack Rolls.",
+     "hidden": false,
+     "boosts": "RollBonus(MeleeSpellAttack, 1);RollBonus(RangedSpellAttack,1)"
+    }
+   ],
+   "spells": [
+    {
+     "id": "Projectile_PiercingShot",
+     "name": "Piercing Shot",
+     "level": null,
+     "school": null,
+     "desc": "Deal regular damage and possibly inflict Gaping Wounds, which cause extra damage on attacks.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Item_WPN_HUM_LightCrossbow_A_1",
+   "damage": "1d8",
+   "damage_type": "Piercing",
+   "versatile": null,
+   "weapon_props": [
+    "Ammunition",
+    "Loading",
+    "Twohanded"
+   ],
+   "proficiency": "LightCrossbows",
+   "enchant": [
+    "+2 weapon enchantment"
+   ],
+   "slot": "RangedMainHand",
+   "slot_label": "Ranged"
+  },
+  {
+   "id": "Tut_WW_Wizard_Equipment_Hood_of_the_Archmage",
+   "name": "Hood of the Archmage",
+   "desc": "Woven with shimmering silver thread, this hood exudes an aura of ancient wisdom and arcane power.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [
+    "+2 Intelligence (max 22)"
+   ],
+   "passives": [
+    {
+     "id": "MagicResistance",
+     "name": "Magic Resistance",
+     "desc": "Has Advantage on Saving Throws against spells and other magical effects.",
+     "hidden": false,
+     "boosts": "IF(HasSpellFlag(SpellFlags.Spell)):Advantage(AllSavingThrows)"
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_EndGameCaster_Hood_A_Magic",
+   "ac": null,
+   "armor_type": "Cloth",
+   "slot": "Helmet",
+   "slot_label": "Head"
+  },
+  {
+   "id": "ART_RobeOfTheArchmagi",
+   "name": "Robe of the Archmagi",
+   "desc": "Worn by the great wizards of the high schools — those who lived long enough to claim the title and short enough to still have something to prove. The silk is stiff with old ink, the seams reinforced with a thread no mundane needle could carry. Stitched into the hem in faded gold are the names of every spell its previous owners ever bothered to write down.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Armor",
+   "weight": "1.8",
+   "value": "6000",
+   "properties": [
+    "Armour Class becomes 15 + Dexterity modifier"
+   ],
+   "passives": [
+    {
+     "id": "ART_RobeOfTheArchmagi_Passive",
+     "name": "Archmagi's Grace",
+     "desc": "The robe braces every weave with a higher one. Your Armour Class is set to 15 + your Dexterity modifier. Gain +2 to Spell Attack Rolls, +2 to Spell Save DC, and Advantage on Saving Throws against spells.",
+     "hidden": false,
+     "boosts": "SpellSaveDC(2);RollBonus(MeleeSpellAttack, 2);RollBonus(RangedSpellAttack,2);IF(IsSpell()):Advantage(AllSavingThrows)"
+    }
+   ],
+   "spells": [],
+   "src": "FousiosTomeOfItems",
+   "icon": "Generated_MAG_OfArcanicDefense_Robe_Magic",
+   "ac": "10",
+   "armor_type": "None",
+   "slot": "Breast",
+   "slot_label": "Armour"
+  },
+  {
+   "id": "MonkEquipmentAct3_Drape_of_the_Stone_Guardian",
+   "name": "Drape of the Stone Guardian",
+   "desc": "Impossibly heavy and rigid, this drape sacrifices agility to offer its wearer the immovable, unyielding defense of the earth itself.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "2.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "MAG_MonkCloak_NoCrit_Passive",
+     "name": "Stone's Embrace",
+     "desc": "While you are not wearing armour, you are Immune to Critical Hits and gain a +2 bonus to Armour Class.",
+     "hidden": false,
+     "boosts": "CriticalHit(AttackTarget,Success,Never);AC(2)"
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_EndGameCaster_Cape_A_Magic",
+   "ac": null,
+   "armor_type": "Cloth",
+   "slot": "Cloak",
+   "slot_label": "Cloak"
+  },
+  {
+   "id": "MAG_BG_OfDexterity_Gloves",
+   "name": "Gloves of Dexterity",
+   "desc": "The point at which the gloves meet the wrist is form-fitting and very snug; almost a hint at the supple quickness and skill these gloves permit the wearer.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [
+    "Dexterity becomes 18",
+    "+1 to Attack Rolls"
+   ],
+   "passives": [],
+   "spells": [],
+   "src": "vanilla",
+   "icon": "Item_ARM_Gloves_Leather_2",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "Gloves",
+   "slot_label": "Gloves"
+  },
+  {
+   "id": "ART_IsaiahsBoots",
+   "name": "Sevenstride",
+   "desc": "Salt-white leather and quiet silver buckles, made for the step that leaves trouble behind.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Armor",
+   "weight": "0.55",
+   "value": "3400",
+   "properties": [],
+   "passives": [
+    {
+     "id": "ART_IsaiahsBoots_Passive",
+     "name": "Nightwalker Step",
+     "desc": "Ignore Difficult Terrain. Immune to Web, Ensnared, Restrained, and Prone. Cast Misty Step once per Short Rest.",
+     "hidden": false,
+     "boosts": "StatusImmunity(DIFFICULT_TERRAIN);StatusImmunity(DIFFICULT_TERRAIN_WEB);StatusImmunity(DIFFICULT_TERRAIN_MUD);StatusImmunity(DIFFICULT_TERRAIN_VINES);StatusImmunity(DIFFICULT_TERRAIN_OVERGROWTH);StatusImmunity(DIFFICULT_TERRAIN_LAVA);StatusImmunity(WEB);StatusImmunity(ENSNARED);StatusImmunity(ENSNARED_VINES);StatusImmunity(SG_Restrained);StatusImmunity(CRIPPLED);StatusImmunity(HAMSTRING);StatusImmunity(PIN_DOWN);StatusImmunity(SG_Prone)"
+    },
+    {
+     "id": "MAG_Frost_IceSurfaceProneImmunity_Boots_Passive",
+     "name": "Hoarfrost Balance",
+     "desc": "You cannot fall Prone while traversing icy terrain.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_ART_Shared_MistyStep",
+     "name": "Misty Step",
+     "level": 2,
+     "school": "Conjuration",
+     "desc": "Surrounded by silver mist, you teleport to an unoccupied space you can see.",
+     "cost": "Bonus action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Generated_MAG_LC_Umberlee_Regeneration_Boots_Magic",
+   "ac": null,
+   "armor_type": "Leather",
+   "slot": "Boots",
+   "slot_label": "Boots"
+  },
+  {
+   "id": "FATE_InfiniteGrain_Amulet",
+   "name": "Amulet of the Infinite Grain",
+   "desc": "Sand steadily slips down the glass tube, each grain marking the passage of time as if it were nothing.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.05",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "FATE_InfiniteGrain_Amulet_Passive_01",
+     "name": "Temporal Defiance",
+     "desc": "The wearer exists slightly outside the normal flow of time, granting them immunity to becoming Slowed.",
+     "hidden": false,
+     "boosts": "StatusImmunity(SLOW);"
+    },
+    {
+     "id": "FATE_InfiniteGrain_Amulet_Passive_02",
+     "name": "Temporal Acceleration",
+     "desc": "Time bends to hasten your steps, granting a +3m bonus to movement speed and a +2 bonus to Initiative rolls.",
+     "hidden": false,
+     "boosts": "ActionResource(Movement,3,0);Initiative(2);"
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_FATE_Hourglass_Slow",
+     "name": "Slow",
+     "level": 3,
+     "school": "Transmutation",
+     "desc": "Target up to 6 creatures and Slow them. Movement and actions are affected, and their AC and Dexterity saves are reduced by 2.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "xfate_fef3fbd7-4a38-01e2-d37c-g76m",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfate_fef3fbd7-4a38-01e2-d37c-g76m",
+   "icon": "Item_LOOT_GEN_Hourglass_A",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "Amulet",
+   "slot_label": "Amulet"
+  },
+  {
+   "id": "WW_Wizard_Equipment_Band_of_the_Ascendant_Spellcaster",
+   "name": "Band of the Ascendant Spellcaster",
+   "desc": "This ring seems to whisper secrets of the Weave to its wearer.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.05",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "WW_Ascendant_Spellcaster_Passive",
+     "name": "Ascendant Might",
+     "desc": "You gain a +2 bonus to Spell Attack Rolls and Spell Save DC.",
+     "hidden": false,
+     "boosts": "RollBonus(MeleeSpellAttack, 2);RollBonus(RangedSpellAttack,2);SpellSaveDC(2)"
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "AscendedSpellcasterBand_Icon",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "Ring",
+   "slot_label": "Ring"
+  },
+  {
+   "id": "ART_RingOfForcedMovement",
+   "name": "Ring of Forced Movement",
+   "desc": "A heavy iron band. Worn by old envoys who were sent to negotiations they did not intend to walk away from.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.05",
+   "value": "1800",
+   "properties": [],
+   "passives": [
+    {
+     "id": "ART_RingOfForcedMovement_Passive",
+     "name": "Forceful Tongue",
+     "desc": "Gain a +1d4 bonus to Persuasion checks.",
+     "hidden": false,
+     "boosts": "RollBonus(SkillCheck,1d4,Persuasion)"
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_ART_RingOfForcedMovement_Command",
+     "name": "Command",
+     "level": 1,
+     "school": "Enchantment",
+     "desc": "Command a creature to flee, move closer, freeze, drop to the ground or drop its weapon.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Throw_ART_RingOfForcedMovement_Telekinesis",
+     "name": "Telekinesis",
+     "level": 5,
+     "school": "Transmutation",
+     "desc": "Throw a creature or object up to 18m with a thought. Once per turn, you can use Telekinesis again without expending a spell slot.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_RingOfForcedMovement_HoldMonster",
+     "name": "Hold Monster",
+     "level": 5,
+     "school": "Enchantment",
+     "desc": "Paralyse a creature. It can't move, act or react. Attacks from within 3m are always Critical Hits.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Item_MAG_PHB_Ring_Of_Protection",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "Ring2",
+   "slot_label": "Ring"
+  },
+  {
+   "id": "ART_RitualisticUnderwear",
+   "name": "Ritualistic Underwear",
+   "desc": "Stitched with little ward-circles and old familiar names, as though modesty were only one of its duties.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Armor",
+   "weight": "0.2",
+   "value": "2600",
+   "properties": [],
+   "passives": [
+    {
+     "id": "ART_RitualisticUnderwear_Passive",
+     "name": "Ritual Practice",
+     "desc": "Gain Speak with Animals and Disguise Self. Cast Detect Thoughts on a Short Rest, and Speak with Dead and Find Familiar on a Long Rest.",
+     "hidden": false,
+     "boosts": ""
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_ART_RitualisticUnderwear_SpeakWithDead",
+     "name": "Speak with Dead",
+     "level": 3,
+     "school": "Necromancy",
+     "desc": "Question a corpse. Recharge: Long Rest.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": true,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_RitualisticUnderwear_SpeakWithAnimals",
+     "name": "Speak with Animals",
+     "level": 1,
+     "school": "Divination",
+     "desc": "Understand and speak with beasts until Long Rest.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": true,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_RitualisticUnderwear_DetectThoughts",
+     "name": "Detect Thoughts",
+     "level": 2,
+     "school": "Divination",
+     "desc": "Read the surface thoughts of a creature. Recharge: Short Rest.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": true,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_ART_RitualisticUnderwear_DisguiseSelf",
+     "name": "Disguise Self",
+     "level": 1,
+     "school": "Illusion",
+     "desc": "Take on another appearance until Long Rest.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": true,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_ART_RitualisticUnderwear_FindFamiliar",
+     "name": "Find Familiar",
+     "level": 1,
+     "school": "Conjuration",
+     "desc": "Summon a familiar companion. Recharge: Long Rest.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": true,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Generated_Underwear_Dragonborn_A",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "Underwear",
+   "slot_label": "Underwear"
+  },
+  {
+   "id": "FATE_TuningFork",
+   "name": "Tuning Fork of the Lucid Mind",
+   "desc": "This steel fork is perfectly balanced. When struck against a hard surface, it emits a low, unwavering tone that vibrates through the skull, sharpening the user's thoughts into a singular point of focus.",
+   "tech": null,
+   "rarity": "Uncommon",
+   "type": "Armor",
+   "weight": "0.02",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "FATE_TuningFork_Passive",
+     "name": "Lucid Frequency",
+     "desc": "The hum of the tuning fork lingers in your mind, drowning out distractions. You gain a +1 bonus to Spell Attack Rolls and Spell Save DC.",
+     "hidden": false,
+     "boosts": "SpellSaveDC(1);RollBonus(MeleeSpellAttack, 1);RollBonus(RangedSpellAttack,1);"
+    }
+   ],
+   "spells": [],
+   "src": "xfate_fef3fbd7-4a38-01e2-d37c-g76m",
+   "icon": "Item_LOOT_GEN_LOOT_GEN_Dining_Ustensil_Fork_Silver_Rich_A",
+   "ac": null,
+   "armor_type": null,
+   "slot": "MusicalInstrument",
+   "slot_label": "Instrument"
+  },
+  {
+   "id": "ARM_Camp_Body",
+   "name": "Brocade Ensemble",
+   "desc": "The rich detail on this ornate garb suggest the work of the finest craftspeople Waterdeep's fashion district have to offer.",
+   "tech": null,
+   "rarity": "Common",
+   "type": "Armor",
+   "weight": "1",
+   "value": null,
+   "properties": [],
+   "passives": [],
+   "spells": [],
+   "src": "vanilla",
+   "icon": "Generated_ARM_Camp_Patriars_A",
+   "ac": "",
+   "armor_type": "None",
+   "slot": "VanityBody",
+   "slot_label": "Camp clothes"
+  },
+  {
+   "id": "ARM_Camp_Shoes",
+   "name": "Brocade Booties",
+   "desc": "Intricately embroidered to the highest standards, these booties are the height of current Sword Coast fashion.",
+   "tech": null,
+   "rarity": "Common",
+   "type": "Armor",
+   "weight": "0.55",
+   "value": null,
+   "properties": [],
+   "passives": [],
+   "spells": [],
+   "src": "vanilla",
+   "icon": "Generated_ARM_Camp_Shoes_Astarion",
+   "ac": null,
+   "armor_type": "None",
+   "slot": "VanityBoots",
+   "slot_label": "Camp shoes"
+  }
+ ],
+ "pack": [
+  {
+   "id": "SOTM_StaffOfTheMagi",
+   "name": "Staff of the Magi",
+   "desc": "An elder staff of perilous repute, bright with warded fire and hungry for hostile magic. Wakes at levels 5 and 9.",
+   "tech": null,
+   "rarity": "Legendary",
+   "type": "Weapon",
+   "weight": "1.8",
+   "value": "6400",
+   "properties": [
+    "+1 weapon enchantment",
+    "+1 weapon enchantment from level 9",
+    "+2 weapon enchantment"
+   ],
+   "passives": [
+    {
+     "id": "SOTM_Dormant_Passive",
+     "name": "Dormant",
+     "desc": "+1 staff, +1 Spell Attack, Magelight, Spell Absorption, 20 charges.",
+     "hidden": false,
+     "boosts": null
+    },
+    {
+     "id": "SOTM_Awakened_Passive",
+     "name": "Awakened (level 5)",
+     "desc": "Level 5: +2 Spell Attack, Spellguard, 35 charges, more spells.",
+     "hidden": false,
+     "boosts": "IF(CharacterLevelGreaterThan(4) and not HasStatus('ART_SOTM_SHATTERED', context.Source)):RollBonus(MeleeSpellAttack,1);IF(CharacterLevelGreaterThan(4) and not HasStatus('ART_SOTM_SHATTERED', context.Source)):RollBonus(RangedSpellAttack,1)"
+    },
+    {
+     "id": "SOTM_Legendary_Passive",
+     "name": "Legendary (level 9)",
+     "desc": "Level 9: +2 staff, 50 charges, the full spell list and Retributive Strike.",
+     "hidden": false,
+     "boosts": null
+    },
+    {
+     "id": "SOTM_ArcaneMight_Passive",
+     "name": "Arcane Might",
+     "desc": "The staff sharpens your casting, granting +1 to Spell Attack Rolls (+2 once Awakened).",
+     "hidden": false,
+     "boosts": "IF(not HasStatus('ART_SOTM_SHATTERED', context.Source)):RollBonus(MeleeSpellAttack,1);IF(not HasStatus('ART_SOTM_SHATTERED', context.Source)):RollBonus(RangedSpellAttack,1)"
+    },
+    {
+     "id": "SOTM_Spellguard_Passive",
+     "name": "Spellguard",
+     "desc": "Once Awakened (level 5), its wards stand between you and hostile sorcery, granting Advantage on Saving Throws against spells.",
+     "hidden": false,
+     "boosts": "IF(IsSpell() and not HasStatus('ART_SOTM_SHATTERED', context.Source)):Advantage(AllSavingThrows)"
+    },
+    {
+     "id": "SOTM_SpellAbsorption_Passive",
+     "name": "Spell Absorption",
+     "desc": "When an enemy casts a spell that targets only you, you can use your Reaction to make the staff absorb it: the spell fails and the staff gains a number of charges equal to the spell's level, up to its maximum of 50.",
+     "hidden": false,
+     "boosts": "UnlockSpell(Target_SOTM_SpellAbsorption)"
+    },
+    {
+     "id": "SOTM_Magelight_Passive",
+     "name": "Magelight",
+     "desc": "The staff sheds a steady magical light while equipped.",
+     "hidden": false,
+     "boosts": "ActiveCharacterLight(e278f6a0-26d7-49be-b11a-9b84bc313c3c)"
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_SOTM_Light",
+     "name": "Light",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Infuse an object with an aura of light.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_MageHand",
+     "name": "Mage Hand",
+     "level": 0,
+     "school": "Conjuration",
+     "desc": "Create a spectral hand that can manipulate and interact with objects.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_ArcaneLock",
+     "name": "Arcane Lock",
+     "level": 2,
+     "school": "Abjuration",
+     "desc": "Close a door or container with a magical lock. It can no longer be lockpicked or opened with Knock.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_SOTM_ArcaneSight",
+     "name": "Detect Magic (Arcane Sight)",
+     "level": 2,
+     "school": "Divination",
+     "desc": "The deeper sight once named Detect Magic is rendered here as Arcane Sight.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_ProtectionFromEvilAndGood",
+     "name": "Protection from Evil and Good",
+     "level": 1,
+     "school": "Abjuration",
+     "desc": "Protect an ally against the attacks and powers of aberrations, celestials, elementals, fey, fiends, and undead.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_EnlargeReduce",
+     "name": "Enlarge/Reduce",
+     "level": 2,
+     "school": "Transmutation",
+     "desc": "Make a creature larger or smaller to affect their weapon damage and Strength Checks and Saving Throws.",
+     "cost": "Action",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_FlamingSphere",
+     "name": "Flaming Sphere",
+     "level": 2,
+     "school": "Conjuration",
+     "desc": "Summon a flaming sphere that damages nearby enemies and objects. You can move the sphere. It emits a bright light.",
+     "cost": "Action, 2 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_Invisibility",
+     "name": "Invisibility",
+     "level": 2,
+     "school": "Illusion",
+     "desc": "Touch a creature to turn it Invisible. Attacks against it have Disadvantage. It attacks with Advantage.",
+     "cost": "Action, 2 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_Knock",
+     "name": "Knock",
+     "level": 2,
+     "school": "Transmutation",
+     "desc": "Unlock an object that is held shut by a mundane lock.",
+     "cost": "Action, 2 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_Web",
+     "name": "Web",
+     "level": 2,
+     "school": "Conjuration",
+     "desc": "Cover an area in thick, flammable webbing that slows creatures within and possibly Enwebs them.",
+     "cost": "Action, 2 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_RemoveCurse",
+     "name": "Dispel Magic (Remove Curse)",
+     "level": 3,
+     "school": "Abjuration",
+     "desc": "Lift a curse from a creature or object. Stands in for Dispel Magic, which has no equivalent in Baldur's Gate 3.",
+     "cost": "Action, 3 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Projectile_SOTM_Fireball",
+     "name": "Fireball (Level 7)",
+     "level": 6,
+     "school": "Evocation",
+     "desc": "Shoot a bright flame from your fingers that explodes upon contact, torching everything in the vicinity.",
+     "cost": "Action, 7 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Zone_SOTM_LightningBolt",
+     "name": "Lightning Bolt (Level 7)",
+     "level": 6,
+     "school": "Evocation",
+     "desc": "Call forth a blast of lightning that hits all creatures in the line of the eruption.",
+     "cost": "Action, 7 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_IceStorm",
+     "name": "Ice Storm",
+     "level": 4,
+     "school": "Evocation",
+     "desc": "Impel a storm of hail and ice to crash from the sky, covering the ground and striking all objects and creatures within range.",
+     "cost": "Action, 4 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Wall_SOTM_WallOfFire",
+     "name": "Wall of Fire",
+     "level": 4,
+     "school": "Evocation",
+     "desc": "Create a blazing wall of fire, burning anyone who dares stand too close.",
+     "cost": "Action, 4 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 5",
+     "kind": "spell"
+    },
+    {
+     "id": "Throw_SOTM_Telekinesis",
+     "name": "Telekinesis",
+     "level": 5,
+     "school": "Transmutation",
+     "desc": "Throw a creature or object up to 18m with a thought. Once per turn, you can use Telekinesis again without expending a spell slot.",
+     "cost": "Action, 5 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_ConjureElemental",
+     "name": "Conjure Elemental",
+     "level": 5,
+     "school": "Conjuration",
+     "desc": "Bend the barrier between the Planes until they disgorge an elemental ally to follow and fight for you.",
+     "cost": "Action, 7 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Teleportation_SOTM_ArcaneGate",
+     "name": "Passwall (Arcane Gate)",
+     "level": 6,
+     "school": "Conjuration",
+     "desc": "Open two linked portals that let you and your allies pass where walls and chasms would stop you. Stands in for Passwall, which has no equivalent in Baldur's Gate 3.",
+     "cost": "Action, 5 charges",
+     "concentration": true,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_SOTM_PlaneShift",
+     "name": "Plane Shift (Banishment)",
+     "level": 4,
+     "school": "Abjuration",
+     "desc": "Shunt a creature to another plane of existence for 10 turns unless it succeeds on a Charisma Saving Throw. No Concentration is needed. Stands in for Plane Shift, which has no equivalent in Baldur's Gate 3.",
+     "cost": "Action, 7 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    },
+    {
+     "id": "Shout_SOTM_RetributiveStrike",
+     "name": "Retributive Strike",
+     "level": 0,
+     "school": "Evocation",
+     "desc": "Break the staff over your knee. It is destroyed, and its remaining magic detonates in a 9 m blast. Choose how many charges to unleash: every other creature in range must succeed on a DC 17 Dexterity Saving Throw or take Force damage equal to 6 times the charges (half on a success). You have a 50% chance to slip to another plane and escape the blast; otherwise you take Force damage equal to 16 times the charges.",
+     "cost": "Action, 10 charges",
+     "concentration": false,
+     "ritual": false,
+     "src": "FousiosTomeOfItems",
+     "unlock": "from level 9",
+     "kind": "spell"
+    }
+   ],
+   "src": "FousiosTomeOfItems",
+   "icon": "Item_WPN_HUM_Magicstaff_A_0",
+   "damage": "1d6",
+   "damage_type": "Bludgeoning",
+   "versatile": "1d8",
+   "weapon_props": [
+    "Melee",
+    "Versatile"
+   ],
+   "proficiency": "Quarterstaffs",
+   "enchant": [
+    "+1 weapon enchantment",
+    "+1 weapon enchantment from level 9",
+    "+2 weapon enchantment"
+   ]
+  },
+  {
+   "id": "WW_Wizard_Equipment_Gloves_of_the_Burning_Sky",
+   "name": "Gloves of the Burning Sky",
+   "desc": "Embroidered with fiery red thread depicting a phoenix in flight, these gloves radiate a gentle warmth.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "WW_PhoenixEmbrace_Passive",
+     "name": "Phoenix's Embrace",
+     "desc": "You gain Resistance to Fire damage.",
+     "hidden": false,
+     "boosts": "Resistance(Fire, Resistant)"
+    }
+   ],
+   "spells": [
+    {
+     "id": "WW_Target_Skyfire",
+     "name": "Skyfire",
+     "level": 0,
+     "school": null,
+     "desc": "Call down a barrage of fiery comets. Creatures in a 6m radius must make a Dexterity Saving Throw, taking 5d8 Fire damage and 5d8 Radiant damage on a failed save, or half as much on a successful one.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_MM_Sorcery_SeekingSpell_Gloves_Magic",
+   "ac": null,
+   "armor_type": "None"
+  },
+  {
+   "id": "WW_Wizard_Equipment_Shroud_of_the_Shadow_Weaver",
+   "name": "Shroud of the Shadow Weaver",
+   "desc": "The cloak feels cold and clammy to the touch, and a faint, whispering sound can be heard emanating from its depths.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [],
+   "spells": [
+    {
+     "id": "WW_Shout_SpellSlotRestoration_WeaveOfShadows",
+     "name": "Weave of Shadows",
+     "level": null,
+     "school": null,
+     "desc": "You manipulate the shroud's shadowy essence to mend the fabric of your arcane power, restoring a spell slot up to 3rd Level.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_LC_Nymph_Cloak_Magic",
+   "ac": null,
+   "armor_type": "Cloth"
+  },
+  {
+   "id": "CC_Sorcerer_Equipment_Cape_of_the_Fluctuating_Ward",
+   "name": "Cape of the Fluctuating Ward",
+   "desc": "This cape feels cool to the touch, radiating a gentle, soothing energy.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "CC_FluxShield_Passive",
+     "name": "Flux Shield",
+     "desc": "While you have 4 or more unused Sorcery Points, you gain a +2 bonus to AC.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_ElementalGish_AbsorbElements_Cloak_Magic",
+   "ac": null,
+   "armor_type": "Cloth"
+  },
+  {
+   "id": "CC_Sorcerer_Equipment_Robe_of_Shared_Essence",
+   "name": "Robe of Shared Essence",
+   "desc": "Intricate patterns, resembling constellations or flowing rivers of light, are woven into the fabric, their designs subtly shifting and rearranging themselves with movement.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Armor",
+   "weight": "1.8",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "CC_ArcaneSymbiosis_Passive",
+     "name": "Arcane Symbiosis",
+     "desc": "When you cast a spell of 1st level or higher and expend a Sorcery Point, you gain temporary hit points equal to twice the spell's level + your Charisma Modifier for 2 turns.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Item_ARM_Robe_D",
+   "ac": "10",
+   "armor_type": "None"
+  },
+  {
+   "id": "CC_Sorcerer_Equipment_Staff_of_Arcane_Resonance",
+   "name": "Staff of Arcane Resonance",
+   "desc": "Woven throughout the carvings are delicate strands of a silvery metal, which catch and reflect light in a subtle, mesmerizing way.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Weapon",
+   "weight": "1.8",
+   "value": null,
+   "properties": [
+    "+1 weapon enchantment"
+   ],
+   "passives": [],
+   "spells": [
+    {
+     "id": "CC_Shout_InnerTap",
+     "name": "Inner Tap",
+     "level": null,
+     "school": null,
+     "desc": "Gain Sorcery Points equal to your Charisma Modifier.",
+     "cost": "Bonus action",
+     "concentration": false,
+     "ritual": false,
+     "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+     "unlock": "always",
+     "kind": "spell"
+    },
+    {
+     "id": "Target_Topple",
+     "name": "Topple",
+     "level": null,
+     "school": null,
+     "desc": "Swipe at a creature to knock it Prone.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "vanilla",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Item_WPN_HUM_Quarterstaff_A_1",
+   "damage": "1d6",
+   "damage_type": "Bludgeoning",
+   "versatile": "1d8",
+   "weapon_props": [
+    "Melee",
+    "Versatile"
+   ],
+   "proficiency": "Quarterstaffs",
+   "enchant": [
+    "+1 weapon enchantment"
+   ]
+  },
+  {
+   "id": "CC_Sorcerer_Equipment_Band_of_Arcane_Echoes",
+   "name": "Band of Arcane Echoes",
+   "desc": "Crafted from cool, polished obsidian, the intricate, swirling patterns etched into this band subtly shift and rearrange under close observation.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Armor",
+   "weight": "0.05",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "CC_EchoHeal_Passive",
+     "name": "Echo Heal",
+     "desc": "When you cast a spell of 3rd level or higher and expend a Sorcery Point, you regain a number of hit points equal to your Charisma Modifier.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "ArcaneEchoesBand_Icon",
+   "ac": null,
+   "armor_type": "None"
+  },
+  {
+   "id": "WW_Wizard_Equipment_Gloves_of_the_Cinderbrand",
+   "name": "Gloves of the Cinderbrand",
+   "desc": "The gloves feel warm to the touch, and faint wisps of smoke curl from the fingertips, tracing intricate patterns in the air before dissipating like fading embers.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "WW_Cinderbrand_Passive",
+     "name": "Cinderbrand's Ignition",
+     "desc": "When you deal fire damage to a creature, flickering flames erupt around it in a 3m radius. Your fire spells also ignite with greater intensity, dealing an additional 1d4 Fire damage.",
+     "hidden": false,
+     "boosts": "IF(HasDamageDoneForType(DamageType.Fire) and not Self()):DamageBonus(1d4, Fire)"
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Item_ARM_Gloves_Leather_D",
+   "ac": null,
+   "armor_type": "None"
+  },
+  {
+   "id": "MAG_Illithid_Regen_Circlet",
+   "name": "Circlet of Mental Anguish",
+   "desc": "Fell magic has seeped into this circlet, rejoicing at the slightest touch of despair.",
+   "tech": null,
+   "rarity": "Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "MAG_Illithid_Regen_Circlet_Passive",
+     "name": "Psychic Leech",
+     "desc": "When an enemy fails a Charisma, Intelligence, or Wisdom Saving Throw against one of your spells or cantrips, you regain 1d4 hit points.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "vanilla",
+   "icon": "Item_ARM_Circlet",
+   "ac": null,
+   "armor_type": "None"
+  },
+  {
+   "id": "HAI_FocusCirclet",
+   "name": "Circlet of Nous (Fragmented)",
+   "desc": "A thin study circlet set with a small brass flower to draw wandering thoughts into line.",
+   "tech": null,
+   "rarity": "Uncommon",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": "180",
+   "properties": [],
+   "passives": [
+    {
+     "id": "HAI_FocusCirclet_Passive",
+     "name": "Measured Focus",
+     "desc": "Gain +1 to Spell Attack Rolls while actively Concentrating on a spell.",
+     "hidden": false,
+     "boosts": "IF(IsConcentrating(context.Source)):RollBonus(MeleeSpellAttack, 1);IF(IsConcentrating(context.Source)):RollBonus(RangedSpellAttack, 1)"
+    }
+   ],
+   "spells": [],
+   "src": "FousiosTomeOfItems",
+   "icon": "Item_ARM_Circlet",
+   "ac": null,
+   "armor_type": "Cloth"
+  },
+  {
+   "id": "MAG_Fire_BonusActionOnFireSpell_Circlet",
+   "name": "Pyroquickness Hat",
+   "desc": "Merely holding the circlet makes your skin flush, filling you with determination and righteous fury.",
+   "tech": null,
+   "rarity": "Very Rare",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "MAG_Fire_BonusActionOnFireSpell_Passive",
+     "name": "Fiery Return",
+     "desc": "When you deal Fire damage with a levelled spell, you Burn yourself and gain an additional bonus action this round.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "vanilla",
+   "icon": "Generated_ARM_Hat_Wizard_C_Magic",
+   "ac": null,
+   "armor_type": "Cloth"
+  },
+  {
+   "id": "CC_Sorcerer_Equipment_Mantle_of_the_Spell_Current",
+   "name": "Mantle of the Spell Current",
+   "desc": "This gracefully draped fabric possesses a surprising lightness that belies its intricate construction, featuring a subtly ribbed texture.",
+   "tech": null,
+   "rarity": "Uncommon",
+   "type": "Armor",
+   "weight": "0.5",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "CC_LivingCurrent_Passive",
+     "name": "Living Current",
+     "desc": "When you cast a spell of 1st level or higher, you regain hit points equal to the level of the spell slot used.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [],
+   "src": "xfed_aio_af330e86-7335-b20c-ce-drzn",
+   "icon": "Generated_MAG_LC_Nymph_Cloak_Magic",
+   "ac": null,
+   "armor_type": "Cloth"
+  },
+  {
+   "id": "FATE_Conch_Shell_Ring",
+   "name": "The Spined Whelk",
+   "desc": "A heavy, calcified shell covered in sharp, defensive spines. If you listen closely to the opening, you don't just hear the ocean—you hear the crashing of a storm.",
+   "tech": null,
+   "rarity": "Uncommon",
+   "type": "Armor",
+   "weight": "0.05",
+   "value": null,
+   "properties": [],
+   "passives": [
+    {
+     "id": "FATE_Conch_Shell_Passive",
+     "name": "Tidal Balm",
+     "desc": "The soothing rhythm of the ocean phantomly bolsters your spirit. When you start combat, you gain 3 temporary hit points.",
+     "hidden": false,
+     "boosts": null
+    }
+   ],
+   "spells": [
+    {
+     "id": "Target_FATE_CallTheWave",
+     "name": "Call the Wave",
+     "level": 1,
+     "school": "Transmutation",
+     "desc": "You blow into the shell to summon the tide. Allows you to cast Create Water.",
+     "cost": "Action",
+     "concentration": false,
+     "ritual": false,
+     "src": "xfate_fef3fbd7-4a38-01e2-d37c-g76m",
+     "unlock": "always",
+     "kind": "spell"
+    }
+   ],
+   "src": "xfate_fef3fbd7-4a38-01e2-d37c-g76m",
+   "icon": "Item_DEC_Harbour_Shell_Conch_C",
+   "ac": null,
+   "armor_type": "None"
+  }
+ ],
+ "boons": [
+  {
+   "id": "DEN_ALFIRA_PROFICIENCY",
+   "name": "An Unlikely Tutor",
+   "desc": "You have Proficiency with an instrument thanks to Alfira's tutelage."
+  },
+  {
+   "id": "HAG_HAIR_INT",
+   "name": "Auntie Ethel's Boon",
+   "desc": "Eating Ethel's hairy scalp has granted you a permanent boost to Intelligence."
+  },
+  {
+   "id": "EPI_GALEGOD_BUFF",
+   "name": "Aura of Possibility",
+   "desc": "While near the God of Ambition, this creature has a +10 bonus to all Ability Checks."
+  }
+ ],
+ "companions": [
+  {
+   "name": "Astarion",
+   "approval": 100
+  },
+  {
+   "name": "Gale",
+   "approval": 100
+  },
+  {
+   "name": "Jaheira",
+   "approval": 100
+  },
+  {
+   "name": "Karlach",
+   "approval": 100
+  },
+  {
+   "name": "Lae'zel",
+   "approval": 100
+  },
+  {
+   "name": "Shadowheart",
+   "approval": 100
+  },
+  {
+   "name": "Wyll",
+   "approval": 100
+  },
+  {
+   "name": "Halsin",
+   "approval": 93
+  },
+  {
+   "name": "Minsc",
+   "approval": 83
+  },
+  {
+   "name": "Minthara",
+   "approval": 63
+  }
+ ],
+ "features": {
+  "race": [
+   {
+    "name": "Civil Militia",
+    "desc": "You have Weapon Proficiency with spears, pikes, halberds, and glaives, and Armour Proficiency with Light Armour and Shields."
+   },
+   {
+    "name": "Darkvision",
+    "desc": "You can see in the dark up to 12m."
+   },
+   {
+    "name": "Fey Ancestry",
+    "desc": "You have Advantage on Saving Throws against being Charmed, and magic can't put you to sleep."
+   }
+  ],
+  "class": [
+   {
+    "name": "Arcane Recovery",
+    "desc": "Replenish spell slots while out of combat. You cannot restore spell slots above 5th level."
+   },
+   {
+    "name": "Arcane Ward",
+    "desc": "The residual magic of your spells forms a ward around you that protects you from harm."
+   },
+   {
+    "name": "Projected Ward",
+    "desc": "When a nearby ally takes damage and you have an active Arcane Ward, you can sacrifice your ward to reduce the damage they take."
+   },
+   {
+    "name": "Improved Abjuration",
+    "desc": "Each time you take a Short Rest, the intensity of your Arcane Ward increases by an amount equal to your wizard level."
+   }
+  ]
+ },
+ "char_boosts": [
+  [
+   "class",
+   "ActionResource(SpellSlot,2,1);ProficiencyBonus(SavingThrow,Intelligence);ProficiencyBonus(SavingThrow,Wisdom);Proficiency(Daggers);Proficiency(Quarterstaffs);Proficiency(LightCrossbows);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,1)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,1);ActionResource(SpellSlot,2,2);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,2)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,2,3);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "Savant(Abjuration)"
+  ],
+  [
+   "race",
+   "ActionResource(Movement,9,0)"
+  ],
+  [
+   "race",
+   "Proficiency(Spears);Proficiency(Pikes); Proficiency(Halberds); Proficiency(Glaives);Proficiency(LightArmor);Proficiency(Shields);"
+  ],
+  [
+   "race",
+   "DarkvisionRangeMin(12);ActiveCharacterLight(051648e6-f05a-e41f-e398-ffd5cd148989)"
+  ],
+  [
+   "race",
+   "StatusImmunity(SLEEP);StatusImmunity(POISON_DROW_CONDITION);Tag(CHARMED_ADV);StatusImmunity(SG_Sleeping_Magical)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,3)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,4);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,4)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,4);ActionResource(SpellSlot,1,5);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,5)"
+  ],
+  [
+   "class",
+   "ActionResource(SpellSlot,1,6);ActionResource(ArcaneRecoveryPoint,1,0)"
+  ],
+  [
+   "class",
+   "UnlockInterrupt(Interrupt_ProjectedWard)"
+  ],
+  [
+   "feat",
+   "Ability(Constitution,1,20);ProficiencyBonus(SavingThrow,Constitution)"
+  ],
+  [
+   "background",
+   "ProficiencyBonus(Skill,Arcana);ProficiencyBonus(Skill,History)"
+  ]
+ ],
+ "feats": [
+  {
+   "level": 4,
+   "name": "Ability Improvement (+2 Intelligence)",
+   "desc": "You increase one Ability by 2, or two Abilities by 1, to a maximum of 20.",
+   "choice": []
+  },
+  {
+   "level": 8,
+   "name": "War Caster",
+   "desc": "You gain Advantage on Saving Throws to maintain Concentration on a spell.\n\nYou can also use a reaction to cast Shocking Grasp at a target moving out of melee range.",
+   "choice": []
+  },
+  {
+   "level": 12,
+   "name": "Resilient",
+   "desc": "You increase an Ability by 1, to a maximum of 20, and gain Proficiency in that Ability's Saving Throws.",
+   "choice": [
+    "Resilient: Constitution"
+   ]
+  }
+ ],
+ "journey": {
+  "days": 64,
+  "supplies": 589,
+  "playtime": "290h 22m",
+  "difficulty": "Custom",
+  "save": "QuickSave 583",
+  "quicksaves": 583,
+  "location": "Epilogue camp",
+  "saved": "2026-06-09"
+ },
+ "derived": {
+  "ac": 24,
+  "ac_parts": [
+   [
+    "Robe of the Archmagi (15 + DEX)",
+    19
+   ],
+   [
+    "Turtle Shell",
+    3
+   ],
+   [
+    "Drape of the Stone Guardian",
+    2
+   ]
+  ],
+  "dc": 25,
+  "dc_parts": [
+   [
+    "8 + proficiency + INT",
+    19
+   ],
+   [
+    "Isaiah's Staff",
+    1
+   ],
+   [
+    "Robe of the Archmagi",
+    2
+   ],
+   [
+    "Band of the Ascendant Spellcaster",
+    2
+   ],
+   [
+    "Tuning Fork of the Lucid Mind",
+    1
+   ]
+  ],
+  "atk": 19,
+  "atk_parts": [
+   [
+    "proficiency + INT",
+    11
+   ],
+   [
+    "Isaiah's Staff",
+    2
+   ],
+   [
+    "Arcanum Repeater",
+    1
+   ],
+   [
+    "Robe of the Archmagi",
+    2
+   ],
+   [
+    "Band of the Ascendant Spellcaster",
+    2
+   ],
+   [
+    "Tuning Fork of the Lucid Mind",
+    1
+   ]
+  ],
+  "init": 6,
+  "init_parts": [
+   [
+    "DEX",
+    4
+   ],
+   [
+    "Amulet of the Infinite Grain",
+    2
+   ]
+  ],
+  "speed": 12,
+  "speed_parts": [
+   [
+    "base",
+    9
+   ],
+   [
+    "Amulet of the Infinite Grain",
+    3
+   ]
+  ],
+  "mods": {
+   "Strength": -1,
+   "Dexterity": 4,
+   "Constitution": 2,
+   "Intelligence": 7,
+   "Wisdom": 0,
+   "Charisma": 1
+  },
+  "saves": {
+   "Strength": {
+    "bonus": -1,
+    "prof": false
+   },
+   "Dexterity": {
+    "bonus": 4,
+    "prof": false
+   },
+   "Constitution": {
+    "bonus": 6,
+    "prof": true
+   },
+   "Intelligence": {
+    "bonus": 11,
+    "prof": true
+   },
+   "Wisdom": {
+    "bonus": 4,
+    "prof": true
+   },
+   "Charisma": {
+    "bonus": 1,
+    "prof": false
+   }
+  },
+  "skills": [
+   {
+    "name": "Athletics",
+    "ability": "STR",
+    "bonus": -1,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Acrobatics",
+    "ability": "DEX",
+    "bonus": 4,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Sleight of Hand",
+    "ability": "DEX",
+    "bonus": 4,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Stealth",
+    "ability": "DEX",
+    "bonus": 4,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Arcana",
+    "ability": "INT",
+    "bonus": 11,
+    "prof": true,
+    "expert": false,
+    "src": "Background",
+    "extra": []
+   },
+   {
+    "name": "History",
+    "ability": "INT",
+    "bonus": 11,
+    "prof": true,
+    "expert": false,
+    "src": "Background",
+    "extra": []
+   },
+   {
+    "name": "Investigation",
+    "ability": "INT",
+    "bonus": 11,
+    "prof": true,
+    "expert": false,
+    "src": "Wizard",
+    "extra": []
+   },
+   {
+    "name": "Nature",
+    "ability": "INT",
+    "bonus": 7,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Religion",
+    "ability": "INT",
+    "bonus": 7,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Animal Handling",
+    "ability": "WIS",
+    "bonus": 0,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Insight",
+    "ability": "WIS",
+    "bonus": 4,
+    "prof": true,
+    "expert": false,
+    "src": "Wizard",
+    "extra": []
+   },
+   {
+    "name": "Medicine",
+    "ability": "WIS",
+    "bonus": 0,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Perception",
+    "ability": "WIS",
+    "bonus": 0,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Survival",
+    "ability": "WIS",
+    "bonus": 0,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Deception",
+    "ability": "CHA",
+    "bonus": 1,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Intimidation",
+    "ability": "CHA",
+    "bonus": 1,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Performance",
+    "ability": "CHA",
+    "bonus": 1,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": []
+   },
+   {
+    "name": "Persuasion",
+    "ability": "CHA",
+    "bonus": 1,
+    "prof": false,
+    "expert": false,
+    "src": null,
+    "extra": [
+     "1d4"
+    ]
+   }
+  ],
+  "passive_perception": 10,
+  "adv_vs_spells": [
+   "Hood of the Archmage",
+   "Robe of the Archmagi",
+   "Turtle Shell"
+  ],
+  "crit_immune": [
+   "Drape of the Stone Guardian",
+   "Turtle Shell"
+  ]
+ }
+}
