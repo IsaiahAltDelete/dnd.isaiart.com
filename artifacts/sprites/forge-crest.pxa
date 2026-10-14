@@ -1,0 +1,34 @@
+@name  forge-crest
+@scale 8
+@size 16x16
+
+@palette
+K #17121b  outline
+k #2c2430  shadow
+1 #6b4a2e  bronze dark
+2 #9c7043  bronze mid
+3 #cfa46a  bronze light
+4 #3f2f66  gem dark
+5 #6d59b0  gem mid
+6 #a996e8  gem light
+m #4a4f5c  metal dark
+M #99a2b4  metal light
+W #f4efe2  highlight
+
+@frame f0
+................
+.....KKKKKK.....
+....KMMKKMMK....
+...KM222222MK...
+..K2224444222K..
+..K2245554222K..
+..K2245654222K..
+..K224WW44222K..
+..K2224442222K..
+..K2222222222K..
+...K22222222K...
+....K222222K....
+.....K2222K.....
+......K22K......
+.......KK.......
+................

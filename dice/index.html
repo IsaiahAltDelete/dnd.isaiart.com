@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Dice / Roller</title>
+    <style>
+      :root {
+        --ink: #111;
+        --paper: #fff;
+        --wash: #f4f4f4;
+        --line: #d2d2d2;
+        --muted: #717171;
+        --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        --ease: cubic-bezier(.2, .7, .2, 1);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #ececec;
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button, input { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+      @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+      @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 55% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
+      @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: .35; } }
+      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+      @keyframes stripes { from { background-position: 0 0; } to { background-position: 28px 0; } }
+      @keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+      .app {
+        width: min(1480px, calc(100vw - 28px));
+        height: min(920px, calc(100dvh - 28px));
+        min-height: 600px;
+        margin: 14px auto;
+        display: grid;
+        grid-template-rows: 64px minmax(0, 1fr);
+        overflow: hidden;
+        border: 1px solid var(--ink);
+        background: var(--paper);
+        animation: fade-in .45s var(--ease) both;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        padding: 0 20px;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .eyebrow, .label, .micro, .hint, .history-meta, .top-meta, .die-option small {
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: .12em;
+      }
+
+      .eyebrow { display: block; margin-bottom: 5px; color: var(--muted); font-size: 9px; }
+      h1 { margin: 0; font-size: 19px; line-height: 1; letter-spacing: -.045em; }
+
+      .top-meta { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 9px; letter-spacing: .1em; }
+      .top-meta strong { color: var(--ink); }
+      .status { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+      .status::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
+      .app:not([data-phase="ready"]) .status::before { animation: pulse .9s ease-in-out infinite; }
+
+      .workbench { min-height: 0; display: grid; grid-template-columns: 168px minmax(0, 1fr) 250px; }
+
+      .dice-rail, .info-panel { min-height: 0; display: flex; flex-direction: column; background: var(--paper); animation: rise .55s var(--ease) both; }
+      .dice-rail { border-right: 1px solid var(--ink); animation-delay: .06s; }
+      .info-panel { border-left: 1px solid var(--ink); animation-delay: .14s; }
+
+      .label { display: block; color: var(--muted); font-size: 9px; line-height: 1.3; }
+      .rail-head { padding: 15px 15px 11px; border-bottom: 1px solid var(--line); }
+
+      .dice-list { display: grid; }
+
+      .die-option {
+        width: 100%;
+        min-height: 58px;
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        align-items: center;
+        gap: 11px;
+        padding: 8px 12px 8px 14px;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        background: var(--paper);
+        text-align: left;
+        transition: background .18s var(--ease), color .18s var(--ease), padding-left .22s var(--ease);
+      }
+
+      .die-option:hover { background: var(--wash); padding-left: 18px; }
+      .die-option[aria-pressed="true"] { background: var(--ink); color: #fff; padding-left: 18px; }
+      .die-option b { display: block; font-size: 12px; letter-spacing: -.01em; }
+      .die-option small { display: block; margin-top: 2px; font-size: 8px; opacity: .65; }
+
+      .mini-die { width: 32px; height: 30px; display: grid; place-items: center; transition: transform .28s var(--ease); }
+      .die-option:hover .mini-die { transform: rotate(-9deg) scale(1.08); }
+      .die-option[aria-pressed="true"] .mini-die { transform: scale(1.1); }
+      .mini-die svg { width: 100%; height: 100%; overflow: visible; }
+      .mini-die polygon { fill: #fff; stroke: currentColor; stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: fill .18s var(--ease); }
+      .die-option[aria-pressed="true"] .mini-die polygon { fill: var(--ink); }
+      .mini-die line { stroke: currentColor; stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+      .tray {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        isolation: isolate;
+        background-image: linear-gradient(#e9e9e9 1px, transparent 1px), linear-gradient(90deg, #e9e9e9 1px, transparent 1px);
+        background-size: 40px 40px;
+        animation: fade-in .7s var(--ease) both;
+        animation-delay: .1s;
+      }
+
+      #diceCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      #diceCanvas.grabbing { cursor: grabbing; }
+
+      .result-hud {
+        position: absolute;
+        z-index: 3;
+        top: 16px;
+        left: 50%;
+        display: grid;
+        justify-items: center;
+        max-width: min(420px, 80%);
+        text-align: center;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .result-hud .micro { color: var(--muted); font-size: 9px; }
+      .result-hud strong { margin-top: 3px; font-family: var(--mono); font-size: clamp(34px, 4.2vw, 56px); line-height: .95; letter-spacing: -.08em; }
+      .result-hud strong.pop { animation: pop .55s var(--ease); }
+      .result-hud strong.waiting { animation: blink 1.1s ease-in-out infinite; }
+      .sequence { margin: 6px 0 0; color: var(--muted); font-family: var(--mono); font-size: 10px; line-height: 1.45; word-break: break-word; }
+
+      .roll-dock {
+        position: absolute;
+        z-index: 4;
+        bottom: 20px;
+        left: 50%;
+        display: grid;
+        justify-items: center;
+        gap: 9px;
+        transform: translateX(-50%);
+      }
+
+      .roll-button {
+        position: relative;
+        min-width: 240px;
+        height: 49px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 18px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        overflow: hidden;
+        transition: transform .14s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+      }
+
+      .roll-button::after {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(-45deg, transparent 0 10px, rgba(255, 255, 255, .1) 10px 20px);
+        background-size: 28px 28px;
+        opacity: 0;
+        transition: opacity .3s;
+        content: "";
+      }
+
+      .app[data-phase="rolling"] .roll-button::after, .app[data-phase="cocked"] .roll-button::after { opacity: 1; animation: stripes .5s linear infinite; }
+      .roll-button:hover { background: #2b2b2b; transform: translateY(-1px); box-shadow: 0 4px 0 -1px rgba(17, 17, 17, .18); }
+      .roll-button:active { transform: translateY(2px); box-shadow: none; }
+      .roll-button kbd { padding: 3px 5px; border: 1px solid #777; color: #ccc; font-family: var(--mono); font-size: 9px; }
+      .hint { color: var(--muted); font-size: 9px; white-space: nowrap; }
+
+      .panel-section { padding: 15px 15px 17px; border-bottom: 1px solid var(--line); }
+      .panel-section > .label { margin-bottom: 12px; }
+
+      .count-row { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--ink); }
+      .count-button { height: 38px; border: 0; border-right: 1px solid var(--ink); background: var(--paper); font-family: var(--mono); font-size: 11px; transition: background .18s var(--ease), color .18s var(--ease); }
+      .count-button:last-child { border-right: 0; }
+      .count-button:hover { background: var(--wash); }
+      .count-button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+      .modifier-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; margin-top: 14px; }
+      .modifier-row input { width: 74px; height: 38px; padding: 0 10px; border: 1px solid var(--ink); border-radius: 0; background: #fff; font-family: var(--mono); transition: background .18s var(--ease); }
+      .modifier-row input:hover { background: var(--wash); }
+      .roll-range { display: flex; justify-content: space-between; gap: 12px; margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 10px; }
+      .roll-range strong { font-weight: 700; }
+
+      .history-section { min-height: 0; flex: 1; display: flex; flex-direction: column; border-bottom: 0; }
+      .history-list { min-height: 0; overflow: auto; }
+      .history-empty { padding-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 10px; line-height: 1.6; }
+      .history-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+      .history-row:first-child { animation: slide-in .4s var(--ease); }
+      .history-row strong { align-self: center; font-family: var(--mono); font-size: 20px; }
+      .history-roll { font-family: var(--mono); font-size: 10px; line-height: 1.4; }
+      .history-meta { margin-top: 3px; color: var(--muted); font-size: 8px; }
+
+      .clear-button { margin-top: 12px; padding: 0 0 3px; border: 0; border-bottom: 1px solid var(--ink); background: none; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; transition: letter-spacing .2s var(--ease), opacity .2s; }
+      .clear-button:hover { letter-spacing: .18em; }
+
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+      @media (max-height: 760px) and (min-width: 781px) {
+        .app { min-height: 540px; grid-template-rows: 56px minmax(0, 1fr); }
+        .die-option { min-height: 50px; }
+        .rail-head, .panel-section { padding-block: 11px; }
+        .roll-dock { bottom: 14px; }
+        .roll-button { height: 43px; }
+      }
+
+      @media (max-width: 980px) {
+        .app { width: calc(100vw - 16px); height: calc(100dvh - 16px); margin: 8px auto; }
+        .workbench { grid-template-columns: 150px minmax(0, 1fr) 218px; }
+        .topbar { padding-inline: 15px; }
+      }
+
+      @media (max-width: 780px) {
+        html, body { height: 100%; overflow: hidden; }
+        body { background: var(--paper); }
+        .app { width: 100%; height: 100dvh; min-height: 0; margin: 0; border-width: 0; grid-template-rows: 58px minmax(0, 1fr); }
+        .topbar { padding-inline: 14px; }
+        .top-meta { gap: 14px; }
+        .workbench { grid-template-columns: 1fr; min-height: 0; overflow-y: auto; }
+        .dice-rail { border-right: 0; border-bottom: 1px solid var(--ink); }
+        .rail-head { display: none; }
+        .dice-list { grid-template-columns: repeat(7, minmax(46px, 1fr)); }
+        .die-option { min-height: 58px; grid-template-columns: 1fr; justify-items: center; gap: 3px; padding: 7px 3px; border-bottom: 0; border-right: 1px solid var(--line); }
+        .die-option:last-child { border-right: 0; }
+        .die-option:hover, .die-option[aria-pressed="true"] { padding-left: 3px; }
+        .die-option small { display: none; }
+        .die-option b { font-size: 9px; }
+        .mini-die { width: 28px; height: 24px; }
+        .tray { min-height: 60dvh; border-bottom: 1px solid var(--ink); }
+        .result-hud { top: 12px; }
+        .roll-dock { bottom: 14px; }
+        .roll-button { min-width: 210px; height: 45px; }
+        .hint { display: none; }
+        .info-panel { border-left: 0; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app" data-phase="ready">
+      <header class="topbar">
+        <div><span class="eyebrow">utility / tabletop</span><h1>DICE / ROLLER</h1></div>
+        <div class="top-meta"><span class="status" id="trayStatus">ready / touch a die</span><span>roll <strong id="rollCount">00</strong></span></div>
+      </header>
+
+      <div class="workbench">
+        <aside class="dice-rail" aria-label="Dice type">
+          <div class="rail-head"><span class="label">dice</span></div>
+          <div class="dice-list" id="diceList">
+            <button class="die-option" type="button" data-sides="4"><span class="mini-die"></span><span><b>D4</b><small>tetra</small></span></button>
+            <button class="die-option" type="button" data-sides="6"><span class="mini-die"></span><span><b>D6</b><small>cube</small></span></button>
+            <button class="die-option" type="button" data-sides="8"><span class="mini-die"></span><span><b>D8</b><small>octa</small></span></button>
+            <button class="die-option" type="button" data-sides="10"><span class="mini-die"></span><span><b>D10</b><small>deca</small></span></button>
+            <button class="die-option" type="button" data-sides="12"><span class="mini-die"></span><span><b>D12</b><small>dodeca</small></span></button>
+            <button class="die-option" type="button" data-sides="20" aria-pressed="true"><span class="mini-die"></span><span><b>D20</b><small>icosa</small></span></button>
+            <button class="die-option" type="button" data-sides="100"><span class="mini-die"></span><span><b>D100</b><small>percentile</small></span></button>
+          </div>
+        </aside>
+
+        <section class="tray" aria-label="Dice tray">
+          <canvas id="diceCanvas" tabindex="0" aria-label="Interactive 3D dice. Tap a die to poke it or drag a die to throw it."></canvas>
+          <div class="result-hud">
+            <span class="micro"><span id="resultKind">waiting</span> · <span id="hudFormula">3d20</span></span>
+            <strong id="hudTotal">—</strong>
+            <p class="sequence" id="rollSequence">Roll or throw the dice.</p>
+          </div>
+          <div class="roll-dock">
+            <button class="roll-button" type="button" id="rollButton">ROLL <span id="rollLabel">3D20</span><kbd>SPACE</kbd></button>
+            <span class="hint">tap a die to poke it · drag to throw</span>
+          </div>
+        </section>
+
+        <aside class="info-panel" aria-label="Roll settings and log">
+          <section class="panel-section">
+            <span class="label">quantity</span>
+            <div class="count-row" id="countRow" role="group" aria-label="How many dice">
+              <button class="count-button" type="button" data-count="1">1</button>
+              <button class="count-button" type="button" data-count="2">2</button>
+              <button class="count-button" type="button" data-count="3" aria-pressed="true">3</button>
+              <button class="count-button" type="button" data-count="4">4</button>
+              <button class="count-button" type="button" data-count="5">5</button>
+            </div>
+            <div class="modifier-row"><label class="label" for="modifierInput">modifier</label><input id="modifierInput" type="number" min="-20" max="20" step="1" value="0" /></div>
+            <div class="roll-range"><span id="rollSpec">3d20 + 0</span><strong id="rangeSpec">3—60</strong></div>
+          </section>
+
+          <section class="panel-section history-section">
+            <span class="label">log</span>
+            <div class="history-list" id="historyList"><div class="history-empty">No rolls yet.<br />Results appear after every die settles.</div></div>
+            <div><button class="clear-button" type="button" id="clearButton">reset / clear</button></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <div class="sr-only" id="liveRegion" aria-live="polite"></div>
+    <script src="vendor/three.global.js"></script>
+    <script src="vendor/cannon-es.global.js"></script>
+    <script src="models/dice.js"></script>
+    <script>
+      (() => {
+        const THREE = globalThis.THREE, CANNON = globalThis.CANNON, MODELS = globalThis.DICE_MODELS;
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+        const app = $('.app');
+        const canvas = $('#diceCanvas');
+        const resultHud = $('.result-hud');
+        const rollDock = $('.roll-dock');
+        const trayStatus = $('#trayStatus');
+        const hudTotal = $('#hudTotal');
+        const hudFormula = $('#hudFormula');
+        const resultKind = $('#resultKind');
+        const rollSequence = $('#rollSequence');
+        const historyList = $('#historyList');
+        const modifierInput = $('#modifierInput');
+        const rollSpec = $('#rollSpec');
+        const rangeSpec = $('#rangeSpec');
+        const rollLabel = $('#rollLabel');
+        const rollCount = $('#rollCount');
+        const liveRegion = $('#liveRegion');
+
+        const state = { sides: 20, quantity: 3, modifier: 0, rolls: [], rollCount: 0, rolling: false, pending: false, nudges: 0, quiet: 0 };
+        const QUIET_SPEED = .9;
+        const MAX_NUDGES = 4;
+        const QUIET_TIME = .45;
+        // World units: one unit is roughly 2 cm, so a die is about 1.7 units across. Gravity is
+        // scaled to match so the dice fall and tumble at a believable speed.
+        const TRAY_RADIUS = 4.35;
+        const WALL_HEIGHT = 6;
+        const GRAVITY = -110;
+        const STEP = 1 / 120;
+        const SIZES = { 4: 1.04, 6: .8, 8: .86, 10: .86, 12: .84, 20: .88, 100: .78 };
+        const D4_VERTEX_VALUES = [1, 2, 3, 4];
+        const INK = '#25272a';
+        const OUTLINE = .032;
+        const NUMERAL_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+        let dice = [];
+        let grab = null;
+        let settleTimer = null;
+        let previousFrame = performance.now();
+
+        // ---------- physics ----------
+        const world = new CANNON.World({ gravity: new CANNON.Vec3(0, GRAVITY, 0), allowSleep: true });
+        world.broadphase = new CANNON.SAPBroadphase(world);
+        world.solver.iterations = 14;
+        const diceMaterial = new CANNON.Material('dice');
+        const trayMaterial = new CANNON.Material('tray');
+        world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial, trayMaterial, { friction: .34, restitution: .28 }));
+        world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial, diceMaterial, { friction: .12, restitution: .4 }));
+
+        // cannon computes a body's AABB in its constructor, so static bodies get their pose as options.
+        const quaternionFromEuler = (x, y, z) => new CANNON.Quaternion().setFromEuler(x, y, z);
+        world.addBody(new CANNON.Body({ mass: 0, material: trayMaterial, shape: new CANNON.Plane(), quaternion: quaternionFromEuler(-Math.PI / 2, 0, 0) }));
+        world.addBody(new CANNON.Body({ mass: 0, material: trayMaterial, shape: new CANNON.Plane(), quaternion: quaternionFromEuler(Math.PI / 2, 0, 0), position: new CANNON.Vec3(0, WALL_HEIGHT, 0) }));
+        const WALL_SEGMENTS = 28;
+        const WALL_THICKNESS = .3;
+        for (let i = 0; i < WALL_SEGMENTS; i += 1) {
+          const angle = (i + .5) / WALL_SEGMENTS * Math.PI * 2;
+          const centreRadius = TRAY_RADIUS + WALL_THICKNESS;
+          const length = 2 * Math.PI * centreRadius / WALL_SEGMENTS;
+          world.addBody(new CANNON.Body({
+            mass: 0, material: trayMaterial,
+            shape: new CANNON.Box(new CANNON.Vec3(length / 2 + .15, WALL_HEIGHT / 2, WALL_THICKNESS)),
+            position: new CANNON.Vec3(Math.cos(angle) * centreRadius, WALL_HEIGHT / 2, Math.sin(angle) * centreRadius),
+            quaternion: new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2 - angle),
+          }));
+        }
+
+        // ---------- rendering ----------
+        let renderer;
+        try {
+          renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+        } catch (error) {
+          trayStatus.textContent = 'webgl unavailable';
+          app.dataset.phase = 'ready';
+          return;
+        }
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setClearColor(0x000000, 0);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(34, 1, .1, 80);
+        const CAMERA_DIRECTION = new THREE.Vector3(0, 1.7, 1).normalize();
+
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xb4b4b4, 1.7));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+        keyLight.position.set(-4.5, 10, 3.5);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.set(2048, 2048);
+        keyLight.shadow.camera.near = 1;
+        keyLight.shadow.camera.far = 30;
+        keyLight.shadow.camera.left = keyLight.shadow.camera.bottom = -(TRAY_RADIUS + 1);
+        keyLight.shadow.camera.right = keyLight.shadow.camera.top = TRAY_RADIUS + 1;
+        keyLight.shadow.bias = -.0005;
+        keyLight.shadow.normalBias = .02;
+        scene.add(keyLight, keyLight.target);
+        const fillLight = new THREE.DirectionalLight(0xffffff, .7);
+        fillLight.position.set(5, 6, -4);
+        scene.add(fillLight);
+
+        const floorMesh = new THREE.Mesh(new THREE.CircleGeometry(TRAY_RADIUS + WALL_THICKNESS, 96), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+        floorMesh.rotation.x = -Math.PI / 2;
+        floorMesh.receiveShadow = true;
+        scene.add(floorMesh);
+        const WALL_VISIBLE = .24;
+        const wallMesh = new THREE.Mesh(new THREE.CylinderGeometry(TRAY_RADIUS, TRAY_RADIUS, WALL_VISIBLE, 96, 1, true), new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: .95, side: THREE.DoubleSide }));
+        wallMesh.position.y = WALL_VISIBLE / 2;
+        wallMesh.receiveShadow = true;
+        scene.add(wallMesh);
+        function ring(radius, y, color, opacity) {
+          const points = [];
+          for (let i = 0; i <= 160; i += 1) { const a = i / 160 * Math.PI * 2; points.push(new THREE.Vector3(Math.cos(a) * radius, y, Math.sin(a) * radius)); }
+          return new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
+        }
+        scene.add(ring(TRAY_RADIUS, WALL_VISIBLE + .003, 0x111111, 1), ring(TRAY_RADIUS + .004, .004, 0x111111, 1), ring(TRAY_RADIUS - .2, .004, 0x9a9a9a, .75));
+
+        // ---------- die assets: numeral atlas + beveled geometry ----------
+        const assetCache = new Map();
+        const silhouetteMaterial = new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.BackSide });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x1c1c1c, transparent: true, opacity: .85 });
+        const kindFor = (sides) => `d${sides}`;
+        const modelFor = (kind) => MODELS[kind === 'tens' || kind === 'units' ? '10' : kind.slice(1)];
+
+        function labelsFor(kind, model) {
+          return model.values.map((value) => {
+            const text = kind === 'tens' ? String((value % 10) * 10).padStart(2, '0') : kind === 'units' ? String(value % 10) : String(value);
+            return { text, underline: /^[69]0?$/.test(text) };
+          });
+        }
+
+        function faceFrame(model, faceIndex, kind) {
+          const ids = model.faces[faceIndex];
+          const corners = ids.map((id) => new THREE.Vector3(...model.vertices[id]));
+          const center = corners.reduce((sum, v) => sum.add(v), new THREE.Vector3()).multiplyScalar(1 / corners.length);
+          const normal = new THREE.Vector3(...model.normals[faceIndex]);
+          let upTarget;
+          if (kind === 'd6') upTarget = corners[0].clone().add(corners[1]).multiplyScalar(.5);
+          else if (kind === 'd10' || kind === 'tens' || kind === 'units') upTarget = corners[ids.findIndex((id) => id < 2)];
+          else upTarget = corners[0];
+          const up = upTarget.clone().sub(center);
+          up.addScaledVector(normal, -up.dot(normal)).normalize();
+          const right = new THREE.Vector3().crossVectors(up, normal);
+          const circum = Math.max(...corners.map((v) => v.distanceTo(center)));
+          let inradius = Infinity;
+          corners.forEach((a, i) => {
+            const b = corners[(i + 1) % corners.length];
+            const ab = b.clone().sub(a);
+            const t = clamp(center.clone().sub(a).dot(ab) / ab.lengthSq(), 0, 1);
+            inradius = Math.min(inradius, center.distanceTo(a.clone().addScaledVector(ab, t)));
+          });
+          return { center, normal, up, right, circum, inradius, corners };
+        }
+
+        function buildAtlas(kind, model) {
+          const labels = labelsFor(kind, model);
+          const faceCount = model.faces.length;
+          const cols = Math.ceil(Math.sqrt(faceCount + 1));
+          const rows = Math.ceil((faceCount + 1) / cols);
+          const SIZE = 2048;
+          const cell = Math.floor(SIZE / cols);
+          const atlasCanvas = document.createElement('canvas');
+          atlasCanvas.width = SIZE; atlasCanvas.height = SIZE;
+          const ctx = atlasCanvas.getContext('2d');
+          ctx.fillStyle = '#f9f9f9';
+          ctx.fillRect(0, 0, SIZE, SIZE);
+          const frames = model.faces.map((_, i) => faceFrame(model, i, kind));
+          const cellFor = (i) => ({ col: i % cols, row: Math.floor(i / cols) });
+          const isTriangle = model.faces[0].length === 3;
+          const isKite = kind === 'd10' || kind === 'tens' || kind === 'units';
+          const scaleFor = kind === 'd4' ? 0 : isTriangle ? 1.3 : isKite ? 1.28 : kind === 'd6' ? 1.5 : 1.45;
+
+          const drawNumeral = (label, fontPx) => {
+            ctx.font = `700 ${fontPx}px ${NUMERAL_FONT}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = INK;
+            const baseline = fontPx * .358;
+            ctx.fillText(label.text, 0, baseline);
+            if (label.underline) {
+              const width = ctx.measureText(label.text).width * .78;
+              ctx.fillRect(-width / 2, baseline + fontPx * .1, width, fontPx * .065);
+            }
+          };
+
+          frames.forEach((frame, i) => {
+            const { col, row } = cellFor(i);
+            const pxPerUnit = cell / (2 * frame.circum * 1.08);
+            ctx.save();
+            ctx.translate((col + .5) * cell, (row + .5) * cell);
+            if (kind === 'd4') {
+              // Vertex-numbered d4: each corner carries the value read when that vertex points up.
+              model.faces[i].forEach((vertexId, k) => {
+                const corner = frame.corners[k].clone().sub(frame.center);
+                const x = corner.dot(frame.right) * pxPerUnit;
+                const y = -corner.dot(frame.up) * pxPerUnit;
+                ctx.save();
+                ctx.translate(x * .58, y * .58);
+                ctx.rotate(Math.atan2(x, -y));
+                drawNumeral({ text: String(D4_VERTEX_VALUES[vertexId]), underline: false }, frame.inradius * pxPerUnit * .95);
+                ctx.restore();
+              });
+            } else {
+              drawNumeral(labels[i], frame.inradius * pxPerUnit * scaleFor);
+            }
+            ctx.restore();
+          });
+
+          const texture = new THREE.CanvasTexture(atlasCanvas);
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          texture.generateMipmaps = true;
+          texture.minFilter = THREE.LinearMipmapLinearFilter;
+          const uvFor = (index, u, v) => { const { col, row } = cellFor(index); return [(col + u) * cell / SIZE, 1 - (row + 1 - v) * cell / SIZE]; };
+          return { texture, frames, uvFor, blankUv: uvFor(faceCount, .5, .5) };
+        }
+
+        function buildGeometry(model, atlas) {
+          const positions = [], normals = [], uvs = [];
+          model.surfaces.forEach((surface) => {
+            const points = surface.points.map((p) => new THREE.Vector3(...p));
+            const normal = new THREE.Vector3().crossVectors(points[1].clone().sub(points[0]), points[2].clone().sub(points[0])).normalize();
+            const uvOf = (point) => {
+              if (surface.face < 0) return atlas.blankUv;
+              const frame = atlas.frames[surface.face];
+              const span = 2 * frame.circum * 1.08;
+              const offset = point.clone().sub(frame.center);
+              return atlas.uvFor(surface.face, .5 + offset.dot(frame.right) / span, .5 + offset.dot(frame.up) / span);
+            };
+            for (let i = 1; i < points.length - 1; i += 1) {
+              [points[0], points[i], points[i + 1]].forEach((point) => {
+                positions.push(point.x, point.y, point.z);
+                normals.push(normal.x, normal.y, normal.z);
+                uvs.push(...uvOf(point));
+              });
+            }
+          });
+          const geometry = new THREE.BufferGeometry();
+          geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+          geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+          return geometry;
+        }
+
+        function assetsFor(kind) {
+          if (!assetCache.has(kind)) {
+            const model = modelFor(kind);
+            const atlas = buildAtlas(kind, model);
+            const material = new THREE.MeshStandardMaterial({ map: atlas.texture, color: 0xffffff, roughness: .5, metalness: 0 });
+            const restHeight = model.normals[0].reduce((sum, value, axis) => sum + value * model.vertices[model.faces[0][0]][axis], 0);
+            const edgeKeys = new Set();
+            const edgePositions = [];
+            model.faces.forEach((face) => face.forEach((id, i) => {
+              const next = face[(i + 1) % face.length];
+              const key = id < next ? `${id}-${next}` : `${next}-${id}`;
+              if (edgeKeys.has(key)) return;
+              edgeKeys.add(key);
+              edgePositions.push(...model.vertices[id], ...model.vertices[next]);
+            }));
+            const edges = new THREE.BufferGeometry();
+            edges.setAttribute('position', new THREE.Float32BufferAttribute(edgePositions, 3));
+            assetCache.set(kind, { model, geometry: buildGeometry(model, atlas), material, restHeight, edges });
+          }
+          return assetCache.get(kind);
+        }
+
+        // ---------- dice ----------
+        const allParts = () => dice.flatMap((die) => die.parts);
+
+        function createPart(kind, index) {
+          const assets = assetsFor(kind);
+          const size = SIZES[state.sides];
+          const mesh = new THREE.Mesh(assets.geometry, assets.material);
+          mesh.scale.setScalar(size);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          const silhouette = new THREE.Mesh(assets.geometry, silhouetteMaterial);
+          silhouette.scale.setScalar(1 + OUTLINE / size);
+          const edgeLines = new THREE.LineSegments(assets.edges, edgeMaterial);
+          edgeLines.scale.setScalar(1.004);
+          mesh.add(silhouette, edgeLines);
+          const shape = new CANNON.ConvexPolyhedron({
+            vertices: assets.model.vertices.map((v) => new CANNON.Vec3(v[0] * size, v[1] * size, v[2] * size)),
+            faces: assets.model.faces.map((face) => face.slice()),
+          });
+          const body = new CANNON.Body({ mass: 1, shape, material: diceMaterial, allowSleep: true, sleepSpeedLimit: .45, sleepTimeLimit: .25, linearDamping: .04, angularDamping: .12 });
+          scene.add(mesh);
+          world.addBody(body);
+          return { kind, index, mesh, body, model: assets.model, size, restHeight: assets.restHeight * size };
+        }
+
+        function syncPart(part) {
+          part.mesh.position.copy(part.body.position);
+          part.mesh.quaternion.copy(part.body.quaternion);
+        }
+
+        function restingPositions(count) {
+          if (count === 1) return [[0, 0]];
+          const ringOf = (n, radius, phase) => Array.from({ length: n }, (_, i) => { const a = phase + i / n * Math.PI * 2; return [Math.cos(a) * radius, Math.sin(a) * radius]; });
+          if (count <= 6) return ringOf(count, Math.max(1.2, 2.15 / (2 * Math.sin(Math.PI / count))), -Math.PI / 2 + Math.PI / count);
+          return [[0, 0], ...ringOf(count - 1, Math.min(3, 2.15 / (2 * Math.sin(Math.PI / (count - 1)))), -Math.PI / 2)];
+        }
+
+        function placeAtRest(part, [x, z], seed) {
+          const model = part.model;
+          const showcase = part.kind === 'd4' ? 0 : model.values.indexOf(Math.max(...model.values));
+          const target = new THREE.Vector3(0, part.kind === 'd4' ? -1 : 1, 0);
+          const orientation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(...model.normals[showcase]), target);
+          orientation.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), seed * 1.9 + .4));
+          part.body.position.set(x, part.restHeight + .9 + seed * .28, z);
+          part.body.quaternion.set(orientation.x, orientation.y, orientation.z, orientation.w);
+          part.body.velocity.setZero();
+          part.body.angularVelocity.setZero();
+          part.body.wakeUp();
+          part.body.updateAABB();
+          syncPart(part);
+        }
+
+        function rebuildDice() {
+          clearTimeout(settleTimer);
+          grab = null;
+          canvas.classList.remove('grabbing');
+          allParts().forEach((part) => { scene.remove(part.mesh); world.removeBody(part.body); });
+          dice = Array.from({ length: state.quantity }, (_, index) => ({
+            index, value: null,
+            parts: state.sides === 100 ? [createPart('tens', index), createPart('units', index)] : [createPart(kindFor(state.sides), index)],
+          }));
+          const parts = allParts();
+          restingPositions(parts.length).forEach((spot, i) => placeAtRest(parts[i], spot, i));
+          state.rolling = false; state.pending = false; state.nudges = 0;
+          setStatus('ready / touch a die');
+          resultKind.textContent = 'waiting';
+          hudTotal.textContent = '—'; hudTotal.classList.remove('waiting', 'pop');
+          rollSequence.textContent = 'Roll or throw the dice.';
+        }
+
+        // ---------- reading faces ----------
+        function readPart(part) {
+          const q = part.body.quaternion;
+          const worldY = (vector) => q.vmult(new CANNON.Vec3(vector[0], vector[1], vector[2])).y;
+          if (part.kind === 'd4') {
+            let bestVertex = 0, bestY = -Infinity;
+            part.model.vertices.forEach((vertex, i) => { const y = worldY(vertex); if (y > bestY) { bestY = y; bestVertex = i; } });
+            const lowestNormal = Math.min(...part.model.normals.map(worldY));
+            return { value: D4_VERTEX_VALUES[bestVertex], flat: lowestNormal < -.94 };
+          }
+          let bestFace = 0, bestY = -Infinity;
+          part.model.normals.forEach((normal, i) => { const y = worldY(normal); if (y > bestY) { bestY = y; bestFace = i; } });
+          return { value: part.model.values[bestFace], flat: bestY > .94 };
+        }
+
+        function dieValue(die) {
+          if (state.sides === 100) {
+            const total = (readPart(die.parts[0]).value % 10) * 10 + readPart(die.parts[1]).value % 10;
+            return total === 0 ? 100 : total;
+          }
+          return readPart(die.parts[0]).value;
+        }
+
+        // ---------- camera fit ----------
+        function fitCamera(width, height, topPad, bottomPad) {
+          camera.aspect = width / height;
+          camera.clearViewOffset();
+          const rim = [];
+          for (let i = 0; i < 48; i += 1) {
+            const a = i / 48 * Math.PI * 2;
+            rim.push(new THREE.Vector3(Math.cos(a) * (TRAY_RADIUS + WALL_THICKNESS), 0, Math.sin(a) * (TRAY_RADIUS + WALL_THICKNESS)));
+            rim.push(new THREE.Vector3(Math.cos(a) * TRAY_RADIUS, WALL_VISIBLE, Math.sin(a) * TRAY_RADIUS));
+          }
+          const availableWidth = width * .92;
+          const availableHeight = Math.max(80, height - topPad - bottomPad);
+          const measure = (distance) => {
+            camera.position.copy(CAMERA_DIRECTION).multiplyScalar(distance);
+            camera.lookAt(0, 0, 0);
+            camera.updateProjectionMatrix();
+            camera.updateMatrixWorld();
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            rim.forEach((point) => { const s = point.clone().project(camera); minX = Math.min(minX, s.x); maxX = Math.max(maxX, s.x); minY = Math.min(minY, s.y); maxY = Math.max(maxY, s.y); });
+            return { width: (maxX - minX) / 2 * width, height: (maxY - minY) / 2 * height, centerY: (1 - (minY + maxY) / 2) / 2 * height };
+          };
+          let low = 4, high = 70;
+          for (let i = 0; i < 20; i += 1) {
+            const mid = (low + high) / 2;
+            const box = measure(mid);
+            if (box.width > availableWidth || box.height > availableHeight) low = mid; else high = mid;
+          }
+          const box = measure(high);
+          camera.setViewOffset(width, height, 0, box.centerY - (topPad + availableHeight / 2), width, height);
+          camera.updateProjectionMatrix();
+        }
+
+        function resizeCanvas() {
+          const rect = canvas.getBoundingClientRect();
+          const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
+          renderer.setSize(width, height, false);
+          const topPad = Math.max(0, resultHud.getBoundingClientRect().bottom - rect.top) + 10;
+          const bottomPad = Math.max(0, rect.bottom - rollDock.getBoundingClientRect().top) + 10;
+          fitCamera(width, height, topPad, bottomPad);
+        }
+
+        // ---------- rolling + settling ----------
+        function setStatus(text) { trayStatus.textContent = text; app.dataset.phase = text.split(/[ /]/)[0]; }
+        function formula() { return `${state.quantity}d${state.sides}${state.modifier ? ` ${state.modifier > 0 ? '+' : '−'} ${Math.abs(state.modifier)}` : ''}`; }
+
+        function beginMotion(statusText) {
+          state.rolling = true; state.pending = true; state.nudges = 0; state.quiet = 0;
+          dice.forEach((die) => { die.value = null; });
+          hudTotal.textContent = '…'; hudTotal.classList.add('waiting'); hudTotal.classList.remove('pop');
+          resultKind.textContent = 'in motion'; rollSequence.textContent = 'Reading the dice after they settle.';
+          setStatus(statusText); updateControls(); armSettleTimer();
+        }
+
+        // If the dice are still jostling after a few seconds, freeze them and resolve the roll.
+        function armSettleTimer() {
+          clearTimeout(settleTimer);
+          settleTimer = setTimeout(() => {
+            if (!state.pending || grab) return;
+            resolveRest();
+          }, 5000);
+        }
+
+        function roll() {
+          if (grab) return;
+          beginMotion('rolling / physics active');
+          const parts = allParts();
+          const base = Math.random() * Math.PI * 2;
+          parts.forEach((part, i) => {
+            const layer = Math.floor(i / 6);
+            const slot = i % 6;
+            const perLayer = Math.min(parts.length - layer * 6, 6);
+            const angle = base + (slot - (perLayer - 1) / 2) * .6 + (Math.random() - .5) * .1;
+            const radius = TRAY_RADIUS - part.size - .3;
+            const body = part.body;
+            body.wakeUp();
+            body.position.set(Math.cos(angle) * radius, 1.4 + part.size + layer * 2.2 + Math.random() * .4, Math.sin(angle) * radius);
+            const aim = Math.atan2(-body.position.z, -body.position.x) + (Math.random() - .5) * .5;
+            const speed = 7 + Math.random() * 4;
+            body.velocity.set(Math.cos(aim) * speed, .5 + Math.random() * 2, Math.sin(aim) * speed);
+            const axis = new CANNON.Vec3(Math.random() - .5, Math.random() - .5, Math.random() - .5);
+            axis.normalize();
+            const spin = 14 + Math.random() * 12;
+            body.angularVelocity.set(axis.x * spin, axis.y * spin, axis.z * spin);
+            body.quaternion.setFromEuler(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
+            body.updateAABB();
+          });
+        }
+
+        // Hop a cocked die toward open floor: away from its nearest neighbour and toward the centre.
+        function nudge(part) {
+          const body = part.body;
+          body.wakeUp();
+          let away = new THREE.Vector3(-body.position.x, 0, -body.position.z);
+          let nearest = Infinity;
+          allParts().forEach((other) => {
+            if (other === part) return;
+            const gap = other.body.position.distanceTo(body.position);
+            if (gap < nearest) { nearest = gap; away = new THREE.Vector3(body.position.x - other.body.position.x, 0, body.position.z - other.body.position.z); }
+          });
+          away.y = 0;
+          if (away.lengthSq() < 1e-6) away.set(Math.random() - .5, 0, Math.random() - .5);
+          away.normalize().add(new THREE.Vector3(-body.position.x, 0, -body.position.z).multiplyScalar(.15)).normalize();
+          body.velocity.set(away.x * 2.4, 3.8, away.z * 2.4);
+          body.angularVelocity.set((Math.random() - .5) * 10, (Math.random() - .5) * 10, (Math.random() - .5) * 10);
+        }
+
+        function resolveRest() {
+          const parts = allParts();
+          parts.forEach((part) => { part.body.velocity.setZero(); part.body.angularVelocity.setZero(); part.body.sleep(); });
+          const cocked = parts.filter((part) => !readPart(part).flat);
+          if (cocked.length && state.nudges < MAX_NUDGES) {
+            state.nudges += 1;
+            state.quiet = 0;
+            cocked.forEach(nudge);
+            setStatus('cocked die / nudging');
+            armSettleTimer();
+            return;
+          }
+          finishRoll();
+        }
+
+        // Settled means every die has been near-motionless for a moment, whether or not cannon has
+        // put it to sleep yet; with many dice touching, the engine's sleep state can keep resetting.
+        function checkSettled(dt) {
+          if (!state.pending || grab) return;
+          const parts = allParts();
+          const motion = Math.max(...parts.map((part) => part.body.velocity.length() + part.body.angularVelocity.length()));
+          state.quiet = motion < QUIET_SPEED ? state.quiet + dt : 0;
+          if (state.quiet < QUIET_TIME) return;
+          state.quiet = 0;
+          resolveRest();
+        }
+
+        function finishRoll() {
+          clearTimeout(settleTimer);
+          state.rolling = false; state.pending = false;
+          dice.forEach((die) => { die.value = dieValue(die); });
+          const values = dice.map((die) => die.value);
+          const total = values.reduce((sum, value) => sum + value, 0) + state.modifier;
+          const expression = `${values.join(' + ')}${state.modifier ? ` ${state.modifier > 0 ? '+' : '−'} ${Math.abs(state.modifier)}` : ''} = ${total}`;
+          hudTotal.textContent = total; hudTotal.classList.remove('waiting', 'pop'); void hudTotal.offsetWidth; hudTotal.classList.add('pop');
+          resultKind.textContent = 'settled'; rollSequence.textContent = expression;
+          state.rollCount += 1; rollCount.textContent = String(state.rollCount).padStart(2, '0');
+          state.rolls.unshift({ formula: formula(), values, total, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+          state.rolls = state.rolls.slice(0, 5);
+          renderHistory(); setStatus('ready / touch a die'); liveRegion.textContent = `Dice settled. Result ${total}.`;
+        }
+
+        // ---------- direct manipulation ----------
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+        function pointerRay(clientX, clientY) {
+          const rect = canvas.getBoundingClientRect();
+          pointer.set((clientX - rect.left) / rect.width * 2 - 1, -((clientY - rect.top) / rect.height * 2 - 1));
+          raycaster.setFromCamera(pointer, camera);
+          return raycaster;
+        }
+        function hitPart(clientX, clientY) {
+          const parts = allParts();
+          const hits = pointerRay(clientX, clientY).intersectObjects(parts.map((part) => part.mesh), false);
+          return hits.length ? parts.find((part) => part.mesh === hits[0].object) : null;
+        }
+        function floorPoint(clientX, clientY, height) {
+          const out = new THREE.Vector3();
+          return pointerRay(clientX, clientY).ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -height), out) ? out : null;
+        }
+        function clampTarget(target, part) {
+          const limit = TRAY_RADIUS - part.size - .1;
+          const radial = Math.hypot(target.x, target.z);
+          if (radial > limit) { target.x *= limit / radial; target.z *= limit / radial; }
+          target.y = clamp(target.y, part.size + .2, WALL_HEIGHT - part.size - .3);
+          return target;
+        }
+
+        function driveGrab() {
+          const body = grab.part.body;
+          const k = 22;
+          const vx = (grab.target.x - body.position.x) * k, vy = (grab.target.y - body.position.y) * k, vz = (grab.target.z - body.position.z) * k;
+          const speed = Math.hypot(vx, vy, vz);
+          const cap = speed > 40 ? 40 / speed : 1;
+          body.velocity.set(vx * cap, vy * cap, vz * cap);
+          body.angularVelocity.set(1.4, 2.1, .7);
+          body.wakeUp();
+        }
+
+        canvas.addEventListener('pointerdown', (event) => {
+          if (grab) return;
+          const part = hitPart(event.clientX, event.clientY);
+          if (!part) return;
+          event.preventDefault();
+          canvas.setPointerCapture(event.pointerId);
+          canvas.classList.add('grabbing');
+          const body = part.body;
+          body.wakeUp();
+          body.type = CANNON.Body.KINEMATIC;
+          body.allowSleep = false;
+          body.updateMassProperties();
+          body.velocity.setZero();
+          body.angularVelocity.setZero();
+          const lift = part.size + .5;
+          const target = clampTarget(floorPoint(event.clientX, event.clientY, lift) || new THREE.Vector3(body.position.x, lift, body.position.z), part);
+          grab = { part, id: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false, target, samples: [{ t: performance.now(), x: target.x, z: target.z }] };
+          beginMotion('holding / pull to throw');
+        });
+
+        canvas.addEventListener('pointermove', (event) => {
+          if (!grab || event.pointerId !== grab.id) return;
+          const pull = Math.hypot(event.clientX - grab.startX, event.clientY - grab.startY);
+          grab.moved ||= pull > 7;
+          const lift = grab.part.size + .5 + Math.min(1.6, pull / 110);
+          const target = floorPoint(event.clientX, event.clientY, lift);
+          if (!target) return;
+          grab.target = clampTarget(target, grab.part);
+          grab.samples.push({ t: performance.now(), x: grab.target.x, z: grab.target.z });
+          if (grab.samples.length > 8) grab.samples.shift();
+        });
+
+        function releaseGrab(event, cancelled = false) {
+          if (!grab || (event && event.pointerId !== grab.id)) return;
+          const held = grab;
+          grab = null;
+          const body = held.part.body;
+          canvas.classList.remove('grabbing');
+          try { canvas.releasePointerCapture(held.id); } catch {}
+          body.type = CANNON.Body.DYNAMIC;
+          body.allowSleep = true;
+          body.updateMassProperties();
+          body.wakeUp();
+          if (cancelled) {
+            body.velocity.setZero();
+            body.angularVelocity.setZero();
+          } else if (held.moved) {
+            const now = performance.now();
+            const recent = held.samples.filter((sample) => now - sample.t < 120);
+            const first = recent[0] || held.samples[held.samples.length - 1];
+            const last = held.samples[held.samples.length - 1];
+            const dt = Math.max(.016, (last.t - first.t) / 1000);
+            let vx = (last.x - first.x) / dt, vz = (last.z - first.z) / dt;
+            const speed = Math.hypot(vx, vz);
+            if (speed > 16) { vx *= 16 / speed; vz *= 16 / speed; }
+            body.velocity.set(vx, 1.5 + Math.min(4, speed * .2), vz);
+            body.angularVelocity.set(vz * .9 + (Math.random() - .5) * 6, (Math.random() - .5) * 6, -vx * .9 + (Math.random() - .5) * 6);
+          } else {
+            const angle = Math.random() * Math.PI * 2;
+            body.velocity.set(Math.cos(angle) * 3.5, 7, Math.sin(angle) * 3.5);
+            body.angularVelocity.set((Math.random() - .5) * 26, (Math.random() - .5) * 26, (Math.random() - .5) * 26);
+          }
+          setStatus('rolling / physics active');
+          armSettleTimer();
+        }
+
+        canvas.addEventListener('pointerup', (event) => releaseGrab(event));
+        canvas.addEventListener('pointercancel', (event) => releaseGrab(event, true));
+
+        // ---------- controls ----------
+        function updateControls() {
+          $$('.die-option').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.sides) === state.sides)));
+          $$('.count-button').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.count) === state.quantity)));
+          rollLabel.textContent = `${state.quantity}D${state.sides}`;
+          rollSpec.textContent = `${state.quantity}d${state.sides} ${state.modifier >= 0 ? '+' : '−'} ${Math.abs(state.modifier)}`;
+          rangeSpec.textContent = `${state.quantity + state.modifier}—${state.quantity * state.sides + state.modifier}`;
+          hudFormula.textContent = formula();
+        }
+
+        function renderHistory() {
+          if (!state.rolls.length) { historyList.innerHTML = '<div class="history-empty">No rolls yet.<br />Results appear after every die settles.</div>'; return; }
+          historyList.innerHTML = state.rolls.slice(0, 5).map((roll) => `<div class="history-row"><div><div class="history-roll">${roll.formula} → [${roll.values.join(', ')}]</div><div class="history-meta">${roll.time}</div></div><strong>${roll.total}</strong></div>`).join('');
+        }
+
+        function miniSvg(sides) {
+          if (sides === 4) return '<svg viewBox="0 0 40 36"><polygon points="20,3 36,32 4,32"/><line x1="20" y1="3" x2="20" y2="32"/></svg>';
+          if (sides === 6) return '<svg viewBox="0 0 40 36"><polygon points="7,10 27,10 34,15 14,15"/><polygon points="7,10 14,15 14,32 7,27"/><polygon points="14,15 34,15 34,27 14,32"/></svg>';
+          if (sides === 8) return '<svg viewBox="0 0 40 36"><polygon points="20,2 36,18 20,34 4,18"/><line x1="20" y1="2" x2="20" y2="34"/><line x1="4" y1="18" x2="36" y2="18"/></svg>';
+          if (sides === 10) return '<svg viewBox="0 0 40 36"><polygon points="20,2 35,12 31,32 9,32 5,12"/><line x1="20" y1="2" x2="20" y2="20"/><line x1="5" y1="12" x2="20" y2="20"/><line x1="35" y1="12" x2="20" y2="20"/></svg>';
+          if (sides === 100) return '<svg viewBox="0 0 40 36"><polygon points="13,3 24,10 21,25 5,25 2,10"/><line x1="13" y1="3" x2="13" y2="16"/><line x1="2" y1="10" x2="13" y2="16"/><line x1="24" y1="10" x2="13" y2="16"/><polygon points="27,11 38,18 35,33 19,33 16,18"/><line x1="27" y1="11" x2="27" y2="24"/><line x1="16" y1="18" x2="27" y2="24"/><line x1="38" y1="18" x2="27" y2="24"/></svg>';
+          if (sides === 12) return '<svg viewBox="0 0 40 36"><polygon points="20,2 36,12 33,30 7,30 4,12"/><polygon points="20,10 28,16 25,25 15,25 12,16"/><line x1="20" y1="2" x2="20" y2="10"/><line x1="36" y1="12" x2="28" y2="16"/><line x1="33" y1="30" x2="25" y2="25"/><line x1="7" y1="30" x2="15" y2="25"/><line x1="4" y1="12" x2="12" y2="16"/></svg>';
+          return '<svg viewBox="0 0 40 36"><polygon points="20,2 34,7 38,19 31,32 20,35 9,32 2,19 6,7"/><line x1="20" y1="2" x2="20" y2="19"/><line x1="2" y1="19" x2="20" y2="19"/><line x1="38" y1="19" x2="20" y2="19"/><line x1="9" y1="32" x2="20" y2="19"/><line x1="31" y1="32" x2="20" y2="19"/></svg>';
+        }
+
+        $('#rollButton').addEventListener('click', roll);
+        $('#diceList').addEventListener('click', (event) => { const button = event.target.closest('[data-sides]'); if (!button) return; state.sides = Number(button.dataset.sides); rebuildDice(); updateControls(); });
+        $('#countRow').addEventListener('click', (event) => { const button = event.target.closest('[data-count]'); if (!button) return; state.quantity = Number(button.dataset.count); rebuildDice(); updateControls(); });
+
+        modifierInput.addEventListener('input', () => {
+          if (modifierInput.value === '' || modifierInput.value === '-') return;
+          const parsed = Number(modifierInput.value); if (!Number.isFinite(parsed)) return;
+          state.modifier = clamp(Math.trunc(parsed), -20, 20); updateControls();
+        });
+        modifierInput.addEventListener('blur', () => { modifierInput.value = state.modifier; updateControls(); });
+
+        $('#clearButton').addEventListener('click', () => { state.rolls = []; state.rollCount = 0; rollCount.textContent = '00'; renderHistory(); rebuildDice(); updateControls(); liveRegion.textContent = 'Roll history cleared.'; });
+        document.addEventListener('keydown', (event) => { if ((event.code === 'Space' || event.key === ' ') && !event.repeat && event.target !== modifierInput && event.target.tagName !== 'BUTTON') { event.preventDefault(); roll(); } });
+        window.addEventListener('resize', resizeCanvas);
+
+        function frame(now) {
+          const dt = Math.min(.05, Math.max(.001, (now - previousFrame) / 1000));
+          previousFrame = now;
+          if (grab) driveGrab();
+          world.step(STEP, dt, 12);
+          allParts().forEach(syncPart);
+          checkSettled(dt);
+          renderer.render(scene, camera);
+          requestAnimationFrame(frame);
+        }
+
+        $$('.die-option').forEach((button) => { button.querySelector('.mini-die').innerHTML = miniSvg(Number(button.dataset.sides)); });
+        resizeCanvas(); rebuildDice(); updateControls(); renderHistory(); requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>

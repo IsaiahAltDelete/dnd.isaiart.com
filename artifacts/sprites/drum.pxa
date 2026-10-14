@@ -1,0 +1,50 @@
+@name  drum
+@scale 10
+@size  24x32
+
+@palette
+K #17121b  outline
+k #2c2430  contact shadow
+1 #6b4a2e  material dark
+2 #9c7043  material mid
+3 #cfa46a  material light
+4 #3f2f66  gem dark
+5 #6d59b0  gem mid
+6 #a996e8  gem light
+m #4a4f5c  metal dark
+M #99a2b4  metal light
+W #f4efe2  highlight
+
+@frame f0
+........................
+........................
+........................
+........................
+.......KKKKKKKKKK.......
+.....KKK33333333KKK.....
+....KK333222222223KK....
+...KK33222221222222KK...
+..KK33222WWW1WW22222KK..
+.KK3322WWWWW1WWWW2222KK.
+.K33221WWWWW1WWWWW1221K.
+KK322WW1WWWW1WWWW1W222KK
+K3322WWW1WWW1WWW1WW2221K
+K322WWWWW15555W1WWWW221K
+K322WWWWW555555WWWWW221K
+K322WWWWW565555WWWWW221K
+K32111111555555W1111111K
+K322WWWWW555555WWWWW221K
+K322WWWWWW5555WWWWWW221K
+K3222WWWW1WWWWW1WWW22MMK
+KK222WWW1WWW1WWW1WW2MMMm
+.K3222W1WWWW1WWWW122MMmm
+.KK2221WWWWW1WWWW2112MmK
+..KK22222WWW1WW22212K11K
+...KK22222221222211K11KK
+....KK122222122111KK21K.
+.....KKK11111111KKKK11K.
+.......KKKKKKKKKK.K21KK.
+.................KK11K..
+.................K21KK..
+.................K11K...
+.................KKKK...

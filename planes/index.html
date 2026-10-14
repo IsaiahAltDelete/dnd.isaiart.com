@@ -2,683 +2,2878 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Cosmology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#04050b" />
+    <meta
+      name="description"
+      content="An interactive, pixel-textured atlas of the Great Wheel cosmology."
+    />
+    <title>The Great Wheel | Interactive Planar Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      /* ------------------------------------------------------------------
-         NEO-SWISS UI & LAYOUT
-         ------------------------------------------------------------------ */
       :root {
-        --bg-color: #050505;
-        --panel-bg: rgba(255, 255, 255, 0.03);
-        --panel-border: 1px solid rgba(255, 255, 255, 0.1);
-        --accent: #ffffff;
-        --text-muted: rgba(255, 255, 255, 0.5);
-        --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        --ink: #f5f3ff;
+        --muted: #aaa8bd;
+        --dim: #6f6e82;
+        --void: #04050b;
+        --void-soft: #090b14;
+        --glass: rgba(8, 10, 20, 0.74);
+        --line: rgba(220, 218, 255, 0.17);
+        --line-bright: rgba(231, 229, 255, 0.34);
+        --violet: #a89cff;
+        --cyan: #77ddf6;
+        --plane: #a89cff;
+        --serif: "Cormorant Garamond", Georgia, serif;
+        --sans: "Jost", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--void);
       }
 
       body {
-        margin: 0;
-        overflow: hidden;
-        background-color: var(--bg-color);
-        font-family: var(--font-main);
-        color: var(--accent);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
         user-select: none;
+      }
+
+      button,
+      select,
+      input {
+        font: inherit;
+      }
+
+      button,
+      select {
+        color: inherit;
+      }
+
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--plane);
+        outline-offset: 3px;
+      }
+
+      #scene {
+        position: fixed;
+        inset: 0;
       }
 
       canvas {
         display: block;
+        width: 100%;
+        height: 100%;
         outline: none;
       }
 
-      /* Floating Title - Top Left */
-      #titleBlock {
-        position: absolute;
-        top: 40px;
-        left: 40px;
+      .atmosphere {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
         pointer-events: none;
-        z-index: 10;
+        background:
+          radial-gradient(circle at 50% 46%, transparent 0 24%, rgba(5, 7, 18, 0.18) 54%, rgba(1, 2, 7, 0.8) 100%),
+          linear-gradient(115deg, rgba(62, 50, 126, 0.08), transparent 42%, rgba(39, 115, 143, 0.06));
+        mix-blend-mode: screen;
+        transition: background 0.8s ease, opacity 0.8s ease;
+      }
+
+      body.is-focused .atmosphere {
+        background:
+          radial-gradient(circle at 33% 48%, color-mix(in srgb, var(--plane) 13%, transparent) 0 8%, transparent 34%),
+          radial-gradient(circle at 50% 46%, transparent 0 27%, rgba(4, 5, 13, 0.28) 58%, rgba(1, 2, 7, 0.88) 100%);
+      }
+
+      .pixel-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        opacity: 0.13;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size: 6px 6px;
+        mask-image: radial-gradient(circle at center, transparent 15%, black 95%);
+      }
+
+      .masthead {
+        position: fixed;
+        top: clamp(22px, 4vw, 48px);
+        left: clamp(20px, 4vw, 54px);
+        z-index: 20;
+        width: min(390px, calc(100vw - 40px));
+        pointer-events: none;
+        transition: opacity 0.45s ease, transform 0.65s cubic-bezier(0.2, 0.78, 0.2, 1);
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.19em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 24px;
+        height: 1px;
+        content: "";
+        background: var(--violet);
+        box-shadow: 0 0 12px rgba(168, 156, 255, 0.7);
       }
 
       h1 {
-        font-size: 48px;
-        font-weight: 700;
         margin: 0;
-        letter-spacing: -1.5px;
-        line-height: 0.9;
-        text-transform: uppercase;
+        font-family: var(--serif);
+        font-size: clamp(3rem, 6.1vw, 6.2rem);
+        font-weight: 500;
+        letter-spacing: -0.055em;
+        line-height: 0.72;
       }
 
-      h2 {
-        font-size: 12px;
-        font-weight: 400;
-        margin-top: 8px;
-        color: var(--text-muted);
-        letter-spacing: 2px;
-        text-transform: uppercase;
+      h1 em {
+        display: block;
+        margin-left: 0.72em;
+        color: #cbc5ff;
+        font-weight: 500;
       }
 
-      /* 3D Labels */
-      .label {
-        color: rgba(255, 255, 255, 0.9);
-        font-family: var(--font-main);
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 4px 8px;
-        border-radius: 2px;
-        backdrop-filter: blur(2px);
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      .deck {
+        max-width: 310px;
+        margin: 23px 0 0 4px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.65;
       }
 
-      /* Floating Controls - Bottom Left */
-      #controlsPanel {
+      .deck strong {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      .wheel-key {
+        position: fixed;
+        top: clamp(24px, 4vw, 50px);
+        right: clamp(24px, 4vw, 54px);
+        z-index: 20;
+        display: grid;
+        grid-template-columns: 120px 104px;
+        gap: 16px;
+        align-items: center;
+        padding: 16px;
+        border-top: 1px solid var(--line-bright);
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(90deg, rgba(4, 5, 11, 0.14), rgba(4, 5, 11, 0.5));
+        backdrop-filter: blur(12px);
+        transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.78, 0.2, 1);
+      }
+
+      .orbit-diagram {
+        position: relative;
+        width: 112px;
+        aspect-ratio: 1;
+      }
+
+      .orbit-diagram span {
         position: absolute;
-        bottom: 40px;
-        left: 40px;
-        width: 220px;
-        background: var(--panel-bg);
-        border: var(--panel-border);
-        backdrop-filter: blur(20px);
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        z-index: 100;
-        transition: opacity 0.3s;
-      }
-
-      /* Play Button Area */
-      .header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-
-      #playPause {
-        background: var(--accent);
-        color: #000;
-        border: none;
-        width: 32px;
-        height: 32px;
+        inset: 50%;
+        display: block;
+        border: 1px solid currentColor;
         border-radius: 50%;
-        cursor: pointer;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s;
+        transform: translate(-50%, -50%);
       }
 
-      #playPause:hover {
-        transform: scale(1.1);
+      .orbit-diagram .outer {
+        width: 100%;
+        height: 100%;
+        color: rgba(184, 174, 255, 0.5);
+        box-shadow: inset 0 0 22px rgba(139, 124, 255, 0.06), 0 0 24px rgba(139, 124, 255, 0.05);
+      }
+
+      .orbit-diagram .astral {
+        width: 86%;
+        height: 86%;
+        color: rgba(147, 132, 236, 0.32);
+        border-style: dashed;
+      }
+
+      .orbit-diagram .outlands {
+        width: 69%;
+        height: 69%;
+        color: rgba(147, 221, 176, 0.5);
+        border-style: dashed;
+      }
+
+      .orbit-diagram .ethereal {
+        width: 59%;
+        height: 59%;
+        color: rgba(130, 209, 225, 0.28);
+        border-style: dotted;
+      }
+
+      .orbit-diagram .elements {
+        width: 48%;
+        height: 48%;
+        color: rgba(111, 213, 238, 0.62);
+      }
+
+      .orbit-diagram .echoes {
+        width: 27%;
+        height: 27%;
+        color: rgba(240, 138, 235, 0.72);
+        border-style: dotted;
+      }
+
+      .orbit-diagram .material {
+        width: 8px;
+        height: 8px;
+        border: 0;
+        background: white;
+        box-shadow: 0 0 14px white;
+      }
+
+      .diagram-copy {
+        display: grid;
+        gap: 6px;
+      }
+
+      .diagram-copy strong {
+        font-family: var(--serif);
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .diagram-copy span {
+        color: var(--muted);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        line-height: 1.45;
+        text-transform: uppercase;
+      }
+
+      .controls-panel {
+        position: fixed;
+        bottom: clamp(24px, 4vw, 48px);
+        left: clamp(20px, 4vw, 54px);
+        z-index: 30;
+        width: 288px;
+        padding: 17px 18px 18px;
+        border: 1px solid var(--line);
+        background: linear-gradient(145deg, rgba(13, 15, 28, 0.88), rgba(5, 7, 14, 0.74));
+        box-shadow: 0 20px 64px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(22px) saturate(130%);
+        transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.78, 0.2, 1);
+      }
+
+      .controls-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .controls-title {
+        display: grid;
+        gap: 2px;
+      }
+
+      .controls-title strong {
+        font-family: var(--serif);
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .controls-title small {
+        color: var(--dim);
+        font-size: 0.66rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .icon-button {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid var(--line-bright);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.055);
+        cursor: pointer;
+        transition: transform 0.22s ease, color 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      }
+
+      .icon-button:hover {
+        color: #05050b;
+        border-color: var(--ink);
+        background: var(--ink);
+        transform: scale(1.08);
+      }
+
+      .icon-button:active {
+        transform: scale(0.94);
+      }
+
+      .play-glyph {
+        width: 11px;
+        height: 12px;
+      }
+
+      .play-glyph::before,
+      .play-glyph::after {
+        position: absolute;
+        top: 11px;
+        width: 3px;
+        height: 12px;
+        content: "";
+        background: currentColor;
+        transition: clip-path 0.2s ease, transform 0.2s ease;
+      }
+
+      .play-glyph::before {
+        left: 13px;
+      }
+
+      .play-glyph::after {
+        right: 13px;
+      }
+
+      .icon-button.is-paused .play-glyph::before {
+        top: 10px;
+        left: 13px;
+        width: 12px;
+        height: 14px;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+      }
+
+      .icon-button.is-paused .play-glyph::after {
+        display: none;
+      }
+
+      .select-wrap {
+        position: relative;
+        margin-bottom: 14px;
+      }
+
+      .select-wrap::after {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        color: var(--muted);
+        content: "⌄";
+        pointer-events: none;
+        transform: translateY(-55%);
+      }
+
+      select {
+        width: 100%;
+        min-height: 40px;
+        padding: 0 34px 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 0;
+        appearance: none;
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: border-color 0.25s ease, background 0.25s ease;
+      }
+
+      select:hover {
+        border-color: var(--line-bright);
+        background: rgba(255, 255, 255, 0.075);
+      }
+
+      select option,
+      select optgroup {
+        color: white;
+        background: #0b0c15;
+      }
+
+      .sliders {
+        display: grid;
+        gap: 12px;
       }
 
       .control-group {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 8px;
+        grid-template-columns: 1fr auto;
+        gap: 7px 12px;
+        align-items: center;
       }
 
-      label {
-        font-size: 9px;
-        font-weight: 700;
+      .control-group label,
+      .control-group output {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-muted);
-        display: flex;
-        justify-content: space-between;
       }
 
-      /* Swiss Style Range Sliders */
+      .control-group output {
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
       input[type="range"] {
-        -webkit-appearance: none;
+        grid-column: 1 / -1;
         width: 100%;
+        height: 14px;
+        margin: 0;
+        appearance: none;
         background: transparent;
+        cursor: pointer;
       }
 
       input[type="range"]::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.3);
-        cursor: pointer;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(167, 156, 255, 0.72), rgba(255, 255, 255, 0.17));
       }
 
       input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 12px;
-        width: 12px;
-        background: var(--accent);
-        border-radius: 0; /* Square thumb for Swiss feel */
-        margin-top: -5px;
+        width: 10px;
+        height: 10px;
+        margin-top: -4px;
+        border: 1px solid #fff;
+        border-radius: 0;
+        appearance: none;
+        background: #080912;
+        box-shadow: 0 0 12px rgba(168, 156, 255, 0.58);
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      input[type="range"]:hover::-webkit-slider-thumb {
+        background: white;
+        transform: rotate(45deg) scale(1.08);
+      }
+
+      input[type="range"]::-moz-range-track {
+        height: 2px;
+        border: 0;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        border: 1px solid #fff;
+        border-radius: 0;
+        background: #080912;
+      }
+
+      .controls-foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .text-button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--muted);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
         cursor: pointer;
-        transition: transform 0.1s;
+        transition: color 0.2s ease;
       }
 
-      input[type="range"]::-webkit-slider-thumb:hover {
-        transform: scale(1.2);
+      .text-button:hover {
+        color: white;
       }
 
-      input[type="range"]:focus {
-        outline: none;
+      .interaction-hint {
+        position: fixed;
+        right: clamp(24px, 4vw, 54px);
+        bottom: clamp(24px, 4vw, 48px);
+        z-index: 20;
+        display: flex;
+        gap: 17px;
+        align-items: center;
+        color: var(--dim);
+        font-size: 0.7rem;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+        transition: opacity 0.35s ease, transform 0.5s ease;
       }
-    </style>
+
+      .interaction-hint span {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .interaction-hint i {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-family: var(--serif);
+        font-size: 0.83rem;
+        font-style: normal;
+      }
+
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        background: rgba(2, 3, 8, 0.68);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.71rem;
+        font-weight: 500;
+        letter-spacing: 0.095em;
+        white-space: nowrap;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+        transform: translateY(0) scale(1);
+        transition: opacity 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+      }
+
+      .label::before {
+        width: 5px;
+        height: 5px;
+        content: "";
+        background: var(--label-color, white);
+        box-shadow: 0 0 8px var(--label-color, white);
+      }
+
+      .label.is-hovered,
+      .label.is-selected {
+        border-color: var(--label-color, white);
+        background: rgba(7, 8, 16, 0.92);
+        color: white;
+        transform: translateY(-3px) scale(1.045);
+      }
+
+      .hover-card {
+        position: fixed;
+        z-index: 50;
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 10px;
+        width: 232px;
+        padding: 10px 12px 11px;
+        border-left: 2px solid var(--hover-color, white);
+        background: rgba(5, 6, 13, 0.9);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.38);
+        opacity: 0;
+        pointer-events: none;
+        backdrop-filter: blur(14px);
+        transform: translate(14px, 14px) scale(0.96);
+        transform-origin: top left;
+        transition: opacity 0.16s ease, transform 0.2s ease;
+      }
+
+      .hover-card.is-visible {
+        opacity: 1;
+        transform: translate(14px, 14px) scale(1);
+      }
+
+      .hover-card strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: 1.18rem;
+        font-weight: 600;
+        line-height: 1;
+      }
+
+      .hover-preview {
+        grid-row: 1 / span 3;
+        width: 48px;
+        height: 48px;
+        align-self: center;
+        border: 1px solid color-mix(in srgb, var(--hover-color) 55%, transparent);
+        background: #080912;
+        image-rendering: pixelated;
+        box-shadow: 0 0 22px color-mix(in srgb, var(--hover-color) 18%, transparent);
+      }
+
+      .hover-line {
+        position: fixed;
+        z-index: 49;
+        width: 0;
+        height: 1px;
+        background: linear-gradient(90deg, var(--hover-color, white), transparent);
+        opacity: 0;
+        pointer-events: none;
+        transform-origin: 0 0;
+        transition: opacity 0.18s ease;
+      }
+
+      .hover-line.is-visible {
+        opacity: 0.55;
+      }
+
+      .hover-card span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.67rem;
+        letter-spacing: 0.08em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .hover-card small {
+        display: block;
+        margin-top: 8px;
+        color: #d8d5e6;
+        font-size: 0.7rem;
+        letter-spacing: 0.03em;
+      }
+
+      .plane-panel {
+        --plane: #a89cff;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        width: min(455px, 42vw);
+        height: 100%;
+        overflow: hidden;
+        border-left: 1px solid color-mix(in srgb, var(--plane) 45%, transparent);
+        background:
+          linear-gradient(180deg, color-mix(in srgb, var(--plane) 9%, transparent), transparent 25%),
+          rgba(5, 6, 13, 0.92);
+        box-shadow: -36px 0 90px rgba(0, 0, 0, 0.42);
+        opacity: 0;
+        pointer-events: none;
+        backdrop-filter: blur(28px) saturate(135%);
+        transform: translateX(105%);
+        transition: transform 0.72s cubic-bezier(0.16, 0.84, 0.26, 1), opacity 0.45s ease;
+      }
+
+      .plane-panel.is-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
+
+      .panel-scroll {
+        height: 100%;
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--plane) transparent;
+      }
+
+      .panel-inner {
+        padding: clamp(28px, 5vw, 58px) clamp(24px, 4vw, 46px) 54px;
+      }
+
+      .close-button {
+        position: absolute;
+        top: 21px;
+        right: 22px;
+        z-index: 2;
+        font-size: 1.15rem;
+      }
+
+      .panel-index {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--plane);
+        font-size: 0.68rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .panel-index::before {
+        width: 7px;
+        height: 7px;
+        content: "";
+        background: var(--plane);
+        box-shadow: 0 0 16px var(--plane);
+      }
+
+      .plane-panel h2 {
+        margin: 18px 0 0;
+        font-family: var(--serif);
+        font-size: clamp(2.7rem, 5vw, 4.8rem);
+        font-weight: 500;
+        letter-spacing: -0.045em;
+        line-height: 0.82;
+      }
+
+      .panel-alignment {
+        margin: 19px 0 0;
+        color: var(--plane);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .panel-summary {
+        margin: 22px 0 0;
+        color: #d5d3df;
+        font-family: var(--serif);
+        font-size: 1.2rem;
+        line-height: 1.5;
+      }
+
+      .section-rule {
+        margin: 28px 0 24px;
+        border: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .panel-section {
+        margin-top: 28px;
+      }
+
+      .section-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .section-label span {
+        color: var(--plane);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .trait-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+
+      .trait {
+        min-height: 78px;
+        padding: 12px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .trait small {
+        display: block;
+        color: var(--dim);
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .trait strong {
+        display: block;
+        margin-top: 7px;
+        font-family: var(--serif);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .alignment-wrap {
+        display: grid;
+        grid-template-columns: 122px 1fr;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .alignment-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+
+      .alignment-cell {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        color: var(--dim);
+        font-size: 0.58rem;
+        letter-spacing: 0.06em;
+        transition: color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .alignment-cell.is-active {
+        background: color-mix(in srgb, var(--plane) 20%, transparent);
+        box-shadow: inset 0 0 0 1px var(--plane), 0 0 18px color-mix(in srgb, var(--plane) 24%, transparent);
+        color: white;
+      }
+
+      .alignment-copy {
+        color: var(--muted);
+        font-size: 0.76rem;
+        line-height: 1.65;
+      }
+
+      .layer-stack {
+        display: grid;
+        gap: 6px;
+      }
+
+      .layer-diagram {
+        position: relative;
+        display: grid;
+        gap: 3px;
+        margin: 0 0 14px;
+        padding: 14px 13px 14px 58px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025), transparent),
+          repeating-linear-gradient(90deg, transparent 0 31px, rgba(255, 255, 255, 0.025) 32px);
+      }
+
+      .layer-diagram::before {
+        position: absolute;
+        top: 14px;
+        bottom: 14px;
+        left: 29px;
+        width: 1px;
+        content: "";
+        background: linear-gradient(180deg, var(--plane), color-mix(in srgb, var(--plane) 8%, transparent));
+      }
+
+      .layer-diagram::after {
+        position: absolute;
+        top: 14px;
+        left: 23px;
+        width: 11px;
+        height: 11px;
+        content: "";
+        border: 1px solid var(--plane);
+        background: #080912;
+        transform: rotate(45deg);
+      }
+
+      .diagram-axis-label {
+        position: absolute;
+        bottom: 11px;
+        left: 10px;
+        color: var(--dim);
+        font-size: 0.55rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+      }
+
+      .layer-band {
+        position: relative;
+        display: grid;
+        grid-template-columns: 25px minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        min-height: 20px;
+        width: var(--band-width, 100%);
+        padding: 3px 7px;
+        border-left: 1px solid color-mix(in srgb, var(--plane) 78%, transparent);
+        background: linear-gradient(90deg, color-mix(in srgb, var(--plane) var(--band-alpha, 18%), transparent), rgba(255, 255, 255, 0.018));
+        color: var(--muted);
+        font-size: 0.62rem;
+        cursor: default;
+        transition: width 0.3s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+      }
+
+      .layer-band span:first-child {
+        color: var(--plane);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .layer-band.is-linked,
+      .layer-band:hover {
+        width: 100%;
+        background: color-mix(in srgb, var(--plane) 23%, transparent);
+        color: white;
+        transform: translateX(3px);
+      }
+
+      .layer-row {
+        position: relative;
+        display: grid;
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 57px;
+        padding: 9px 12px 9px 9px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.025);
+        opacity: 0;
+        transform: translateX(15px);
+        transition: border-color 0.25s ease, background 0.25s ease, transform 0.45s ease, opacity 0.45s ease;
+      }
+
+      .plane-panel.is-open .layer-row {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .layer-row::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: var(--depth, 20%);
+        height: 2px;
+        content: "";
+        background: var(--plane);
+        opacity: 0.72;
+      }
+
+      .layer-row:hover,
+      .layer-row.is-linked {
+        border-color: color-mix(in srgb, var(--plane) 55%, transparent);
+        background: color-mix(in srgb, var(--plane) 7%, transparent);
+        transform: translateX(4px);
+      }
+
+      .layer-number {
+        display: grid;
+        place-items: center;
+        width: 25px;
+        height: 25px;
+        border: 1px solid color-mix(in srgb, var(--plane) 55%, transparent);
+        color: var(--plane);
+        font-family: var(--serif);
+        font-size: 0.84rem;
+      }
+
+      .layer-copy strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .layer-copy p {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 0.75rem;
+        line-height: 1.45;
+      }
+
+      .travel-note {
+        padding-left: 14px;
+        border-left: 2px solid var(--plane);
+        color: #d2d0dc;
+        font-family: var(--serif);
+        font-size: 1.02rem;
+        line-height: 1.5;
+      }
+
+      .source-note {
+        margin: 28px 0 0;
+        color: var(--dim);
+        font-size: 0.62rem;
+        line-height: 1.55;
+      }
+
+      .source-note a {
+        color: var(--muted);
+        text-decoration-color: color-mix(in srgb, var(--plane) 65%, transparent);
+        text-underline-offset: 3px;
+      }
+
+      .status-pill {
+        position: fixed;
+        left: 50%;
+        bottom: 28px;
+        z-index: 22;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 7px 11px;
+        border: 1px solid var(--line);
+        background: rgba(4, 5, 11, 0.66);
+        color: var(--dim);
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        backdrop-filter: blur(10px);
+        transform: translateX(-50%);
+        transition: color 0.25s ease, border-color 0.25s ease;
+      }
+
+      .status-pill::before {
+        width: 5px;
+        height: 5px;
+        content: "";
+        background: var(--cyan);
+        box-shadow: 0 0 9px var(--cyan);
+      }
+
+      .loading-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        display: grid;
+        place-items: center;
+        background: #04050b;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.7s ease, visibility 0.7s ease;
+      }
+
+      .loading-screen.is-ready {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .loading-copy {
+        display: grid;
+        gap: 12px;
+        width: min(280px, calc(100vw - 48px));
+        text-align: center;
+      }
+
+      .loading-copy strong {
+        font-family: var(--serif);
+        font-size: 1.8rem;
+        font-weight: 500;
+      }
+
+      .loading-copy span {
+        color: var(--muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .loading-meter {
+        height: 2px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .loading-meter::after {
+        display: block;
+        width: 45%;
+        height: 100%;
+        content: "";
+        background: var(--violet);
+        box-shadow: 0 0 14px var(--violet);
+        animation: loading-scan 1.15s ease-in-out infinite alternate;
+      }
+
+      .loading-screen.is-failed .loading-meter {
+        display: none;
+      }
+
+      .loading-screen.is-failed .loading-copy span {
+        color: #ef9b9b;
+        line-height: 1.6;
+        letter-spacing: 0.04em;
+        text-transform: none;
+      }
+
+      @keyframes loading-scan {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(225%); }
+      }
+
+      body.is-focused .status-pill {
+        color: white;
+        border-color: color-mix(in srgb, var(--plane) 45%, transparent);
+      }
+
+      body.is-focused .masthead,
+      body.is-focused .wheel-key,
+      body.is-focused .controls-panel,
+      body.is-focused .interaction-hint {
+        opacity: 0.14;
+        pointer-events: none;
+        transform: translateX(-16px);
+      }
+
+      body.is-dragging canvas {
+        cursor: grabbing !important;
+      }
+
+      @media (max-width: 900px) {
+        .wheel-key {
+          display: none;
+        }
+
+        .interaction-hint {
+          display: none;
+        }
+
+        .plane-panel {
+          top: auto;
+          bottom: 0;
+          width: 100%;
+          height: min(76vh, 720px);
+          border-top: 1px solid color-mix(in srgb, var(--plane) 45%, transparent);
+          border-left: 0;
+          opacity: 0;
+          transform: translateY(105%);
+        }
+
+        .plane-panel.is-open {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .panel-inner {
+          padding-top: 38px;
+        }
+
+        body.is-focused .masthead,
+        body.is-focused .controls-panel {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+      }
+
+      @media (max-width: 620px) {
+        .masthead {
+          top: 21px;
+          left: 19px;
+        }
+
+        h1 {
+          font-size: 3.5rem;
+        }
+
+        .deck {
+          display: none;
+        }
+
+        .controls-panel {
+          right: 18px;
+          bottom: 18px;
+          left: 18px;
+          width: auto;
+          padding: 13px 14px 14px;
+        }
+
+        .controls-title small,
+        .sliders {
+          display: none;
+        }
+
+        .controls-head {
+          margin-bottom: 10px;
+        }
+
+        .select-wrap {
+          margin-bottom: 0;
+        }
+
+        .controls-foot {
+          margin-top: 9px;
+          padding-top: 9px;
+        }
+
+        .status-pill {
+          display: none;
+        }
+
+        .alignment-wrap {
+          grid-template-columns: 104px 1fr;
+        }
+
+        .panel-summary {
+          font-size: 1.08rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
+      }
+    
+/* Atlas refinement: quiet chrome, open space, restrained color. */
+:root{--ink:#eeeae1;--muted:#a5abb8;--dim:#8993a3;--violet:#c9b68c;--line:rgba(195,207,225,.16)}
+.pixel-grid,.wheel-key,.deck,.hover-line{display:none}
+.masthead{top:30px;left:36px;width:auto}
+.eyebrow{font-size:10px;letter-spacing:.24em;color:#b9ab90;margin-bottom:13px}
+h1{font-size:48px;line-height:1;letter-spacing:-.04em}h1 em{display:inline;margin:0;color:#d0bea0}
+.atmosphere{opacity:.45}
+.controls-panel{left:50%;bottom:28px;transform:translateX(-50%);width:540px;padding:12px;display:flex;align-items:center;gap:12px;border-radius:16px;background:rgba(11,16,26,.88);backdrop-filter:blur(14px)}
+.controls-head{margin:0}.controls-title{display:none}.select-wrap{flex:1;margin:0}.select-wrap select{height:42px;border-radius:8px;background-color:#111925;font-size:13px}
+.controls-foot{margin:0;padding:0;border:0;gap:12px}.controls-foot>span{display:none}.text-button{white-space:nowrap;font-size:12px}
+.motion-settings{position:relative}.motion-settings summary{cursor:pointer;list-style:none;font-size:12px;color:var(--muted);padding:12px 8px}.motion-settings summary:hover{color:var(--ink)}
+.sliders{position:absolute;bottom:58px;right:-70px;width:270px;padding:20px;border:1px solid var(--line);border-radius:12px;background:#0c131f;box-shadow:0 16px 48px #0008}
+.interaction-hint{bottom:108px;font-size:10px;opacity:.65}.status-pill{top:38px;right:36px;bottom:auto;border:0;background:none;color:#a7b0bd;font-size:10px;letter-spacing:.12em}
+.label{border:0;background:transparent;box-shadow:none;backdrop-filter:none;padding:4px 6px;font-size:10px;letter-spacing:.06em;text-transform:none;color:#dce1eb;text-shadow:0 2px 5px #000,0 0 9px #000;transition:opacity .2s,color .2s}
+.label::before{width:3px;height:3px;border-radius:50%;box-shadow:none}.label.is-hovered,.label.is-selected{background:#101a29cc;border-radius:5px;transform:none;color:#fff}
+.hover-card{border:1px solid #ffffff20;border-left:2px solid var(--hover-color);border-radius:10px;gap:4px 12px}.hover-preview{border-radius:50%;image-rendering:auto}.hover-card small{display:none}
+.plane-panel{background:linear-gradient(150deg,color-mix(in srgb,var(--plane) 7%,#0b111b),#090e17 55%);backdrop-filter:blur(12px)}
+.panel-inner{padding:52px 30px 32px}.panel-summary{font-size:14px;line-height:1.65}.panel-section{margin-top:24px}.panel-section:has(#alignmentHeading),.panel-section:has(#travelHeading),.source-note,.layer-diagram{display:none}.section-rule{margin:24px 0}.plane-panel h2{font-size:48px}.layer-row p{font-size:12px}.trait-grid{gap:8px}
+body.is-focused .controls-panel{transform:translate(-50%,20px)}
+@media(max-width:700px){.masthead{top:24px;left:22px}h1{font-size:35px}.eyebrow{font-size:8px}.status-pill{top:108px;left:23px;right:auto;padding:0}.controls-panel{width:calc(100% - 28px);bottom:18px;gap:5px;padding:9px}.controls-foot{gap:0}.text-button{font-size:10px}.motion-settings summary{font-size:10px;padding:10px 5px}.select-wrap select{font-size:11px;padding-left:8px}.interaction-hint{bottom:92px;gap:14px}.interaction-hint span:last-child{display:none}.sliders{right:-60px}.plane-panel{top:auto;bottom:0;width:100%;height:48%;border-radius:20px 20px 0 0}.panel-inner{padding:28px 24px}.plane-panel h2{font-size:36px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.status-pill{left:auto;transform:none}.interaction-hint{left:50%;right:auto;transform:translateX(-50%);white-space:nowrap}.label{font-size:11px}.sliders{margin:0}@media(max-width:700px){.status-pill{left:23px;right:auto}.label{font-size:9px}.interaction-hint{font-size:9px}} 
+.controls-panel{left:0;right:0;bottom:0;transform:none;width:100%;height:72px;border-radius:0;border:0;border-top:1px solid var(--line);padding:12px 36px;gap:18px;background:rgba(9,15,24,.96);box-shadow:none}
+.controls-panel .select-wrap{order:-1;flex:0 1 280px;margin-right:auto}.controls-head{order:0}.motion-settings{order:1}.controls-foot{order:2}.sliders{right:0;bottom:54px}.interaction-hint{bottom:88px}body.is-focused .controls-panel{transform:translateY(20px)}
+@media(max-width:700px){.controls-panel{height:66px;padding:10px 14px;gap:8px;width:100%;left:0;bottom:0}.controls-panel .select-wrap{min-width:0;flex:1}.select-wrap select{padding-right:22px}.interaction-hint{bottom:80px}.sliders{right:-55px}.icon-button{width:32px;height:32px}}
+
+:root{--ink:#eee;--muted:#aaa;--dim:#888;--violet:#ddd;--cyan:#ccc;--line:rgba(255,255,255,.16);--line-bright:rgba(255,255,255,.3)}
+.eyebrow,h1 em,.status-pill{color:#aaa}.eyebrow::before{background:#aaa;box-shadow:none}.status-pill::before{background:#aaa;box-shadow:none}.controls-panel{background:rgba(10,10,10,.96)}.select-wrap select{background-color:#171717}.sliders{background:#121212}.plane-panel{background:rgba(10,10,10,.97);border-color:#333}.hover-card{background:#101010;border-color:#444}.hover-preview{image-rendering:pixelated}.plane-panel .section-label,.panel-index,.panel-alignment{color:#aaa}.label.is-hovered,.label.is-selected{background:#151515}.icon-button:hover{background:#eee}.atmosphere{opacity:.2}
+
+.controls-panel{left:50%;right:auto;bottom:22px;transform:translateX(-50%);width:390px;height:62px;padding:10px;gap:10px;border:1px solid #333;border-radius:14px;background:rgba(12,12,12,.94)}
+.controls-panel .select-wrap{flex:1;min-width:0;margin:0}.controls-panel svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.motion-settings summary,.controls-foot button{width:34px;height:36px;display:grid;place-items:center;padding:0;border-radius:6px}.motion-settings summary:hover,.controls-foot button:hover{background:#292929;color:#fff}.interaction-hint,.status-pill{display:none}.select-wrap select{border:0;background:transparent}.sliders{bottom:52px;right:-44px}body.is-focused .controls-panel{transform:translate(-50%,20px)}
+@media(max-width:700px){.controls-panel{width:calc(100% - 28px);max-width:390px;left:50%;bottom:16px;height:60px;padding:8px;gap:7px}.sliders{right:-42px}}
+body,.plane-panel{--plane:#ccc!important}.panel-index::before{background:#bbb;box-shadow:none}.hover-card{--hover-color:#ccc!important}.plane-panel :focus-visible{outline-color:#eee} input[type="range"]{accent-color:#ccc}input[type="range"]::-webkit-slider-runnable-track{background:#555} .controls-panel{width:430px}.controls-foot{gap:6px}#toggleLabels[aria-pressed="true"]{background:#292929;color:#fff}#toggleLabels[aria-pressed="false"]{color:#777}@media(max-width:700px){.controls-panel{width:calc(100% - 28px)}.controls-foot{gap:2px}} @media(min-width:701px) and (max-width:900px){.plane-panel{height:48%;border-radius:20px 20px 0 0}} </style>
   </head>
   <body>
-    <div id="titleBlock">
-      <h1>The Great<br>Wheel</h1>
-      <h2>Cosmology Viewer</h2>
-    </div>
-
-    <div id="controlsPanel">
-      <div class="header-row">
-        <label style="font-size: 12px; color: white;">Simulation</label>
-        <button id="playPause">❚❚</button>
-      </div>
-
-      <div class="control-group">
-        <label>Outer Planes</label>
-        <input type="range" id="outerSpeed" min="0" max="0.01" step="0.0001" value="0.002">
-      </div>
-
-      <div class="control-group">
-        <label>Elemental Chaos</label>
-        <input type="range" id="elementalSpeed" min="0" max="0.01" step="0.0001" value="0.003">
-      </div>
-
-      <div class="control-group">
-        <label>Outlands</label>
-        <input type="range" id="outlandsSpeed" min="0" max="0.05" step="0.0001" value="0.02">
-      </div>
-
-      <div class="control-group">
-        <label>Inner Spheres</label>
-        <input type="range" id="innerSpeed" min="0" max="0.05" step="0.0001" value="0.01">
-      </div>
-
-      <div class="control-group">
-        <label>Sidereal Rotation</label>
-        <input type="range" id="starRotation" min="0" max="0.005" step="0.0001" value="0.0005">
+    <div class="loading-screen" id="loadingScreen" role="status" aria-live="polite">
+      <div class="loading-copy">
+        <strong id="loadingTitle">Charting the planes</strong>
+        <div class="loading-meter" aria-hidden="true"></div>
+        <span id="loadingMessage">Building textures and planar routes</span>
       </div>
     </div>
+    <div id="scene" aria-label="Interactive three-dimensional model of the Great Wheel cosmology"></div>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="pixel-grid" aria-hidden="true"></div>
+
+    <header class="masthead">
+      <p class="eyebrow">PLANAR ATLAS</p>
+      <h1>The Great <em>Wheel</em></h1>
+      <p class="deck">
+        Thought forms the outer ring. Matter churns within. <strong>Select any plane</strong> to halt the wheel and inspect its structure.
+      </p>
+    </header>
+
+    <aside class="wheel-key" aria-label="Cosmology ring diagram">
+      <div class="orbit-diagram" aria-hidden="true">
+        <span class="outer"></span>
+        <span class="astral"></span>
+        <span class="outlands"></span>
+        <span class="ethereal"></span>
+        <span class="elements"></span>
+        <span class="echoes"></span>
+        <span class="material"></span>
+      </div>
+      <div class="diagram-copy">
+        <strong>Five bands</strong>
+        <span>Outer ideals<br />Neutral axis<br />Elements<br />Echoes<br />Material</span>
+        <span>Dashed routes: Astral and Ethereal</span>
+      </div>
+    </aside>
+
+    <section class="controls-panel" aria-label="Cosmology controls">
+      <div class="controls-head">
+        <div class="controls-title">
+          <strong>Sidereal motion</strong>
+          <small>Live orbital model</small>
+        </div>
+        <button class="icon-button" id="playPause" type="button" aria-label="Pause simulation" title="Pause simulation">
+          <span class="play-glyph" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="select-wrap">
+        <select id="planeSelect" aria-label="Explore the planes">
+          <option value="">Explore the planes</option>
+        </select>
+      </div>
+
+      <details class="motion-settings"><summary aria-label="Motion settings" title="Motion settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg></summary><div class="sliders">
+        <div class="control-group">
+          <label for="outerSpeed">Outer ideals</label>
+          <output id="outerSpeedValue">40%</output>
+          <input type="range" id="outerSpeed" min="0" max="0.005" step="0.0001" value="0.002" />
+        </div>
+        <div class="control-group">
+          <label for="elementalSpeed">Elemental ring</label>
+          <output id="elementalSpeedValue">50%</output>
+          <input type="range" id="elementalSpeed" min="0" max="0.006" step="0.0001" value="0.003" />
+        </div>
+        <div class="control-group">
+          <label for="innerSpeed">Material echoes</label>
+          <output id="innerSpeedValue">35%</output>
+          <input type="range" id="innerSpeed" min="0" max="0.006" step="0.0001" value="0.0021" />
+        </div>
+      </div>
+
+      </details><div class="controls-foot"><button class="text-button" id="toggleLabels" type="button" aria-label="Toggle plane labels" aria-pressed="true" title="Plane labels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h8l10 10-6 6L3 9Z"/><circle cx="7" cy="8" r="1"/></svg></button>
+        <button class="text-button" id="resetView" type="button" aria-label="Reset view" title="Reset view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6"/></svg></button>
+        <span class="text-button" aria-hidden="true">Drag / orbit</span>
+      </div>
+    </section>
+
+    <div class="interaction-hint" aria-hidden="true">
+      <span><i>↔</i> drag to orbit</span>
+      <span><i>+</i> scroll to zoom</span>
+      <span><i>◎</i> select a plane</span>
+    </div>
+
+    <div class="status-pill" id="statusPill" aria-live="polite">Wheel in motion</div>
+
+    <div class="hover-line" id="hoverLine" aria-hidden="true"></div>
+    <div class="hover-card" id="hoverCard" aria-hidden="true">
+      <canvas class="hover-preview" id="hoverPreview" width="48" height="48" aria-hidden="true"></canvas>
+      <strong id="hoverName"></strong>
+      <span id="hoverMeta"></span>
+      <small>Click to enter atlas view</small>
+    </div>
+
+    <aside class="plane-panel" id="planePanel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="panelName" inert>
+      <button class="icon-button close-button" id="closePanel" type="button" aria-label="Close plane details" title="Close plane details">×</button>
+      <div class="panel-scroll">
+        <div class="panel-inner">
+          <div class="panel-index" id="panelIndex"></div>
+          <h2 id="panelName"></h2>
+          <p class="panel-alignment" id="panelAlignment"></p>
+          <p class="panel-summary" id="panelSummary"></p>
+
+          <hr class="section-rule" />
+
+          <section class="panel-section" aria-labelledby="traitsHeading">
+            <h3 class="section-label" id="traitsHeading">Planar signature <span id="planeType"></span></h3>
+            <div class="trait-grid" id="traitGrid"></div>
+          </section>
+
+          <section class="panel-section" aria-labelledby="alignmentHeading">
+            <h3 class="section-label" id="alignmentHeading">Alignment diagram <span>belief / order</span></h3>
+            <div class="alignment-wrap">
+              <div class="alignment-grid" id="alignmentGrid" aria-label="Nine alignment matrix"></div>
+              <p class="alignment-copy" id="alignmentCopy"></p>
+            </div>
+          </section>
+
+          <section class="panel-section" aria-labelledby="layersHeading">
+            <h3 class="section-label" id="layersHeading"><span id="layerHeadingText">Layer structure</span><span id="layerCount"></span></h3>
+            <div class="layer-diagram" id="layerDiagram" aria-label="Visual cross-section from planar threshold to deepest mapped region"></div>
+            <div class="layer-stack" id="layerStack"></div>
+          </section>
+
+          <section class="panel-section" aria-labelledby="travelHeading">
+            <h3 class="section-label" id="travelHeading">Passage note <span>atlas record</span></h3>
+            <p class="travel-note" id="travelNote"></p>
+          </section>
+
+          <p class="source-note">
+            Diagram follows the classic sixteen-plane Great Wheel. Planar details combine the current D&amp;D overview with traditional Planescape layer names.
+            The Astral and Ethereal planes are shown as connective routes in the locator diagram rather than selectable worlds.
+            <a href="https://www.dndbeyond.com/sources/dnd/basic-rules-2014/appendix-d-the-planes-of-existence" target="_blank" rel="noreferrer">Reference overview</a>.
+          </p>
+        </div>
+      </div>
+    </aside>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TrackballControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
-
     <script>
-      // ---------------------------
-      // Core Setup
-      // ---------------------------
-      const scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x050505, 0.0008); // Add depth with fog
+      (() => {
+        "use strict";
 
-      const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 4000);
-      camera.position.set(0, 180, 380);
-      
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.outputEncoding = THREE.sRGBEncoding;
-      document.body.appendChild(renderer.domElement);
-      
-      const labelRenderer = new THREE.CSS2DRenderer();
-      labelRenderer.setSize(window.innerWidth, window.innerHeight);
-      labelRenderer.domElement.style.position = "absolute";
-      labelRenderer.domElement.style.top = "0";
-      labelRenderer.domElement.style.pointerEvents = "none";
-      document.body.appendChild(labelRenderer.domElement);
-      
-      // ---------------------------
-      // Lighting (Dramatic)
-      // ---------------------------
-      const ambientLight = new THREE.AmbientLight(0x404040, 1.0);
-      scene.add(ambientLight);
+        const loadingScreen = document.getElementById("loadingScreen");
+        const loadingTitle = document.getElementById("loadingTitle");
+        const loadingMessage = document.getElementById("loadingMessage");
 
-      // Sun/Core light
-      const pointLight = new THREE.PointLight(0xffffff, 1.5, 1000);
-      pointLight.position.set(0, 0, 0);
-      scene.add(pointLight);
-
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      dirLight.position.set(100, 200, 100);
-      scene.add(dirLight);
-      
-      // ---------------------------
-      // Controls
-      // ---------------------------
-      const controls = new THREE.TrackballControls(camera, renderer.domElement);
-      controls.rotateSpeed = 3.0;
-      controls.zoomSpeed = 1.2;
-      controls.panSpeed = 0.8;
-      controls.noZoom = false;
-      controls.noPan = false;
-      controls.staticMoving = false;
-      controls.dynamicDampingFactor = 0.2;
-      
-      let params = {
-        outerSpeed: 0.002,
-        elementalSpeed: 0.003,
-        outlandsSpeed: 0.02,
-        innerSpeed: 0.01,
-        starRotation: 0.0005,
-        playing: true,
-      };
-      
-      // ---------------------------
-      // Environment: Stars
-      // ---------------------------
-      function createStars(count = 3000) {
-        const geometry = new THREE.BufferGeometry();
-        const positions = [];
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-          positions.push(THREE.MathUtils.randFloatSpread(3000), THREE.MathUtils.randFloatSpread(3000), THREE.MathUtils.randFloatSpread(3000));
-          const color = new THREE.Color();
-          color.setHSL(Math.random(), 0.2, 0.8);
-          colors.push(color.r, color.g, color.b);
+        function showFatal(message) {
+          loadingScreen.classList.remove("is-ready");
+          loadingScreen.classList.add("is-failed");
+          loadingTitle.textContent = "The atlas could not open";
+          loadingMessage.textContent = message;
         }
-        geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-        geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-        const material = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.8, sizeAttenuation: true });
-        return new THREE.Points(geometry, material);
-      }
-      const starField = createStars();
-      scene.add(starField);
-      
-      // Shooting Stars
-      const shootingStars = [];
-      const shootingStarGeo = new THREE.SphereGeometry(0.5, 8, 8);
-      const shootingStarMat = new THREE.MeshBasicMaterial({ color: 0xffffee });
-      
-      // Tail effect
-      function createTail() {
-        const geo = new THREE.BufferGeometry();
-        const pos = [0,0,0, 0,0,10];
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-        return new THREE.Line(geo, new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.5}));
-      }
 
-      for (let i = 0; i < 8; i++) {
-        const star = new THREE.Mesh(shootingStarGeo, shootingStarMat);
-        const tail = createTail();
-        star.add(tail);
-        tail.position.z = 0.5;
-        resetShootingStar(star);
-        shootingStars.push(star);
-        scene.add(star);
-      }
-      function resetShootingStar(star) {
-        star.position.set(THREE.MathUtils.randFloatSpread(1200), THREE.MathUtils.randFloat(200, 600), 1200);
-        star.userData.velocity = new THREE.Vector3(
-          -THREE.MathUtils.randFloat(4, 8),
-          -THREE.MathUtils.randFloat(1, 3),
-          -THREE.MathUtils.randFloat(4, 8)
-        );
-        star.lookAt(star.position.clone().add(star.userData.velocity));
-      }
-      
-      // ---------------------------
-      // Geometry Helpers
-      // ---------------------------
-      function createLabeledSphere(name, color, size = 10, roughness = 0.7) {
-        const geometry = new THREE.SphereGeometry(size, 64, 64);
-        const material = new THREE.MeshStandardMaterial({ 
-            color: color, 
-            roughness: roughness,
-            metalness: 0.1,
-            emissive: color,
-            emissiveIntensity: 0.2
-        });
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.userData.planeName = name;
-        
-        const div = document.createElement("div");
-        div.className = "label";
-        div.textContent = name;
-        const label = new THREE.CSS2DObject(div);
-        label.position.set(0, size + 4, 0);
-        sphere.add(label);
-        return sphere;
-      }
-      
-      function addOrbitRing(radius, opacity = 0.15) {
-        // Use Torus for a thin physical ring look instead of flat ring
-        const geometry = new THREE.TorusGeometry(radius, 0.3, 16, 128);
-        const material = new THREE.MeshBasicMaterial({ 
-            color: 0xffffff, 
-            transparent: true, 
-            opacity: opacity 
-        });
-        const ring = new THREE.Mesh(geometry, material);
-        ring.rotation.x = Math.PI / 2;
-        scene.add(ring);
-      }
-
-      // ---------------------------
-      // Particle Effects (Enhanced)
-      // ---------------------------
-      // Standard particle material for additive blending (glow effect)
-      const glowParticleMat = (color, size=1.5, opacity=0.8) => new THREE.PointsMaterial({ 
-          color: color, 
-          size: size, 
-          transparent: true, 
-          opacity: opacity, 
-          blending: THREE.AdditiveBlending 
-      });
-
-      function createAuraEffect(color) {
-        const group = new THREE.Group();
-        // Orbital lights
-        for (let i = 0; i < 8; i++) {
-          const mini = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-          mini.position.set(9 * Math.cos((i/8)*Math.PI*2), Math.sin(i)*2, 9 * Math.sin((i/8)*Math.PI*2));
-          group.add(mini);
+        if (!window.THREE || !window.THREE.TrackballControls || !window.THREE.CSS2DRenderer) {
+          showFatal("The required 3D libraries did not load. Check the connection and refresh the page.");
+          return;
         }
-        return group;
-      }
-      
-      function createSwirlingLightningEffect(color) {
-        const group = new THREE.Group();
-        const geom = new THREE.BufferGeometry();
-        const pos = [];
-        for (let i = 0; i < 100; i++) {
-          pos.push((Math.random()-0.5)*22, (Math.random()-0.5)*22, (Math.random()-0.5)*22);
+
+        const planeData = [
+          {
+            id: "celestia", name: "Mount Celestia", short: "Seven Heavens", ring: "Outer Plane", region: "Lawful Good", align: "LG", color: "#f6d86e",
+            palette: ["#261d3f", "#66504c", "#bd965b", "#f3d778", "#fff1bd"], pattern: "terraces", cloud: "radiance", effect: "crown", size: 11,
+            summary: "A holy mountain rising through seven ascending heavens, where discipline and mercy are refined together into luminous perfection.",
+            traits: [["Form", "Sevenfold ascent"], ["Light", "Pearl and gold"], ["Gravity", "Toward the mountain"], ["Temper", "Resolute grace"]],
+            axis: "Law gives goodness a path upward. Each summit asks for greater clarity, courage, and compassion.",
+            layers: [["Lunia", "Silver sea and starlit foothills"], ["Mercuria", "Golden slopes and honored tombs"], ["Venya", "Green terraces and quiet harvests"], ["Solania", "Crystal peaks and sacred forges"], ["Mertion", "Platinum cities of paladins"], ["Jovar", "Gem-bright reaches near the crown"], ["Chronias", "The veiled summit beyond mortal certainty"]],
+            travel: "The climb is spiritual as much as physical. Portals tend to open only when a traveler is ready for the lesson above."
+          },
+          {
+            id: "bytopia", name: "Bytopia", short: "Twin Paradises", ring: "Outer Plane", region: "Good with lawful lean", align: "LG,NG", color: "#e8b978",
+            palette: ["#233654", "#4d7256", "#88a968", "#d9b76d", "#f3dfaf"], pattern: "dual", cloud: "cloud", effect: "double", size: 10,
+            summary: "Two pastoral worlds face one another across a shared sky, rewarding craft, neighborly effort, and the dignity of work well done.",
+            traits: [["Form", "Two facing worlds"], ["Light", "Warm twin dawns"], ["Gravity", "Toward either ground"], ["Temper", "Earnest plenty"]],
+            axis: "Goodness is expressed through practical labor and mutual reliance rather than revelation or wild impulse.",
+            layers: [["Dothion", "Cultivated hills, towns, and patient craft"], ["Shurrock", "Untamed ranges rich with ore and danger"]],
+            travel: "Travelers can look up and see the other layer overhead. High mountains, strange passages, and divine routes bridge the shared sky."
+          },
+          {
+            id: "elysium", name: "Elysium", short: "Blessed Fields", ring: "Outer Plane", region: "Neutral Good", align: "NG", color: "#ef9ed8",
+            palette: ["#312b61", "#5a5f96", "#879cc2", "#d69cc9", "#f4c5db"], pattern: "rivers", cloud: "mist", effect: "wisps", size: 10.5,
+            summary: "Gentle rivers bind four serene layers where kindness feels natural, beauty restores the spirit, and peace can become difficult to leave.",
+            traits: [["Form", "River-linked realms"], ["Light", "Soft perpetual day"], ["Gravity", "Natural"], ["Temper", "Healing peace"]],
+            axis: "Compassion stands at the center. Law and chaos matter less than the immediate good of living beings.",
+            layers: [["Amoria", "Meadows crossed by the River Oceanus"], ["Eronia", "Wild hills, cataracts, and resilient joy"], ["Belierin", "Fog-veiled marshes guarding old mysteries"], ["Thalasia", "Oceanic reaches and islands of the blessed"]],
+            travel: "The River Oceanus is the clearest route between layers and neighboring upper planes, if its tranquil current does not persuade you to stay."
+          },
+          {
+            id: "beastlands", name: "Beastlands", short: "Untamed Splendor", ring: "Outer Plane", region: "Good with chaotic lean", align: "NG,CG", color: "#7fd873",
+            palette: ["#102d32", "#28503d", "#4d7d45", "#80ad58", "#c5d67b"], pattern: "forest", cloud: "cloud", effect: "moons", size: 10.5,
+            summary: "An endless wilderness ruled by the rhythm of hunt, rest, and instinct, where every creature carries a sharper echo of its natural self.",
+            traits: [["Form", "Primal wilderness"], ["Light", "Fixed day cycle"], ["Gravity", "Natural"], ["Temper", "Fierce harmony"]],
+            axis: "Freedom serves life rather than ego. Civilization thins out while empathy with beasts and wilderness grows stronger.",
+            layers: [["Krigala", "Unending noon beneath a warm sun"], ["Brux", "Amber twilight and prowling silhouettes"], ["Karasuthra", "Moonlit night alive with hidden motion"]],
+            travel: "Following a migrating beast, moonlit trail, or river can carry travelers between the three fixed phases of the plane's day."
+          },
+          {
+            id: "arborea", name: "Arborea", short: "Olympian Glades", ring: "Outer Plane", region: "Chaotic Good", align: "CG", color: "#72e0a0",
+            palette: ["#15364a", "#205f59", "#4c9568", "#81ce7d", "#cbecac"], pattern: "wild", cloud: "petal", effect: "wisps", size: 11,
+            summary: "A realm of mythic forests, impossible seas, and emotions felt at full volume. Beauty here is ecstatic, dangerous, and gloriously alive.",
+            traits: [["Form", "Mythic landscapes"], ["Light", "Saturated seasons"], ["Gravity", "Natural"], ["Temper", "Passionate freedom"]],
+            axis: "Goodness refuses restraint. Love, fury, art, and grief arrive with the force of weather.",
+            layers: [["Arvandor", "Vast forests, feasts, and elven realms"], ["Aquallor", "An endless blue-green ocean"], ["Mithardir", "A white desert of buried divinities"]],
+            travel: "Songs, moonlit groves, storm-tossed seas, and divine invitations are more reliable than measured roads."
+          },
+          {
+            id: "ysgard", name: "Ysgard", short: "Heroic Domains", ring: "Outer Plane", region: "Chaos with good lean", align: "CG,CN", color: "#8fd2ef",
+            palette: ["#22304e", "#3f6680", "#79a6a2", "#d18155", "#f0c16d"], pattern: "storm", cloud: "storm", effect: "shards", size: 10.5,
+            summary: "Colossal earthbergs drift above endless void, carrying heroic halls and daily battles whose worthy fallen rise again with the dawn.",
+            traits: [["Form", "Floating earthbergs"], ["Light", "Storm and aurora"], ["Gravity", "Local to each mass"], ["Temper", "Exultant valor"]],
+            axis: "Liberty is tested through courage. Conflict is not merely destruction here, but a proving ground for heroic will.",
+            layers: [["Ysgard", "Heroic halls on drifting mountains"], ["Muspelheim", "A furnace realm of fire giants"], ["Nidavellir", "Deep caverns, craft, and guarded roads"]],
+            travel: "World-spanning rivers, rainbow bridges, and the collision of drifting earthbergs create temporary roads through the void."
+          },
+          {
+            id: "limbo", name: "Limbo", short: "Ever-Changing Chaos", ring: "Outer Plane", region: "Chaotic Neutral", align: "CN", color: "#65d9ef",
+            palette: ["#322758", "#3e78ad", "#64dfcf", "#f1cb68", "#ef6f95"], pattern: "chaos", cloud: "energy", effect: "chaos", size: 11,
+            summary: "Raw possibility without a stable horizon. Thought can briefly shape the elemental soup before the plane folds it into something else.",
+            traits: [["Form", "Mutable flux"], ["Light", "Self-generated"], ["Gravity", "Directed by will"], ["Temper", "Unfixed"]],
+            axis: "No law holds long enough to become a rule. Creation and dissolution are separated only by concentration.",
+            layerTitle: "Stable phenomena",
+            layers: [["Elemental flux", "Matter changes state without warning"], ["Thought-islands", "Willpower holds temporary landscapes together"], ["Slaad domains", "Pockets of chaos claimed by native powers"]],
+            travel: "A focused mind can choose a direction and stabilize nearby matter. Losing concentration means surrendering the route to chance."
+          },
+          {
+            id: "pandemonium", name: "Pandemonium", short: "Windswept Depths", ring: "Outer Plane", region: "Chaos with evil lean", align: "CN,CE", color: "#bc77ef",
+            palette: ["#130d24", "#282044", "#50346f", "#774993", "#ad75b8"], pattern: "wind", cloud: "smoke", effect: "storm", size: 10.5,
+            summary: "A lightless network of caverns scoured by winds that steal speech, sleep, and eventually certainty from anyone trapped too long.",
+            traits: [["Form", "Endless caverns"], ["Light", "Nearly absent"], ["Gravity", "Toward nearby walls"], ["Temper", "Howling dread"]],
+            axis: "Freedom has curdled into isolation. Nothing coordinates the dark except winds that never stop screaming.",
+            layers: [["Pandesmos", "Vast tunnels and the loudest winds"], ["Cocytus", "Narrow passages and maddening echoes"], ["Phlegethon", "Dark caverns with scattered settlements"], ["Agathion", "Sealed pockets and forgotten prisons"]],
+            travel: "Sound is both compass and threat. Openings to deeper layers often hide inside wind tunnels no sane guide follows twice."
+          },
+          {
+            id: "abyss", name: "The Abyss", short: "Infinite Layers", ring: "Outer Plane", region: "Chaotic Evil", align: "CE", color: "#8b4de8",
+            palette: ["#05020a", "#160721", "#2e0c42", "#541268", "#9a3ba5"], pattern: "rift", cloud: "void", effect: "void", size: 12,
+            summary: "An apparently endless descent of hostile realities, each shaped by cruelty, appetite, and the will of whatever horror rules it.",
+            traits: [["Form", "Uncounted layers"], ["Light", "Hostile and erratic"], ["Gravity", "Layer-dependent"], ["Temper", "Predatory entropy"]],
+            axis: "Desire is unbounded by law or care. Every layer is a different answer to the question of how reality can hate.",
+            layerTitle: "Sampled depths",
+            layers: [["Pazunia", "The Plain of Infinite Portals"], ["Azzagrat", "A triple realm of decadent cities"], ["Demonweb Pits", "Webbed domains folded through darkness"], ["Unnumbered depths", "The descent continues beyond any complete map"]],
+            travel: "Portals are plentiful but treacherous. A gate's destination can shift, and the return route may demand a different price."
+          },
+          {
+            id: "carceri", name: "Carceri", short: "Tarterian Depths", ring: "Outer Plane", region: "Evil with chaotic lean", align: "CE,NE", color: "#d05b67",
+            palette: ["#1e111d", "#48212d", "#793440", "#a94d50", "#ce735f"], pattern: "prison", cloud: "haze", effect: "cage", size: 10.5,
+            summary: "Six chains of red worlds hang in blackness, built around betrayal and confinement. Escape always seems possible from a distance.",
+            traits: [["Form", "Orb chains"], ["Light", "Red twilight"], ["Gravity", "Local to each orb"], ["Temper", "Bitter captivity"]],
+            axis: "Evil is personal and suspicious. Alliances form only long enough for one prisoner to become another's jailer.",
+            layers: [["Othrys", "Marshes beneath clashing red suns"], ["Cathrys", "Jungles and razor grass"], ["Minethys", "Sand-blasted ruins"], ["Colothys", "Mountains cut by impossible ledges"], ["Porphatys", "Black snow and acidic shallows"], ["Agathys", "A frozen orb at the chain's end"]],
+            travel: "Each layer is a string of worlds. Crossing the gulf between them is hard; leaving the plane is harder unless a prisoner has earned release."
+          },
+          {
+            id: "hades", name: "Hades", short: "Gray Waste", ring: "Outer Plane", region: "Neutral Evil", align: "NE", color: "#a58f96",
+            palette: ["#17151a", "#2a272c", "#474048", "#67585d", "#8d7372"], pattern: "ash", cloud: "ash", effect: "embers", size: 11,
+            summary: "Color, hope, and conviction drain away across a war-scarred waste. The plane does not rage; it simply makes effort feel pointless.",
+            traits: [["Form", "Three gray glooms"], ["Light", "Colorless haze"], ["Gravity", "Natural"], ["Temper", "Devouring apathy"]],
+            axis: "Evil is stripped of ambition and spectacle. What remains is the quiet erosion of care itself.",
+            layers: [["Oinos", "Disease, battlefields, and the River Styx"], ["Niflheim", "Cold fog and forests of the lost"], ["Pluton", "A dim realm of dust and the dead"]],
+            travel: "The River Styx crosses every gloom, but memory and motivation can fade before a traveler reaches the intended shore."
+          },
+          {
+            id: "gehenna", name: "Gehenna", short: "Bleak Eternity", ring: "Outer Plane", region: "Evil with lawful lean", align: "NE,LE", color: "#e56745",
+            palette: ["#140b0b", "#381410", "#6b2418", "#b54122", "#ef7a35"], pattern: "volcanic", cloud: "smoke", effect: "lava", size: 11,
+            summary: "Four volcanic slopes tumble through an endless void. There is almost no level ground, and every refuge belongs to someone dangerous.",
+            traits: [["Form", "Four volcanic mounts"], ["Light", "Lava and cinders"], ["Gravity", "Down each slope"], ["Temper", "Mercenary cruelty"]],
+            axis: "Self-interest accepts hierarchy when hierarchy pays. Trust is a currency spent only under pressure.",
+            layers: [["Khalas", "Steep slopes cut by the Styx"], ["Chamada", "A furnace of lava and ash"], ["Mungoth", "Acidic snow on a darkening mount"], ["Krangath", "A cold, dead volcanic shell"]],
+            travel: "Paths are switchbacks across unstable slopes. Bargains with yugoloth guides are common, exact, and rarely generous."
+          },
+          {
+            id: "nine-hells", name: "Nine Hells", short: "Baator", ring: "Outer Plane", region: "Lawful Evil", align: "LE", color: "#ef5147",
+            palette: ["#120607", "#321013", "#64191c", "#a12824", "#e45438"], pattern: "hell", cloud: "smoke", effect: "cage", size: 12,
+            summary: "A nine-level tyranny built from infernal law, weaponized ambition, and bargains that remain binding long after regret arrives.",
+            traits: [["Form", "Nine descending realms"], ["Light", "Fire to frozen dark"], ["Gravity", "Layer-dependent"], ["Temper", "Perfected domination"]],
+            axis: "Order becomes a machine for exploitation. Every rank serves the one above and schemes against it.",
+            layers: [["Avernus", "War-scarred gateway beneath a blood-red sky"], ["Dis", "The burning iron city"], ["Minauros", "Sinking swamps of greed"], ["Phlegethos", "Fire, courts, and punishment"], ["Stygia", "A dark, frozen sea"], ["Malbolge", "Collapsing slopes and brutal prisons"], ["Maladomini", "Ruined cities under endless reconstruction"], ["Cania", "A lethal kingdom of blue-white ice"], ["Nessus", "The deepest rift and throne of Asmodeus"]],
+            travel: "The River Styx reaches Avernus. Descent beyond it is controlled by infernal roads, guarded portals, and permissions with very small print."
+          },
+          {
+            id: "acheron", name: "Acheron", short: "Infinite Battlefield", ring: "Outer Plane", region: "Law with evil lean", align: "LE,LN", color: "#bf8a83",
+            palette: ["#14161d", "#30323a", "#595861", "#87706c", "#ba8a7c"], pattern: "iron", cloud: "sparks", effect: "cubes", size: 10.5, metalness: 0.72,
+            summary: "Immense iron cubes drift and collide in a ringing void, their surfaces covered by fortresses, marching armies, and wars without purpose.",
+            traits: [["Form", "Colliding iron cubes"], ["Light", "Cold metallic gleam"], ["Gravity", "Toward each cube face"], ["Temper", "Obedient conflict"]],
+            axis: "Order survives after meaning is gone. Identity dissolves into rank, command, and the next battle.",
+            layers: [["Avalas", "Battlefields on city-sized iron cubes"], ["Thuldanin", "War machines slowly petrify into scrap"], ["Tintibulus", "Geometric debris whipped through the void"], ["Ocanthus", "Black ice shards moving at lethal speed"]],
+            travel: "Armies control the safest gates. Cube collisions can open brief passages or erase a route completely."
+          },
+          {
+            id: "mechanus", name: "Mechanus", short: "Clockwork Nirvana", ring: "Outer Plane", region: "Lawful Neutral", align: "LN", color: "#e1c47c",
+            palette: ["#191b24", "#3f4143", "#756840", "#ad8e46", "#e3c16b"], pattern: "gear", cloud: null, effect: "gears", size: 11, metalness: 0.82,
+            summary: "Interlocking cogs turn through an ordered infinity. Every movement has a cause, a ratio, and a place in a system too large to perceive at once.",
+            traits: [["Form", "Infinite gearwork"], ["Light", "Measured and even"], ["Gravity", "Toward cog surfaces"], ["Temper", "Absolute order"]],
+            axis: "Law is neither kind nor cruel. It is simply the certainty that every part must fit.",
+            layerTitle: "Ordered domains",
+            layers: [["Great gears", "Continents of interlocking machinery"], ["Regulus", "The rigorously indexed realm of modrons"], ["Equation halls", "Archives where laws become architecture"]],
+            travel: "Gear teeth become bridges when cycles align. A route that is perfect today may not return to position for a century."
+          },
+          {
+            id: "arcadia", name: "Arcadia", short: "Peaceable Kingdoms", ring: "Outer Plane", region: "Law with good lean", align: "LN,LG", color: "#b7d9a0",
+            palette: ["#273541", "#496252", "#79916a", "#aebc7c", "#e1dcaa"], pattern: "order", cloud: "cloud", effect: "double", size: 10.5,
+            summary: "Perfect fields, straight rivers, and orderly communities pursue harmony so intensely that individual difference can feel like a flaw.",
+            traits: [["Form", "Measured landscapes"], ["Light", "Predictable cycles"], ["Gravity", "Natural"], ["Temper", "Collective harmony"]],
+            axis: "Goodness is organized for everyone, though the system can prize conformity more than the person it claims to protect.",
+            layers: [["Abellio", "Orchards, cities, and perfectly tended fields"], ["Buxenus", "Disciplined wildlands and watchful borders"], ["Nemausus", "A lost layer drawn toward stricter order"]],
+            travel: "Roads are exact and well guarded. Visitors who respect local schedules find travel easy; improvisers discover how firm peace can become."
+          },
+          {
+            id: "outlands", name: "The Outlands", short: "Concordant Domain", ring: "Neutral Axis", region: "True Neutral", align: "N", color: "#84c99a",
+            palette: ["#172d32", "#315347", "#55795a", "#83a369", "#bdc98c"], pattern: "outlands", cloud: "haze", effect: "spire", size: 12,
+            summary: "A vast neutral disk linking every Outer Plane. At its center rises the impossible Spire, with Sigil floating beyond ordinary reach above it.",
+            traits: [["Form", "Great disk and Spire"], ["Light", "Balanced horizon"], ["Gravity", "Natural"], ["Temper", "Equilibrium"]],
+            axis: "Competing philosophies cancel toward the center. Near the Spire, even divine magic gradually loses force.",
+            layerTitle: "Concentric regions",
+            layers: [["Gate-towns", "Sixteen thresholds echoing the Outer Planes"], ["The rings", "Magic weakens in bands toward the center"], ["The Spire", "An impossibly tall null point"], ["Sigil", "The City of Doors above the summit"]],
+            travel: "Gate-towns offer direct roads outward. Sigil offers doors almost anywhere, but never a simple path straight up the Spire."
+          },
+          {
+            id: "air", name: "Plane of Air", short: "Endless Sky", ring: "Inner Plane", region: "Elemental", align: "N", color: "#b9e9f4",
+            palette: ["#4f7f9d", "#76a8be", "#9ecbd6", "#c8e7e7", "#edf8ef"], pattern: "air", cloud: "cloud", effect: "wisps", size: 9,
+            summary: "An open infinity of blue, cloud continents, sudden storms, and islands forever falling without reaching a bottom.",
+            traits: [["Substance", "Air dominant"], ["Light", "Bright open sky"], ["Gravity", "Subjective"], ["Temper", "Restless clarity"]],
+            axis: "Elemental planes are not moral destinations. They are reality reduced toward a single material principle.",
+            layerTitle: "Elemental gradient",
+            layers: [["Border sky", "Mixed air, water, and drifting earth"], ["Cloud realms", "Storm banks and inhabited islands"], ["Pure reaches", "Air with almost no solid matter"], ["Chaos frontier", "Other elements begin to churn back in"]],
+            travel: "Flight or a stable vessel is essential. Direction follows intention more readily than any visible horizon."
+          },
+          {
+            id: "water", name: "Plane of Water", short: "Endless Sea", ring: "Inner Plane", region: "Elemental", align: "N", color: "#4eb6ef",
+            palette: ["#071e43", "#0e4773", "#167ba0", "#42adbd", "#91dae0"], pattern: "water", cloud: null, effect: "bubbles", size: 9,
+            summary: "An ocean without surface or floor, lit through impossible blue distances and broken by reefs, currents, and suspended islands.",
+            traits: [["Substance", "Water dominant"], ["Light", "Blue ambient glow"], ["Gravity", "Subjective currents"], ["Temper", "Immersive pressure"]],
+            axis: "The plane expresses water as environment, motion, shelter, and threat rather than as a simple volume to cross.",
+            layerTitle: "Elemental gradient",
+            layers: [["Border sea", "Breathable pockets and familiar reefs"], ["Current roads", "Vast flows used as planar routes"], ["Lightless depths", "Pressure and strange deepwater domains"], ["Chaos frontier", "Water breaks into elemental turbulence"]],
+            travel: "Currents function as roads. Without a guide, the lack of landmarks makes a short journey indistinguishable from an endless one."
+          },
+          {
+            id: "earth", name: "Plane of Earth", short: "Endless Stone", ring: "Inner Plane", region: "Elemental", align: "N", color: "#b7865d",
+            palette: ["#251b1a", "#4c3528", "#785238", "#a97b50", "#d2af72"], pattern: "earth", cloud: "dust", effect: "shards", size: 9,
+            summary: "Stone fills almost everything. Tunnels, gemstone vaults, and crushing faults open like temporary breaths inside the infinite mass.",
+            traits: [["Substance", "Earth dominant"], ["Light", "Crystal and lava"], ["Gravity", "Toward stable floors"], ["Temper", "Immense pressure"]],
+            axis: "The element is expressed as permanence, weight, treasure, and the patient force that eventually closes every empty space.",
+            layerTitle: "Elemental gradient",
+            layers: [["Border caverns", "Mixed terrain and survivable passages"], ["Living tunnels", "Settlements, mines, and shifting faults"], ["Deep stone", "Nearly solid elemental mass"], ["Chaos frontier", "Mineral form breaks into raw potential"]],
+            travel: "Passwall magic, burrowing guides, and mapped fault lines keep travelers from being sealed into the plane itself."
+          },
+          {
+            id: "fire", name: "Plane of Fire", short: "Endless Flame", ring: "Inner Plane", region: "Elemental", align: "N", color: "#ff7849",
+            palette: ["#200708", "#56100c", "#a82512", "#ed561e", "#ffc15a"], pattern: "fire", cloud: "smoke", effect: "lava", size: 9,
+            summary: "Flame is atmosphere, weather, and ground. Seas of fire roll beneath brass cities while heat presses against every unprotected thought.",
+            traits: [["Substance", "Fire dominant"], ["Light", "Total radiance"], ["Gravity", "Toward dense flame"], ["Temper", "Consuming motion"]],
+            axis: "This is fire without morality: illumination, craft, appetite, destruction, and renewal made physically continuous.",
+            layerTitle: "Elemental gradient",
+            layers: [["Border flame", "Hot lands where other elements persist"], ["Sea of Fire", "Rolling incandescent terrain"], ["Furnace reaches", "Almost pure heat and combustion"], ["Chaos frontier", "Flame dissolves into mixed creation"]],
+            travel: "Protection from heat is only the beginning. Brass roads and efreet routes are safer than crossing the Sea of Fire directly."
+          },
+          {
+            id: "feywild", name: "Feywild", short: "Bright Reflection", ring: "Material Echo", region: "Parallel Plane", align: "N", color: "#ef76d8",
+            palette: ["#192645", "#274976", "#347b7b", "#62bd75", "#e45ec7"], pattern: "fey", cloud: "petal", effect: "wisps", size: 8.5,
+            summary: "A heightened echo of the Material Plane where emotion, story, and nature bloom past ordinary limits and time treats schedules as suggestions.",
+            traits: [["Form", "Material reflection"], ["Light", "Saturated twilight"], ["Time", "Unreliable"], ["Temper", "Enchanted intensity"]],
+            axis: "Its neutrality is not calm. The Feywild magnifies beauty, appetite, delight, terror, and the logic of old stories.",
+            layerTitle: "Reflective depth",
+            layers: [["Near echo", "Familiar geography in marvelous form"], ["Crossing wilds", "Paths ruled by season and story"], ["Deep domains", "Archfey realms with their own narrative laws"]],
+            travel: "Fey crossings appear where the Material world feels unusually alive. The route home may return on the wrong day, year, or memory."
+          },
+          {
+            id: "shadowfell", name: "Shadowfell", short: "Gloom Reflection", ring: "Material Echo", region: "Parallel Plane", align: "N", color: "#8f93bd",
+            palette: ["#0b0d16", "#1b1d2a", "#303344", "#4b5066", "#747994"], pattern: "shadow", cloud: "mist", effect: "void", size: 8.5,
+            summary: "A dim echo of mortal geography where color and warmth recede, ruins linger, and despair can become part of the weather.",
+            traits: [["Form", "Material reflection"], ["Light", "Perpetual gloom"], ["Time", "Mostly familiar"], ["Temper", "Emotional gravity"]],
+            axis: "The plane is not automatically evil, but its atmosphere rewards resignation and gives predatory darkness room to grow.",
+            layerTitle: "Reflective depth",
+            layers: [["Near echo", "Recognizable places stripped of warmth"], ["Shadow roads", "Gloom paths between distant locations"], ["Deep domains", "Isolated realms shaped by death and dread"]],
+            travel: "Shadow crossings gather around graveyards, ruins, and places of profound loss. Light helps, but purpose matters more."
+          },
+          {
+            id: "material", name: "Material Plane", short: "Mortal Nexus", ring: "Central Plane", region: "Mixed Reality", align: "N", color: "#5ea7ef",
+            palette: ["#06172e", "#0c3d68", "#176c88", "#438f69", "#9fb77d", "#e7e8d4"], pattern: "world", cloud: "cloud", effect: "orbiters", size: 22,
+            summary: "The mortal center where elemental substance and outer belief mingle into worlds complex enough for ordinary life, contradiction, and choice.",
+            traits: [["Form", "Countless worlds"], ["Light", "Local stars"], ["Gravity", "World-dependent"], ["Temper", "Mixed possibility"]],
+            axis: "No single alignment or element dominates. That instability is exactly what makes mortal choice meaningful.",
+            layerTitle: "Cosmic structure",
+            layers: [["Worlds", "Mortal realms where most adventures begin"], ["Wildspace", "The void and systems surrounding each world"], ["Planar thresholds", "Crossings into echoes and transitive realms"]],
+            travel: "Portals, spells, spelljamming routes, and planar crossings connect the center to the wider wheel. Every setting decides which doors are easiest to find."
+          }
+        ];
+
+        const sceneHost = document.getElementById("scene");
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x03040a);
+        scene.fog = new THREE.FogExp2(0x03040a, 0.00105);
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 4200);
+        camera.position.set(0, 205, 405);
+
+        let renderer;
+        try {
+          renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        } catch (error) {
+          showFatal("WebGL is unavailable in this browser or has been disabled.");
+          return;
         }
-        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-        const pts = new THREE.Points(geom, glowParticleMat(color, 2, 0.6));
-        group.add(pts);
-        
-        // Jagged Lines
-        const lineMat = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
-        for(let k=0; k<3; k++){
-            const lineGeom = new THREE.BufferGeometry();
-            const linePos = [];
-            let x=0, y=0, z=0;
-            for (let i = 0; i < 10; i++) {
-                x += (Math.random()-0.5)*5;
-                y += (Math.random()-0.5)*5;
-                z += (Math.random()-0.5)*5;
-                linePos.push(x,y,z);
-            }
-            lineGeom.setAttribute("position", new THREE.Float32BufferAttribute(linePos, 3));
-            const line = new THREE.Line(lineGeom, lineMat);
-            group.add(line);
-        }
-        return group;
-      }
-      
-      function createNebulaEffect() {
-        const group = new THREE.Group();
-        const geom = new THREE.BufferGeometry();
-        const count = 200;
-        const positions = [];
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-          const r = 10 + Math.random() * 5;
-          const theta = Math.random() * Math.PI * 2;
-          const phi = Math.random() * Math.PI;
-          positions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
-          colors.push(0.8, 0.5 + Math.random()*0.5, 0.8 + Math.random()*0.2);
-        }
-        geom.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-        geom.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-        const pts = new THREE.Points(geom, new THREE.PointsMaterial({ vertexColors: true, size: 1.2, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending }));
-        group.add(pts);
-        return group;
-      }
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.5));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.12;
+        renderer.domElement.setAttribute("role", "img");
+        renderer.domElement.setAttribute("aria-label", "Rotate and select the pixel-textured planes of the Great Wheel");
+        renderer.domElement.tabIndex = 0;
+        renderer.domElement.style.cursor = "grab";
+        sceneHost.appendChild(renderer.domElement);
 
-      // Generic functions for other effects with improved density
-      function createVolumeEffect(color, count, spread) {
-        const group = new THREE.Group();
-        const geom = new THREE.BufferGeometry();
-        const pos = [];
-        for (let i = 0; i < count; i++) {
-          pos.push((Math.random()-0.5)*spread, (Math.random()-0.5)*spread, (Math.random()-0.5)*spread);
-        }
-        geom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-        const pts = new THREE.Points(geom, glowParticleMat(color, 1.5, 0.6));
-        group.add(pts);
-        return group;
-      }
+        const labelRenderer = new THREE.CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = "absolute";
+        labelRenderer.domElement.style.inset = "0";
+        labelRenderer.domElement.style.pointerEvents = "none";
+        sceneHost.appendChild(labelRenderer.domElement);
 
-      function createMechanicalEffect() {
-        const group = new THREE.Group();
-        const gearGeom = new THREE.TorusGeometry(10, 0.5, 8, 24); // Abstract gear
-        const mat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.2 });
-        const gear1 = new THREE.Mesh(gearGeom, mat);
-        const gear2 = new THREE.Mesh(gearGeom, mat);
-        gear2.rotation.x = Math.PI/2;
-        group.add(gear1);
-        group.add(gear2);
-        return group;
-      }
+        const controls = new THREE.TrackballControls(camera, renderer.domElement);
+        controls.rotateSpeed = 2.2;
+        controls.zoomSpeed = 1.05;
+        controls.panSpeed = 0.42;
+        controls.dynamicDampingFactor = 0.13;
+        controls.staticMoving = false;
+        controls.minDistance = 90;
+        controls.maxDistance = 950;
+        controls.target.set(0, 0, 0);
 
-      function createChaosEffect() {
-        const group = createVolumeEffect(0xffffff, 150, 30);
-        group.userData.isChaos = true;
-        return group;
-      }
+        scene.add(new THREE.HemisphereLight(0x7783c8, 0x100b1d, 1.4));
+        const coreLight = new THREE.PointLight(0xb9dfff, 2.3, 620, 1.65);
+        coreLight.position.set(0, 10, 0);
+        scene.add(coreLight);
+        const rimLight = new THREE.DirectionalLight(0xb7a8ff, 0.9);
+        rimLight.position.set(-160, 230, 120);
+        scene.add(rimLight);
 
-      function createRingedEffect(color) {
-        const group = new THREE.Group();
-        for (let i = 1; i <= 3; i++) {
-            const ring = new THREE.Mesh(
-                new THREE.TorusGeometry(i*4, 0.1, 8, 64),
-                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.6 })
-            );
-            ring.rotation.x = Math.random() * Math.PI;
-            ring.rotation.y = Math.random() * Math.PI;
-            group.add(ring);
-        }
-        return group;
-      }
-
-      // Map functions
-      const effectMapping = {
-        "Mount Celestia": (c) => createAuraEffect(c),
-        "The Abyss": (c) => createSwirlingLightningEffect(c),
-        "Elysium": () => createNebulaEffect(),
-        "Hades": () => createVolumeEffect(0xff5500, 100, 22), // Fire
-        "Arborea": () => createVolumeEffect(0x22ff44, 80, 20), // Nature
-        "Baator": () => createVolumeEffect(0x550000, 100, 25), // Smoke/Dark
-        "Mechanus": () => createMechanicalEffect(),
-        "Limbo": () => createChaosEffect(),
-        "Arcadia": () => createRingedEffect(0xffcc99),
-        "Pandemonium": (c) => createSwirlingLightningEffect(0xff00ff),
-        "Beastlands": () => createVolumeEffect(0x88cc44, 120, 22),
-        "Gehenna": () => createVolumeEffect(0x992200, 100, 24),
-        "Bytopia": () => createRingedEffect(0xffddaa),
-        "Carceri": () => createVolumeEffect(0x444444, 80, 20) // Shards
-      };
-      
-      // ---------------------------
-      // Scene Construction
-      // ---------------------------
-      
-      // 1. Great Wheel (Outer Planes)
-      const outerGroup = new THREE.Group();
-      const outerOrbitRadius = 160;
-      const outerPairs = [
-        { positive: { name: "Mount Celestia", color: 0xffdb4d }, negative: { name: "The Abyss", color: 0x4b0082 } },
-        { positive: { name: "Elysium", color: 0xffaaff }, negative: { name: "Hades", color: 0x808080 } },
-        { positive: { name: "Arborea", color: 0x00ff7f }, negative: { name: "Baator", color: 0x8b0000 } },
-        { positive: { name: "Mechanus", color: 0xc0c0c0 }, negative: { name: "Limbo", color: 0x87ceeb } },
-        { positive: { name: "Arcadia", color: 0xffe4b5 }, negative: { name: "Pandemonium", color: 0xff1493 } },
-        { positive: { name: "Beastlands", color: 0x32cd32 }, negative: { name: "Gehenna", color: 0xa52a2a } },
-        { positive: { name: "Bytopia", color: 0xff8c00 }, negative: { name: "Carceri", color: 0x2f4f4f } },
-      ];
-      
-      // Spoke material - faint beams
-      const spokeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.1, transparent: true });
-
-      outerPairs.forEach((pair, i) => {
-        const angle = (i / outerPairs.length) * Math.PI * 2;
-        
-        // Helper to build plane
-        const buildPlane = (def, offsetAngle) => {
-            const x = outerOrbitRadius * Math.cos(angle + offsetAngle);
-            const z = outerOrbitRadius * Math.sin(angle + offsetAngle);
-            const sphere = createLabeledSphere(def.name, def.color, 11);
-            sphere.position.set(x, 0, z);
-            if(effectMapping[def.name]) sphere.add(effectMapping[def.name](def.color));
-            outerGroup.add(sphere);
-
-            // Spoke
-            const innerPoint = new THREE.Vector3(90 * Math.cos(angle + offsetAngle), 0, 90 * Math.sin(angle + offsetAngle));
-            const geo = new THREE.BufferGeometry().setFromPoints([sphere.position, innerPoint]);
-            scene.add(new THREE.Line(geo, spokeMaterial));
+        const params = {
+          playing: true,
+          outerSpeed: 0.002,
+          elementalSpeed: 0.003,
+          innerSpeed: 0.0021
         };
 
-        buildPlane(pair.positive, 0);
-        buildPlane(pair.negative, Math.PI);
-      });
-      scene.add(outerGroup);
-      addOrbitRing(outerOrbitRadius, 0.1);
-      
-      // 2. Elemental Chaos
-      const elementalGroup = new THREE.Group();
-      const elementalOrbitRadius = 90;
-      const elementalPlanes = [
-        { name: "Air", color: 0xaec6cf },
-        { name: "Earth", color: 0x8b4513 },
-        { name: "Fire", color: 0xff4500 },
-        { name: "Water", color: 0x1e90ff },
-      ];
-      elementalPlanes.forEach((plane, i) => {
-        const angle = (i / elementalPlanes.length) * Math.PI * 2;
-        const sphere = createLabeledSphere(plane.name, plane.color, 8);
-        sphere.position.set(elementalOrbitRadius * Math.cos(angle), 0, elementalOrbitRadius * Math.sin(angle));
-        
-        // Add specific elemental particles
-        const pGroup = createVolumeEffect(plane.color, 40, 15);
-        sphere.add(pGroup);
-        elementalGroup.add(sphere);
-      });
-      scene.add(elementalGroup);
-      addOrbitRing(elementalOrbitRadius, 0.1);
-      
-      // 3. Outlands
-      const outlandsGroup = new THREE.Group();
-      const outlandsOrbitRadius = 110; // Between Elemental and Outer
-      const outlandsSphere = createLabeledSphere("Outlands", 0x228b22, 10);
-      outlandsSphere.position.set(outlandsOrbitRadius, 0, 0); // Just one sphere orbiting? Or a ring? In lore it's the ring, but let's keep it as an object for the wheel structure
-      // Actually, let's represent the Outlands as a faint torus itself with the Spire in the middle?
-      // Reverting to user's structure: It was a sphere.
-      outlandsGroup.add(outlandsSphere);
-      scene.add(outlandsGroup);
-      addOrbitRing(outlandsOrbitRadius, 0.05);
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) params.playing = false;
 
-      // 4. Material Plane & Inner Spheres
-      // Center (Prime Material)
-      const materialPlane = createLabeledSphere("Material Plane", 0x1a2b3c, 24, 0.4);
-      materialPlane.material.emissiveIntensity = 0; // Less emissive, more physical
-      
-      // Add a glow sprite for atmosphere
-      const spriteMat = new THREE.SpriteMaterial({ 
-          map: new THREE.CanvasTexture(generateGlowTexture()), 
-          color: 0x4488ff, 
-          transparent: true, 
-          blending: THREE.AdditiveBlending 
-      });
-      const glowSprite = new THREE.Sprite(spriteMat);
-      glowSprite.scale.set(70, 70, 1.0);
-      materialPlane.add(glowSprite);
-      scene.add(materialPlane);
+        const outerGroup = new THREE.Group();
+        const outlandsGroup = new THREE.Group();
+        const elementalGroup = new THREE.Group();
+        const echoGroup = new THREE.Group();
+        const materialGroup = new THREE.Group();
+        scene.add(outerGroup, outlandsGroup, elementalGroup, echoGroup, materialGroup);
 
-      // Inner Planes (Feywild/Shadowfell)
-      const innerOrbitGroup = new THREE.Group();
-      const innerOrbitRadius = 35;
-      const innerPlanes = [
-        { name: "Feywild", color: 0xff1493 },
-        { name: "Shadowfell", color: 0x2f2f2f },
-      ];
-      innerPlanes.forEach((plane, i) => {
-        const angle = (i / innerPlanes.length) * Math.PI * 2;
-        const sphere = createLabeledSphere(plane.name, plane.color, 7);
-        sphere.position.set(innerOrbitRadius * Math.cos(angle), 0, innerOrbitRadius * Math.sin(angle));
-        innerOrbitGroup.add(sphere);
-      });
-      scene.add(innerOrbitGroup);
-      addOrbitRing(innerOrbitRadius, 0.15);
-      
-      // ---------------------------
-      // Utils
-      // ---------------------------
-      function generateGlowTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 32; canvas.height = 32;
-        const context = canvas.getContext('2d');
-        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(0.2, 'rgba(255,255,255,0.5)');
-        gradient.addColorStop(1, 'rgba(0,0,0,0)');
-        context.fillStyle = gradient;
-        context.fillRect(0, 0, 32, 32);
-        return canvas;
-      }
+        const selectableMeshes = [];
+        const planeRoots = [];
+        const rotatingDetails = [];
+        const dataById = new Map(planeData.map((plane) => [plane.id, plane]));
+        const rootById = new Map();
 
-      // ---------------------------
-      // Logic & Animation
-      // ---------------------------
-      const playBtn = document.getElementById("playPause");
-      playBtn.addEventListener("click", () => {
-        params.playing = !params.playing;
-        playBtn.textContent = params.playing ? "❚❚" : "▶";
-      });
-      
-      document.getElementById("outerSpeed").addEventListener("input", e => params.outerSpeed = parseFloat(e.target.value));
-      document.getElementById("elementalSpeed").addEventListener("input", e => params.elementalSpeed = parseFloat(e.target.value));
-      document.getElementById("outlandsSpeed").addEventListener("input", e => params.outlandsSpeed = parseFloat(e.target.value));
-      document.getElementById("innerSpeed").addEventListener("input", e => params.innerSpeed = parseFloat(e.target.value));
-      document.getElementById("starRotation").addEventListener("input", e => params.starRotation = parseFloat(e.target.value));
-      
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        
-        if (params.playing) {
-          starField.rotation.y += params.starRotation;
-          outerGroup.rotation.y += params.outerSpeed;
-          elementalGroup.rotation.y += params.elementalSpeed;
-          outlandsGroup.rotation.y += params.outlandsSpeed;
-          innerOrbitGroup.rotation.y += params.innerSpeed;
-          materialPlane.rotation.y += 0.001;
+        function hashString(value) {
+          let hash = 2166136261;
+          for (let i = 0; i < value.length; i += 1) {
+            hash ^= value.charCodeAt(i);
+            hash = Math.imul(hash, 16777619);
+          }
+          return hash >>> 0;
         }
 
-        // Chaos color shifting
-        const time = Date.now() * 0.001;
-        scene.traverse(obj => {
-          if (obj.userData.isChaos && obj.children.length > 0) {
-             const pts = obj.children[0];
-             if(pts.material) {
-                pts.material.color.setHSL(Math.sin(time)*0.5 + 0.5, 0.8, 0.5);
-             }
+        function mulberry32(seed) {
+          return function random() {
+            let t = seed += 0x6d2b79f5;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        function hexToRgb(hex) {
+          const value = parseInt(hex.slice(1), 16);
+          return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+        }
+
+        function clamp(value, min = 0, max = 1) {
+          return Math.max(min, Math.min(max, value));
+        }
+
+        function textureSignal(pattern, x, y, width, height, random) {
+          const u = x / width;
+          const v = y / height;
+          const grain = random() * 0.08;
+          const waves = Math.sin(x * 0.31 + Math.sin(y * 0.43) * 2.2) * 0.12;
+          let n = 0.46 + grain + waves + Math.sin(y * 0.72) * 0.08;
+
+          if (pattern === "terraces") n = 0.2 + (1 - v) * 0.65 + (Math.floor(v * 12) % 2) * 0.16 + grain * 0.35;
+          if (pattern === "dual") n = (y < height / 2 ? 0.68 : 0.28) + Math.sin(x * 0.22) * 0.12 + grain * 0.45;
+          if (pattern === "rivers") n += Math.abs(Math.sin(x * 0.14 + Math.sin(y * 0.42) * 2)) < 0.18 ? 0.42 : -0.04;
+          if (pattern === "forest") n = 0.25 + grain * 0.7 + Math.sin(x * 0.17) * Math.sin(y * 0.24) * 0.24;
+          if (pattern === "wild") n += Math.sin(x * 0.14 + y * 0.17) * 0.23 + Math.cos(x * 0.06 - y * 0.21) * 0.13;
+          if (pattern === "storm") n = 0.47 + Math.sin(y * 0.66 + Math.sin(x * 0.16) * 2.4) * 0.24 + grain * 0.42;
+          if (pattern === "chaos") n = random() * 0.8 + Math.sin(x * 0.8 + y * 0.47) * 0.22;
+          if (pattern === "wind") n = 0.34 + Math.sin(y * 1.1 + Math.sin(x * 0.1) * 4) * 0.26 + grain * 0.38;
+          if (pattern === "rift") n = 0.17 + grain * 0.35 + (Math.abs(Math.sin(x * 0.19 + y * 0.12)) < 0.075 ? 0.75 : 0);
+          if (pattern === "prison") n = 0.26 + grain * 0.43 + (y % 7 < 2 ? 0.34 : 0) + (x % 17 === 0 ? 0.24 : 0);
+          if (pattern === "ash") n = 0.27 + grain * 0.52 + (random() > 0.973 ? 0.55 : 0);
+          if (pattern === "volcanic") n = 0.12 + grain * 0.36 + (Math.abs(Math.sin(x * 0.24) + Math.cos(y * 0.31)) < 0.12 ? 0.79 : 0);
+          if (pattern === "hell") n = 0.19 + grain * 0.38 + (y % 5 === 0 ? 0.55 : 0) + Math.sin(x * 0.16 + y * 0.1) * 0.12;
+          if (pattern === "iron") n = 0.25 + ((Math.floor(x / 5) + Math.floor(y / 5)) % 2) * 0.4 + grain * 0.26;
+          if (pattern === "gear") {
+            const teeth = (x % 12 < 2 || y % 8 < 2) ? 0.48 : 0;
+            n = 0.2 + teeth + grain * 0.4 + Math.sin(Math.hypot(x - width / 2, y - height / 2) * 0.8) * 0.12;
+          }
+          if (pattern === "order") n = 0.34 + ((Math.floor(x / 8) + Math.floor(y / 6)) % 2) * 0.27 + Math.sin(y * 0.3) * 0.08 + grain * 0.25;
+          if (pattern === "outlands") n = 0.32 + Math.sin(x * 0.2) * Math.cos(y * 0.28) * 0.2 + (y % 8 === 0 ? 0.22 : 0) + grain * 0.38;
+          if (pattern === "air") n = 0.5 + Math.sin(y * 0.58 + Math.sin(x * 0.11) * 3.2) * 0.2 + grain * 0.34;
+          if (pattern === "water") n = 0.38 + Math.sin(y * 0.42 + Math.sin(x * 0.18) * 1.7) * 0.22 + Math.cos(x * 0.14) * 0.12 + grain * 0.28;
+          if (pattern === "earth") n = 0.25 + grain * 0.62 + (Math.abs(Math.sin(x * 0.31) - Math.cos(y * 0.29)) < 0.09 ? 0.5 : 0);
+          if (pattern === "fire") n = 0.22 + Math.abs(Math.sin(x * 0.15 + y * 0.26)) * 0.55 + grain * 0.34;
+          if (pattern === "fey") n = 0.25 + grain * 0.53 + Math.sin(x * 0.18) * Math.cos(y * 0.23) * 0.25 + (random() > 0.96 ? 0.55 : 0);
+          if (pattern === "shadow") n = 0.18 + grain * 0.48 + Math.sin(y * 0.47 + x * 0.05) * 0.12;
+          if (pattern === "world") {
+            const continents = Math.sin(x * 0.13 + Math.sin(y * 0.22) * 2.5) + Math.cos(y * 0.31 - x * 0.08) + random() * 0.55;
+            n = continents > 0.5 ? 0.58 + grain * 0.45 : 0.12 + grain * 0.35;
+            if (v < 0.09 || v > 0.91) n = 0.96;
+          }
+          return clamp(n);
+        }
+
+        function makePixelTexture(definition) {
+          const width = 96;
+          const height = 48;
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const context = canvas.getContext("2d");
+          context.imageSmoothingEnabled = false;
+          const image = context.createImageData(width, height);
+          const palette = definition.palette.map(hexToRgb);
+          const random = mulberry32(hashString(definition.id));
+
+          for (let y = 0; y < height; y += 1) {
+            for (let x = 0; x < width; x += 1) {
+              const signal = textureSignal(definition.pattern, x, y, width, height, random);
+              const index = Math.min(palette.length - 1, Math.floor(signal * palette.length));
+              const rgb = palette[index];
+              const offset = (y * width + x) * 4;
+              image.data[offset] = rgb[0];
+              image.data[offset + 1] = rgb[1];
+              image.data[offset + 2] = rgb[2];
+              image.data[offset + 3] = 255;
+            }
+          }
+          context.putImageData(image, 0, 0);
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestMipmapLinearFilter;
+          texture.generateMipmaps = true;
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.encoding = THREE.sRGBEncoding;
+          texture.needsUpdate = true;
+          return texture;
+        }
+
+        function makeCloudTexture(definition) {
+          const width = 96;
+          const height = 48;
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const context = canvas.getContext("2d");
+          context.clearRect(0, 0, width, height);
+          context.imageSmoothingEnabled = false;
+          const image = context.createImageData(width, height);
+          const random = mulberry32(hashString(`${definition.id}-cloud`));
+          const tint = definition.cloud === "smoke" || definition.cloud === "ash" || definition.cloud === "void"
+            ? [113, 108, 132]
+            : definition.cloud === "petal"
+              ? [255, 175, 241]
+              : definition.cloud === "radiance"
+                ? [255, 244, 194]
+                : [225, 241, 255];
+
+          for (let y = 0; y < height; y += 1) {
+            for (let x = 0; x < width; x += 1) {
+              const band = Math.sin(y * 0.53 + Math.sin(x * 0.15) * 3) * 0.22;
+              const streak = Math.sin(x * 0.11 + y * 0.18) * 0.15;
+              let density = random() * 0.63 + band + streak;
+              if (definition.cloud === "storm") density += Math.sin(y * 0.9) * 0.24;
+              if (definition.cloud === "petal") density = random() > 0.89 ? 0.95 : 0.08;
+              if (definition.cloud === "dust" || definition.cloud === "sparks") density = random() > 0.92 ? 0.9 : 0.06;
+              const alpha = density > 0.57 ? (density > 0.78 ? 176 : 94) : 0;
+              const offset = (y * width + x) * 4;
+              image.data[offset] = tint[0];
+              image.data[offset + 1] = tint[1];
+              image.data[offset + 2] = tint[2];
+              image.data[offset + 3] = alpha;
+            }
+          }
+          context.putImageData(image, 0, 0);
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestMipmapLinearFilter;
+          texture.generateMipmaps = true;
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.needsUpdate = true;
+          return texture;
+        }
+
+        function makeGlowTexture() {
+          const canvas = document.createElement("canvas");
+          canvas.width = 64;
+          canvas.height = 64;
+          const context = canvas.getContext("2d");
+          context.imageSmoothingEnabled = false;
+          for (let radius = 31; radius > 0; radius -= 4) {
+            const alpha = Math.pow(1 - radius / 34, 1.45) * 0.46;
+            context.fillStyle = `rgba(255,255,255,${alpha})`;
+            context.beginPath();
+            context.arc(32, 32, radius, 0, Math.PI * 2);
+            context.fill();
+          }
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestMipmapLinearFilter;
+          texture.needsUpdate = true;
+          return texture;
+        }
+
+        const glowTexture = makeGlowTexture();
+        glowTexture.magFilter = THREE.LinearFilter;
+
+        function createStarField(count, spread, size, opacity, colorBias) {
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(count * 3);
+          const colors = new Float32Array(count * 3);
+          const random = mulberry32(count + spread);
+          for (let i = 0; i < count; i += 1) {
+            const radius = 260 + random() * spread;
+            const theta = random() * Math.PI * 2;
+            const phi = Math.acos(2 * random() - 1);
+            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = radius * Math.cos(phi);
+            positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+            const color = new THREE.Color().setHSL(colorBias + random() * 0.1, 0.28, 0.58 + random() * 0.4);
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
+          }
+          geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+          const material = new THREE.PointsMaterial({
+            size,
+            vertexColors: true,
+            transparent: true,
+            opacity,
+            sizeAttenuation: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          });
+          return new THREE.Points(geometry, material);
+        }
+
+        const starsFar = createStarField(1500, 1900, 0.65, 0.55, 0.57);
+        const starsNear = createStarField(350, 950, 1.1, 0.36, 0.68);
+        scene.add(starsFar, starsNear);
+
+        function createDustRing(radius, count, color) {
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(count * 3);
+          const random = mulberry32(Math.round(radius * 100));
+          for (let i = 0; i < count; i += 1) {
+            const angle = random() * Math.PI * 2;
+            const r = radius + (random() - 0.5) * 18;
+            positions[i * 3] = Math.cos(angle) * r;
+            positions[i * 3 + 1] = (random() - 0.5) * 8;
+            positions[i * 3 + 2] = Math.sin(angle) * r;
+          }
+          geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          return new THREE.Points(geometry, new THREE.PointsMaterial({
+            color,
+            size: 0.72,
+            transparent: true,
+            opacity: 0.23,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          }));
+        }
+
+        const outerDust = createDustRing(178, 700, 0x8e80de);
+        const elementalDust = createDustRing(82, 360, 0x5caac7);
+        scene.add(outerDust, elementalDust);
+
+        const orbitRings = [];
+
+        function addOrbitRing(radius, color, opacity, dashed = false) {
+          const points = [];
+          for (let i = 0; i <= 192; i += 1) {
+            const angle = (i / 192) * Math.PI * 2;
+            points.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+          }
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const material = dashed
+            ? new THREE.LineDashedMaterial({ color, transparent: true, opacity, dashSize: 3, gapSize: 5 })
+            : new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+          const line = new THREE.Line(geometry, material);
+          if (dashed) line.computeLineDistances();
+          line.userData.baseOpacity = opacity;
+          orbitRings.push(line);
+          scene.add(line);
+          return line;
+        }
+
+        addOrbitRing(178, 0x9d91ea, 0.19, true);
+        addOrbitRing(116, 0x78c79b, 0.14, true);
+        addOrbitRing(82, 0x6ed0ed, 0.19, false);
+        addOrbitRing(39, 0xd67fd2, 0.25, true);
+
+        function createParticles(color, count, spread, size = 0.8) {
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(count * 3);
+          const random = mulberry32(hashString(`${color}-${count}-${spread}`));
+          for (let i = 0; i < count; i += 1) {
+            const radius = spread * (0.56 + random() * 0.52);
+            const theta = random() * Math.PI * 2;
+            const phi = Math.acos(2 * random() - 1);
+            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = radius * Math.cos(phi);
+            positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+          }
+          geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          return new THREE.Points(geometry, new THREE.PointsMaterial({
+            color,
+            size,
+            transparent: true,
+            opacity: 0.65,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          }));
+        }
+
+        function createGearDisc(radius, teeth, color) {
+          const shape = new THREE.Shape();
+          const steps = teeth * 2;
+          for (let i = 0; i <= steps; i += 1) {
+            const angle = (i / steps) * Math.PI * 2;
+            const r = i % 2 === 0 ? radius : radius * 0.82;
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            if (i === 0) shape.moveTo(x, y);
+            else shape.lineTo(x, y);
+          }
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, radius * 0.34, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+          const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.7, bevelEnabled: false, steps: 1 });
+          geometry.center();
+          return new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+            color,
+            emissive: color,
+            emissiveIntensity: 0.13,
+            roughness: 0.42,
+            metalness: 0.84,
+            transparent: true,
+            opacity: 0.64
+          }));
+        }
+
+        function addPlaneEffect(root, definition) {
+          const color = new THREE.Color(definition.color);
+          const group = new THREE.Group();
+          group.userData.effectType = definition.effect;
+
+          if (["crown", "double", "cage", "gears"].includes(definition.effect)) {
+            const count = definition.effect === "crown" ? 3 : definition.effect === "cage" ? 4 : 2;
+            for (let i = 0; i < count; i += 1) {
+              const radius = definition.size * (1.23 + i * 0.13);
+              const tube = definition.effect === "gears" ? 0.18 : 0.09;
+              const ring = new THREE.Mesh(
+                new THREE.TorusGeometry(radius, tube, 5, definition.effect === "gears" ? 24 : 72),
+                new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.34 - i * 0.045, blending: THREE.AdditiveBlending })
+              );
+              ring.rotation.set(i * 0.72, i * 0.43, i * 0.31);
+              group.add(ring);
+            }
+          }
+
+          if (["wisps", "chaos", "storm", "void", "embers", "lava", "bubbles"].includes(definition.effect)) {
+            const particles = createParticles(color, definition.effect === "chaos" ? 95 : 54, definition.size * 1.55, definition.effect === "bubbles" ? 1.35 : 0.78);
+            group.add(particles);
+          }
+
+          if (["shards", "cubes", "orbiters", "spire", "moons"].includes(definition.effect)) {
+            const geometry = definition.effect === "cubes"
+              ? new THREE.BoxGeometry(1.2, 1.2, 1.2)
+              : definition.effect === "spire"
+                ? new THREE.ConeGeometry(1.2, 8, 5)
+                : definition.effect === "moons"
+                  ? new THREE.SphereGeometry(1.55, 12, 8)
+                : new THREE.TetrahedronGeometry(definition.effect === "moons" ? 1.7 : 0.9, 0);
+            const material = new THREE.MeshStandardMaterial({
+              color,
+              emissive: color,
+              emissiveIntensity: 0.32,
+              roughness: 0.55,
+              metalness: definition.effect === "cubes" ? 0.75 : 0.14
+            });
+            const total = definition.effect === "spire" ? 1 : definition.effect === "orbiters" ? 3 : 7;
+            for (let i = 0; i < total; i += 1) {
+              const mesh = new THREE.Mesh(geometry, material);
+              const angle = (i / total) * Math.PI * 2;
+              const radius = definition.effect === "spire" ? 0 : definition.size * (1.55 + (i % 2) * 0.15);
+              mesh.position.set(Math.cos(angle) * radius, definition.effect === "spire" ? definition.size * 0.42 : Math.sin(i * 1.7) * 3, Math.sin(angle) * radius);
+              if (definition.effect === "spire") mesh.scale.y = 2.6;
+              mesh.rotation.set(i, i * 0.7, i * 0.37);
+              group.add(mesh);
+            }
+          }
+
+          if (definition.id === "celestia") {
+            const mountainMaterial = new THREE.MeshStandardMaterial({
+              color: 0xe8cf83,
+              emissive: 0xb58b3d,
+              emissiveIntensity: 0.18,
+              roughness: 0.72,
+              flatShading: true
+            });
+            for (let tier = 0; tier < 4; tier += 1) {
+              const mountain = new THREE.Mesh(
+                new THREE.ConeGeometry(definition.size * (0.72 - tier * 0.1), definition.size * 0.58, 12),
+                mountainMaterial
+              );
+              mountain.position.y = definition.size * 0.68 + tier * definition.size * 0.29;
+              group.add(mountain);
+            }
+          }
+
+          if (definition.id === "ysgard") {
+            const rockMaterial = new THREE.MeshStandardMaterial({
+              color: 0x73919a,
+              emissive: 0x213e57,
+              emissiveIntensity: 0.18,
+              roughness: 0.95,
+              flatShading: true
+            });
+            for (let i = 0; i < 5; i += 1) {
+              const berg = new THREE.Mesh(new THREE.DodecahedronGeometry(1.5 + (i % 3) * 0.55, 0), rockMaterial);
+              const angle = (i / 5) * Math.PI * 2;
+              berg.position.set(Math.cos(angle) * definition.size * 1.55, (i - 2) * 1.55, Math.sin(angle) * definition.size * 1.55);
+              berg.scale.y = 1.6;
+              group.add(berg);
+            }
+          }
+
+          if (definition.id === "carceri") {
+            const orbMaterial = new THREE.MeshStandardMaterial({
+              color: 0x9c3848,
+              emissive: 0x5f1724,
+              emissiveIntensity: 0.22,
+              roughness: 0.8
+            });
+            const chainPoints = [];
+            for (let i = -2; i <= 2; i += 1) {
+              const orb = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 9), orbMaterial);
+              orb.position.set(i * 4.3, -definition.size * 1.5, i * -1.7);
+              group.add(orb);
+              chainPoints.push(orb.position.clone());
+            }
+            group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(chainPoints), new THREE.LineBasicMaterial({ color: 0xd76b79, transparent: true, opacity: 0.48 })));
+          }
+
+          if (definition.id === "mechanus") {
+            const gearA = createGearDisc(definition.size * 1.5, 14, 0xd9b75e);
+            const gearB = createGearDisc(definition.size * 1.08, 11, 0x8b7445);
+            gearA.rotation.set(Math.PI / 2.5, 0.2, 0);
+            gearB.rotation.set(-0.7, Math.PI / 2, 0.4);
+            gearB.position.set(definition.size * 0.65, 0, -definition.size * 0.25);
+            group.add(gearA, gearB);
+          }
+
+          if (definition.id === "nine-hells") {
+            const infernalMaterial = new THREE.MeshBasicMaterial({ color: 0xff5942, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending });
+            for (let level = 0; level < 9; level += 1) {
+              const ring = new THREE.Mesh(new THREE.TorusGeometry(definition.size * (0.76 + level * 0.055), 0.055, 4, 48), infernalMaterial);
+              ring.position.y = (level - 4) * 1.05;
+              ring.rotation.x = Math.PI / 2;
+              group.add(ring);
+            }
+          }
+
+          root.add(group);
+          root.userData.effectGroup = group;
+          rotatingDetails.push({ object: group, root, speed: definition.effect === "chaos" ? 0.012 : 0.0035, axis: definition.effect === "gears" ? "z" : "y" });
+        }
+
+        function createLabel(definition) {
+          const element = document.createElement("div");
+          element.className = "label";
+          element.textContent = definition.name;
+          element.style.setProperty("--label-color", definition.color);
+          const label = new THREE.CSS2DObject(element);
+          label.position.set(0, definition.size + 9, 0);
+          return { label, element };
+        }
+
+        function createPlane(definition) {
+          const root = new THREE.Group();
+          root.userData.planeId = definition.id;
+          root.userData.hoverAmount = 0;
+          root.userData.baseScale = 1;
+
+          const texture = makePixelTexture(definition);
+          const color = new THREE.Color(definition.color);
+          const material = new THREE.MeshStandardMaterial({
+            map: texture,
+            bumpMap: texture,
+            bumpScale: definition.pattern === "gear" || definition.pattern === "iron" ? 1.25 : 0.72,
+            roughness: definition.pattern === "water" ? 0.36 : definition.pattern === "world" ? 0.62 : 0.76,
+            metalness: definition.metalness || 0.06,
+            emissive: color,
+            emissiveIntensity: ["fire", "hell", "rift", "fey", "chaos"].includes(definition.pattern) ? 0.28 : 0.1,
+            transparent: true,
+            opacity: 1
+          });
+          let surfaceGeometry = new THREE.SphereGeometry(definition.size, 52, 38);
+          if (definition.id === "acheron") {
+            surfaceGeometry = new THREE.BoxGeometry(definition.size * 1.52, definition.size * 1.52, definition.size * 1.52, 5, 5, 5);
+          }
+          if (definition.id === "outlands") {
+            surfaceGeometry = new THREE.CylinderGeometry(definition.size * 1.24, definition.size * 1.24, definition.size * 0.28, 48, 2);
+          }
+          const sphere = new THREE.Mesh(surfaceGeometry, material);
+          sphere.userData.planeRoot = root;
+          sphere.userData.planeId = definition.id;
+          root.add(sphere);
+          root.userData.surface = sphere;
+          selectableMeshes.push(sphere);
+
+          if (definition.cloud && definition.id !== "outlands") {
+            const shellMaterial = new THREE.MeshLambertMaterial({
+              map: makeCloudTexture(definition),
+              transparent: true,
+              opacity: definition.cloud === "radiance" ? 0.72 : 0.62,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+              blending: definition.cloud === "smoke" || definition.cloud === "ash" ? THREE.NormalBlending : THREE.AdditiveBlending
+            });
+            const shell = new THREE.Mesh(new THREE.SphereGeometry(definition.size * 1.045, 52, 38), shellMaterial);
+            shell.userData.planeRoot = root;
+            shell.userData.baseOpacity = shellMaterial.opacity;
+            root.add(shell);
+            root.userData.cloudShell = shell;
+            rotatingDetails.push({ object: shell, root, speed: definition.cloud === "storm" ? -0.004 : 0.0018, axis: "y" });
+          }
+
+          const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: glowTexture,
+            color,
+            transparent: true,
+            opacity: 0.16,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          }));
+          halo.scale.set(definition.size * 3.45, definition.size * 3.45, 1);
+          halo.userData.baseSize = definition.size * 3.45;
+          root.add(halo);
+          root.userData.halo = halo;
+
+          addPlaneEffect(root, definition);
+          const labelParts = createLabel(definition);
+          root.add(labelParts.label);
+          root.userData.labelElement = labelParts.element;
+          root.userData.definition = definition;
+
+          planeRoots.push(root);
+          rootById.set(definition.id, root);
+          return root;
+        }
+
+        const outerPlanes = planeData.filter((plane) => plane.ring === "Outer Plane");
+        outerPlanes.forEach((definition, index) => {
+          const angle = -Math.PI / 2 + (index / outerPlanes.length) * Math.PI * 2;
+          const root = createPlane(definition);
+          root.position.set(Math.cos(angle) * 178, Math.sin(index * 1.7) * 4, Math.sin(angle) * 178);
+          root.rotation.y = -angle;
+          outerGroup.add(root);
+
+          const spokePoints = [
+            new THREE.Vector3(Math.cos(angle) * 126, 0, Math.sin(angle) * 126),
+            new THREE.Vector3(Math.cos(angle) * 164, root.position.y, Math.sin(angle) * 164)
+          ];
+          const spoke = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(spokePoints),
+            new THREE.LineDashedMaterial({ color: definition.color, transparent: true, opacity: 0.18, dashSize: 2, gapSize: 3 })
+          );
+          spoke.computeLineDistances();
+          outerGroup.add(spoke);
+        });
+
+        const outlands = createPlane(dataById.get("outlands"));
+        outlands.position.set(116, 0, 0);
+        outlandsGroup.add(outlands);
+
+        ["air", "water", "earth", "fire"].forEach((id, index) => {
+          const angle = -Math.PI / 2 + index * (Math.PI / 2);
+          const root = createPlane(dataById.get(id));
+          root.position.set(Math.cos(angle) * 82, Math.sin(index * 2.1) * 3, Math.sin(angle) * 82);
+          elementalGroup.add(root);
+        });
+
+        ["feywild", "shadowfell"].forEach((id, index) => {
+          const angle = index * Math.PI;
+          const root = createPlane(dataById.get(id));
+          root.position.set(Math.cos(angle) * 39, index === 0 ? 4 : -4, Math.sin(angle) * 39);
+          echoGroup.add(root);
+        });
+
+        const materialPlane = createPlane(dataById.get("material"));
+        materialGroup.add(materialPlane);
+
+        const centralGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+          map: glowTexture,
+          color: 0x6fb8ff,
+          transparent: true,
+          opacity: 0.2,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending
+        }));
+        centralGlow.scale.set(116, 116, 1);
+        materialGroup.add(centralGlow);
+
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+        const pointerStart = new THREE.Vector2();
+        let hoveredRoot = null;
+        let focusedRoot = null;
+        let cameraTween = null;
+        let priorPlaying = true;
+        let lastFrame = performance.now();
+        let renderSuspended = document.hidden;
+        let frameCounter = 0;
+        let panelRevealTimer = 0;
+        let resizeTimer = 0;
+        let lastFocusTrigger = null;
+        let keyboardPlaneIndex = 0;
+        const homeDirection = new THREE.Vector3(0, 0.85, 0.62).normalize();
+        const homePosition = new THREE.Vector3();
+        const homeTarget = controls.target.clone();
+
+        const hoverCard = document.getElementById("hoverCard");
+        const hoverLine = document.getElementById("hoverLine");
+        const hoverPreview = document.getElementById("hoverPreview");
+        const hoverName = document.getElementById("hoverName");
+        const hoverMeta = document.getElementById("hoverMeta");
+        const panel = document.getElementById("planePanel");
+        const controlsOverlay = document.querySelector(".controls-panel");
+        const planeSelect = document.getElementById("planeSelect");
+        const statusPill = document.getElementById("statusPill");
+
+        function refitHomeView(applyNow = false) {
+          const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+          const halfTan = Math.tan(verticalFov / 2);
+          const aspect = Math.max(0.42, window.innerWidth / window.innerHeight);
+          const contentRadius = window.innerWidth < 700 ? 205 : 245;
+          const verticalDistance = contentRadius / halfTan;
+          const horizontalDistance = contentRadius / (halfTan * aspect);
+          const distance = Math.max(verticalDistance, horizontalDistance) * 1;
+          homePosition.copy(homeDirection).multiplyScalar(distance);
+          homeTarget.set(0, window.innerWidth >= 700 ? -18 : 0, 0);
+          controls.maxDistance = Math.max(950, distance * 1.25);
+          scene.fog.density = aspect < 0.8 ? 0.00055 : 0.00105;
+          if (applyNow) {
+            camera.position.copy(homePosition);
+            controls.target.copy(homeTarget);
+            camera.lookAt(homeTarget);
+          }
+        }
+        refitHomeView(true);
+
+        function populatePlaneSelect() {
+          const groups = [
+            ["Outer Planes", planeData.filter((plane) => plane.ring === "Outer Plane")],
+            ["Neutral Axis", planeData.filter((plane) => plane.ring === "Neutral Axis")],
+            ["Inner Planes", planeData.filter((plane) => plane.ring === "Inner Plane")],
+            ["Material and Echoes", planeData.filter((plane) => plane.ring === "Material Echo" || plane.ring === "Central Plane")]
+          ];
+          groups.forEach(([label, items]) => {
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = label;
+            items.forEach((plane) => {
+              const option = document.createElement("option");
+              option.value = plane.id;
+              option.textContent = plane.name;
+              optgroup.appendChild(option);
+            });
+            planeSelect.appendChild(optgroup);
+          });
+        }
+        populatePlaneSelect();
+
+        function updatePointer(event) {
+          const rect = renderer.domElement.getBoundingClientRect();
+          pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        }
+
+        function findPlaneAtPointer(event) {
+          updatePointer(event);
+          raycaster.setFromCamera(pointer, camera);
+          const hits = raycaster.intersectObjects(selectableMeshes, false);
+          return hits.length ? hits[0].object.userData.planeRoot : null;
+        }
+
+        function setHovered(root, event) {
+          if (hoveredRoot === root) {
+            if (root && event && hoverCard.classList.contains("is-visible")) {
+              positionHoverCard(event);
+              return;
+            }
+          }
+          if (hoveredRoot && hoveredRoot !== focusedRoot) {
+            hoveredRoot.userData.labelElement.classList.remove("is-hovered");
+          }
+          hoveredRoot = root;
+          if (!root || focusedRoot) {
+            hoverCard.classList.remove("is-visible");
+            hoverLine.classList.remove("is-visible");
+            renderer.domElement.style.cursor = focusedRoot ? "default" : "grab";
+            return;
+          }
+          const definition = root.userData.definition;
+          root.userData.labelElement.classList.add("is-hovered");
+          hoverName.textContent = definition.name;
+          hoverMeta.textContent = `${definition.ring} / ${definition.region}`;
+          hoverCard.style.setProperty("--hover-color", definition.color);
+          hoverLine.style.setProperty("--hover-color", definition.color);
+          const previewContext = hoverPreview.getContext("2d");
+          previewContext.imageSmoothingEnabled = false;
+          previewContext.clearRect(0, 0, hoverPreview.width, hoverPreview.height);
+          previewContext.drawImage(root.userData.surface.material.map.image, 0, 0, hoverPreview.width, hoverPreview.height);
+          hoverCard.classList.add("is-visible");
+          hoverLine.classList.add("is-visible");
+          renderer.domElement.style.cursor = "pointer";
+          if (event) positionHoverCard(event);
+        }
+
+        function positionHoverCard(event) {
+          const width = 252;
+          const height = 112;
+          const left = Math.min(event.clientX, window.innerWidth - width - 18);
+          const top = Math.min(event.clientY, window.innerHeight - height - 18);
+          const cardLeft = Math.max(8, left);
+          const cardTop = Math.max(8, top);
+          hoverCard.style.left = `${cardLeft}px`;
+          hoverCard.style.top = `${cardTop}px`;
+          if (hoveredRoot) {
+            const world = new THREE.Vector3();
+            hoveredRoot.getWorldPosition(world);
+            world.project(camera);
+            const startX = (world.x * 0.5 + 0.5) * window.innerWidth;
+            const startY = (-world.y * 0.5 + 0.5) * window.innerHeight;
+            const endX = cardLeft + 12;
+            const endY = cardTop + 17;
+            const dx = endX - startX;
+            const dy = endY - startY;
+            hoverLine.style.left = `${startX}px`;
+            hoverLine.style.top = `${startY}px`;
+            hoverLine.style.width = `${Math.hypot(dx, dy)}px`;
+            hoverLine.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+          }
+        }
+
+        renderer.domElement.addEventListener("pointermove", (event) => {
+          if (focusedRoot) return;
+          if (event.buttons) {
+            document.body.classList.add("is-dragging");
+            setHovered(null);
+            return;
+          }
+          document.body.classList.remove("is-dragging");
+          setHovered(findPlaneAtPointer(event), event);
+        });
+
+        renderer.domElement.addEventListener("pointerleave", () => {
+          document.body.classList.remove("is-dragging");
+          setHovered(null);
+        });
+
+        renderer.domElement.addEventListener("pointerdown", (event) => {
+          pointerStart.set(event.clientX, event.clientY);
+          document.body.classList.add("is-dragging");
+        });
+
+        renderer.domElement.addEventListener("pointerup", (event) => {
+          document.body.classList.remove("is-dragging");
+          const travel = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+          if (travel < 7 && !focusedRoot) {
+            const target = findPlaneAtPointer(event);
+            if (target) focusPlane(target);
           }
         });
-        
-        // Shooting stars update
-        shootingStars.forEach(star => {
-          star.position.add(star.userData.velocity);
-          if (star.position.z < -1500) resetShootingStar(star);
+
+        function easeInOutCubic(value) {
+          return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
+        }
+
+        function startCameraTween(endPosition, endTarget, duration, onComplete) {
+          cameraTween = {
+            start: performance.now(),
+            duration: reducedMotion ? 1 : duration,
+            startPosition: camera.position.clone(),
+            startTarget: controls.target.clone(),
+            endPosition: endPosition.clone(),
+            endTarget: endTarget.clone(),
+            onComplete
+          };
+        }
+
+        function renderAlignment(definition) {
+          const cells = ["LG", "NG", "CG", "LN", "N", "CN", "LE", "NE", "CE"];
+          const activeCells = definition.align.split(",");
+          const grid = document.getElementById("alignmentGrid");
+          grid.innerHTML = "";
+          cells.forEach((code) => {
+            const cell = document.createElement("div");
+            cell.className = `alignment-cell${activeCells.includes(code) ? " is-active" : ""}`;
+            cell.textContent = code;
+            grid.appendChild(cell);
+          });
+          document.getElementById("alignmentCopy").textContent = definition.axis;
+        }
+
+        function renderLayers(definition) {
+          const stack = document.getElementById("layerStack");
+          const diagram = document.getElementById("layerDiagram");
+          stack.innerHTML = "";
+          diagram.innerHTML = '<span class="diagram-axis-label">threshold to depth</span>';
+          document.getElementById("layerHeadingText").textContent = definition.layerTitle || "Layer structure";
+          document.getElementById("layerCount").textContent = `${definition.layers.length} ${definition.layers.length === 1 ? "entry" : "entries"}`;
+          definition.layers.forEach(([name, description], index) => {
+            const depth = index / Math.max(1, definition.layers.length - 1);
+            const band = document.createElement("div");
+            band.className = "layer-band";
+            band.style.setProperty("--band-width", `${100 - depth * 21}%`);
+            band.style.setProperty("--band-alpha", `${14 + depth * 20}%`);
+            band.innerHTML = `<span>${String(index + 1).padStart(2, "0")}</span><span></span>`;
+            band.lastElementChild.textContent = name;
+            diagram.appendChild(band);
+
+            const row = document.createElement("article");
+            row.className = "layer-row";
+            row.style.setProperty("--depth", `${22 + (index / Math.max(1, definition.layers.length - 1)) * 78}%`);
+            row.style.transitionDelay = `${Math.min(index * 38, 260)}ms`;
+            row.innerHTML = `<div class="layer-number">${String(index + 1).padStart(2, "0")}</div><div class="layer-copy"><strong>${name}</strong><p>${description}</p></div>`;
+            band.addEventListener("mouseenter", () => row.classList.add("is-linked"));
+            band.addEventListener("mouseleave", () => row.classList.remove("is-linked"));
+            row.addEventListener("mouseenter", () => band.classList.add("is-linked"));
+            row.addEventListener("mouseleave", () => band.classList.remove("is-linked"));
+            stack.appendChild(row);
+          });
+        }
+
+        function renderTraits(definition) {
+          const grid = document.getElementById("traitGrid");
+          grid.innerHTML = "";
+          definition.traits.forEach(([label, value]) => {
+            const item = document.createElement("div");
+            item.className = "trait";
+            item.innerHTML = `<small>${label}</small><strong>${value}</strong>`;
+            grid.appendChild(item);
+          });
+        }
+
+        function openPanel(definition, revealDelay = 0) {
+          document.documentElement.style.setProperty("--plane", definition.color);
+          panel.style.setProperty("--plane", definition.color);
+          document.getElementById("panelIndex").textContent = `${definition.ring} / ${definition.short}`;
+          document.getElementById("panelName").textContent = definition.name;
+          document.getElementById("panelAlignment").textContent = definition.region;
+          document.getElementById("panelSummary").textContent = definition.summary;
+          document.getElementById("planeType").textContent = definition.short;
+          document.getElementById("travelNote").textContent = definition.travel;
+          renderTraits(definition);
+          renderAlignment(definition);
+          renderLayers(definition);
+          panel.querySelector(".panel-scroll").scrollTop = 0;
+          window.clearTimeout(panelRevealTimer);
+          panelRevealTimer = window.setTimeout(() => {
+            panel.inert = false;
+            panel.setAttribute("aria-hidden", "false");
+            panel.classList.add("is-open");
+            document.getElementById("closePanel").focus({ preventScroll: true });
+          }, reducedMotion ? 0 : revealDelay);
+        }
+
+        function focusPlane(root) {
+          if (!root) return;
+          lastFocusTrigger = document.activeElement === planeSelect ? planeSelect : renderer.domElement;
+          setHovered(null);
+          if (focusedRoot && focusedRoot !== root) {
+            focusedRoot.userData.labelElement.classList.remove("is-selected");
+          }
+          focusedRoot = root;
+          const definition = root.userData.definition;
+          priorPlaying = params.playing;
+          controls.enabled = false;
+          controlsOverlay.inert = true;
+          renderer.domElement.tabIndex = -1;
+          document.body.classList.add("is-focused");
+          root.userData.labelElement.classList.add("is-selected");
+          planeSelect.value = definition.id;
+          statusPill.textContent = `Orbit locked / ${definition.name}`;
+          openPanel(definition, 390);
+
+          const world = new THREE.Vector3();
+          root.getWorldPosition(world);
+          const viewDirection = camera.position.clone().sub(world).normalize();
+          const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+          const panelOffset = window.innerWidth > 900 ? right.multiplyScalar(definition.size * 2.2) : right.multiplyScalar(0);
+          const endTarget = world.clone().add(panelOffset);
+          if (window.innerWidth <= 900) endTarget.y -= definition.size * 3.3;
+          const endPosition = world.clone().add(viewDirection.multiplyScalar(definition.size * (window.innerWidth <= 900 ? 6 : 4.7) + 25));
+          endPosition.y += definition.size * 0.35;
+          startCameraTween(endPosition, endTarget, 1050);
+        }
+
+        function closePlane() {
+          if (!focusedRoot) return;
+          const oldRoot = focusedRoot;
+          focusedRoot = null;
+          setHovered(null);
+          window.clearTimeout(panelRevealTimer);
+          oldRoot.userData.labelElement.classList.remove("is-selected");
+          panel.classList.remove("is-open");
+          panel.setAttribute("aria-hidden", "true");
+          panel.inert = true;
+          controlsOverlay.inert = false;
+          renderer.domElement.tabIndex = 0;
+          document.body.classList.remove("is-focused");
+          planeSelect.value = "";
+          statusPill.textContent = priorPlaying ? "Wheel in motion" : "Wheel paused";
+          startCameraTween(homePosition, homeTarget, 980, () => {
+            controls.enabled = true;
+            params.playing = priorPlaying;
+            if (lastFocusTrigger && typeof lastFocusTrigger.focus === "function") lastFocusTrigger.focus({ preventScroll: true });
+          });
+        }
+
+        document.getElementById("closePanel").addEventListener("click", closePlane);
+        document.getElementById("resetView").addEventListener("click", () => {
+          if (focusedRoot) {
+            closePlane();
+          } else {
+            startCameraTween(homePosition, homeTarget, 800);
+          }
         });
-        
-        renderer.render(scene, camera);
-        labelRenderer.render(scene, camera);
-      }
-      
-      animate();
-      
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        controls.handleResize();
-      });
+        planeSelect.addEventListener("change", (event) => {
+          if (event.target.value) focusPlane(rootById.get(event.target.value));
+        });
+        window.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closePlane();
+          if (event.key === "Tab" && panel.classList.contains("is-open")) {
+            const focusable = [...panel.querySelectorAll("button, a[href]")].filter((element) => !element.inert && element.offsetParent !== null);
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first.focus();
+            }
+          }
+        });
+
+        renderer.domElement.addEventListener("keydown", (event) => {
+          if (focusedRoot) return;
+          if (["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(event.key)) {
+            event.preventDefault();
+            const direction = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1;
+            keyboardPlaneIndex = (keyboardPlaneIndex + direction + planeRoots.length) % planeRoots.length;
+            if (hoveredRoot) hoveredRoot.userData.labelElement.classList.remove("is-hovered");
+            hoveredRoot = planeRoots[keyboardPlaneIndex];
+            hoveredRoot.userData.labelElement.classList.add("is-hovered");
+            statusPill.textContent = `${hoveredRoot.userData.definition.name} / press Enter to inspect`;
+          }
+          if (event.key === "Enter" && hoveredRoot) {
+            event.preventDefault();
+            focusPlane(hoveredRoot);
+          }
+        });
+
+        const playButton = document.getElementById("playPause");
+        function syncPlayButton() {
+          playButton.classList.toggle("is-paused", !params.playing);
+          playButton.setAttribute("aria-label", params.playing ? "Pause simulation" : "Play simulation");
+          playButton.title = params.playing ? "Pause simulation" : "Play simulation";
+          if (!focusedRoot) statusPill.textContent = params.playing ? "Wheel in motion" : "Wheel paused";
+        }
+        syncPlayButton();
+        playButton.addEventListener("click", () => {
+          params.playing = !params.playing;
+          priorPlaying = params.playing;
+          syncPlayButton();
+        });
+
+        function wireRange(id, parameter, max) {
+          const input = document.getElementById(id);
+          const output = document.getElementById(`${id}Value`);
+          const update = () => {
+            params[parameter] = parseFloat(input.value);
+            output.textContent = `${Math.round((params[parameter] / max) * 100)}%`;
+          };
+          input.addEventListener("input", update);
+          update();
+        }
+        wireRange("outerSpeed", "outerSpeed", 0.005);
+        wireRange("elementalSpeed", "elementalSpeed", 0.006);
+        wireRange("innerSpeed", "innerSpeed", 0.006);
+
+        function updateCameraTween(now) {
+          if (!cameraTween) return;
+          const raw = clamp((now - cameraTween.start) / cameraTween.duration);
+          const eased = easeInOutCubic(raw);
+          camera.position.lerpVectors(cameraTween.startPosition, cameraTween.endPosition, eased);
+          controls.target.lerpVectors(cameraTween.startTarget, cameraTween.endTarget, eased);
+          camera.lookAt(controls.target);
+          if (raw >= 1) {
+            const callback = cameraTween.onComplete;
+            cameraTween = null;
+            if (callback) callback();
+          }
+        }
+
+        let labelsVisible = window.innerWidth >= 700;
+        const labelToggle = document.getElementById('toggleLabels');
+        labelToggle.setAttribute('aria-pressed', String(labelsVisible));
+        labelToggle.addEventListener('click', () => {
+          labelsVisible = !labelsVisible;
+          labelToggle.setAttribute('aria-pressed', String(labelsVisible));
+          updateLabelVisibility();
+        });
+        const labelRaycaster = new THREE.Raycaster();
+        const labelWorld = new THREE.Vector3();
+        const labelDirection = new THREE.Vector3();
+
+        function updateLabelVisibility() {
+          const occupied = [];
+          const ordered = [...planeRoots].sort((a, b) => Number(b === hoveredRoot || b === focusedRoot) - Number(a === hoveredRoot || a === focusedRoot));
+          ordered.forEach((root) => {
+            const element = root.userData.labelElement;
+            const priority = root === hoveredRoot || root === focusedRoot;
+            if ((!labelsVisible && !priority) || (focusedRoot && root !== focusedRoot)) {
+              element.style.opacity = "0";
+              element.style.visibility = "hidden";
+              return;
+            }
+            root.getWorldPosition(labelWorld);
+            const distance = camera.position.distanceTo(labelWorld);
+            labelDirection.copy(labelWorld).sub(camera.position).normalize();
+            labelRaycaster.set(camera.position, labelDirection);
+            labelRaycaster.near = 0;
+            labelRaycaster.far = distance + root.userData.definition.size;
+            const firstHit = labelRaycaster.intersectObjects(selectableMeshes, false)[0];
+            const occluded = firstHit && firstHit.object.userData.planeRoot !== root && firstHit.distance < distance;
+            const projected = labelWorld.clone().project(camera);
+            const offscreen = projected.z < -1 || projected.z > 1 || Math.abs(projected.x) > 1.08 || Math.abs(projected.y) > 1.08;
+            const distanceFade = clamp(1 - (distance - 180) / 1000, 0.7, 0.95);
+            const rect = element.getBoundingClientRect();
+            const clipped = rect.left < 8 || rect.right > window.innerWidth - 8 || rect.top < 8 || rect.bottom > window.innerHeight - 90;
+            const overlaps = occupied.some(box => rect.left < box.right + 5 && rect.right + 5 > box.left && rect.top < box.bottom + 3 && rect.bottom + 3 > box.top);
+            const opacity = priority ? 1 : occluded || offscreen || overlaps || clipped ? 0 : distanceFade;
+            if (opacity > 0) occupied.push(rect);
+            element.style.opacity = opacity.toFixed(2);
+            element.style.visibility = opacity < 0.06 ? "hidden" : "visible";
+          });
+        }
+
+        let lastActivity = performance.now();
+        ['pointermove', 'pointerdown', 'pointerup', 'wheel', 'keydown', 'click', 'input', 'change'].forEach(type => window.addEventListener(type, () => { lastActivity = performance.now(); }, { passive: true }));
+        window.addEventListener('resize', () => { lastActivity = performance.now(); });
+        document.addEventListener('visibilitychange', () => { lastActivity = performance.now(); });
+        function animate(now = performance.now()) {
+          requestAnimationFrame(animate);
+          if (renderSuspended) {
+            lastFrame = now;
+            return;
+          }
+          if ((!params.playing || reducedMotion) && !cameraTween && now - lastActivity > 1800) { lastFrame = now; return; }
+          if (now - lastFrame < (params.playing && !reducedMotion ? 1000 / 60 : 1000 / 30)) return;
+          const delta = Math.min((now - lastFrame) / 16.6667, 2.5);
+          lastFrame = now;
+          frameCounter += 1;
+
+          updateCameraTween(now);
+          if (!cameraTween && controls.enabled) controls.update();
+
+          const sceneMotion = params.playing && !reducedMotion;
+          const orbiting = sceneMotion && !focusedRoot && !cameraTween;
+          if (orbiting) {
+            outerGroup.rotation.y += params.outerSpeed * delta;
+            outlandsGroup.rotation.y -= params.outerSpeed * 0.58 * delta;
+            elementalGroup.rotation.y += params.elementalSpeed * delta;
+            echoGroup.rotation.y -= params.innerSpeed * delta;
+            outerDust.rotation.y += params.outerSpeed * 0.18 * delta;
+            elementalDust.rotation.y -= params.elementalSpeed * 0.12 * delta;
+          }
+
+          if (sceneMotion) {
+            starsFar.rotation.y += 0.00007 * delta;
+            starsNear.rotation.y -= 0.00011 * delta;
+          }
+
+          rotatingDetails.forEach((detail) => {
+            if (sceneMotion && (!focusedRoot || detail.root === focusedRoot)) {
+              const hoverBoost = detail.root === hoveredRoot ? 1.25 : 1;
+              detail.object.rotation[detail.axis] += detail.speed * delta * hoverBoost;
+            }
+          });
+
+          planeRoots.forEach((root, index) => {
+            const active = root === hoveredRoot || root === focusedRoot;
+            const background = Boolean(focusedRoot && root !== focusedRoot);
+            const targetScale = root === focusedRoot ? 1.19 : background ? 0.76 : active ? 1.09 : 1;
+            root.userData.hoverAmount += ((active ? 1 : 0) - root.userData.hoverAmount) * 0.11 * delta;
+            const scale = THREE.MathUtils.lerp(root.scale.x, targetScale, 0.1 * delta);
+            root.scale.setScalar(scale);
+            if (sceneMotion && (!focusedRoot || root === focusedRoot)) {
+              root.userData.surface.rotation.y += (0.00045 + (index % 5) * 0.00008) * delta * (active ? 1.45 : 1);
+              if (active && ["chaos", "storm", "wind"].includes(root.userData.definition.pattern)) {
+                root.rotation.z = Math.sin(now * 0.0018) * 0.035;
+              } else {
+                root.rotation.z = THREE.MathUtils.lerp(root.rotation.z, 0, 0.08 * delta);
+              }
+            }
+            root.userData.surface.material.opacity = THREE.MathUtils.lerp(root.userData.surface.material.opacity, background ? 0.12 : 1, 0.12 * delta);
+            root.userData.surface.material.emissiveIntensity = THREE.MathUtils.lerp(
+              root.userData.surface.material.emissiveIntensity,
+              background ? 0.015 : active ? 0.28 : (["fire", "hell", "rift", "fey", "chaos"].includes(root.userData.definition.pattern) ? 0.28 : 0.1),
+              0.08 * delta
+            );
+            root.userData.halo.material.opacity = THREE.MathUtils.lerp(root.userData.halo.material.opacity, background ? 0.008 : active ? 0.48 : 0.16, 0.1 * delta);
+            const haloSize = root.userData.halo.userData.baseSize * (active ? 1.15 : 1);
+            root.userData.halo.scale.x = THREE.MathUtils.lerp(root.userData.halo.scale.x, haloSize, 0.09 * delta);
+            root.userData.halo.scale.y = root.userData.halo.scale.x;
+            if (root.userData.cloudShell) {
+              const targetCloudOpacity = background ? 0.025 : root.userData.cloudShell.userData.baseOpacity;
+              root.userData.cloudShell.material.opacity = THREE.MathUtils.lerp(root.userData.cloudShell.material.opacity, targetCloudOpacity, 0.12 * delta);
+            }
+            if (root.userData.effectGroup) root.userData.effectGroup.visible = !background;
+          });
+
+          orbitRings.forEach((ring) => {
+            ring.material.opacity = THREE.MathUtils.lerp(ring.material.opacity, focusedRoot ? 0.018 : ring.userData.baseOpacity, 0.1 * delta);
+          });
+          outerDust.material.opacity = THREE.MathUtils.lerp(outerDust.material.opacity, focusedRoot ? 0.035 : 0.23, 0.1 * delta);
+          elementalDust.material.opacity = THREE.MathUtils.lerp(elementalDust.material.opacity, focusedRoot ? 0.025 : 0.23, 0.1 * delta);
+          centralGlow.material.opacity = THREE.MathUtils.lerp(centralGlow.material.opacity, focusedRoot && focusedRoot !== materialPlane ? 0.018 : 0.2, 0.1 * delta);
+
+          if (sceneMotion && dataById.get("limbo")) {
+            const limbo = rootById.get("limbo");
+            const hue = (now * 0.00004) % 1;
+            limbo.userData.halo.material.color.setHSL(hue, 0.72, 0.62);
+          }
+
+          renderer.render(scene, camera);
+          labelRenderer.render(scene, camera);
+          if (frameCounter === 1 || frameCounter % 8 === 0) updateLabelVisibility();
+          if (!loadingScreen.classList.contains("is-ready")) loadingScreen.classList.add("is-ready");
+        }
+        animate();
+
+        window.addEventListener("resize", () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1 : 1.5));
+          labelRenderer.setSize(window.innerWidth, window.innerHeight);
+          controls.handleResize();
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(() => {
+            refitHomeView(false);
+            if (!focusedRoot) {
+              startCameraTween(homePosition, homeTarget, 420);
+            } else {
+              const definition = focusedRoot.userData.definition;
+              const world = new THREE.Vector3();
+              focusedRoot.getWorldPosition(world);
+              const viewDirection = camera.position.clone().sub(world).normalize();
+              const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+              const endTarget = world.clone().add(window.innerWidth > 900 ? right.multiplyScalar(definition.size * 2.2) : right.multiplyScalar(0));
+              if (window.innerWidth <= 900) endTarget.y -= definition.size * 3.3;
+              const endPosition = world.clone().add(viewDirection.multiplyScalar(definition.size * (window.innerWidth <= 900 ? 6 : 4.7) + 25));
+              endPosition.y += definition.size * 0.35;
+              startCameraTween(endPosition, endTarget, 420);
+            }
+          }, 100);
+        });
+
+        document.addEventListener("visibilitychange", () => {
+          renderSuspended = document.hidden;
+          lastFrame = performance.now();
+        });
+
+        renderer.domElement.addEventListener("webglcontextlost", (event) => {
+          event.preventDefault();
+          showFatal("The 3D context was interrupted. Refresh the page to rebuild the atlas.");
+        });
+
+        window.addEventListener("error", () => {
+          statusPill.textContent = "Atlas encountered a rendering error";
+        });
+      })();
     </script>
   </body>
 </html>

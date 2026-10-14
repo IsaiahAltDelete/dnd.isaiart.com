@@ -1,0 +1,50 @@
+@name  tome
+@scale 10
+@size  24x32
+
+@palette
+K #17121b  outline
+k #2c2430  contact shadow
+1 #6b4a2e  material dark
+2 #9c7043  material mid
+3 #cfa46a  material light
+4 #3f2f66  gem dark
+5 #6d59b0  gem mid
+6 #a996e8  gem light
+m #4a4f5c  metal dark
+M #99a2b4  metal light
+W #f4efe2  highlight
+
+@frame f0
+........................
+........................
+...KKKKKKKKKKKKKKKKKK...
+...K2223333333333332K...
+...K211222222222MMMMKK..
+...K211222222222MMMMWK..
+...K211222222222MMMMWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122255552222WWWK..
+...K21122555555222WWWK..
+...K211255665555MMMMmK..
+...K211255555555MMMMmK..
+...K211255555555MMMMmK..
+...K211255555555MMMMmK..
+...K211255555555MMMMmK..
+...K21122555555222WWWK..
+...K21122255552222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K21122222222222WWWK..
+...K211222222222MMMMWK..
+...K211222222222MMMmWK..
+...K211222222222MMMmKK..
+...K1111111111111111K...
+...KKKKKKKKKKKKKKKKKK...
+........................
+........................

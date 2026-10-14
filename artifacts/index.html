@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arcane Artifact Generator</title>
+  <meta name="description" content="Roll sourcebook-ready magic items for D&amp;D 5e, each with a pixel-art portrait forged from its own materials. Seeded, shareable, and tuned so low-level parties stay unbroken." />
+  <meta name="color-scheme" content="light" />
+  <link rel="icon" href="sprites/forge-crest.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0&display=block" rel="stylesheet">
   <style>
     :root {
       --bg-parchment: #e6cf9f;
-      --bg-paper: #f3e4be;
-      --bg-paper-deep: #e8d3a5;
       --ink: #000000;
       --header: #58180D;
       --accent: #c9ad6a;
@@ -19,8 +21,11 @@
       --charcoal: #2b2b2b;
       --callout: #FDF1DC;
       --line: rgba(88, 24, 13, 0.36);
-      --shadow: rgba(46, 24, 8, 0.20);
       --radius: 22px;
+      /* Set per roll by the renderer. */
+      --rarity: #6f6a63;
+      --rarity-2: #6f6a63;
+      --gemglow: rgba(109, 89, 176, 0.35);
       --font-body: "Bookinsanity", "Cormorant Garamond", Georgia, serif;
       --font-header: "Mr Eaves Small Caps", "Cinzel", Georgia, serif;
       --font-callout: "Scaly Sans", "Inter", system-ui, sans-serif;
@@ -28,6 +33,27 @@
     }
 
     * { box-sizing: border-box; }
+
+    /* Until the icon face is confirmed loaded the ligature source text would
+       paint as literal words ("military_tech"), and offline it would never stop.
+       Hide the glyphs and only reveal them once the font really is there. */
+    .icons-pending .material-symbols-outlined { visibility: hidden; }
+
+    /* A word behind the one icon-only control, shown only while the icon face
+       is missing, so it never renders as an empty box. */
+    .icon-fallback {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .icons-pending .icon-fallback {
+      position: static;
+      width: auto; height: auto;
+      clip: auto;
+      font: 700 0.86rem var(--font-callout);
+    }
 
     html, body {
       margin: 0;
@@ -64,12 +90,25 @@
       padding: 28px 18px 60px;
     }
 
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--callout);
+      color: var(--header);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font: 700 0.9rem var(--font-callout);
+      z-index: 20;
+    }
+    .skip:focus { left: 8px; top: 8px; }
+
     .title-block {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin: 4px auto 22px;
+      margin: 4px auto 18px;
       color: var(--header);
     }
 
@@ -90,18 +129,18 @@
     }
 
     .subhead {
-      max-width: 820px;
+      max-width: 760px;
       margin: 0 auto 22px;
       text-align: center;
       font-family: var(--font-callout);
       color: rgba(43,43,43,0.78);
-      line-height: 1.5;
-      font-size: 0.98rem;
+      line-height: 1.55;
+      font-size: 0.95rem;
     }
 
     .toolbar {
-      width: min(960px, 100%);
-      margin: 0 auto 24px;
+      width: min(1000px, 100%);
+      margin: 0 auto 22px;
       padding: 16px 18px;
       border-radius: 18px;
       border: 1px solid rgba(88,24,13,0.22);
@@ -112,14 +151,13 @@
         0 12px 28px rgba(63, 35, 10, 0.10),
         inset 0 1px 0 rgba(255,255,255,0.55);
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px 18px;
+      gap: 14px;
       backdrop-filter: blur(4px);
     }
 
     .filters {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       min-width: 0;
     }
@@ -136,7 +174,7 @@
       gap: 8px;
       color: var(--header);
       font-family: var(--font-callout);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
@@ -147,8 +185,7 @@
       min-width: 0;
       appearance: none;
       border: 1px solid rgba(88,24,13,0.35);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
       color: var(--charcoal);
       border-radius: 12px;
       padding: 11px 14px;
@@ -157,20 +194,51 @@
       outline: none;
     }
 
+    .field select {
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(88,24,13,0.6) 50%),
+        linear-gradient(135deg, rgba(88,24,13,0.6) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
+      background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%, 0 0;
+      background-size: 6px 6px, 6px 6px, auto;
+      background-repeat: no-repeat;
+      padding-right: 32px;
+    }
+
+    :is(select, input, button, a):focus-visible {
+      outline: 3px solid var(--accent-deep);
+      outline-offset: 2px;
+    }
+
     .actions {
       display: flex;
-      align-items: end;
-      justify-content: end;
+      align-items: center;
+      justify-content: flex-end;
       gap: 10px;
       flex-wrap: wrap;
+    }
+
+    .actions .hint {
+      flex: 1 1 240px;
+      min-width: 0;
+      margin: 0;
+      font: 500 0.84rem var(--font-callout);
+      color: rgba(43,43,43,0.82);
+    }
+    .actions .hint kbd {
+      font: 700 0.78rem var(--font-callout);
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(88,24,13,0.24);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 6px;
     }
 
     button {
       border: 1px solid rgba(88,24,13,0.45);
       border-radius: 14px;
       padding: 10px 14px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(246,229,194,0.92));
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(246,229,194,0.92));
       color: var(--header);
       font: 700 0.95rem var(--font-callout);
       cursor: pointer;
@@ -191,9 +259,11 @@
       border-color: rgba(88,24,13,0.65);
     }
 
+    button:active { transform: translateY(0); }
+
     button.primary {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(232,205,152,0.94));
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(232,205,152,0.94));
+      border-color: rgba(88,24,13,0.6);
     }
 
     .material-symbols-outlined {
@@ -208,6 +278,8 @@
       word-wrap: normal;
       direction: ltr;
       font-feature-settings: 'liga';
+      font-variant: normal;
+      font-variant-ligatures: normal;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -235,15 +307,24 @@
         0 12px 30px rgba(59,34,12,0.09);
     }
 
-    .artifact-card::before,
+    /* A rarity-colored ribbon down the binding edge, so the tier of the item is
+       readable before a single word is. */
+    .artifact-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, var(--rarity) 0%, var(--rarity-2) 55%, rgba(0,0,0,0.3) 100%);
+      opacity: 0.95;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .artifact-card::after {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
-    }
-
-    .artifact-card::before {
       background:
         radial-gradient(circle at top left, rgba(201,173,106,0.26), transparent 15%),
         radial-gradient(circle at top right, rgba(201,173,106,0.22), transparent 15%),
@@ -255,19 +336,10 @@
       opacity: 0.7;
     }
 
-    .artifact-card::after {
-      border: 1px solid rgba(201,173,106,0.5);
-      inset: 10px;
-      border-radius: 18px;
-      mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
-      -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
-      padding: 8px;
-      opacity: 0.3;
-    }
-
     .artifact-inner {
       position: relative;
-      padding: 34px 32px 30px;
+      z-index: 1;
+      padding: 32px 32px 28px;
     }
 
     .header-band {
@@ -300,6 +372,15 @@
       border: 1px solid rgba(88,24,13,0.20);
     }
 
+    .eyebrow .pill.rarity {
+      border-color: color-mix(in srgb, var(--rarity) 55%, transparent);
+      background: color-mix(in srgb, var(--rarity) 12%, rgba(253,241,220,0.8));
+      /* Mixing further toward the ink keeps every band, Legendary included,
+         above 4.5:1 on the pill's own tinted ground. */
+      color: color-mix(in srgb, var(--rarity) 58%, #241a12);
+      font-weight: 700;
+    }
+
     h2 {
       margin: 0;
       text-align: center;
@@ -314,7 +395,7 @@
     }
 
     .meta-grid {
-      margin-top: 18px;
+      margin: 0 0 4px;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
@@ -324,7 +405,8 @@
     .info-card,
     .section,
     .callout,
-    .summary-box {
+    .summary-box,
+    .reliquary {
       background:
         linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.06)),
         rgba(253,241,220,0.58);
@@ -336,8 +418,9 @@
     .meta-card {
       padding: 12px 14px;
       min-height: 88px;
-      display: grid;
-      align-content: start;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       gap: 5px;
     }
 
@@ -353,26 +436,120 @@
     }
 
     .meta-value {
-      font-size: 1.18rem;
+      font-size: 1.1rem;
       color: var(--charcoal);
       font-weight: 700;
+      line-height: 1.25;
     }
 
     .meta-note {
+      /* Pin the note to the bottom so a two-line value doesn't leave this row
+         of four cards with ragged baselines. */
+      margin-top: auto;
       font-family: var(--font-callout);
       font-size: 0.82rem;
       color: rgba(43,43,43,0.78);
     }
 
+    /* --- the reliquary: pixel portrait + materials + surface ---------------- */
+
     .surface-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1fr);
       gap: 14px;
       margin: 18px 0 20px;
+      align-items: stretch;
     }
 
-    .info-card {
-      padding: 16px 18px;
+    .reliquary {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      align-content: space-between;
+    }
+
+    .plinth {
+      position: relative;
+      width: 176px;
+      height: 236px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, var(--gemglow) 0, transparent 64%),
+        linear-gradient(180deg, #33261c 0%, #1d1510 62%, #120c09 100%);
+      border: 1px solid rgba(88,24,13,0.45);
+      box-shadow:
+        inset 0 2px 14px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(201,173,106,0.22),
+        0 2px 6px rgba(59,34,12,0.18);
+    }
+
+    /* Summoning circle behind the item: a solid outer ring and a slowly
+       turning dashed inner one, both tinted by the item's rarity. */
+    .plinth::before,
+    .plinth::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .plinth::before {
+      width: 152px;
+      height: 152px;
+      border: 1px solid color-mix(in srgb, var(--rarity) 75%, transparent);
+      box-shadow: 0 0 22px color-mix(in srgb, var(--rarity) 30%, transparent);
+      opacity: 0.7;
+    }
+
+    .plinth::after {
+      width: 118px;
+      height: 118px;
+      border: 2px dashed color-mix(in srgb, var(--rarity) 80%, transparent);
+      opacity: 0.42;
+      animation: turn 52s linear infinite;
+    }
+
+    @keyframes turn { to { transform: rotate(360deg); } }
+
+    #relicCanvas {
+      position: relative;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(0 5px 7px rgba(0,0,0,0.6));
+    }
+
+    .relic-caption {
+      font: 600 0.76rem var(--font-callout);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(88,24,13,0.88);
+      text-align: center;
+    }
+
+    .relic-actions { display: flex; gap: 8px; }
+    .relic-actions button { padding: 7px 10px; font-size: 0.84rem; border-radius: 11px; }
+
+    .info-card { padding: 16px 18px; }
+
+    .signature-card {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 12px;
+    }
+
+    .signature-card .pattern-label { margin: -6px 0 0; }
+
+    .signature-card .section-title { margin: 0; }
+
+    .signature-text {
+      margin: 0;
+      font-size: 1.02rem;
+      line-height: 1.4;
+      color: var(--charcoal);
     }
 
     .section-title {
@@ -387,27 +564,23 @@
       font-size: 1.1rem;
     }
 
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
 
     .chip {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 10px;
+      padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid rgba(88,24,13,0.16);
       background: rgba(255,255,255,0.42);
-      font: 600 0.92rem var(--font-callout);
+      font: 600 0.85rem var(--font-callout);
       color: var(--charcoal);
     }
 
     .swatch {
-      width: 17px;
-      height: 17px;
+      width: 15px;
+      height: 15px;
       border-radius: 4px;
       border: 1px solid rgba(43,43,43,0.45);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.44);
@@ -415,12 +588,13 @@
     }
 
     .pattern-preview {
-      min-height: 132px;
+      min-height: 104px;
       border-radius: 16px;
       border: 1px solid rgba(88,24,13,0.20);
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0)),
-        var(--pattern-bg, linear-gradient(45deg, rgba(201,173,106,0.15), rgba(88,24,13,0.08)));
+        linear-gradient(160deg, rgba(255,255,255,0.28), rgba(60,36,14,0.10)),
+        var(--pattern-bg, linear-gradient(45deg, rgba(201,173,106,0.15), rgba(88,24,13,0.08))),
+        linear-gradient(180deg, #f0dfba, #ddc79a);
       position: relative;
       overflow: hidden;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
@@ -431,24 +605,19 @@
       position: absolute;
       inset: 0;
       background: var(--pattern-overlay, none);
-      opacity: 0.75;
+      opacity: 1;
       mix-blend-mode: multiply;
     }
 
     .pattern-label {
-      position: absolute;
-      left: 12px;
-      bottom: 10px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(253,241,220,0.78);
-      border: 1px solid rgba(88,24,13,0.16);
-      font: 600 0.88rem var(--font-callout);
-      color: var(--header);
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 7px;
+      margin: 8px 0 0;
+      font: 600 0.82rem var(--font-callout);
+      color: rgba(88,24,13,0.9);
     }
+    .pattern-label .material-symbols-outlined { font-size: 1.05rem; }
 
     .columns {
       display: grid;
@@ -456,15 +625,9 @@
       gap: 16px;
     }
 
-    .stack {
-      display: grid;
-      gap: 14px;
-      align-content: start;
-    }
+    .stack { display: grid; gap: 14px; align-content: start; }
 
-    .section {
-      padding: 16px 18px;
-    }
+    .section { padding: 16px 18px; }
 
     .section ul {
       list-style: none;
@@ -477,20 +640,17 @@
     .section li {
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(88,24,13,0.18);
-      font-size: 1.08rem;
-      line-height: 1.35;
+      font-size: 1.06rem;
+      line-height: 1.38;
     }
 
-    .section li:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
+    .section li:last-child { border-bottom: 0; padding-bottom: 0; }
 
     .rule-prefix {
       font-family: var(--font-callout);
       font-weight: 700;
       color: var(--header);
-      margin-right: 4px;
+      margin-right: 5px;
     }
 
     .callout {
@@ -500,10 +660,7 @@
         var(--callout);
     }
 
-    .lore-hook {
-      font-size: 1.06rem;
-      line-height: 1.5;
-    }
+    .lore-hook { font-size: 1.05rem; line-height: 1.5; }
 
     .lore-hook::first-letter {
       font-family: var(--font-drop);
@@ -530,211 +687,1398 @@
       gap: 8px;
       font-family: var(--font-callout);
       color: rgba(43,43,43,0.82);
+      font-size: 0.94rem;
     }
 
-    .summary-line strong {
-      color: var(--header);
-    }
+    .summary-line strong { color: var(--header); }
 
     .warning-note {
       display: none;
-      margin-top: 16px;
+      margin-top: 14px;
       padding: 12px 14px;
       border-radius: 14px;
-      border: 1px solid rgba(88,24,13,0.22);
-      background: rgba(253,241,220,0.72);
+      border: 1px solid color-mix(in srgb, var(--rarity) 40%, rgba(88,24,13,0.22));
+      background: color-mix(in srgb, var(--rarity) 8%, rgba(253,241,220,0.72));
       font-family: var(--font-callout);
+      font-size: 0.94rem;
       color: var(--header);
     }
 
-    .warning-note.is-visible { display: block; }
+    .warning-note.is-visible { display: flex; gap: 8px; align-items: flex-start; }
+
+    /* --- the shelf: recent rolls ------------------------------------------- */
+
+    .shelf {
+      width: min(1000px, 100%);
+      margin: 20px auto 0;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(88,24,13,0.18);
+      background: rgba(253,241,220,0.5);
+      display: none;
+      gap: 10px;
+      align-items: center;
+    }
+    .shelf.is-visible { display: flex; }
+
+    .shelf h3 {
+      margin: 0;
+      font: 600 0.74rem var(--font-callout);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(88,24,13,0.7);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      align-self: stretch;
+      display: grid;
+      place-items: center;
+      padding-right: 4px;
+      border-right: 1px solid rgba(88,24,13,0.18);
+    }
+
+    .shelf-rail {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px;
+      flex: 1;
+      scrollbar-width: thin;
+    }
+
+    .shelf-item {
+      flex: 0 0 auto;
+      width: 74px;
+      padding: 6px 4px 5px;
+      border-radius: 12px;
+      border: 1px solid rgba(88,24,13,0.18);
+      border-bottom: 3px solid var(--slot-rarity, #6f6a63);
+      background: rgba(255,255,255,0.42);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      box-shadow: none;
+    }
+    .shelf-item:hover { transform: translateY(-2px); background: rgba(255,255,255,0.7); }
+    .shelf-item canvas { image-rendering: pixelated; display: block; }
+    .shelf-item span {
+      font: 600 0.62rem var(--font-callout);
+      color: rgba(43,43,43,0.82);
+      text-align: center;
+      line-height: 1.2;
+      max-width: 100%;
+      height: 2.4em;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow-wrap: anywhere;
+    }
 
     .footer-note {
-      margin: 16px auto 0;
+      margin: 18px auto 0;
       width: min(1000px, 100%);
       text-align: center;
       color: rgba(43,43,43,0.72);
-      font: 500 0.9rem var(--font-callout);
+      font: 500 0.88rem var(--font-callout);
+      line-height: 1.6;
+    }
+    .footer-note a { color: var(--header); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
     }
 
-    @media (max-width: 960px) {
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-      .actions {
-        justify-content: start;
-      }
-      .meta-grid,
-      .surface-grid,
-      .columns {
-        grid-template-columns: 1fr 1fr;
-      }
+    @media (max-width: 1000px) {
+      .surface-grid { grid-template-columns: auto minmax(0, 1fr); }
+      .surface-grid > .info-card:last-child { grid-column: 1 / -1; }
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 860px) {
+      .filters { grid-template-columns: 1fr 1fr; }
+      .meta-grid { grid-template-columns: 1fr 1fr; }
+      .columns { grid-template-columns: 1fr; }
+      .surface-grid { grid-template-columns: 1fr; justify-items: stretch; }
+      .reliquary { justify-items: center; }
+    }
+
+    @media (max-width: 620px) {
       .app { padding-inline: 10px; }
-      .artifact-inner { padding: 22px 18px 20px; }
-      .filters,
-      .meta-grid,
-      .surface-grid,
-      .columns {
-        grid-template-columns: 1fr;
-      }
+      .artifact-inner { padding: 22px 18px 20px; display: flex; flex-direction: column; }
+      /* On a phone the four meta cards stacked into a screenful of low-density
+         text before the portrait, which is the thing worth seeing first. */
+      .header-band { order: 1; }
+      .surface-grid { order: 2; margin-top: 0; }
+      .meta-grid { order: 3; }
+      .columns { order: 4; }
+      .summary-box { order: 5; }
+      .warning-note { order: 6; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .filters { gap: 10px; }
+      .field label { font-size: 0.72rem; letter-spacing: 0.04em; }
+      .field select, .field input { padding: 9px 11px; font-size: 0.9rem; }
+      .field select { padding-right: 26px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%, 0 0; }
+      .subhead { margin-bottom: 16px; }
+      .toolbar { padding: 13px 13px; }
+      .actions { justify-content: stretch; }
+      .actions button { flex: 1; justify-content: center; }
+      .actions .hint { display: none; }
       .title-block { gap: 10px; }
-      .subhead { font-size: 0.92rem; }
+      .subhead { font-size: 0.9rem; }
+      .shelf h3 { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* A DM printing the entry should get the card, not the chrome. */
+    @media print {
+      body { background: #fff; }
+      body::before, .toolbar, .shelf, .relic-actions, .skip, .footer-note { display: none !important; }
+      .app { padding: 0; max-width: none; }
+      .artifact-shell { box-shadow: none; padding: 0; }
+      .artifact-card { border-color: #999; box-shadow: none; }
+      .columns { grid-template-columns: 1fr 1fr; }
+      .section li { font-size: 0.95rem; }
+    }
+
+    /* -----------------------------------------------------------------------
+       Pixel reliquary pass: the item sprites were forged with Pixelforge, so
+       the surrounding chrome follows the same hard-edged, limited-palette
+       language instead of reading like a separate parchment theme.
+    ----------------------------------------------------------------------- */
+    :root {
+      --bg-parchment: #110e18;
+      --ink: #f4efe2;
+      --header: #f0cf91;
+      --accent: #c58b4d;
+      --accent-deep: #e0a75e;
+      --charcoal: #eadfce;
+      --callout: #292035;
+      --line: rgba(226, 182, 105, 0.28);
+      --font-body: "Cormorant Garamond", Georgia, serif;
+      --font-header: "MedievalSharp", "Cinzel", Georgia, serif;
+      --font-callout: "VT323", "Inter", system-ui, sans-serif;
+      --font-drop: "MedievalSharp", "Cinzel Decorative", Georgia, serif;
+    }
+
+    html, body {
+      background-color: #110e18;
+      color: var(--ink);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+        radial-gradient(circle at 14% 8%, rgba(105, 74, 151, 0.32), transparent 29%),
+        radial-gradient(circle at 88% 20%, rgba(175, 104, 53, 0.18), transparent 26%),
+        linear-gradient(150deg, #151020 0%, #0d0b13 72%, #17101b 100%);
+      background-size: 12px 12px, 12px 12px, auto, auto, auto;
+      background-attachment: fixed;
+    }
+
+    body::before {
+      box-shadow: inset 0 0 220px rgba(0,0,0,0.74);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.23;
+      background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(255,255,255,0.025) 4px, transparent 5px);
+      mix-blend-mode: screen;
+    }
+
+    .app {
+      max-width: 1240px;
+      padding: 30px 18px 72px;
+    }
+
+    header {
+      position: relative;
+      margin: 0 auto 24px;
+      padding: 16px 10px 4px;
+      text-align: center;
+    }
+
+    header::before,
+    header::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: min(420px, 62vw);
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(224,167,94,0.62), transparent);
+    }
+    header::before { top: 0; }
+    header::after { bottom: -8px; }
+
+    .title-block {
+      gap: 18px;
+      margin: 0 auto 12px;
+      color: var(--header);
+    }
+
+    .brand-mark {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: #251b31;
+      border: 2px solid #a8794e;
+      box-shadow: 0 0 0 4px rgba(197,139,77,0.10), 0 12px 28px rgba(0,0,0,0.36), inset 0 0 0 2px rgba(240,207,145,0.12);
+      clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
+      animation: crest-float 5s ease-in-out infinite;
+    }
+
+    .brand-mark img {
+      display: block;
+      width: 58px;
+      height: 58px;
+      image-rendering: pixelated;
+    }
+
+    .title-copy { min-width: 0; text-align: left; }
+
+    .hero-kicker {
+      margin: 0 0 6px;
+      color: #b69ac7;
+      font: 1rem/1 "VT323", monospace;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-family: var(--font-header);
+      color: #f7d99d;
+      font-size: clamp(2.25rem, 5vw, 4.25rem);
+      line-height: 0.98;
+      letter-spacing: 0.02em;
+      text-shadow: 0 3px 0 #37243e, 0 7px 22px rgba(0,0,0,0.46);
+    }
+
+    h1 span { color: #bc9ae9; }
+
+    .subhead {
+      max-width: 710px;
+      margin: 0 auto;
+      color: #c5b7cb;
+      font: 1.16rem/1.34 var(--font-body);
+    }
+
+    .toolbar,
+    .artifact-shell,
+    .shelf {
+      border-radius: 5px;
+    }
+
+    .toolbar {
+      position: relative;
+      width: min(1120px, 100%);
+      padding: 20px;
+      margin-bottom: 26px;
+      border: 1px solid #63476d;
+      background: linear-gradient(180deg, rgba(39,29,52,0.98), rgba(24,18,33,0.98));
+      box-shadow: 0 18px 42px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .toolbar::before {
+      content: "FORGE CONTROLS";
+      position: absolute;
+      top: 0;
+      left: 20px;
+      padding: 0 8px 3px;
+      background: #1b1425;
+      color: #e2ab64;
+      font: 0.92rem/1.1 "Press Start 2P", monospace;
+      letter-spacing: 0.04em;
+      transform: translateY(-1px);
+    }
+
+    .filters { gap: 13px; margin-top: 8px; }
+
+    .field label {
+      color: #e0b571;
+      font: 1rem/1 var(--font-callout);
+      letter-spacing: 0.08em;
+    }
+
+    .field label .material-symbols-outlined { color: #b796e2; }
+
+    .field select,
+    .field input {
+      border: 1px solid #5a4264;
+      border-radius: 3px;
+      background: #15111e;
+      color: #f6ead6;
+      padding: 12px 14px;
+      font: 1.15rem/1 var(--font-callout);
+      box-shadow: inset 0 2px 0 rgba(0,0,0,0.24), 0 0 0 1px rgba(255,255,255,0.025);
+      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+
+    .field select {
+      background-image:
+        linear-gradient(45deg, transparent 50%, #d5a667 50%),
+        linear-gradient(135deg, #d5a667 50%, transparent 50%),
+        linear-gradient(180deg, #20172b, #15111e);
+    }
+
+    .field select:hover,
+    .field input:hover,
+    .field select:focus,
+    .field input:focus { border-color: #c596de; box-shadow: 0 0 0 2px rgba(197,150,222,0.16); }
+
+    :is(select, input, button, a):focus-visible {
+      outline: 2px solid #f0c779;
+      outline-offset: 3px;
+    }
+
+    .actions { gap: 10px; }
+    .actions .hint { color: #bcaec3; font-size: 1rem; }
+    .actions .hint kbd { color: #f2d293; background: #2b2039; border-color: #6a4b75; border-radius: 3px; }
+
+    button {
+      border: 1px solid #725273;
+      border-radius: 3px;
+      padding: 11px 14px;
+      background: linear-gradient(180deg, #3a294b, #241a30);
+      color: #f3e3c6;
+      font: 1.08rem/1 var(--font-callout);
+      box-shadow: 0 5px 0 #120c18, inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 160ms cubic-bezier(.2,.8,.2,1), box-shadow 160ms ease, border-color 160ms ease, filter 160ms ease;
+    }
+
+    button:hover { transform: translateY(-2px); border-color: #d1a1df; box-shadow: 0 7px 0 #120c18, 0 0 18px rgba(199,151,231,0.16), inset 0 1px 0 rgba(255,255,255,0.12); filter: brightness(1.1); }
+    button:active { transform: translateY(2px); box-shadow: 0 2px 0 #120c18; }
+    button.primary { background: linear-gradient(180deg, #d6a15b, #8d552d); border-color: #f2ce88; color: #1a1116; text-shadow: none; }
+
+    .artifact-shell {
+      width: min(1120px, 100%);
+      padding: 9px;
+      background: linear-gradient(135deg, #4b3157, #17101f 26%, #33203f 76%, #6b432c);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.42), 0 0 0 1px rgba(227,176,99,0.18);
+    }
+
+    .artifact-card {
+      border: 1px solid #74537b;
+      border-radius: 4px;
+      background: linear-gradient(180deg, rgba(37,27,50,0.98), rgba(21,16,29,0.98));
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.02), inset 0 0 50px rgba(122,73,146,0.08), 0 10px 28px rgba(0,0,0,0.28);
+    }
+
+    .artifact-card::before { width: 7px; background: linear-gradient(180deg, var(--rarity), var(--rarity-2), #17101e); }
+    .artifact-card::after { opacity: 0.34; mix-blend-mode: screen; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(255,255,255,0.028) 12px), repeating-linear-gradient(90deg, transparent 0 11px, rgba(255,255,255,0.02) 12px); background-size: 12px 12px; }
+    .artifact-inner { padding: 34px 36px 30px; }
+
+    .header-band { border-bottom: 1px dashed rgba(224,167,94,0.38); }
+    .eyebrow .pill { border-color: #5c4267; background: #2a1e38; color: #d7bfdf; border-radius: 3px; font: 1rem/1 var(--font-callout); letter-spacing: 0.06em; }
+    .eyebrow .pill.rarity { border-color: color-mix(in srgb, var(--rarity) 80%, #e0b071); background: color-mix(in srgb, var(--rarity) 25%, #261b33); color: #fae4b4; }
+
+    h2 { color: #f1d294; font-family: var(--font-header); font-size: clamp(2.2rem, 5vw, 3.8rem); text-shadow: 0 3px 0 #37233f, 0 10px 28px rgba(0,0,0,0.35); }
+
+    .meta-card,
+    .info-card,
+    .section,
+    .callout,
+    .summary-box,
+    .reliquary,
+    .ledger {
+      border-color: #4f3a5b;
+      border-radius: 4px;
+      background: linear-gradient(180deg, rgba(49,36,61,0.92), rgba(30,23,40,0.92));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 22px rgba(0,0,0,0.12);
+    }
+
+    .meta-card { min-height: 96px; padding: 13px 15px; }
+    .meta-top { color: #d2a866; font: 1rem/1 var(--font-callout); }
+    .meta-top .material-symbols-outlined { color: #ae8dd8; }
+    .meta-value { color: #f5e7cf; font-size: 1.3rem; }
+    .meta-note { color: #b8a9bd; font: 0.96rem/1.15 var(--font-callout); }
+
+    .surface-grid { grid-template-columns: 200px minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; }
+    .reliquary { padding: 14px; }
+    .plinth { width: 188px; height: 246px; border-radius: 3px; background: radial-gradient(circle at 50% 40%, var(--gemglow), transparent 60%), linear-gradient(180deg, #2c2039, #120d18 78%); border-color: #76527d; box-shadow: inset 0 0 0 2px rgba(216,165,89,0.16), inset 0 0 24px rgba(0,0,0,0.72), 0 12px 24px rgba(0,0,0,0.24); }
+    .plinth::before { border-color: color-mix(in srgb, var(--rarity) 80%, #e0b071); animation: rune-pulse 3.6s ease-in-out infinite; }
+    .plinth::after { border-color: color-mix(in srgb, var(--rarity) 88%, #e0b071); animation-duration: 32s; }
+    .relic-caption { color: #d5ae70; font: 1rem/1 var(--font-callout); }
+    .relic-actions button { padding: 8px 11px; font-size: 1rem; }
+
+    .section-title { margin-bottom: 13px; color: #f0ca87; font-family: var(--font-header); font-size: 1.45rem; }
+    .section-title .material-symbols-outlined { color: #bb96e4; }
+    .chip { border-color: #5c4267; background: #241a31; color: #dfd0de; border-radius: 3px; font: 1rem/1 var(--font-callout); }
+    .swatch { border-radius: 2px; }
+    .pattern-preview { min-height: 118px; border-color: #6a4b74; border-radius: 3px; background-size: 9px 9px, auto, auto; box-shadow: inset 0 0 22px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.14); }
+    .pattern-label { color: #d5ae70; font: 1rem/1 var(--font-callout); }
+    .signature-text, .lore-hook { color: #dfd1df; }
+    .section li { border-bottom-color: #493653; color: #e0d5df; font-size: 1.15rem; }
+    .rule-prefix { color: #d7a964; font: 1.12rem var(--font-callout); }
+    .callout { background: linear-gradient(180deg, rgba(55,39,65,0.95), rgba(34,24,45,0.96)), #292035; }
+    .lore-hook { font-size: 1.2rem; }
+
+    .ledger {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
+      gap: 18px;
+      margin: 0 0 18px;
+      padding: 17px 18px;
+    }
+
+    .ledger-title { margin-bottom: 10px; }
+    .forge-table { width: 100%; border-collapse: collapse; font: 1.08rem/1.15 var(--font-callout); }
+    .forge-table th,
+    .forge-table td { padding: 9px 10px; border-bottom: 1px solid #493653; text-align: left; }
+    .forge-table th { width: 16%; color: #c89458; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; }
+    .forge-table td { width: 34%; color: #f0e3cf; }
+    .forge-table tr:last-child th,
+    .forge-table tr:last-child td { border-bottom: 0; }
+
+    .resonance-panel { display: grid; align-content: center; gap: 10px; padding: 12px 14px; border: 1px solid #5d4167; background: #20162b; }
+    .resonance-kicker { margin: 0; color: #b892d9; font: 0.95rem/1 var(--font-callout); letter-spacing: 0.1em; text-transform: uppercase; }
+    .resonance-value { margin: 0; color: #f1cd8d; font: 2rem/1 var(--font-header); }
+    .resonance-track { height: 13px; padding: 2px; background: #130e19; border: 1px solid #5d4167; }
+    .resonance-fill { height: 100%; width: var(--resonance, 0%); background: linear-gradient(90deg, #8b5ac0, #e1a55c); box-shadow: 0 0 12px rgba(203,145,226,0.45); transition: width 500ms cubic-bezier(.2,.8,.2,1); }
+    .resonance-note { margin: 0; color: #b9a9c1; font: 1rem/1.1 var(--font-callout); }
+
+    .summary-box { padding: 16px 18px; border-color: #65456e; }
+    .summary-line { color: #c5b6c9; font: 1rem/1 var(--font-callout); }
+    .summary-line strong { color: #f0c985; }
+    .warning-note { border-radius: 3px; background: #30233b; color: #f3d39a; font: 1.08rem/1.25 var(--font-callout); }
+
+    .shelf { width: min(1120px, 100%); padding: 13px 15px; border-color: #4f3a5b; background: rgba(31,23,42,0.9); box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
+    .shelf h3 { color: #d0a466; font: 1rem/1 var(--font-callout); border-right-color: #4f3a5b; }
+    .shelf-item { border-color: #4f3a5b; border-bottom-color: var(--slot-rarity, #6f6a63); border-radius: 3px; background: #241a31; color: #ead9c8; }
+    .shelf-item:hover { background: #322241; }
+    .shelf-item span { color: #d8c4d9; font: 0.82rem/1.1 var(--font-callout); }
+    .footer-note { color: #9f8faa; font: 1rem/1.2 var(--font-callout); }
+    .footer-note a { color: #dbad6a; }
+
+    .artifact-card.is-rolling { animation: forge-in 460ms cubic-bezier(.2,.8,.2,1); }
+    .toolbar, .artifact-shell { animation: forge-in 620ms both; }
+
+    @keyframes forge-in {
+      from { opacity: 0; transform: translateY(14px) scale(0.992); filter: saturate(0.7); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+    }
+    @keyframes crest-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes rune-pulse { 0%, 100% { opacity: 0.42; transform: scale(0.98); } 50% { opacity: 0.82; transform: scale(1.02); } }
+
+    @media (max-width: 1000px) {
+      .surface-grid { grid-template-columns: 200px minmax(0, 1fr); }
+      .surface-grid > .info-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 860px) {
+      .ledger { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 20px 10px 48px; }
+      .title-block { align-items: flex-start; gap: 12px; }
+      .brand-mark { width: 56px; height: 56px; }
+      .brand-mark img { width: 43px; height: 43px; }
+      .title-copy { flex: 1; }
+      .hero-kicker { font-size: 0.78rem; }
+      h1 { font-size: clamp(2rem, 9vw, 3rem); }
+      .subhead { font-size: 1.05rem; }
+      .toolbar { padding: 16px 13px 13px; }
+      .toolbar::before { left: 13px; font-size: 0.72rem; }
+      .artifact-inner { padding: 24px 18px 20px; }
+      .surface-grid { grid-template-columns: 1fr; }
+      .surface-grid > .info-card:last-child { grid-column: auto; }
+      .ledger { order: 4; overflow: hidden; }
+      .columns { order: 5; }
+      .summary-box { order: 6; }
+      .warning-note { order: 7; }
+      .forge-table { width: 100%; table-layout: fixed; font-size: 0.94rem; }
+      .forge-table th, .forge-table td { padding: 8px 6px; }
+      .forge-table th { width: 22%; }
+      .forge-table td { width: 28%; }
+      .forge-table th, .forge-table td { overflow-wrap: anywhere; word-break: break-word; }
+      .summary-box { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .brand-mark, .artifact-card.is-rolling, .toolbar, .artifact-shell, .plinth::before { animation: none !important; }
+    }
+
+    /* Warm vellum pass: cream is the field, coffee-brown is the ink, and
+       violet survives only as a small arcane accent. */
+    :root {
+      --bg-parchment: #ead9b9;
+      --ink: #2c211b;
+      --header: #65351f;
+      --accent: #b97838;
+      --accent-deep: #8c4f28;
+      --charcoal: #3b2b21;
+      --callout: #fff4dc;
+      --line: rgba(101,53,31,0.28);
+    }
+
+    html, body {
+      color: var(--ink);
+      background-color: #ead9b9;
+      background-image:
+        linear-gradient(rgba(91,56,30,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,56,30,0.045) 1px, transparent 1px),
+        radial-gradient(circle at 12% 4%, rgba(255,250,235,0.92), transparent 31%),
+        radial-gradient(circle at 86% 17%, rgba(214,164,98,0.25), transparent 25%),
+        linear-gradient(145deg, #f1e4c8 0%, #dfc695 72%, #ebd7af 100%);
+      background-size: 12px 12px, 12px 12px, auto, auto, auto;
+    }
+
+    body::before { box-shadow: inset 0 0 200px rgba(79,43,25,0.22); }
+    body::after { opacity: 0.07; background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(75,43,25,0.20) 4px, transparent 5px); mix-blend-mode: multiply; }
+
+    header::before,
+    header::after { background: linear-gradient(90deg, transparent, rgba(138,79,40,0.62), transparent); }
+    .brand-mark { background: #fff0d0; border-color: #9a6436; box-shadow: 0 0 0 4px rgba(137,80,40,0.10), 0 12px 28px rgba(73,38,19,0.22), inset 0 0 0 2px rgba(101,53,31,0.12); }
+    .hero-kicker { color: #8a5a3c; }
+    h1 { color: #5d301f; text-shadow: 0 3px 0 #f8ebd2, 0 7px 18px rgba(83,44,23,0.20); }
+    h1 span { color: #7a5590; }
+    .subhead { color: #6c5846; }
+
+    .toolbar { border-color: #b17a49; background: linear-gradient(180deg, rgba(255,247,229,0.98), rgba(234,208,164,0.98)); box-shadow: 0 18px 42px rgba(79,43,23,0.18), inset 0 1px 0 rgba(255,255,255,0.72); }
+    .toolbar::before { background: #fff0d0; color: #93552d; }
+    .field label { color: #704025; }
+    .field label .material-symbols-outlined { color: #7c5b8b; }
+    .field select,
+    .field input { border-color: #b27d4e; background: #fff9ec; color: #3c2b20; box-shadow: inset 0 2px 0 rgba(106,63,31,0.07), 0 0 0 1px rgba(255,255,255,0.45); }
+    .field select { color-scheme: light; appearance: auto; background: #fff9ec !important; background-image: none !important; }
+    .field select:hover,
+    .field input:hover,
+    .field select:focus,
+    .field input:focus { border-color: #82548f; box-shadow: 0 0 0 2px rgba(122,85,144,0.16); }
+    .actions .hint { color: #725c4b; }
+    .actions .hint kbd { color: #704025; background: #f8e7c5; border-color: #c19460; }
+    button { border-color: #ae7950; background: linear-gradient(180deg, #fff8e9, #e7c793); color: #5b321f; box-shadow: 0 5px 0 #9a6437, inset 0 1px 0 rgba(255,255,255,0.92); }
+    button:hover { border-color: #7c5590; box-shadow: 0 7px 0 #9a6437, 0 0 18px rgba(125,87,146,0.12), inset 0 1px 0 rgba(255,255,255,0.98); }
+    button:active { box-shadow: 0 2px 0 #9a6437; }
+    button.primary { background: linear-gradient(180deg, #dca15f, #a96432); border-color: #f0c77f; color: #2d1c15; }
+
+    .artifact-shell { background: linear-gradient(135deg, #c28c50, #6e422d 26%, #b67a43 76%, #e2bb7b); box-shadow: 0 26px 70px rgba(75,39,19,0.25), 0 0 0 1px rgba(107,57,29,0.18); }
+    .artifact-card { border-color: #b18156; background: linear-gradient(180deg, rgba(255,247,228,0.99), rgba(239,216,177,0.99)); box-shadow: inset 0 0 0 3px rgba(255,255,255,0.30), inset 0 0 50px rgba(135,83,39,0.08), 0 10px 28px rgba(76,39,19,0.16); }
+    .artifact-card::after { opacity: 0.32; mix-blend-mode: multiply; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(101,53,31,0.045) 12px), repeating-linear-gradient(90deg, transparent 0 11px, rgba(101,53,31,0.035) 12px); }
+    .eyebrow .pill { border-color: #bb8b5b; background: #fff1d3; color: #70442b; }
+    .eyebrow .pill.rarity { border-color: color-mix(in srgb, var(--rarity) 80%, #b07b43); background: color-mix(in srgb, var(--rarity) 17%, #fff1d3); color: #5a301f; }
+    h2 { color: #65351f; text-shadow: 0 3px 0 rgba(255,248,230,0.86), 0 10px 28px rgba(88,46,23,0.18); }
+
+    .meta-card,
+    .info-card,
+    .section,
+    .callout,
+    .summary-box,
+    .reliquary,
+    .ledger { border-color: #c49a6c; background: linear-gradient(180deg, rgba(255,247,229,0.90), rgba(241,218,179,0.90)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.64), 0 10px 22px rgba(92,48,23,0.10); }
+    .meta-top { color: #83502e; }
+    .meta-top .material-symbols-outlined { color: #79558b; }
+    .meta-value { color: #3d2a20; }
+    .meta-note { color: #745d4a; }
+    .plinth { background: radial-gradient(circle at 50% 40%, var(--gemglow), transparent 60%), linear-gradient(180deg, #584334, #241a15 78%); border-color: #9e704e; box-shadow: inset 0 0 0 2px rgba(244,202,127,0.20), inset 0 0 24px rgba(47,25,16,0.64), 0 12px 24px rgba(78,40,19,0.18); }
+    .relic-caption { color: #83512f; }
+    .section-title { color: #6a3821; }
+    .section-title .material-symbols-outlined { color: #7c5b8b; }
+    .chip { border-color: #c09668; background: #fff1d3; color: #59402e; }
+    .pattern-preview { border-color: #bd8d5d; background-color: #f1dbb0; box-shadow: inset 0 0 22px rgba(100,55,26,0.14), inset 0 1px 0 rgba(255,255,255,0.76); }
+    .pattern-label { color: #83512f; }
+    .signature-text, .lore-hook { color: #594536; }
+    .section li { border-bottom-color: #d0ab7d; color: #513c2e; }
+    .rule-prefix { color: #824d2b; }
+    .callout { background: linear-gradient(180deg, rgba(255,247,229,0.96), rgba(239,215,174,0.96)), #fff0d0; }
+    .ledger-title { color: #6a3821; }
+    .forge-table th, .forge-table td { border-bottom-color: #d0ab7d; }
+    .forge-table th { color: #8b542e; }
+    .forge-table td { color: #4b3628; }
+    .resonance-panel { border-color: #c09668; background: #f7e5c2; }
+    .resonance-kicker { color: #7e568e; }
+    .resonance-value { color: #6b3921; }
+    .resonance-track { background: #e1c18f; border-color: #b98552; }
+    .resonance-fill { background: linear-gradient(90deg, #9d6aae, #c57a38); box-shadow: 0 0 12px rgba(157,106,174,0.24); }
+    .resonance-note { color: #755d49; }
+    .summary-line { color: #705947; }
+    .summary-line strong { color: #713d23; }
+    .warning-note { background: #f4dfb6; color: #6a3821; }
+    .shelf { border-color: #c49a6c; background: rgba(255,244,220,0.82); box-shadow: 0 12px 30px rgba(85,44,20,0.16); }
+    .shelf h3 { color: #8a542e; border-right-color: #c49a6c; }
+    .shelf-item { border-color: #c49a6c; background: #fff0d0; color: #59402e; }
+    .shelf-item:hover { background: #f7dfb6; }
+    .shelf-item span { color: #704d35; }
+    .footer-note { color: #765f4d; }
+    .footer-note a { color: #7b4a2a; }
+
+    @media (min-width: 1001px) { .filters { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+    @media (max-width: 1000px) and (min-width: 621px) { .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+    /* Full pixel system: every readable face, control and surface now belongs
+       to the same late-medieval game UI instead of mixing print and web styles. */
+    :root {
+      --radius: 0;
+      --font-body: "VT323", ui-monospace, monospace;
+      --font-header: "Press Start 2P", ui-monospace, monospace;
+      --font-callout: "VT323", ui-monospace, monospace;
+      --font-drop: "Press Start 2P", ui-monospace, monospace;
+      --pixel-border: #6b3b25;
+      --pixel-shadow: #9a6437;
+      --pixel-highlight: rgba(255, 255, 255, 0.68);
+    }
+
+    html,
+    body,
+    button,
+    input,
+    select,
+    textarea,
+    table {
+      font-family: var(--font-body);
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      text-rendering: geometricPrecision;
+    }
+
+    body { font-size: 21px; line-height: 1.34; }
+    ::selection { color: #fff6dd; background: #7b4a2a; }
+    img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+    h1,
+    h2,
+    h3,
+    .hero-kicker,
+    .section-title,
+    .toolbar::before,
+    .eyebrow .pill,
+    .field label,
+    button,
+    .ledger-title,
+    .pattern-label,
+    .relic-caption,
+    .resonance-kicker {
+      font-family: var(--font-header);
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(1.62rem, 4vw, 3rem);
+      line-height: 1.3;
+      letter-spacing: -0.055em;
+      text-shadow: 3px 3px 0 #e3bd7c;
+    }
+    h2 {
+      font-size: clamp(1.22rem, 3vw, 2rem);
+      line-height: 1.45;
+      letter-spacing: -0.035em;
+      text-shadow: 3px 3px 0 #e3bd7c;
+    }
+    h3,
+    .section-title,
+    .ledger-title { font-size: 0.78rem; line-height: 1.55; letter-spacing: 0.02em; }
+    .hero-kicker { font-size: 0.58rem; line-height: 1.7; letter-spacing: 0.08em; }
+    .subhead { font-size: 1.28rem; line-height: 1.3; }
+    .field label { font-size: 0.61rem; line-height: 1.55; letter-spacing: 0; }
+    .toolbar::before { font-size: 0.58rem; letter-spacing: 0.04em; }
+    .eyebrow .pill,
+    .chip { font-size: 1.02rem; line-height: 1; letter-spacing: 0.045em; }
+    .meta-value { font-family: var(--font-body); font-size: 1.35rem; }
+    .meta-note,
+    .pattern-label,
+    .relic-caption,
+    .resonance-kicker { font-size: 0.57rem; line-height: 1.6; letter-spacing: 0.03em; }
+    .forge-table { font-size: 1.08rem; line-height: 1.2; }
+
+    .toolbar,
+    .artifact-shell,
+    .artifact-card,
+    .meta-card,
+    .info-card,
+    .section,
+    .callout,
+    .summary-box,
+    .reliquary,
+    .ledger,
+    .plinth,
+    .pattern-preview,
+    .eyebrow .pill,
+    .chip,
+    .shelf,
+    .shelf-item,
+    .warning-note,
+    .resonance-panel,
+    .resonance-track,
+    .swatch,
+    button,
+    input,
+    select,
+    kbd,
+    .brand-mark {
+      border-radius: 0 !important;
+    }
+
+    .toolbar,
+    .artifact-card,
+    .meta-card,
+    .info-card,
+    .section,
+    .callout,
+    .summary-box,
+    .reliquary,
+    .ledger,
+    .shelf {
+      border-width: 2px;
+      box-shadow: 5px 5px 0 rgba(100, 58, 30, 0.22), inset 2px 2px 0 var(--pixel-highlight);
+    }
+
+    .toolbar { box-shadow: 7px 7px 0 rgba(100, 58, 30, 0.24), inset 2px 2px 0 var(--pixel-highlight); }
+    .artifact-shell {
+      padding: 6px;
+      background: linear-gradient(135deg, #e4bc78 0 10%, #77472c 10% 18%, #b8753d 18% 82%, #f1d49b 82% 90%, #78462d 90%);
+      box-shadow: 10px 10px 0 rgba(91, 52, 28, 0.27);
+    }
+    .artifact-card { box-shadow: inset 3px 3px 0 rgba(255,255,255,0.56), inset -3px -3px 0 rgba(116,70,36,0.17); }
+
+    /* Nested surfaces use different parchment weights, like stacked windows
+       in a classic inventory screen, so the page does not become one box grid. */
+    .meta-card {
+      background: #f2d6a5;
+      border-color: #a66b3d;
+      box-shadow: 3px 3px 0 rgba(100,58,30,0.18), inset 2px 2px 0 rgba(255,255,255,0.46);
+    }
+    .reliquary,
+    .info-card {
+      background: #fff5df;
+      border-width: 3px;
+      border-style: double;
+      box-shadow: 3px 3px 0 rgba(100,58,30,0.17);
+    }
+    .ledger {
+      background: #efd5a5;
+      border-top: 4px solid #79558b;
+      box-shadow: 4px 4px 0 rgba(100,58,30,0.19), inset 2px 2px 0 rgba(255,255,255,0.4);
+    }
+    .section {
+      background: #f8e5bf;
+      border-left: 4px solid #a96a3b;
+      box-shadow: 3px 3px 0 rgba(100,58,30,0.17), inset 2px 2px 0 rgba(255,255,255,0.42);
+    }
+    .callout {
+      background: #fff3d9;
+      border-top: 4px solid #79558b;
+      box-shadow: 3px 3px 0 rgba(100,58,30,0.17), inset 2px 2px 0 rgba(255,255,255,0.52);
+    }
+    .summary-box { background: #eed09a; box-shadow: 3px 3px 0 rgba(100,58,30,0.18), inset 2px 2px 0 rgba(255,255,255,0.4); }
+
+    .brand-mark,
+    .plinth,
+    .pattern-preview,
+    .resonance-panel {
+      clip-path: polygon(7px 0, calc(100% - 7px) 0, calc(100% - 7px) 3px, 100% 3px, 100% calc(100% - 7px), calc(100% - 3px) calc(100% - 7px), calc(100% - 3px) 100%, 7px 100%, 7px calc(100% - 3px), 0 calc(100% - 3px), 0 7px, 3px 7px, 3px 3px, 7px 3px);
+    }
+
+    .brand-mark { border-width: 3px; box-shadow: 5px 5px 0 rgba(93,54,30,0.28), inset 2px 2px 0 #fff8e7; }
+    .brand-mark img { transform: scale(1.05); }
+    .toolbar::after,
+    .artifact-card::before {
+      border-radius: 0;
+      background-size: 8px 8px;
+      image-rendering: pixelated;
+    }
+
+    .field input,
+    .field select {
+      min-height: 48px;
+      border: 2px solid #9d683c;
+      color: #3c2b20;
+      background-color: #fff9ec !important;
+      box-shadow: inset 3px 3px 0 rgba(119, 73, 38, 0.12), 3px 3px 0 rgba(111, 65, 35, 0.18);
+      font-size: 1.15rem;
+      line-height: 1;
+      transition: transform 110ms steps(2, end), border-color 110ms steps(2, end), box-shadow 110ms steps(2, end);
+    }
+    .field select {
+      appearance: none;
+      padding-right: 38px;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #6a3821 50%),
+        linear-gradient(135deg, #6a3821 50%, transparent 50%) !important;
+      background-position: calc(100% - 17px) 52%, calc(100% - 10px) 52% !important;
+      background-size: 7px 7px, 7px 7px !important;
+      background-repeat: no-repeat !important;
+    }
+    .field input:hover,
+    .field select:hover,
+    .field input:focus,
+    .field select:focus {
+      transform: translate(-1px, -1px);
+      border-color: #79558b;
+      box-shadow: inset 3px 3px 0 rgba(119, 73, 38, 0.10), 4px 4px 0 rgba(111, 65, 35, 0.20);
+    }
+
+    button {
+      min-height: 44px;
+      border-width: 2px;
+      padding: 10px 15px;
+      font-size: 0.61rem;
+      line-height: 1.5;
+      box-shadow: 4px 4px 0 var(--pixel-shadow), inset 2px 2px 0 rgba(255,255,255,0.8);
+      transition: transform 100ms steps(2, end), box-shadow 100ms steps(2, end), filter 100ms steps(2, end);
+    }
+    button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--pixel-shadow), inset 2px 2px 0 rgba(255,255,255,0.9);
+      filter: saturate(1.08);
+    }
+    button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--pixel-shadow); }
+    button.primary {
+      color: #21140e;
+      background: linear-gradient(180deg, #f3ca7f, #c78945);
+      border-color: #8f572e;
+    }
+    .relic-actions button { border-radius: 0; font-size: 0.52rem; }
+
+    .eyebrow .pill,
+    .chip,
+    .warning-note,
+    .shelf-item {
+      border-width: 2px;
+      box-shadow: 2px 2px 0 rgba(108,64,36,0.17);
+    }
+    .swatch { width: 13px; height: 13px; border-width: 2px; }
+    .actions .hint kbd { font-family: var(--font-header); font-size: 0.55rem; box-shadow: 2px 2px 0 rgba(106,63,31,0.2); }
+
+    .plinth::before,
+    .plinth::after {
+      border-radius: 0;
+      clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
+    }
+    .plinth::before { animation: rune-pulse 2.8s steps(4, end) infinite; }
+    .resonance-fill {
+      box-shadow: 3px 0 0 rgba(105,61,33,0.22);
+      transition: width 420ms steps(8, end);
+    }
+    .shelf-item { transition: transform 100ms steps(2, end), background-color 100ms steps(2, end); }
+    .shelf-item:hover { transform: translate(-2px, -2px); }
+    .footer-note { color: #5f4736; font-size: 1.08rem; line-height: 1.16; }
+    .footer-note a { color: #65351f; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+    .artifact-card.is-rolling { animation: forge-in 420ms steps(6, end); }
+    .toolbar,
+    .artifact-shell { animation: forge-in 560ms steps(7, end) both; }
+    .brand-mark { animation: crest-float 3.2s steps(5, end) infinite; }
+
+    @media (max-width: 620px) {
+      body { font-size: 19px; }
+      h1 { font-size: clamp(1.28rem, 7vw, 1.8rem); line-height: 1.45; }
+      h2 { font-size: clamp(1.05rem, 6vw, 1.42rem); }
+      .subhead { font-size: 1.15rem; }
+      .toolbar::before { font-size: 0.49rem; }
+      .section-title,
+      .ledger-title { font-size: 0.78rem; line-height: 1.7; }
+      .field label { font-size: 0.68rem; line-height: 1.7; }
+      .hero-kicker { font-size: 0.62rem; }
+      .artifact-shell { padding: 4px; box-shadow: 6px 6px 0 rgba(91,52,28,0.24); }
+      .artifact-inner { padding: 22px 14px 18px; }
+      .forge-table { font-size: 0.98rem; }
+      button { font-size: 0.68rem; }
+      .toolbar::before { font-size: 0.55rem; }
+      .meta-note,
+      .pattern-label,
+      .relic-caption,
+      .resonance-kicker { font-size: 0.66rem; }
+    }
+
+    @media (max-width: 350px) {
+      .app { width: calc(100% - 16px); }
+      .toolbar { padding-inline: 10px; }
+      .artifact-inner { padding-inline: 10px; }
+      .filters .field:last-child { grid-column: 1 / -1; }
+      .field label,
+      button { font-size: 0.66rem; }
+      .section-title,
+      .ledger-title { font-size: 0.73rem; }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div class="title-block">
-        <span class="material-symbols-outlined">auto_awesome</span>
-        <h1>Arcane Artifact Generator</h1>
+  <a class="skip" href="#artifactCard">Skip to the generated item</a>
+    <main class="app">
+      <header>
+        <div class="title-block">
+        <span class="brand-mark"><img src="sprites/forge-crest.png" width="58" height="58" alt="" /></span>
+        <div class="title-copy">
+          <p class="hero-kicker">The lost guild // Pixelforge reliquary</p>
+          <h1>Arcane Artifact <span>Forge</span></h1>
+        </div>
       </div>
-      <p class="subhead">Roll up sourcebook-ready relics with restrained power scaling, richer material detail, and a parchment-heavy fantasy compendium look. Legendary pieces can still appear at low tiers, but they arrive dormant until a stronger wielder awakens them.</p>
+      <p class="subhead">Roll sourcebook-ready relics with restrained power scaling and a pixel portrait forged from the item&rsquo;s own materials. Legendary pieces can still surface at low tiers, but they arrive dormant until a stronger wielder wakes them.</p>
     </header>
 
     <section class="toolbar" aria-label="Artifact generation controls">
       <div class="filters">
         <div class="field">
-          <label for="schoolSelect"><span class="material-symbols-outlined">local_library</span> Arcane school</label>
+          <label for="schoolSelect"><span class="material-symbols-outlined" aria-hidden="true">local_library</span> Arcane school</label>
           <select id="schoolSelect"></select>
         </div>
         <div class="field">
-          <label for="raritySelect"><span class="material-symbols-outlined">military_tech</span> Rarity</label>
+          <label for="raritySelect"><span class="material-symbols-outlined" aria-hidden="true">military_tech</span> Rarity</label>
           <select id="raritySelect"></select>
         </div>
         <div class="field">
-          <label for="tierSelect"><span class="material-symbols-outlined">shield</span> Party tier</label>
+          <label for="tierSelect"><span class="material-symbols-outlined" aria-hidden="true">shield</span> Party tier</label>
           <select id="tierSelect"></select>
+        </div>
+        <div class="field">
+          <label for="seedInput"><span class="material-symbols-outlined" aria-hidden="true">token</span> Seed</label>
+          <input id="seedInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
+                 placeholder="random" aria-describedby="seedHelp" />
+        </div>
+        <div class="field">
+          <label for="paletteSelect"><span class="material-symbols-outlined" aria-hidden="true">palette</span> Forge palette</label>
+          <select id="paletteSelect"></select>
         </div>
       </div>
       <div class="actions">
-        <button id="rerollButton" class="primary" type="button"><span class="material-symbols-outlined">casino</span> Generate</button>
-        <button id="copyButton" type="button"><span class="material-symbols-outlined">content_copy</span> Copy entry</button>
+        <p class="hint" id="seedHelp">Same seed and filters always roll the same item. <kbd>R</kbd> rerolls.</p>
+        <button id="rerollButton" class="primary" type="button"><span class="material-symbols-outlined" aria-hidden="true">casino</span> Generate</button>
+        <button id="copyButton" type="button"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span> Copy entry</button>
+        <button id="linkButton" type="button"><span class="material-symbols-outlined" aria-hidden="true">link</span> Copy link</button>
       </div>
     </section>
 
+    <p id="liveStatus" class="sr-only" role="status" aria-live="polite"></p>
+
     <section class="artifact-shell">
-      <article class="artifact-card" aria-live="polite">
+      <article class="artifact-card" id="artifactCard" tabindex="-1">
         <div class="artifact-inner">
           <div class="header-band">
             <div class="eyebrow" id="eyebrow"></div>
-            <h2 id="artifactName">Loading Relic...</h2>
-            <div class="meta-grid" id="metaGrid"></div>
+            <h2 id="artifactName">Loading Relic&hellip;</h2>
           </div>
 
+          <div class="meta-grid" id="metaGrid"></div>
+
           <div class="surface-grid">
-            <section class="info-card">
-              <h3 class="section-title"><span class="material-symbols-outlined">diamond</span> Materials & palette</h3>
-              <div class="chips" id="appearanceChips"></div>
-            </section>
-            <section class="info-card">
-              <h3 class="section-title"><span class="material-symbols-outlined">texture</span> Surface pattern</h3>
-              <div class="pattern-preview" id="patternPreview">
-                <div class="pattern-label"><span class="material-symbols-outlined">gesture</span><span id="patternLabel"></span></div>
+            <section class="reliquary" aria-labelledby="relicCaption">
+              <div class="plinth">
+                <canvas id="relicCanvas" width="168" height="224" role="img"
+                        aria-label="Pixel-art portrait of the generated item"></canvas>
+              </div>
+              <p class="relic-caption" id="relicCaption"></p>
+              <div class="relic-actions">
+                <button id="spriteButton" type="button" title="Download the portrait as a PNG">
+                  <span class="material-symbols-outlined" aria-hidden="true">download</span> PNG
+                </button>
               </div>
             </section>
+            <section class="info-card">
+              <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">diamond</span> Materials &amp; palette</h3>
+              <div class="chips" id="appearanceChips"></div>
+            </section>
+            <section class="info-card signature-card">
+              <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">star</span> Signature &amp; surface</h3>
+              <div class="pattern-preview" id="patternPreview"></div>
+              <p class="pattern-label"><span class="material-symbols-outlined" aria-hidden="true">gesture</span><span id="patternLabel"></span></p>
+              <p class="signature-text" id="signatureText"></p>
+            </section>
           </div>
+
+          <section class="ledger" aria-labelledby="ledgerTitle">
+            <div>
+              <h3 class="section-title ledger-title" id="ledgerTitle"><span class="material-symbols-outlined">table_rows</span> Forge ledger</h3>
+              <table class="forge-table">
+                <tbody id="ledgerTable"></tbody>
+              </table>
+            </div>
+            <aside class="resonance-panel" aria-label="Arcane resonance">
+              <p class="resonance-kicker">Arcane resonance</p>
+              <p class="resonance-value" id="resonanceValue">—</p>
+              <div class="resonance-track" aria-hidden="true"><div class="resonance-fill" id="resonanceFill"></div></div>
+              <p class="resonance-note" id="resonanceNote">Waiting for a forge roll.</p>
+            </aside>
+          </section>
 
           <div class="columns">
             <div class="stack">
               <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined">menu_book</span> Spellcraft & rules</h3>
+                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">menu_book</span> Spellcraft &amp; rules</h3>
                 <ul id="rulesList"></ul>
               </section>
               <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined">bolt</span> Enhancements</h3>
+                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">bolt</span> Enhancements</h3>
                 <ul id="boonsList"></ul>
               </section>
             </div>
             <div class="stack">
               <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined">warning</span> Costs, drawbacks & quirks</h3>
+                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">warning</span> Costs, drawbacks &amp; quirks</h3>
                 <ul id="drawbacksList"></ul>
               </section>
               <section class="callout">
-                <h3 class="section-title"><span class="material-symbols-outlined">history_edu</span> Lore hook</h3>
+                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">history_edu</span> Lore hook</h3>
                 <p class="lore-hook" id="loreHook"></p>
               </section>
             </div>
           </div>
 
           <div class="summary-box">
-            <div class="summary-line"><span class="material-symbols-outlined">star</span> <strong id="summaryPower">Power band</strong></div>
-            <div class="summary-line"><span class="material-symbols-outlined">info</span> <span id="summaryBalance"></span></div>
-            <div class="summary-line"><span class="material-symbols-outlined">token</span> <span id="summarySeed"></span></div>
+            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">star</span> <strong id="summaryPower">Power band</strong></div>
+            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">info</span> <span id="summaryBalance"></span></div>
+            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">token</span> <span id="summarySeed"></span></div>
           </div>
           <div class="warning-note" id="dormantNote"></div>
         </div>
       </article>
     </section>
 
-    <p class="footer-note">Built as a single-file compendium page with an infinite parchment backdrop, icon-first UI, and more grounded item logic for low-level play.</p>
+    <section class="shelf" id="shelf" aria-label="Recently generated items">
+      <h3>Shelf</h3>
+      <div class="shelf-rail" id="shelfRail"></div>
+      <button id="clearShelf" type="button" title="Clear the shelf">
+        <span class="material-symbols-outlined" aria-hidden="true">delete_sweep</span>
+        <span class="icon-fallback">Clear</span>
+      </button>
+    </section>
+
+    <p class="footer-note">
+      Single-file compendium page. The portraits are
+      <a href="https://isaiart.com/pixelforge/">pixelforge</a> sprites &mdash; 24&times;32 text grids
+      with a semantic palette, recolored in the browser from whatever material and gemstone the roll
+      produced, so no two relics render the same.
+    </p>
   </main>
 
   <script>
-    const schoolSelect = document.getElementById('schoolSelect');
-    const raritySelect = document.getElementById('raritySelect');
-    const tierSelect = document.getElementById('tierSelect');
-    const rerollButton = document.getElementById('rerollButton');
-    const copyButton = document.getElementById('copyButton');
+  (function () {
+    'use strict';
 
-    const artifactName = document.getElementById('artifactName');
-    const eyebrow = document.getElementById('eyebrow');
-    const metaGrid = document.getElementById('metaGrid');
-    const appearanceChips = document.getElementById('appearanceChips');
-    const patternPreview = document.getElementById('patternPreview');
-    const patternLabel = document.getElementById('patternLabel');
-    const rulesList = document.getElementById('rulesList');
-    const boonsList = document.getElementById('boonsList');
-    const drawbacksList = document.getElementById('drawbacksList');
-    const loreHook = document.getElementById('loreHook');
-    const summaryPower = document.getElementById('summaryPower');
-    const summaryBalance = document.getElementById('summaryBalance');
-    const summarySeed = document.getElementById('summarySeed');
-    const dormantNote = document.getElementById('dormantNote');
+    /* =====================================================================
+       Sprite data. Each entry is a 24x32 pixelforge grid flattened row-major.
+       Keys are semantic, not literal: 1/2/3 material dark-mid-light,
+       4/5/6 gemstone, m/M metal, K outline, k shadow, W highlight, '.' clear.
+       Source of truth is sprites/*.pxa; sprites/build.py regenerates this.
+       ===================================================================== */
+    const SW = 24, SH = 32;
+    const SPRITES = {
+      staff:      '..............................KKK......KKK............KMKKKKKKKKMK...........KKMKK6665KKMKK..........KMMKK6555KKMmK..........KMmK666554KMmK..........KMMK655555KMmK..........KKMM655555MMKK...........KMm555545MmK............KMmK5554KMmK............KMMK6555KMmK............KKMM3222MMKK.............KMM2222mmK..............KKMMMMMmKK...............KMMMMmmK................KK2221KK.................K3221K..................K3221K..................K3221K.................KK3222KK................KMMMMMmK................KMMMMmmK................KK2221KK.................K3221K..................K3221K..................K3221K.................KK3222KK................KMMMMMmK................KMMMMmmK................KK2222KK................KMMMMMmK................KMmmmmmK........',
+      wand:       '............KKK....................KKWKK...................KWKWK...................KKWKKKKKKK...............KKKKK666KK................KK66555KK...............K6666554K...........KKK.K6555554K...........KWK.K6555554K...........KKK.K6555544K..............KKK55544KK..............K33M444KK..............KK3M1mKKKKK.............K3M1mKKKKWK............KK31mKK.KWKK............K331KK..KKK............KK311K..................K331KK.................KK311K..................K331KK.................KK311K..................K331KK................KKK311K.................K3331KK................KK3211K.................K3321KK................KK3211K.................K3321KK................KK3211K.................K2211KK.................KKKKKK.......................................',
+      ring:       '.................................KKKKKK.................KK6666KK...............KK665555KK..............K66665554K..............K65655554K..............K65555554K..............K65555554K..............K65555544K..............KK555554KK...............KM5555mK..............KKKMMMMMMKKK...........KK3332222223KK.........KK332111122222KK........K33111KKKK12221K.......KK321KKK..KKK222KK......K3311K......K3221K......K321KK......KK221K......K321K........K321K......K321K........K321K......K322KK......KK321K......K3221K......K3311K......KK222KKK..KKK321KK.......K32223KKKK33311K........KK222223333211KK.........KK1222222111KK...........KKK111111KKK..............KKKKKKKK........................................................................................................',
+      amulet:     'KMMKK.............KKMMK.KKMmK.............KMMKK..KMMKK...........KKMmK...KKMMKK.........KKMMKK....KKMmK.........KMMKK......KMMKK.......KKMmK.......KKMmK.......KMMKK........KMMKK.....KKMmK.........KKMMKK...KKMMKK..........KKMmKKKKKMMKK............KMMKMMMMMmK.............KKmMMMMmmKK..............KKK2222KKK.............KK33322223KK............K3322222221K...........KK3222222222KK..........K332255552221K..........K322255552221K..........K322566555221K..........K322555555221K..........K322555555221K..........K322255552221K..........K322255552211K..........KK2222222221KK...........K3222222211K............KK12222111KK.............KKK2211KKK................KKMmKK..................KKMMKK..................KMMMmK..................KMMMmK..................KMmmmK.........',
+      tome:       '...................................................KKKKKKKKKKKKKKKKKK......K2223333333333332K......K211222222222MMMMKK.....K211222222222MMMMWK.....K211222222222MMMMWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122255552222WWWK.....K21122555555222WWWK.....K211255665555MMMMmK.....K211255555555MMMMmK.....K211255555555MMMMmK.....K211255555555MMMMmK.....K211255555555MMMMmK.....K21122555555222WWWK.....K21122255552222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K21122222222222WWWK.....K211222222222MMMMWK.....K211222222222MMMmWK.....K211222222222MMMmKK.....K1111111111111111K......KKKKKKKKKKKKKKKKKK...................................................',
+      blade:      '..................................KKKK....................K32K...................KK32KK..................K3321K.................KK3332KK................K333321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K................K323321K...........KKKKKK323322KKKKKK.....KKMMMMMMMMMMMMMMMMKK....KMMMMMMMMMMMMMMmmmmK....KKKKmmMMMMMMmmmmKKKK.......KKKKMMMMmmKKKK.............KK1111KK.................K2111K..................K2111K................KKKMMMMKKK..............KMM6555MMK..............KMM5655MmK..............KMM5554mmK..............KKKmmmmKKK.......',
+      shield:     '.............................KKKKKKKKKKKKKK.........KK333333333333KK.......KKMMMMMMMMMMMMMMKK......KMMMMMMMMMMMMMMMmK......KM22222211222222mK......KM22222211222222mK......KM22222211222222mK......KM22222211222222mK......KM22222555522222mK......KM22225555552222mK......KM22255665555222mK......KM22255555555222mK......KM22255555555222mK......K3222555555552221K......K3222555555552211K......KK22225555552221KK.......K32222555522221K........K32222211222211K........KK222221122221KK.........K322221122211K..........KK2222112221KK...........K3222112211K............KK22211221KK.............K32211211K..............KK221111KK...............KK2111KK.................K3211K..................KK21KK...................K21K....................KKKK..................................',
+      armor:      '........KKKKKKKK................KMMMMMMK................KMkkkkmK................KMkkkkmK...........KKKKKKMkkkkMKKKKKK.....KK3333332222223333KK...KKMMM222222222222MMMKK.KKMMMMM2222222222MMMMMKKKMMMMMMM22222222MMMMMMmKKMMMMMMM22555522MMMMMMmKKMMM2222255555522222MmmKKKMM2222556655552222mmKK.KKm2222555555552211mKK...KKK22255555555221KKK......K32255555555221K........K32255555555221K........K32225555552211K........KK222255552221KK.........K322221122221K..........K322221122221K..........K322221122211K..........KKMMMMMMMMMmKK...........KMMMMMMMMMmK............KMMMMMMMMmmK............KK22211221KK.............K32211221K..............K32211221K..............K32211211K..............KK221121KK...............K211111K................KKKKKKKK................................',
+      cloak:      '................................KKKKKKKK...............KK333333KK.............KK33222222KK............K332kkkk221K............K32kkkkkk21K............K32kkkkkk11K..........KKKK2k5555k2KKKK........KMMMM555555MMMMK........KMMMM566555MMMmK........KMMMM555555MmmmK........KKK2255555522KKK.........K331255552121K.........KK321221222122KK.......KK33122212222122KK......K3321222122221221K......K3221222122221221K.....KK3212222122222122KK....K332122221222221221K...KK322122221222221222KK..K33212222212222221221K.KK32212222212222221222KKK3322122222122222212221KK3222122222122222212221KK3221222222122222221222K332212222221222222212221322212222221222222212221322122222221222222221221322122222221222222221221222112211221122112211221KK11KK11KK11KK11KK11KK11.KKKKKKKKKKKKKKKKKKKKKKK',
+      orb:        '................................KKKKKKKK..............KKK666666KKK...........KK6665555556KK.........KK666665555555KK........K666WW665555554K.......KK656WW665555555KK......K6656666655555554K......K6555666555555554K......K6555555555555554K......K6555555555555554K......K6555555555555554K......K6555555555555544K......KK55555555555554KK.......K65555555555544K........KK555555555544KK.........KK4555555455KK..........KMMK5MMMm4KMmK..........KMmKKMMMmKKMmK.........KKMmKKMMMmKKMMKK........KMMKKKMMMmKKKMmK........KMmK.KMMMmK.KMmK........KMmK.KMMMmK.KMmK........KMmK.KMMMmK.KMmK.......KKMmK.KMMMmK.KMMKK......KMMKK.KMMMmK.KKMmK.....KKMMKKKKMMMMKKKKMMKK....K332233332222333321K....K322222222222222221K....K222222222222222111K....KKK11111111111111KKK......KKKKKKKKKKKKKKKK....',
+      bow:        '.......................................KKKKK...................KMM2K..................KK3W1K................KKK23WKK...............KK322KWK................K331KKWK...............KK311KKWK..............KK321KKKWK.............KK321KK.KWK...........KKK331KK..KWK...........K22211K...KWK..........KK21111K...KWK..........KMMMMMmK...KWK..........KMMMMmmK...KWK..........KK1551KK...KWK...........K2651K....KWK..........KK2551KK...KWK..........KMMMMMmK...KWK..........KMMMMMmK...KWK..........KK11111K...KWK...........KKK222KK..KWK.............KK222KK.KWK..............KK222KKKWK...............KK221KKWK................K322KKWK................KK122KWK.................KKK22WKK..................KK2W1K...................KMm1K...................KKKKK............................',
+      lute:       '.......KMMMMMMMMK..............KMMMMMMmmK..............KKMMMMMMKK..............KMMMMMmmmK..............KKKW1WWKKK................KW1WWK..................KW1WWK..................KW1WWK..................KW1WWK..................KW1WWK..................KW1WWK.................KKW1WWKK...............KK3W1WW2KK.............KK33W1WW22KK...........KK332W1WW222KK.........KK3322W1WW2222KK........K33221W1WW22221K.......KK32211KKKK22222KK.....KK33221KK66KK22222KK....K332221K6654K322221K....K322221K6544K322221K....K322222KK44KK322221K....K3222222KKKK3322221K....K322222223333222221K....K322222222222222221K....K322222MMMMMM222211K....KK22222MMMMMM22211KK.....KK22222222222221KK.......K22222222222111K........KKK1222222111KKK..........KKK111111KKK..............KKKKKKKK........',
+      lyre:       '...................................................KKKKK........KKKKK.....KKMMMKKKKKKKKKKMMMKK....KMMMMMMMMMMMMMMMMMmK....KMMMMMMMMMMMMMMMMMmK....KMMmmMmMmMmMmMmMMmmK....KK21KKWKWKWKWKWK21KK.....K31KKWKWKWKWKWK31K......K31KKWKWKWKWKWK31K......K31KKWKWKWKWKWK31K......K31KKWKWKWKWKWK31K......K31KKWKWKWKWKWK31K......K31KKWKWKWKWKWK31K......K32KKWKWKWKWKWK21K......KK21KWKWKWKWKW22KK.......K31KWKWKWKWKW21K........K31KWKWKWKWKW21K........K32KWKWKWKWKW11K........KK22W2W2W2WKW1KK........KK32W2W2W2W2W2KK........K32111111111111K.......KK31111555511112KK......K3322255555522221K......K3222256555522221K......K3222255555522221K......K3222255555522211K......KK22222555522221KK.......K22222222222111K........KKK1222222111KKK..........KKK111111KKK..............KKKKKKKK........',
+      horn:       '....KKKKK...................KMMMK...................KMMmK...................KMMMKK.................KKMMM1K.................K33211K.................K3221KK................KK3221K.................K33211K................KK3222KK................KMMMM21K................KMMMM21K................K322221K................K355521K................K665552KK...KKKKKKK.....K6555522KK.KK33333KK....K65555221KKK3322222KK...KK555MMMMKK332MMM222KK...KK22MMMM233MMkkkMM21K....K322222222MkkkkkM22KK...K32222222MkkkkkkkM21K...KK2222222MkkkkkkkM21K....KK222222MkkkkkkkM21K.....KK22222MkkkkkkkM21K......KK2222MkkkkkkkM21K.......KK222MkkkkkkkM11K........KK222MkkkkkM21KK.........KK22MMkkkMM11K...........KK222MMM211KK............KK2222211KK..............KK11111KK................KKKKKKK....',
+      chime:      '........KKMMMMKK................KMMKKMmK................KMMKKMmK................KM5566mK.........KKKKKKKK655555KKKKKKKK..KMMMMMMM665555MMMMMMMK..K32222225555552222221K..K32222225555552222221K..K22221222455512221111K..KKKmMmKmMmKmMmKmMmKKKK....KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKMMmKMMmK.......KMMmKMMmKmMmKMMmK.......KMMmKMMmKmKmKMMmK.......KMMmKMMmKKKKKMMmK.......KMMmKMMmK...KMMmK.......KmMmKMMmK...KMMmK.......KmKmKMMmK...KMMmK.......KKKKKMMmK...KmMmK...........KMMmK...KmKmK...........KMMmK...KKKKK...........KmMmK...................KmKmK............',
+      drum:       '.......................................................................................................KKKKKKKKKK............KKK33333333KKK.........KK333222222223KK.......KK33222221222222KK.....KK33222WWW1WW22222KK...KK3322WWWWW1WWWW2222KK..K33221WWWWW1WWWWW1221K.KK322WW1WWWW1WWWW1W222KKK3322WWW1WWW1WWW1WW2221KK322WWWWW15555W1WWWW221KK322WWWWW555555WWWWW221KK322WWWWW565555WWWWW221KK32111111555555W1111111KK322WWWWW555555WWWWW221KK322WWWWWW5555WWWWWW221KK3222WWWW1WWWWW1WWW22MMKKK222WWW1WWW1WWW1WW2MMMm.K3222W1WWWW1WWWW122MMmm.KK2221WWWWW1WWWW2112MmK..KK22222WWW1WW22212K11K...KK22222221222211K11KK....KK122222122111KK21K......KKK11111111KKKK11K........KKKKKKKKKK.K21KK..................KK11K...................K21KK...................K11K....................KKKK...'
+    };
+
+    /* ------------------------------------------------------------ colour -- */
+
+    function toRgb(hex) {
+      const h = hex.replace('#', '');
+      const n = parseInt(h.length === 3 ? h.replace(/./g, c => c + c) : h, 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    function toHex(rgb) {
+      return '#' + rgb.map(v => Math.max(0, Math.min(255, Math.round(v)))
+        .toString(16).padStart(2, '0')).join('');
+    }
+
+    function mix(a, b, t) {
+      const x = toRgb(a), y = toRgb(b);
+      return toHex([0, 1, 2].map(i => x[i] + (y[i] - x[i]) * t));
+    }
+
+    const shade = (hex, t) => mix(hex, '#120c14', t);
+    const tint = (hex, t) => mix(hex, '#fffaf0', t);
+
+    function rgba(hex, alpha) {
+      const [r, g, b] = toRgb(hex);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function luminance(hex) {
+      const [r, g, b] = toRgb(hex);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    }
+
+    /* Build the eleven-key palette a sprite is painted with. Very light
+       materials get pushed down rather than up, so a parchment-colored item
+       still has somewhere to put a highlight. */
+    /* Nudge a colour until it is at least `min` luminance. */
+    function floorLum(hex, min) {
+      let c = hex;
+      for (let i = 0; i < 14 && luminance(c) < min; i++) c = tint(c, 0.12);
+      return c;
+    }
+
+    /* The material and gem still come from the roll, but a palette profile can
+       push the whole relic toward a warmer or stranger forge bench without
+       changing its identity. */
+    const paletteProfiles = {
+      seeded:   { label: 'Seeded spectrum', material: null, gem: null, trim: null, strength: 0 },
+      warm:     { label: 'Warm brass', material: '#b47b46', gem: '#b95336', trim: '#d6ae69', strength: 0.52 },
+      moonlit:  { label: 'Moonlit lilac', material: '#7886a4', gem: '#8f6fb1', trim: '#d6c8e7', strength: 0.48 },
+      verdigris:{ label: 'Verdigris', material: '#5d8f7e', gem: '#5c8a72', trim: '#d2b26e', strength: 0.50 },
+      ember:    { label: 'Emberglass', material: '#9f4935', gem: '#d27836', trim: '#edc36f', strength: 0.48 }
+    };
+
+    const visualEffects = [
+      { id: 'quiet', label: 'Quiet forge', note: 'No extra flare; the silhouette leads.' },
+      { id: 'runes', label: 'Rune sparks', note: 'Small glyph sparks orbit the core.' },
+      { id: 'halo', label: 'Halo ring', note: 'A restrained ring of light frames the relic.' },
+      { id: 'embers', label: 'Ember motes', note: 'Warm motes drift from the item edge.' }
+    ];
+
+    const modelPatches = {
+      staff: { ornate: [[5, 3, 'M'], [18, 3, 'M'], [8, 5, '6'], [15, 5, '6'], [4, 21, 'W'], [19, 21, 'W']] },
+      wand: { ornate: [[5, 8, 'W'], [20, 6, 'W'], [8, 16, 'm'], [17, 16, 'm'], [5, 24, '6']] },
+      ring: { ornate: [[6, 11, 'M'], [17, 11, 'M'], [6, 20, 'M'], [17, 20, 'M'], [9, 8, 'W'], [14, 8, 'W']] },
+      amulet: { ornate: [[4, 19, 'M'], [19, 19, 'M'], [8, 25, '4'], [15, 25, '6'], [5, 24, 'W'], [18, 24, 'W']] },
+      tome: { ornate: [[6, 7, 'M'], [17, 7, 'M'], [6, 24, 'M'], [17, 24, 'M'], [10, 10, '6'], [13, 10, '6']] },
+      blade: { ornate: [[4, 19, 'M'], [19, 19, 'M'], [8, 5, 'W'], [15, 5, 'W'], [8, 25, '4'], [15, 25, '6']] },
+      shield: { ornate: [[6, 7, 'M'], [17, 7, 'M'], [6, 18, 'M'], [17, 18, 'M'], [8, 14, '6'], [15, 14, '6']] },
+      armor: { ornate: [[4, 12, 'M'], [19, 12, 'M'], [7, 18, '6'], [16, 18, '6'], [6, 25, 'W'], [17, 25, 'W']] },
+      cloak: { ornate: [[4, 15, '6'], [19, 15, '6'], [3, 23, 'M'], [20, 23, 'M'], [6, 27, 'W'], [17, 27, 'W']] },
+      orb: { ornate: [[2, 12, 'W'], [21, 12, 'W'], [2, 20, '6'], [21, 20, '6'], [5, 4, 'M'], [18, 4, 'M']] },
+      bow: { ornate: [[5, 7, 'W'], [7, 25, '6'], [20, 7, 'W'], [20, 25, 'W'], [9, 13, 'M'], [9, 18, 'M']] },
+      lute: { ornate: [[5, 18, 'M'], [18, 18, 'M'], [8, 23, '6'], [15, 23, '6']] },
+      lyre: { ornate: [[4, 10, 'M'], [19, 10, 'M'], [7, 26, '6'], [16, 26, '6']] },
+      horn: { ornate: [[8, 9, '6'], [10, 11, 'W'], [15, 15, 'M'], [18, 18, 'M']] },
+      chime: { ornate: [[5, 12, '6'], [9, 14, 'W'], [13, 17, '6'], [17, 13, 'W']] },
+      drum: { ornate: [[3, 16, 'M'], [20, 16, 'M'], [8, 12, '6'], [15, 19, '6']] }
+    };
+
+    function flipGrid(grid) {
+      const rows = [];
+      for (let y = 0; y < SH; y++) rows.push(grid.slice(y * SW, (y + 1) * SW).split('').reverse().join(''));
+      return rows.join('');
+    }
+
+    /* A genuinely different second chassis. Widening around the centerline
+       reads on symmetrical swords, staves and shields where mirroring did not. */
+    function broadenGrid(grid) {
+      const cells = Array(SW * SH).fill('.');
+      const factor = 1.24;
+      for (let y = 0; y < SH; y++) {
+        for (let x = 0; x < SW; x++) {
+          const key = grid.charAt(y * SW + x);
+          if (key === '.') continue;
+          const spreadX = Math.max(0, Math.min(SW - 1, Math.round((x - (SW - 1) / 2) * factor + (SW - 1) / 2)));
+          cells[y * SW + spreadX] = key;
+          const bridgeX = spreadX > x ? spreadX - 1 : spreadX < x ? spreadX + 1 : spreadX;
+          if (bridgeX >= 0 && bridgeX < SW && cells[y * SW + bridgeX] === '.') cells[y * SW + bridgeX] = key;
+        }
+      }
+      return cells.join('');
+    }
+
+    function modelGrid(art) {
+      let grid = SPRITES[art.sprite] || SPRITES.staff;
+      if (art.model === 'broad') grid = broadenGrid(grid);
+      /* Backward compatibility for rolls saved before the broad chassis. */
+      if (art.model === 'reversed') grid = flipGrid(grid);
+      if (art.model === 'ornate') {
+        const cells = grid.split('');
+        const patches = (modelPatches[art.sprite] && modelPatches[art.sprite].ornate) || [];
+        patches.forEach(([x, y, key]) => {
+          if (x >= 0 && x < SW && y >= 0 && y < SH) cells[y * SW + x] = key;
+        });
+        grid = cells.join('');
+      }
+      return grid;
+    }
+
+    function paletteProfile(art) {
+      return paletteProfiles[art.palette] || paletteProfiles.seeded;
+    }
+
+    function spritePalette(art) {
+      const profile = paletteProfile(art);
+      const mat = profile.material ? mix(art.material.main[1], profile.material, profile.strength) : art.material.main[1];
+      const matAcc = profile.trim ? mix(art.material.accent[1], profile.trim, profile.strength) : art.material.accent[1];
+      const gemAcc = profile.trim ? mix(art.gem.accent[1], profile.trim, profile.strength) : art.gem.accent[1];
+      const pale = luminance(mat) > 0.72;
+
+      /* A moonstone set in vellum, or a labradorite in blacksteel, vanished:
+         the stone and the body landed on the same value. Push the stone away
+         from the body before building its ramp. */
+      let gem = profile.gem ? mix(art.gem.main[1], profile.gem, profile.strength) : art.gem.main[1];
+      if (Math.abs(luminance(gem) - luminance(mat)) < 0.20) {
+        gem = luminance(mat) > 0.5 ? shade(gem, 0.42) : tint(gem, 0.34);
+      }
+
+      const paleGem = luminance(gem) > 0.74;
+      return {
+        '1': shade(mat, pale ? 0.30 : 0.40),
+        '2': pale ? shade(mat, 0.10) : mat,
+        '3': tint(mat, pale ? 0.10 : 0.32),
+        '4': shade(gem, paleGem ? 0.30 : 0.38),
+        '5': paleGem ? shade(gem, 0.12) : gem,
+        '6': tint(gem, paleGem ? 0.10 : 0.36),
+        'm': shade(matAcc, 0.34),
+        'M': tint(matAcc, 0.22),
+        /* The plinth is near-black, so an outline derived from a dark material
+           dissolved into it. Floor it above the niche's own luminance. */
+        'K': floorLum(mix(shade(mat, 0.84), '#1a1420', 0.5), 0.135),
+        'k': shade(mat, 0.62),
+        'W': mix('#f7f1e1', gemAcc, 0.14)
+      };
+    }
+
+    /* ------------------------------------------------------------ sprite -- */
+
+    function paint(ctx, grid, palette, cell, gemBoost, effect, phase) {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      for (let y = 0; y < SH; y++) {
+        for (let x = 0; x < SW; x++) {
+          const key = grid.charAt(y * SW + x);
+          if (key === '.') continue;
+          let color = palette[key];
+          if (!color) continue;
+          if (gemBoost && (key === '4' || key === '5' || key === '6')) {
+            color = tint(color, gemBoost);
+          }
+          ctx.fillStyle = color;
+          ctx.fillRect(x * cell, y * cell, cell, cell);
+        }
+      }
+      drawEffect(ctx, palette, cell, effect, phase || 0);
+    }
+
+    function drawEffect(ctx, palette, cell, effect, phase) {
+      if (!effect || effect.id === 'quiet') return;
+      const blink = Math.round(((Math.sin(phase * Math.PI * 2) + 1) / 2) * 2);
+      const sparks = [[2, 7], [21, 5], [4, 25], [19, 27], [3, 15], [20, 18]];
+      ctx.save();
+      ctx.globalAlpha = 0.55 + blink * 0.12;
+      if (effect.id === 'halo') {
+        ctx.strokeStyle = palette['6'];
+        ctx.lineWidth = Math.max(1, cell / 2);
+        ctx.strokeRect(cell * 3, cell * 5, cell * 18, cell * 21);
+        ctx.strokeStyle = palette['M'];
+        ctx.strokeRect(cell * 5, cell * 3, cell * 14, cell * 25);
+      }
+      if (effect.id === 'runes') {
+        const runes = [[2, 7], [19, 8], [3, 23], [18, 24]];
+        ctx.fillStyle = palette['W'];
+        runes.forEach(([x, y], index) => {
+          if ((index + blink) % 3 === 0) return;
+          ctx.fillRect(x * cell, y * cell, cell * 3, cell);
+          ctx.fillRect((x + 1) * cell, (y - 1) * cell, cell, cell * 3);
+        });
+      }
+      if (effect.id === 'embers') {
+        sparks.forEach(([x, y], index) => {
+          const drift = ((index + blink) % 3) - 1;
+          const rise = (index + blink) % 4;
+          if ((index + blink) % 2 === 0) {
+            ctx.fillStyle = index % 3 ? palette['6'] : palette['M'];
+            ctx.fillRect((x + drift) * cell, (y - rise) * cell, cell, cell * (index % 2 + 1));
+          }
+        });
+      }
+      ctx.restore();
+    }
+
+    function sizeCanvas(canvas, cell) {
+      const dpr = Math.min(3, window.devicePixelRatio || 1);
+      canvas.style.width = (SW * cell) + 'px';
+      canvas.style.height = (SH * cell) + 'px';
+      canvas.width = Math.round(SW * cell * dpr);
+      canvas.height = Math.round(SH * cell * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      return ctx;
+    }
+
+    /* -------------------------------------------------------------- data -- */
 
     const typeOptions = [
-      { name: 'Staff', icon: 'auto_awesome', base: '1d6 bludgeoning', weight: [3, 6], combatLabel: 'Melee form', schoolBias: ['Evocation', 'Conjuration', 'Transmutation'] },
-      { name: 'Wand', icon: 'magic_button', base: 'Arcane focus', weight: [1, 2], combatLabel: 'Focus form', schoolBias: ['Evocation', 'Illusion', 'Abjuration'] },
-      { name: 'Ring', icon: 'radio_button_checked', base: 'Worn focus', weight: [0, 1], combatLabel: 'Focus form', schoolBias: ['Enchantment', 'Divination', 'Illusion'] },
-      { name: 'Amulet', icon: 'deployed_code', base: 'Worn focus', weight: [1, 2], combatLabel: 'Focus form', schoolBias: ['Abjuration', 'Necromancy', 'Divination'] },
-      { name: 'Tome', icon: 'menu_book', base: 'Scholar focus', weight: [2, 5], combatLabel: 'Study form', schoolBias: ['Divination', 'Abjuration', 'Necromancy'] },
-      { name: 'Blade', icon: 'swords', base: '1d8 slashing', weight: [2, 4], combatLabel: 'Weapon form', schoolBias: ['Evocation', 'Necromancy', 'Abjuration'] },
-      { name: 'Shield', icon: 'shield', base: '+2 AC', weight: [5, 8], combatLabel: 'Defensive form', schoolBias: ['Abjuration', 'Conjuration', 'Transmutation'] },
-      { name: 'Armor', icon: 'shield_lock', base: 'Protective gear', weight: [10, 25], combatLabel: 'Protective form', schoolBias: ['Abjuration', 'Transmutation', 'Necromancy'] },
-      { name: 'Cloak', icon: 'styler', base: 'Worn focus', weight: [2, 4], combatLabel: 'Worn form', schoolBias: ['Illusion', 'Enchantment', 'Abjuration'] },
-      { name: 'Orb', icon: 'lens_blur', base: 'Arcane focus', weight: [2, 5], combatLabel: 'Focus form', schoolBias: ['Divination', 'Evocation', 'Conjuration'] },
-      { name: 'Bow', icon: 'arrow_forward', base: '1d6 piercing', weight: [2, 4], combatLabel: 'Weapon form', schoolBias: ['Transmutation', 'Divination', 'Conjuration'] },
-      { name: 'Instrument', icon: 'music_note', base: 'Arcane focus', weight: [2, 6], combatLabel: 'Performance form', schoolBias: ['Enchantment', 'Illusion', 'Abjuration'] }
+      { name: 'Staff', sprite: 'staff', icon: 'auto_awesome', role: 'weapon', base: '1d6 bludgeoning', weight: [3, 6], schoolBias: ['Evocation', 'Conjuration', 'Transmutation'] },
+      { name: 'Wand', sprite: 'wand', icon: 'magic_button', role: 'focus', base: 'Arcane focus', weight: [1, 2], schoolBias: ['Evocation', 'Illusion', 'Abjuration'] },
+      { name: 'Ring', sprite: 'ring', icon: 'radio_button_checked', role: 'worn', base: 'Worn band', weight: [0, 1], schoolBias: ['Enchantment', 'Divination', 'Illusion'] },
+      { name: 'Amulet', sprite: 'amulet', icon: 'deployed_code', role: 'worn', base: 'Worn pendant', weight: [1, 2], schoolBias: ['Abjuration', 'Necromancy', 'Divination'] },
+      { name: 'Tome', sprite: 'tome', icon: 'menu_book', role: 'focus', base: 'Spellbook focus', weight: [2, 5], schoolBias: ['Divination', 'Abjuration', 'Necromancy'] },
+      { name: 'Blade', sprite: 'blade', icon: 'swords', role: 'weapon', base: '1d8 slashing', weight: [2, 4], schoolBias: ['Evocation', 'Necromancy', 'Abjuration'] },
+      { name: 'Shield', sprite: 'shield', icon: 'shield', role: 'shield', base: '', weight: [5, 8], schoolBias: ['Abjuration', 'Conjuration', 'Transmutation'] },
+      { name: 'Armor', sprite: 'armor', icon: 'shield_lock', role: 'armor', base: '', weight: [10, 25], schoolBias: ['Abjuration', 'Transmutation', 'Necromancy'] },
+      { name: 'Cloak', sprite: 'cloak', icon: 'styler', role: 'worn', base: 'Worn garment', weight: [2, 4], schoolBias: ['Illusion', 'Enchantment', 'Abjuration'] },
+      { name: 'Orb', sprite: 'orb', icon: 'lens_blur', role: 'focus', base: 'Arcane focus', weight: [2, 5], schoolBias: ['Divination', 'Evocation', 'Conjuration'] },
+      { name: 'Bow', sprite: 'bow', icon: 'arrow_forward', role: 'weapon', base: '1d6 piercing', weight: [2, 4], schoolBias: ['Transmutation', 'Divination', 'Conjuration'] },
+      { name: 'Instrument', sprite: 'lute', icon: 'music_note', role: 'focus', base: 'Performance focus', weight: [2, 6],
+        /* Each form carries its own portrait -- naming a card "Hand Drum" over
+           a picture of a lute was worse than the generic label it replaced. */
+        forms: [{ name: 'Lute', sprite: 'lute' }, { name: 'Lyre', sprite: 'lyre' },
+                { name: 'Horn', sprite: 'horn', avoid: ['Velvet Vellum'] },
+                { name: 'Chime', sprite: 'chime', avoid: ['Velvet Vellum', 'Ashwood'] },
+                { name: 'Hand Drum', sprite: 'drum' }],
+      schoolBias: ['Enchantment', 'Illusion', 'Abjuration'] }
+    ];
+
+    const silhouetteVariants = type => [
+      { sprite: type.sprite, model: 'classic', modelLabel: 'Classic silhouette' },
+      { sprite: type.sprite, model: 'broad', modelLabel: 'War-forged silhouette' },
+      { sprite: type.sprite, model: 'ornate', modelLabel: 'Ornate silhouette' }
     ];
 
     const schoolOptions = ['Any', 'Abjuration', 'Conjuration', 'Divination', 'Enchantment', 'Evocation', 'Illusion', 'Necromancy', 'Transmutation'];
     const rarityOptions = ['Any', 'Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary', 'Artifact'];
+    /* Short enough to survive a 375px select without clipping the "17+". */
     const tierOptions = [
       { label: 'Auto', value: 'Auto' },
-      { label: 'Tier I · Levels 1-4', value: '1' },
-      { label: 'Tier II · Levels 5-10', value: '2' },
-      { label: 'Tier III · Levels 11-16', value: '3' },
-      { label: 'Tier IV · Levels 17+', value: '4' }
+      { label: 'Tier I · Lv 1-4', value: '1' },
+      { label: 'Tier II · Lv 5-10', value: '2' },
+      { label: 'Tier III · Lv 11-16', value: '3' },
+      { label: 'Tier IV · Lv 17+', value: '4' }
     ];
+    const paletteOptions = Object.entries(paletteProfiles).map(([value, profile]) => ({ value, label: profile.label }));
 
     const rarityRank = { 'Common': 0, 'Uncommon': 1, 'Rare': 2, 'Very Rare': 3, 'Legendary': 4, 'Artifact': 5 };
+    const rarityColor = {
+      'Common': '#6f6a63', 'Uncommon': '#3f7a4a', 'Rare': '#2e5fa3',
+      'Very Rare': '#7a3fa0', 'Legendary': '#b5701a', 'Artifact': '#c8322a'
+    };
+    /* Only the Artifact band gets a two-tone ribbon, which is the cue that
+       separates it from Legendary at a glance. */
+    const rarityAccent = { 'Artifact': '#e8b54a' };
     const powerLabels = ['Initiate-safe', 'Journeyman', 'Veteran', 'Mythic'];
+    const levelRanges = ['Levels 1-4', 'Levels 5-10', 'Levels 11-16', 'Levels 17+'];
 
-    const materials = [
-      { name: 'Ashwood', main: ['Flax', '#E3C98A'], accent: ['Soot', '#4B3427'], schools: ['Conjuration', 'Evocation', 'Transmutation'], types: ['Staff', 'Wand', 'Bow'], trait: 'warm-grained core', texture: 'polished woodgrain' },
-      { name: 'Moon-silver', main: ['Moonlit Silver', '#C9D1DD'], accent: ['Wine Brown', '#6A3429'], schools: ['Divination', 'Illusion', 'Abjuration'], types: ['Ring', 'Amulet', 'Orb', 'Shield'], trait: 'soft lunar gleam', texture: 'mirror-satin finish' },
-      { name: 'Sun-brass', main: ['Old Brass', '#C69D52'], accent: ['Oxblood', '#6B231A'], schools: ['Evocation', 'Enchantment', 'Abjuration'], types: ['Amulet', 'Instrument', 'Shield', 'Orb'], trait: 'bright ceremonial glow', texture: 'hammered gilt bands' },
-      { name: 'Witchwood', main: ['Walnut', '#7B563D'], accent: ['Verdigris', '#4C786B'], schools: ['Necromancy', 'Illusion', 'Enchantment'], types: ['Staff', 'Wand', 'Tome'], trait: 'dark resinous scent', texture: 'lacquered grain' },
-      { name: 'Blacksteel', main: ['Black Iron', '#46464F'], accent: ['Burnt Gold', '#B8893D'], schools: ['Abjuration', 'Necromancy', 'Evocation'], types: ['Blade', 'Shield', 'Armor'], trait: 'cold weighty mass', texture: 'brushed metal ridges' },
-      { name: 'Star-iron', main: ['Pale Iron', '#B8BFCA'], accent: ['Deep Indigo', '#3E4D7A'], schools: ['Divination', 'Evocation', 'Transmutation'], types: ['Blade', 'Orb', 'Armor', 'Amulet'], trait: 'meteor-burnished sheen', texture: 'pitted celestial grain' },
-      { name: 'Driftglass', main: ['Sea Glass', '#9FCBC3'], accent: ['Cinnamon', '#89513B'], schools: ['Illusion', 'Conjuration', 'Divination'], types: ['Orb', 'Ring', 'Amulet', 'Wand'], trait: 'mist-caught translucence', texture: 'sea-smoothed gloss' },
-      { name: 'Dragonbone', main: ['Ivory', '#E7DBCA'], accent: ['Garnet', '#8C2C2C'], schools: ['Necromancy', 'Abjuration', 'Conjuration'], types: ['Staff', 'Blade', 'Amulet', 'Armor'], trait: 'etched marrow lines', texture: 'bone-polished striations' },
-      { name: 'Velvet Vellum', main: ['Parchment', '#EEDBB8'], accent: ['Mulberry', '#653759'], schools: ['Divination', 'Illusion', 'Enchantment'], types: ['Tome', 'Cloak', 'Instrument'], trait: 'script-pressed fibers', texture: 'embossed folio grain' },
-      { name: 'Stoneglass', main: ['Quartz Smoke', '#B7B0A5'], accent: ['Moss', '#596A4C'], schools: ['Transmutation', 'Abjuration', 'Divination'], types: ['Orb', 'Shield', 'Ring'], trait: 'clouded mineral heart', texture: 'matte carved facets' }
+    const allMaterials = [
+      { name: 'Ashwood', main: ['Flax', '#E3C98A'], accent: ['Soot', '#4B3427'], schools: ['Conjuration', 'Evocation', 'Transmutation'], types: ['Staff', 'Wand', 'Bow'], texture: 'polished woodgrain' },
+      { name: 'Moon-silver', main: ['Moonlit Silver', '#C9D1DD'], accent: ['Wine Brown', '#6A3429'], schools: ['Divination', 'Illusion', 'Abjuration'], types: ['Ring', 'Amulet', 'Orb', 'Shield'], texture: 'mirror-satin finish' },
+      { name: 'Sun-brass', main: ['Old Brass', '#C69D52'], accent: ['Oxblood', '#6B231A'], schools: ['Evocation', 'Enchantment', 'Abjuration'], types: ['Amulet', 'Instrument', 'Shield', 'Orb'], texture: 'hammered gilt bands' },
+      { name: 'Witchwood', main: ['Walnut', '#7B563D'], accent: ['Verdigris', '#4C786B'], schools: ['Necromancy', 'Illusion', 'Enchantment'], types: ['Staff', 'Wand', 'Tome'], texture: 'lacquered grain' },
+      { name: 'Blacksteel', main: ['Black Iron', '#46464F'], accent: ['Burnt Gold', '#B8893D'], schools: ['Abjuration', 'Necromancy', 'Evocation'], types: ['Blade', 'Shield', 'Armor'], texture: 'brushed metal ridges' },
+      { name: 'Star-iron', main: ['Pale Iron', '#B8BFCA'], accent: ['Deep Indigo', '#3E4D7A'], schools: ['Divination', 'Evocation', 'Transmutation'], types: ['Blade', 'Orb', 'Armor', 'Amulet'], texture: 'pitted celestial grain' },
+      { name: 'Driftglass', main: ['Sea Glass', '#9FCBC3'], accent: ['Cinnamon', '#89513B'], schools: ['Illusion', 'Conjuration', 'Divination'], types: ['Orb', 'Ring', 'Amulet', 'Wand'], texture: 'sea-smoothed gloss' },
+      { name: 'Dragonbone', main: ['Ivory', '#E7DBCA'], accent: ['Garnet', '#8C2C2C'], schools: ['Necromancy', 'Abjuration', 'Conjuration'], types: ['Staff', 'Blade', 'Amulet', 'Armor'], texture: 'bone-polished striations' },
+      { name: 'Velvet Vellum', main: ['Parchment', '#EEDBB8'], accent: ['Mulberry', '#653759'], schools: ['Divination', 'Illusion', 'Enchantment'], types: ['Tome', 'Cloak', 'Instrument'], texture: 'embossed folio grain' },
+      { name: 'Stoneglass', main: ['Quartz Smoke', '#B7B0A5'], accent: ['Moss', '#596A4C'], schools: ['Transmutation', 'Abjuration', 'Divination'], types: ['Orb', 'Shield', 'Ring'], texture: 'matte carved facets' }
     ];
 
     const gemstones = [
@@ -750,7 +2094,7 @@
       { name: 'Labradorite', main: ['Labradorite', '#6D798E'], accent: ['Peacock', '#2C7F8A'], schools: ['Divination', 'Necromancy', 'Illusion'] }
     ];
 
-    const motifs = ['serpent-knot filigree', 'solar spokes', 'moth-wing etching', 'thorned lattice', 'tidal spirals', 'constellation pinwork', 'runic braidwork', 'ash-feather whorls', 'vine-scroll borders', 'labyrinth tracery', 'storm-barbed chevrons', 'grave-lily carving'];
+    const motifs = ['serpent-knot filigree', 'solar spokes', 'moth-wing etching', 'thorned lattice', 'tidal spirals', 'constellation pinwork', 'knotwork plaiting', 'ash-feather whorls', 'vine-scroll borders', 'labyrinth tracery', 'storm-barbed chevrons', 'grave-lily carving'];
     const finishes = ['polished', 'weathered', 'satin-burnished', 'ink-stained', 'ceremonially lacquered', 'char-marked', 'frost-kissed', 'wax-sealed'];
     const makers = ['a temple artificer', 'a hedge enchanter', 'a court relicsmith', 'a battlefield quartermage', 'a cloistered scribe', 'a wandering oathbinder', 'an old guild atelier', 'a grave-silent curator'];
     const origins = ['to guard a border shrine', 'to hide contraband lore', 'to escort pilgrims through badlands', 'to settle duels without bloodshed', 'to outlast a plague winter', 'to watch for omens over sea trade', 'to keep oaths in a treacherous court', 'to survive a city under siege'];
@@ -762,25 +2106,27 @@
       { text: 'As a bonus action, you can alter one small worn object’s color or surface finish for 1 hour.', schools: ['Transmutation', 'Illusion', 'Enchantment'], min: 0, max: 1 },
       { text: 'It can whisper brief directional hints toward the last place you rested.', schools: ['Divination', 'Conjuration'], min: 0, max: 2 },
       { text: 'Once per long rest, when you take force, fire, cold, necrotic, or psychic damage matching its school flavor, reduce that damage by your proficiency bonus.', schools: ['Abjuration', 'Necromancy', 'Evocation', 'Illusion'], min: 1, max: 4 },
-      { text: 'While attuned, you gain a +1 bonus to one narrow category of saving throw chosen by the item.', schools: ['Abjuration', 'Enchantment'], min: 1, max: 3 },
+      { text: 'While attuned, you gain a +1 bonus to one narrow category of saving throw chosen by the item.', schools: ['Abjuration', 'Enchantment'], min: 1, max: 3, needsAttunement: true },
       { text: 'You can cast a chosen cantrip through the item without material components.', schools: ['Any'], min: 0, max: 4 },
       { text: 'Opportunity attacks against you are made with disadvantage once per short rest after you cast through the item.', schools: ['Conjuration', 'Illusion', 'Transmutation'], min: 2, max: 4 },
       { text: 'When you roll initiative, you may immediately learn one obvious magical property of a visible creature or object within 30 feet.', schools: ['Divination'], min: 2, max: 4 },
       { text: 'The item stores a single 1st-level spell you cast into it until dawn. It can release that spell once without a slot.', schools: ['Abjuration', 'Conjuration', 'Evocation', 'Enchantment', 'Illusion', 'Transmutation'], min: 2, max: 4 },
-      { text: 'Your first weapon hit each turn deals an extra 1d4 damage of the item’s theme while its charges remain.', schools: ['Evocation', 'Necromancy', 'Transmutation'], min: 2, max: 5 },
+      { text: 'Your first weapon hit each turn deals an extra 1d4 damage of the item’s theme while its charges remain.', schools: ['Evocation', 'Necromancy', 'Transmutation'], min: 2, max: 5, needsCharges: true, roles: ['weapon'] },
       { text: 'You can ignore difficult terrain created by magic for 1 minute, once per short rest.', schools: ['Conjuration', 'Transmutation', 'Abjuration'], min: 3, max: 5 },
       { text: 'When you fail a concentration check, the item can turn that failure into a success once per long rest.', schools: ['Abjuration', 'Divination'], min: 3, max: 5 },
-      { text: 'After casting a spell of 3rd level or lower through this item, you can step 10 feet without provoking opportunity attacks.', schools: ['Conjuration', 'Illusion'], min: 3, max: 5 }
+      { text: 'After casting a spell of 3rd level or lower through this item, you can step 10 feet without provoking opportunity attacks.', schools: ['Conjuration', 'Illusion'], min: 3, max: 5 },
+      { text: 'Once per long rest you can reroll a single damage die rolled through the item, taking the second result.', schools: ['Any'], min: 1, max: 5 },
+      { text: 'The item grants you proficiency with one tool or instrument tied to its craft while attuned.', schools: ['Any'], min: 0, max: 3, needsAttunement: true }
     ];
 
     const drawbacks = [
-      { text: 'Potions and mundane food taste sharply bitter while attuned to this item.', min: 0, max: 5 },
-      { text: 'Whenever you expend the last charge, you glow or darken visibly until the end of your next turn.', min: 0, max: 5 },
+      { text: 'Potions and mundane food taste sharply bitter while attuned to this item.', min: 0, max: 5, needsAttunement: true },
+      { text: 'Whenever you expend the last charge, you glow or darken visibly until the end of your next turn.', min: 0, max: 5, needsCharges: true },
       { text: 'After you cast through the item, your voice briefly carries an eerie echo.', min: 0, max: 5 },
-      { text: 'If you use two or more charges in one turn, you have disadvantage on your next Dexterity check.', min: 1, max: 5 },
+      { text: 'If you use two or more charges in one turn, you have disadvantage on your next Dexterity check.', min: 1, max: 5, needsCharges: true },
       { text: 'The item dislikes haste. If you Dash immediately after using it, one small cosmetic effect flares uncontrollably.', min: 1, max: 5 },
       { text: 'While below half hit points, the item’s cosmetic effects become impossible to hide.', min: 2, max: 5 },
-      { text: 'The item cannot regain charges on a night when you broke an oath, contract, or spoken promise.', min: 2, max: 5 },
+      { text: 'The item cannot regain charges on a night when you broke an oath, contract, or spoken promise.', min: 2, max: 5, needsCharges: true },
       { text: 'Each dawn, the item demands a minute of quiet maintenance or its first magical use fizzles harmlessly.', min: 2, max: 5 },
       { text: 'When you critically fail an attack or spell attack made through the item, you take 1 force damage per rarity step above uncommon.', min: 3, max: 5 },
       { text: 'The item imposes disadvantage on one specific social check against creatures that hate its style of magic.', min: 3, max: 5 },
@@ -789,7 +2135,7 @@
     ];
 
     const signatureFeatures = [
-      { text: 'A lattice of hidden sigils blooms across its surface whenever a charge is spent.', schools: ['Any'], min: 0, max: 5 },
+      { text: 'A lattice of hidden sigils blooms across its surface whenever a charge is spent.', schools: ['Any'], min: 0, max: 5, needsCharges: true },
       { text: 'Its gemstone flashes in sequence like a measured heartbeat.', schools: ['Any'], min: 0, max: 5 },
       { text: 'Fine metallic veins under the surface shift position over the course of the day.', schools: ['Divination', 'Transmutation', 'Illusion'], min: 1, max: 5 },
       { text: 'Hairline seams open to reveal a second inner material when magic is channeled through it.', schools: ['Conjuration', 'Evocation', 'Necromancy'], min: 1, max: 5 },
@@ -807,24 +2153,51 @@
       { name: 'Arcane Lock', school: 'Abjuration', level: 2 },
       { name: 'Counterspell', school: 'Abjuration', level: 3 },
       { name: 'Dispel Magic', school: 'Abjuration', level: 3 },
+      { name: 'Banishment', school: 'Abjuration', level: 4 },
+      { name: 'Death Ward', school: 'Abjuration', level: 4 },
+      { name: 'Greater Restoration', school: 'Abjuration', level: 5 },
+      { name: 'Globe of Invulnerability', school: 'Abjuration', level: 6 },
+      { name: 'Symbol', school: 'Abjuration', level: 7 },
+      { name: 'Antimagic Field', school: 'Abjuration', level: 8 },
+      { name: 'Prismatic Wall', school: 'Abjuration', level: 9 },
       { name: 'Dimension Door', school: 'Conjuration', level: 4 },
       { name: 'Misty Step', school: 'Conjuration', level: 2 },
       { name: 'Fog Cloud', school: 'Conjuration', level: 1 },
       { name: 'Grease', school: 'Conjuration', level: 1 },
       { name: 'Mage Hand', school: 'Conjuration', level: 0 },
       { name: 'Create Food and Water', school: 'Conjuration', level: 3 },
-      { name: 'Guiding Hand', school: 'Divination', level: 1 },
+      { name: 'Conjure Minor Elementals', school: 'Conjuration', level: 4 },
+      { name: 'Teleportation Circle', school: 'Conjuration', level: 5 },
+      { name: 'Heroes’ Feast', school: 'Conjuration', level: 6 },
+      { name: 'Plane Shift', school: 'Conjuration', level: 7 },
+      { name: 'Maze', school: 'Conjuration', level: 8 },
+      { name: 'Gate', school: 'Conjuration', level: 9 },
+      { name: 'Guidance', school: 'Divination', level: 0 },
       { name: 'True Strike', school: 'Divination', level: 0 },
       { name: 'Detect Magic', school: 'Divination', level: 1 },
       { name: 'Locate Object', school: 'Divination', level: 2 },
       { name: 'Clairvoyance', school: 'Divination', level: 3 },
       { name: 'See Invisibility', school: 'Divination', level: 2 },
+      { name: 'Arcane Eye', school: 'Divination', level: 4 },
+      { name: 'Divination', school: 'Divination', level: 4 },
+      { name: 'Legend Lore', school: 'Divination', level: 5 },
+      { name: 'True Seeing', school: 'Divination', level: 6 },
+      { name: 'Vision of Distant Realms', school: 'Divination', level: 7 },
+      { name: 'Mind Blank', school: 'Divination', level: 8 },
+      { name: 'Foresight', school: 'Divination', level: 9 },
       { name: 'Friends', school: 'Enchantment', level: 0 },
       { name: 'Charm Person', school: 'Enchantment', level: 1 },
       { name: 'Heroism', school: 'Enchantment', level: 1 },
       { name: 'Calm Emotions', school: 'Enchantment', level: 2 },
       { name: 'Suggestion', school: 'Enchantment', level: 2 },
       { name: 'Enthrall', school: 'Enchantment', level: 2 },
+      { name: 'Hypnotic Pattern', school: 'Enchantment', level: 3 },
+      { name: 'Confusion', school: 'Enchantment', level: 4 },
+      { name: 'Dominate Person', school: 'Enchantment', level: 5 },
+      { name: 'Mass Suggestion', school: 'Enchantment', level: 6 },
+      { name: 'Power Word Pain', school: 'Enchantment', level: 7 },
+      { name: 'Antipathy/Sympathy', school: 'Enchantment', level: 8 },
+      { name: 'Power Word Kill', school: 'Enchantment', level: 9 },
       { name: 'Fire Bolt', school: 'Evocation', level: 0 },
       { name: 'Ray of Frost', school: 'Evocation', level: 0 },
       { name: 'Magic Missile', school: 'Evocation', level: 1 },
@@ -832,38 +2205,71 @@
       { name: 'Shatter', school: 'Evocation', level: 2 },
       { name: 'Scorching Ray', school: 'Evocation', level: 2 },
       { name: 'Lightning Bolt', school: 'Evocation', level: 3 },
+      { name: 'Wall of Fire', school: 'Evocation', level: 4 },
+      { name: 'Cone of Cold', school: 'Evocation', level: 5 },
+      { name: 'Chain Lightning', school: 'Evocation', level: 6 },
+      { name: 'Delayed Blast Fireball', school: 'Evocation', level: 7 },
+      { name: 'Sunburst', school: 'Evocation', level: 8 },
+      { name: 'Meteor Swarm', school: 'Evocation', level: 9 },
       { name: 'Minor Illusion', school: 'Illusion', level: 0 },
       { name: 'Disguise Self', school: 'Illusion', level: 1 },
       { name: 'Silent Image', school: 'Illusion', level: 1 },
       { name: 'Mirror Image', school: 'Illusion', level: 2 },
       { name: 'Invisibility', school: 'Illusion', level: 2 },
       { name: 'Major Image', school: 'Illusion', level: 3 },
+      { name: 'Greater Invisibility', school: 'Illusion', level: 4 },
+      { name: 'Seeming', school: 'Illusion', level: 5 },
+      { name: 'Programmed Illusion', school: 'Illusion', level: 6 },
+      { name: 'Mirage Arcane', school: 'Illusion', level: 7 },
+      { name: 'Illusory Dragon', school: 'Illusion', level: 8 },
+      { name: 'Weird', school: 'Illusion', level: 9 },
       { name: 'Chill Touch', school: 'Necromancy', level: 0 },
       { name: 'False Life', school: 'Necromancy', level: 1 },
       { name: 'Cause Fear', school: 'Necromancy', level: 1 },
       { name: 'Gentle Repose', school: 'Necromancy', level: 2 },
       { name: 'Blindness/Deafness', school: 'Necromancy', level: 2 },
       { name: 'Speak with Dead', school: 'Necromancy', level: 3 },
-      { name: 'Magecraft Mend', school: 'Transmutation', level: 0 },
+      { name: 'Blight', school: 'Necromancy', level: 4 },
+      { name: 'Enervation', school: 'Necromancy', level: 5 },
+      { name: 'Circle of Death', school: 'Necromancy', level: 6 },
+      { name: 'Finger of Death', school: 'Necromancy', level: 7 },
+      { name: 'Clone', school: 'Necromancy', level: 8 },
+      { name: 'Astral Projection', school: 'Necromancy', level: 9 },
+      { name: 'Prestidigitation', school: 'Transmutation', level: 0 },
       { name: 'Mending', school: 'Transmutation', level: 0 },
       { name: 'Feather Fall', school: 'Transmutation', level: 1 },
       { name: 'Jump', school: 'Transmutation', level: 1 },
       { name: 'Alter Self', school: 'Transmutation', level: 2 },
       { name: 'Spider Climb', school: 'Transmutation', level: 2 },
-      { name: 'Haste', school: 'Transmutation', level: 3 }
+      { name: 'Haste', school: 'Transmutation', level: 3 },
+      { name: 'Polymorph', school: 'Transmutation', level: 4 },
+      { name: 'Animate Objects', school: 'Transmutation', level: 5 },
+      { name: 'Flesh to Stone', school: 'Transmutation', level: 6 },
+      { name: 'Reverse Gravity', school: 'Transmutation', level: 7 },
+      { name: 'Control Weather', school: 'Transmutation', level: 8 },
+      { name: 'True Polymorph', school: 'Transmutation', level: 9 }
     ];
 
+    /* Rows are tiers I-IV, columns are rarity ranks Common..Artifact. */
     const maxSpellByTierAndRarity = [
       [0, 1, 2, 2, 3, 3],
       [1, 2, 3, 4, 5, 5],
       [2, 3, 4, 5, 6, 7],
-      [3, 4, 5, 6, 7, 9]
+      [3, 4, 5, 6, 8, 9]
     ];
 
-    let lastArtifact = null;
+    /* Which tiers a rarity actually belongs to. Used when the reader pins a
+       rarity but leaves the tier on Auto -- without this, picking Artifact
+       landed on Tier I nearly half the time and every roll came back dormant. */
+    const tiersForRarity = {
+      'Common': [1, 1, 2], 'Uncommon': [1, 2, 2, 3], 'Rare': [2, 2, 3, 3],
+      'Very Rare': [3, 3, 4], 'Legendary': [3, 4, 4], 'Artifact': [4]
+    };
+
+    /* --------------------------------------------------------------- rng -- */
 
     function mulberry32(a) {
-      return function() {
+      return function () {
         let t = a += 0x6D2B79F5;
         t = Math.imul(t ^ t >>> 15, t | 1);
         t ^= t + Math.imul(t ^ t >>> 7, t | 61);
@@ -871,25 +2277,35 @@
       };
     }
 
-    function hashSeed(text) {
-      let h = 1779033703 ^ text.length;
-      for (let i = 0; i < text.length; i++) {
-        h = Math.imul(h ^ text.charCodeAt(i), 3432918353);
+    /* Any seed text collapses to a uint32, and a uint32 typed back in is used
+       verbatim -- that round trip is what makes the printed seed reproducible. */
+    function normalizeSeed(text) {
+      const trimmed = String(text == null ? '' : text).trim();
+      if (/^\d+$/.test(trimmed)) {
+        const n = Number(trimmed);
+        if (n >= 0 && n <= 4294967295) return n >>> 0;
+      }
+      let h = 1779033703 ^ trimmed.length;
+      for (let i = 0; i < trimmed.length; i++) {
+        h = Math.imul(h ^ trimmed.charCodeAt(i), 3432918353);
         h = h << 13 | h >>> 19;
       }
-      return () => {
-        h = Math.imul(h ^ (h >>> 16), 2246822507);
-        h = Math.imul(h ^ (h >>> 13), 3266489909);
-        return (h ^= h >>> 16) >>> 0;
-      };
+      h = Math.imul(h ^ (h >>> 16), 2246822507);
+      h = Math.imul(h ^ (h >>> 13), 3266489909);
+      return (h ^ h >>> 16) >>> 0;
     }
 
-    function pick(arr, rng) {
-      return arr[Math.floor(rng() * arr.length)];
+    function randomSeed() {
+      if (window.crypto && window.crypto.getRandomValues) {
+        return window.crypto.getRandomValues(new Uint32Array(1))[0];
+      }
+      return Math.floor(Math.random() * 4294967296) >>> 0;
     }
+
+    const pick = (arr, rng) => arr[Math.floor(rng() * arr.length)];
 
     function sample(arr, count, rng) {
-      const copy = [...arr];
+      const copy = arr.slice();
       const out = [];
       while (copy.length && out.length < count) {
         out.push(copy.splice(Math.floor(rng() * copy.length), 1)[0]);
@@ -897,35 +2313,64 @@
       return out;
     }
 
-    function optionMarkup(items, mapper = (item) => ({ value: item, label: item })) {
-      return items.map(item => {
-        const mapped = mapper(item);
-        return `<option value="${mapped.value}">${mapped.label}</option>`;
-      }).join('');
+    /* ---------------------------------------------------------- selection -- */
+
+    const matchesSchool = (item, school) =>
+      !item.schools || item.schools.indexOf('Any') >= 0 || item.schools.indexOf(school) >= 0;
+
+    /* Relax one constraint at a time instead of falling back to the whole
+       table: dropping straight to `list` handed tier-1 parties entries whose
+       own `min` said they belonged to a legendary. School flavor is the first
+       thing to go; the power floor is never crossed. */
+    function fits(entry, traits) {
+      if (entry.needsCharges && !traits.charges) return false;
+      if (entry.needsAttunement && !traits.attuned) return false;
+      if (entry.roles && entry.roles.indexOf(traits.role) < 0) return false;
+      return true;
     }
 
-    function filterBySchool(list, schoolKey) {
-      if (schoolKey === 'Any') return list;
-      return list.filter(item => !item.schools || item.schools.includes('Any') || item.schools.includes(schoolKey));
+    function chooseFeature(list, school, index, rng, count, traits) {
+      const usable = list.filter(i => fits(i, traits));
+      const inBand = usable.filter(i => index >= i.min && index <= i.max);
+      const pool = inBand.filter(i => matchesSchool(i, school));
+      if (pool.length < count) {
+        inBand.forEach(i => { if (pool.indexOf(i) < 0) pool.push(i); });
+      }
+      if (pool.length < count) {
+        usable.filter(i => index >= i.min).forEach(i => { if (pool.indexOf(i) < 0) pool.push(i); });
+      }
+      return sample(pool, count, rng).map(entry => entry.text);
     }
 
-    function weightedMaterial(typeName, schoolKey, rng) {
-      const matches = materials.filter(mat => mat.types.includes(typeName) || mat.schools.includes(schoolKey));
-      return pick(matches.length ? matches : materials, rng);
+    /* Prefer a material that suits both the form and the school, then one that
+       suits either, then anything. The old single `||` filter let a school
+       match alone dress a tome in blacksteel. */
+    function weightedMaterial(typeName, school, rng, avoid) {
+      const materials = allMaterials.filter(m => !avoid || avoid.indexOf(m.name) < 0);
+      const both = materials.filter(m => m.types.indexOf(typeName) >= 0 && m.schools.indexOf(school) >= 0);
+      /* Usually exactly one material satisfies both, so always taking it made
+         every school-pinned staff Ashwood. Take the perfect fit most of the
+         time and let the wider pool supply the rest. */
+      if (both.length && rng() < 0.6) return pick(both, rng);
+      const byType = materials.filter(m => m.types.indexOf(typeName) >= 0);
+      const bySchool = materials.filter(m => m.schools.indexOf(school) >= 0);
+      const either = byType.concat(bySchool.filter(m => byType.indexOf(m) < 0));
+      return pick(either.length ? either : materials, rng);
     }
 
-    function weightedGem(schoolKey, rng) {
-      const matches = gemstones.filter(gem => gem.schools.includes(schoolKey));
+    function weightedGem(school, rng) {
+      const matches = gemstones.filter(gem => gem.schools.indexOf(school) >= 0);
       return pick(matches.length ? matches : gemstones, rng);
     }
 
-    function preferredType(schoolKey, rng) {
-      const matchingTypes = typeOptions.filter(t => t.schoolBias.includes(schoolKey));
-      return pick(matchingTypes.length ? matchingTypes : typeOptions, rng);
+    function preferredType(school, rng) {
+      const matching = typeOptions.filter(t => t.schoolBias.indexOf(school) >= 0);
+      return pick(matching.length ? matching : typeOptions, rng);
     }
 
-    function resolveTier(selection, rng) {
+    function resolveTier(selection, rarityChoice, rng) {
       if (selection !== 'Auto') return Number(selection);
+      if (rarityChoice !== 'Any') return pick(tiersForRarity[rarityChoice], rng);
       const roll = rng();
       if (roll < 0.42) return 1;
       if (roll < 0.76) return 2;
@@ -935,71 +2380,86 @@
 
     function resolveRarity(selection, tier, rng) {
       if (selection !== 'Any') return selection;
-      const tables = {
+      return pick({
         1: ['Common', 'Common', 'Uncommon', 'Uncommon', 'Rare'],
         2: ['Uncommon', 'Uncommon', 'Rare', 'Rare', 'Very Rare'],
         3: ['Rare', 'Rare', 'Very Rare', 'Very Rare', 'Legendary'],
         4: ['Very Rare', 'Legendary', 'Legendary', 'Artifact']
-      };
-      return pick(tables[tier], rng);
+      }[tier], rng);
     }
 
-    function levelRangeForTier(tier) {
-      return [
-        'Levels 1-4',
-        'Levels 5-10',
-        'Levels 11-16',
-        'Levels 17+'
-      ][tier - 1];
-    }
+    const isDormant = (rarityIndex, tier) => rarityIndex > tier + 1;
 
-    function combatDetail(type, school, rarityIndex, effectiveRarityIndex) {
-      const martialBonus = Math.max(0, Math.min(3, effectiveRarityIndex - 1));
-      if (['Blade', 'Bow', 'Staff'].includes(type.name)) {
-        const bonusText = martialBonus ? `, +${martialBonus} magic bonus` : '';
-        return `${type.base}${bonusText}`;
-      }
-      if (type.name === 'Shield') {
-        return `${type.base}${martialBonus ? ` and +${Math.min(2, martialBonus)} magical resilience` : ''}`;
-      }
-      if (type.name === 'Armor') {
-        return `${type.base}${martialBonus ? `, treated as +${Math.min(3, martialBonus)} armor` : ''}`;
-      }
-      return `${type.base}${effectiveRarityIndex >= 2 ? ', spell attack rolls gain +1' : ''}`;
-    }
+    /* The tier at which a dormant item stops being throttled. */
+    const wakesAtTier = rarityIndex => Math.min(4, rarityIndex - 1);
+    const roman = n => ['', 'I', 'II', 'III', 'IV'][n] || String(n);
 
-    function spellLevelCap(tier, rarityIndex) {
-      return maxSpellByTierAndRarity[tier - 1][rarityIndex];
+    /* Common .. Artifact. Monotonic, and capped at +3 so it stays inside the
+       band 5e actually uses for magic weapons and armour. */
+    const bonusByRank = [0, 0, 1, 1, 2, 3];
+
+    /* Returns the headline bonus and any apex clause separately: run together
+       they made the combat card four lines tall in a row of one-line cards. */
+    function combatDetail(type, idx) {
+      const b = bonusByRank[idx];
+      const apex = idx >= 5;
+      switch (type.role) {
+        case 'weapon':
+          return { main: `${type.base}${b ? `, +${b} attack and damage` : ''}`,
+                   extra: apex ? 'Its damage ignores resistance' : '' };
+        case 'shield':
+          return { main: `Shield, AC +${2 + b}`,
+                   extra: idx >= 4 ? 'Never imposes disadvantage on Stealth' : '' };
+        case 'armor':
+          return { main: b ? `Body armor, +${b} AC` : 'Body armor, no magical AC',
+                   extra: idx >= 4 ? 'No Stealth penalty' : '' };
+        case 'worn':
+          return { main: `${type.base}${b ? `, +${b} AC and saves` : ''}`,
+                   extra: apex ? 'The bonus extends to death saves' : '' };
+        default:
+          return { main: `${type.base}${b ? `, +${b} spell attack` : ''}`,
+                   extra: idx >= 4 ? `+${Math.max(1, b - 1)} to spell save DC` : '' };
+      }
     }
 
     function buildSpellPackage(school, cap, tier, rarityIndex, rng) {
-      const pool = spells.filter(spell => (school === 'Any' || spell.school === school) && spell.level <= cap);
-      const cantrips = pool.filter(spell => spell.level === 0);
-      const leveled = pool.filter(spell => spell.level > 0);
-
+      const pool = spells.filter(s => (school === 'Any' || s.school === school) && s.level <= cap);
+      const cantrips = pool.filter(s => s.level === 0);
+      const leveled = pool.filter(s => s.level > 0);
       const entries = [];
+      let hasCharges = false;
+
       if (cantrips.length && (tier <= 2 || rng() > 0.38)) {
         const c = pick(cantrips, rng);
         entries.push({ label: 'At will', text: `${c.name} (${c.school}, cantrip)` });
       }
 
+      /* Weight toward the deepest spells the item can actually hold -- a
+         tier IV artifact handing out Magic Missile made the whole power curve
+         look broken. */
+      const poolTop = leveled.length ? Math.max.apply(null, leveled.map(s => s.level)) : 0;
+
       if (leveled.length) {
-        const mainSpell = pick(leveled, rng);
+        const strong = leveled.filter(s => s.level >= Math.max(1, poolTop - 1));
+        const main = pick(rng() < 0.75 && strong.length ? strong : leveled, rng);
         if (tier === 1) {
-          const uses = rarityIndex >= 2 ? '1/long rest' : '1/day';
-          entries.push({ label: 'Spell', text: `${mainSpell.name} (${mainSpell.school}, level ${mainSpell.level}) · ${uses}` });
+          const uses = rarityIndex >= 2 ? '2/day, regained at dawn' : '1/day, regained at dawn';
+          entries.push({ label: 'Spell', text: `${main.name} (${main.school}, level ${main.level}) · ${uses}` });
         } else {
-          const charges = Math.min(10, Math.max(3, 2 + tier + Math.max(0, rarityIndex - 1) + Math.floor(rng() * 2)));
-          const cost = Math.max(1, Math.ceil(mainSpell.level / 2));
-          const recharge = tier <= 2 ? `1d${Math.min(6, 3 + tier)} + 1 at dawn` : `1d6 + ${Math.min(4, tier)} at dawn`;
-          entries.push({ label: 'Charges', text: `${charges} total charges` });
-          entries.push({ label: 'Recharge', text: recharge });
-          entries.push({ label: 'Spell slot', text: `${mainSpell.name} (${mainSpell.school}, level ${mainSpell.level}) costs ${cost} charge${cost > 1 ? 's' : ''}` });
+          /* 5e charges a spell's own level, and item capacity grows with both
+             tier and rarity -- no clamp, so the top of the range still varies. */
+          const charges = 2 + tier + rarityIndex * 2 + Math.floor(rng() * 4);
+          const cost = Math.max(1, Math.min(main.level, charges));
+          const regain = Math.max(1, Math.floor(charges / 3));
+          hasCharges = true;
+          entries.push({ label: 'Charges', text: String(charges) });
+          entries.push({ label: 'Recharge', text: `Regains 1d6 + ${regain} expended charges at dawn` });
+          entries.push({ label: 'Spell', text: `${main.name} (${main.school}, level ${main.level}) costs ${cost} charge${cost > 1 ? 's' : ''}` });
           if (rng() > 0.48) {
-            const secondaryPool = leveled.filter(spell => spell.name !== mainSpell.name && spell.level <= Math.max(1, cap - 1));
-            if (secondaryPool.length) {
-              const second = pick(secondaryPool, rng);
-              const cost2 = Math.max(1, Math.ceil(second.level / 2));
+            const secondary = leveled.filter(s => s.name !== main.name && s.level <= Math.max(1, cap - 1));
+            if (secondary.length) {
+              const second = pick(secondary, rng);
+              const cost2 = Math.max(1, Math.min(second.level, charges));
               entries.push({ label: 'Reserve spell', text: `${second.name} (${second.school}, level ${second.level}) costs ${cost2} charge${cost2 > 1 ? 's' : ''}` });
             }
           }
@@ -1009,83 +2469,85 @@
       if (!entries.length) {
         entries.push({ label: 'Effect', text: 'Minor cosmetic transmutations and ritual-safe cantrip effects only.' });
       }
-
-      return entries;
+      return { entries, poolTop, hasCharges };
     }
 
-    function chooseFeature(list, school, effectiveIndex, rng, count) {
-      const filtered = list.filter(item => (item.schools ? item.schools.includes('Any') || item.schools.includes(school) : true) && effectiveIndex >= item.min && effectiveIndex <= item.max);
-      return sample(filtered.length ? filtered : list, count, rng).map(entry => entry.text);
-    }
-
-    function buildName(type, material, gemstone, school, rarity, rng) {
-      const prefixes = ['Ashen', 'Velvet', 'Silent', 'Hollow', 'Gilded', 'Duskwrought', 'Moonlit', 'Stormbound', 'Cinder', 'Whispering', 'Graven', 'Wild', 'Opaline'];
+    /* `form` is the word shown on the card, so the name and the type chip can
+       never disagree -- an Instrument names itself Lute or Horn and says so. */
+    function buildName(form, material, gemstone, school, rarity, rng) {
+      const prefixes = ['Ashen', 'Velvet', 'Silent', 'Hollow', 'Gilded', 'Duskwrought', 'Moonlit',
+        'Stormbound', 'Cinder', 'Whispering', 'Graven', 'Wild', 'Opaline', 'Tarnished', 'Kindled',
+        'Sunken', 'Hallowed', 'Wintered'];
+      const grandPrefixes = ['Undying', 'Sovereign', 'Worldbound', 'Starfallen', 'Deathless', 'Elder'];
       const suffixBySchool = {
-        'Abjuration': ['Aegis', 'Ward', 'Bulwark', 'Seal'],
-        'Conjuration': ['Threshold', 'Gate', 'Passage', 'Summons'],
-        'Divination': ['Omen', 'Sight', 'Augury', 'Lantern'],
-        'Enchantment': ['Vow', 'Chorus', 'Murmur', 'Delight'],
-        'Evocation': ['Spark', 'Pyre', 'Thunder', 'Ember'],
-        'Illusion': ['Veil', 'Gleam', 'Masque', 'Mirage'],
-        'Necromancy': ['Morrow', 'Dirge', 'Grave', 'Hush'],
-        'Transmutation': ['Weave', 'Meld', 'Change', 'Turning']
+        'Abjuration': ['the Aegis', 'the Ward', 'Bulwarks', 'the Seventh Seal', 'Unbreaking', 'the Closed Door'],
+        'Conjuration': ['the Threshold', 'Open Gates', 'Far Passage', 'the Summons', 'Elsewhere', 'the Long Step'],
+        'Divination': ['Omens', 'the Second Sight', 'Augury', 'the Lantern', 'Told Futures', 'the Still Pool'],
+        'Enchantment': ['Vows', 'the Chorus', 'Murmurs', 'Sweet Counsel', 'the Bound Tongue', 'Easy Bargains'],
+        'Evocation': ['Sparks', 'the Pyre', 'Thunder', 'Embers', 'the Last Word', 'Answered Fire'],
+        'Illusion': ['Veils', 'the Gleam', 'Masques', 'Mirages', 'the Kind Lie', 'Borrowed Faces'],
+        'Necromancy': ['the Morrow', 'Dirges', 'the Grave', 'the Hush', 'Cerements', 'the Long Barrow'],
+        'Transmutation': ['the Weave', 'the Meld', 'Change', 'the Turning', 'Second Shapes', 'the Slow Thaw']
       };
-      const suffixes = suffixBySchool[school] || ['Oath', 'Sigil', 'Whorl', 'Mark'];
-      const formWord = type.name === 'Instrument' ? 'Canticle' : type.name;
-      const styleRoll = rng();
-      if (styleRoll < 0.35) return `${pick(prefixes, rng)} ${gemstone.name} ${formWord}`;
-      if (styleRoll < 0.7) return `${material.name} ${formWord} of ${pick(suffixes, rng)}`;
-      const title = rarity === 'Artifact' ? 'the First' : pick(['the Quiet', 'the Embered', 'the Hollow', 'the Goldbound', 'the Ashfeathered', 'the Lanterned'], rng);
-      return `${pick(prefixes, rng)} ${formWord}, ${title}`;
+      const suffixes = suffixBySchool[school] || ['Oaths', 'the Sigil', 'Whorls', 'the Mark'];
+      const grand = rarity === 'Legendary' || rarity === 'Artifact';
+      /* Drop any prefix sharing a stem with the word it will sit beside, or the
+         table produces "Opaline Opal Orb" and "Hollow Ring, the Hollow". */
+      const stem = w => w.toLowerCase().replace(/[^a-z]/g, '').slice(0, 4);
+      const prefixNear = (list, neighbour) => {
+        const clash = stem(neighbour.replace(/^the /, ''));
+        const clean = list.filter(p => stem(p) !== clash);
+        return pick(clean.length ? clean : list, rng);
+      };
+      const roll = rng();
+      if (!grand && roll < 0.34) return `${prefixNear(prefixes, gemstone.name)} ${gemstone.name} ${form}`;
+      if (roll < 0.68) return `${material.name} ${form} of ${pick(suffixes, rng)}`;
+      const title = rarity === 'Artifact' ? 'the First'
+        : pick(['the Quiet', 'the Embered', 'the Hollow', 'the Goldbound',
+                'the Ashfeathered', 'the Lanterned', 'the Unasked', 'the Late Hour'], rng);
+      return `${prefixNear(grand ? grandPrefixes : prefixes, title)} ${form}, ${title}`;
     }
 
-    function patternStyles(mainHex, accentHex, rng) {
-      const patterns = [
+    function patternStyles(rawMain, rawAccent, rng) {
+      /* A parchment body on a parchment card left nothing to see. Darken any
+         pale ink before it is drawn, the way the sprite outline is floored. */
+      const ink = h => luminance(h) > 0.58 ? shade(h, 0.46) : h;
+      const mainHex = ink(rawMain);
+      const accentHex = ink(rawAccent);
+      return pick([
         {
           label: 'Crosshatched vellum',
-          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.16)}, ${hexAlpha(accentHex, 0.18)}), linear-gradient(0deg, rgba(255,255,255,0.34), rgba(255,255,255,0.04))`,
-          overlay: `repeating-linear-gradient(45deg, transparent 0 12px, ${hexAlpha(accentHex, 0.18)} 12px 13px), repeating-linear-gradient(-45deg, transparent 0 14px, ${hexAlpha(mainHex, 0.16)} 14px 15px)`
+          bg: `linear-gradient(135deg, ${rgba(mainHex, 0.43)}, ${rgba(accentHex, 0.48)}), linear-gradient(0deg, rgba(255,255,255,0.34), rgba(255,255,255,0.04))`,
+          overlay: `repeating-linear-gradient(45deg, transparent 0 12px, ${rgba(accentHex, 0.48)} 12px 13px), repeating-linear-gradient(-45deg, transparent 0 14px, ${rgba(mainHex, 0.43)} 14px 15px)`
         },
         {
           label: 'Runic braidwork',
-          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.15)})`,
-          overlay: `radial-gradient(circle at 20% 30%, ${hexAlpha(accentHex, 0.34)} 0 6px, transparent 7px), radial-gradient(circle at 80% 70%, ${hexAlpha(mainHex, 0.28)} 0 7px, transparent 8px), repeating-linear-gradient(90deg, transparent 0 16px, ${hexAlpha(accentHex, 0.12)} 16px 18px)`
+          bg: `linear-gradient(135deg, ${rgba(mainHex, 0.48)}, ${rgba(accentHex, 0.41)})`,
+          overlay: `radial-gradient(circle at 20% 30%, ${rgba(accentHex, 0.72)} 0 6px, transparent 7px), radial-gradient(circle at 80% 70%, ${rgba(mainHex, 0.72)} 0 7px, transparent 8px), repeating-linear-gradient(90deg, transparent 0 16px, ${rgba(accentHex, 0.32)} 16px 18px)`
         },
         {
-          label: 'Hammered gilt bands',
-          bg: `linear-gradient(180deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.16)})`,
-          overlay: `repeating-linear-gradient(0deg, ${hexAlpha(accentHex, 0.08)} 0 18px, ${hexAlpha(accentHex, 0.22)} 18px 20px), radial-gradient(circle at 15% 15%, ${hexAlpha(mainHex, 0.20)} 0 4px, transparent 5px), radial-gradient(circle at 65% 55%, ${hexAlpha(mainHex, 0.15)} 0 6px, transparent 7px)`
+          label: 'Hammered banding',
+          bg: `linear-gradient(180deg, ${rgba(mainHex, 0.48)}, ${rgba(accentHex, 0.43)})`,
+          overlay: `repeating-linear-gradient(0deg, ${rgba(accentHex, 0.22)} 0 18px, ${rgba(accentHex, 0.59)} 18px 20px), radial-gradient(circle at 15% 15%, ${rgba(mainHex, 0.54)} 0 4px, transparent 5px), radial-gradient(circle at 65% 55%, ${rgba(mainHex, 0.41)} 0 6px, transparent 7px)`
         },
         {
           label: 'Celestial lattice',
-          bg: `linear-gradient(135deg, ${hexAlpha(mainHex, 0.18)}, ${hexAlpha(accentHex, 0.13)})`,
-          overlay: `radial-gradient(circle at 30% 28%, ${hexAlpha(accentHex, 0.32)} 0 2px, transparent 3px), radial-gradient(circle at 70% 62%, ${hexAlpha(mainHex, 0.26)} 0 3px, transparent 4px), linear-gradient(120deg, transparent 0 48%, ${hexAlpha(accentHex, 0.12)} 49% 51%, transparent 52%), linear-gradient(60deg, transparent 0 48%, ${hexAlpha(mainHex, 0.10)} 49% 51%, transparent 52%)`
+          bg: `linear-gradient(135deg, ${rgba(mainHex, 0.48)}, ${rgba(accentHex, 0.35)})`,
+          overlay: `radial-gradient(circle at 30% 28%, ${rgba(accentHex, 0.72)} 0 2px, transparent 3px), radial-gradient(circle at 70% 62%, ${rgba(mainHex, 0.70)} 0 3px, transparent 4px), linear-gradient(120deg, transparent 0 48%, ${rgba(accentHex, 0.32)} 49% 51%, transparent 52%), linear-gradient(60deg, transparent 0 48%, ${rgba(mainHex, 0.28)} 49% 51%, transparent 52%)`
         }
-      ];
-      return pick(patterns, rng);
+      ], rng);
     }
 
-    function hexAlpha(hex, alpha) {
-      const normalized = hex.replace('#', '');
-      const bigint = parseInt(normalized, 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
+    /* A ring weighs nothing worth tracking; "0 lbs" read like a bug. */
     function itemWeight(type, rng) {
       const [min, max] = type.weight;
       const whole = min + Math.round(rng() * (max - min));
+      if (whole === 0) return 'Negligible';
       return `${whole} lb${whole === 1 ? '' : 's'}`;
     }
 
-    function isDormant(rarityIndex, tier) {
-      return rarityIndex > tier + 1;
-    }
-
-    function buildLore(name, material, gem, school, type, maker, origin, quirk, rng) {
-      const schoolFlavor = {
+    function buildLore(name, material, gem, school, maker, origin) {
+      const flavor = {
         'Abjuration': 'Its maker trusted barriers more than prayers, and packed every seam with careful ward-script.',
         'Conjuration': 'Its magic favors thresholds, arrivals, and the thin places between where you stand and where you should not.',
         'Divination': 'It was tuned to signs in smoke, reflected stars, and the little hesitations that come before disaster.',
@@ -1095,219 +2557,562 @@
         'Necromancy': 'It keeps the manners of grave magic: formal, patient, and difficult to fool once it has learned your name.',
         'Transmutation': 'The item was shaped with change in mind, as if every surface were only waiting for permission to become something else.'
       };
-      const sentenceB = `${name} was fashioned from ${material.name.toLowerCase()} and set with ${gem.name.toLowerCase()} by ${maker} ${origin}.`;
-      const sentenceC = schoolFlavor[school] || 'Its enchantment is methodical and old-fashioned.';
-      const sentenceD = quirk;
-      return `${sentenceB} ${sentenceC} ${sentenceD}`;
+      return `${name} was fashioned from ${material.name.toLowerCase()} and set with ${gem.name.toLowerCase()} by ${maker} ${origin}. `
+        + (flavor[school] || 'Its enchantment is methodical and old-fashioned.');
     }
 
-    function buildArtifact(seedText = `${Date.now()}-${Math.random()}`) {
-      const seeded = hashSeed(seedText)();
-      const rng = mulberry32(seeded);
+    /* ------------------------------------------------------------- build -- */
 
-      const chosenSchool = schoolSelect.value;
+    function buildArtifact(seed, filters) {
+      const rng = mulberry32(seed);
+      const chosenSchool = filters.school;
       const school = chosenSchool === 'Any' ? pick(schoolOptions.slice(1), rng) : chosenSchool;
-      const tier = resolveTier(tierSelect.value, rng);
-      const rarity = resolveRarity(raritySelect.value, tier, rng);
-      const rawRarityIndex = rarityRank[rarity];
-      const effectiveRarityIndex = isDormant(rawRarityIndex, tier) ? Math.min(rawRarityIndex, tier + 1) : rawRarityIndex;
-      const dormant = isDormant(rawRarityIndex, tier);
+      const tier = resolveTier(filters.tier, filters.rarity, rng);
+      const rarity = resolveRarity(filters.rarity, tier, rng);
+      const rawIndex = rarityRank[rarity];
+      const dormant = isDormant(rawIndex, tier);
+      const effectiveIndex = dormant ? Math.min(rawIndex, tier + 1) : rawIndex;
 
-      const type = chosenSchool === 'Any' ? pick(typeOptions, rng) : (rng() < 0.65 ? preferredType(school, rng) : pick(typeOptions, rng));
-      const material = weightedMaterial(type.name, school, rng);
+      /* The school is settled by now either way, so the form bias applies to
+         an "Any" roll too -- otherwise most rolls paired a random type with an
+         unrelated school and produced things like a Necromancy longbow. */
+      const type = rng() < 0.7 ? preferredType(school, rng) : pick(typeOptions, rng);
+      const variantPool = type.forms || silhouetteVariants(type);
+      const variant = pick(variantPool, rng);
+      const form = type.forms ? variant.name : type.name;
+      const sprite = variant.sprite || type.sprite;
+      const model = variant.model || 'classic';
+      const modelLabel = variant.modelLabel || 'Classic silhouette';
+      const palette = filters.palette || 'seeded';
+      const effect = pick(visualEffects, rng);
+      const material = weightedMaterial(type.name, school, rng, variant && variant.avoid);
       const gem = weightedGem(school, rng);
       const motif = pick(motifs, rng);
       const finish = pick(finishes, rng);
       const maker = pick(makers, rng);
       const origin = pick(origins, rng);
       const quirk = pick(quirks, rng);
-      const signature = chooseFeature(signatureFeatures, school, effectiveRarityIndex, rng, 1)[0];
       const pattern = patternStyles(material.main[1], gem.main[1], rng);
-      const spellCap = spellLevelCap(tier, effectiveRarityIndex);
-      const spellPackage = buildSpellPackage(school, spellCap, tier, effectiveRarityIndex, rng);
-      const boonCount = effectiveRarityIndex <= 1 ? 2 : effectiveRarityIndex <= 3 ? 3 : 4;
-      const drawbackCount = effectiveRarityIndex <= 1 ? 1 : effectiveRarityIndex <= 3 ? 2 : 3;
-      const boons = chooseFeature(passiveBoons, school, effectiveRarityIndex, rng, boonCount);
-      const costs = chooseFeature(drawbacks, school, Math.max(0, effectiveRarityIndex), rng, drawbackCount);
-      const name = buildName(type, material, gem, school, rarity, rng);
-      const suggestedLevel = levelRangeForTier(tier);
-      const attunement = rawRarityIndex >= 2 || ['Ring', 'Amulet', 'Cloak', 'Orb'].includes(type.name) ? 'Required' : 'Optional';
-      const combat = combatDetail(type, school, rawRarityIndex, effectiveRarityIndex);
-      const weight = itemWeight(type, rng);
-      const powerBand = powerLabels[Math.min(tier - 1, powerLabels.length - 1)];
-      const balanceLine = dormant
-        ? `Dormant ${rarity.toLowerCase()} profile capped for ${suggestedLevel}.`
-        : `${rarity} item tuned for ${suggestedLevel}.`;
+      const spellCap = maxSpellByTierAndRarity[tier - 1][effectiveIndex];
+      const spellbook = buildSpellPackage(school, spellCap, tier, effectiveIndex, rng);
+      const attunement = rawIndex >= 2 || ['Ring', 'Amulet', 'Cloak', 'Orb'].indexOf(type.name) >= 0
+        ? 'Required' : 'Not required';
+      /* Settled before the feature tables are read, so nothing can promise a
+         while-attuned property on an item that needs no attunement. */
+      const traits = {
+        charges: spellbook.hasCharges,
+        attuned: attunement === 'Required',
+        role: type.role
+      };
+      const signature = chooseFeature(signatureFeatures, school, effectiveIndex, rng, 1, traits)[0];
+      const boonCount = effectiveIndex <= 1 ? 2 : effectiveIndex <= 3 ? 3 : 4;
+      const costCount = effectiveIndex <= 1 ? 1 : effectiveIndex <= 3 ? 2 : 3;
+      const boons = chooseFeature(passiveBoons, school, effectiveIndex, rng, boonCount, traits);
+      const costs = chooseFeature(drawbacks, school, effectiveIndex, rng, costCount, traits);
+      const name = buildName(form, material, gem, school, rarity, rng);
+      const suggestedLevel = levelRanges[tier - 1];
+      const article = /^[AEIOU]/.test(rarity) ? 'an' : 'a';
+      const profile = combatDetail(type, effectiveIndex);
 
       return {
-        seed: seeded,
-        name,
-        rarity,
-        type: type.name,
-        typeIcon: type.icon,
-        school,
-        tier,
-        suggestedLevel,
-        attunement,
-        weight,
-        material,
-        gem,
-        motif,
-        finish,
-        maker,
-        origin,
-        quirk,
-        signature,
-        dormant,
-        combat,
-        spellPackage,
-        boons,
-        costs,
-        powerBand,
-        balanceLine,
-        spellCap,
-        pattern,
-        lore: buildLore(name, material, gem, school, type, maker, origin, quirk, rng)
+        seed, filters, name, rarity, tier, suggestedLevel, attunement, article,
+        type: type.name, form, typeIcon: type.icon, sprite, model, modelLabel, palette, effect,
+        school, material, gem, motif, finish, quirk, signature, dormant,
+        rawIndex, effectiveIndex,
+        combat: profile.main, combatNote: profile.extra,
+        weight: itemWeight(type, rng),
+        spellPackage: spellbook.entries, poolTop: spellbook.poolTop,
+        boons, costs, spellCap, pattern,
+        powerBand: powerLabels[tier - 1],
+        resonance: Math.min(100, Math.round(18 + ((effectiveIndex + 1) / 6) * 64 + tier * 4 + (dormant ? -10 : 8))),
+        balanceLine: dormant
+          ? `Dormant ${rarity.toLowerCase()} profile, capped for ${suggestedLevel}.`
+          : `${rarity} item tuned for ${suggestedLevel}.`,
+        lore: buildLore(name, material, gem, school, maker, origin)
       };
     }
 
-    function renderArtifact(artifact) {
-      artifactName.textContent = artifact.name;
-      eyebrow.innerHTML = [
-        pill('military_tech', artifact.rarity),
-        pill(artifact.typeIcon, artifact.type),
-        pill('local_library', artifact.school),
-        pill('shield', artifact.suggestedLevel)
+    /* ------------------------------------------------------------ render -- */
+
+    const $ = id => document.getElementById(id);
+    const schoolSelect = $('schoolSelect'), raritySelect = $('raritySelect');
+    const tierSelect = $('tierSelect'), seedInput = $('seedInput'), paletteSelect = $('paletteSelect');
+    const rerollButton = $('rerollButton'), copyButton = $('copyButton');
+    const linkButton = $('linkButton'), spriteButton = $('spriteButton');
+    const relicCanvas = $('relicCanvas'), relicCaption = $('relicCaption');
+    const liveStatus = $('liveStatus'), artifactCard = $('artifactCard');
+    const shelf = $('shelf'), shelfRail = $('shelfRail'), clearShelf = $('clearShelf');
+
+    const esc = s => String(s).replace(/[&<>"]/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    const pill = (icon, text, cls) =>
+      `<span class="pill${cls ? ' ' + cls : ''}"><span class="material-symbols-outlined" aria-hidden="true">${icon}</span>${esc(text)}</span>`;
+
+    const metaCard = (icon, label, value, note) =>
+      `<div class="meta-card"><div class="meta-top"><span class="material-symbols-outlined" aria-hidden="true">${icon}</span>${esc(label)}</div>`
+      + `<div class="meta-value">${esc(value)}</div><div class="meta-note">${esc(note)}</div></div>`;
+
+    const ledgerRow = (leftLabel, leftValue, rightLabel, rightValue) =>
+      `<tr><th scope="row">${esc(leftLabel)}</th><td>${esc(leftValue)}</td><th scope="row">${esc(rightLabel)}</th><td>${esc(rightValue)}</td></tr>`;
+
+    const chip = (icon, text, swatchHex) =>
+      `<span class="chip"><span class="material-symbols-outlined" aria-hidden="true">${icon}</span>`
+      + (swatchHex ? `<span class="swatch" style="background:${esc(swatchHex)}"></span>` : '')
+      + `${esc(text)}</span>`;
+
+    const listEntry = (prefix, text) => `<li><span class="rule-prefix">${esc(prefix)}:</span> ${esc(text)}</li>`;
+
+    function capacityLine(art) {
+      if (art.spellCap === 0) return 'Cantrip-scale effects only';
+      const base = `Holds spells up to level ${art.spellCap}`;
+      return art.poolTop && art.poolTop < art.spellCap
+        ? `${base}; its ${art.school} repertoire currently tops out at level ${art.poolTop}`
+        : base;
+    }
+    const listText = text => `<li>${esc(text)}</li>`;
+
+    let current = null;
+    let pulse = null;
+
+    function renderArtifact(art) {
+      current = art;
+      artifactCard.classList.remove('is-rolling');
+      requestAnimationFrame(() => artifactCard.classList.add('is-rolling'));
+      const root = document.documentElement;
+      root.style.setProperty('--rarity', rarityColor[art.rarity]);
+      root.style.setProperty('--rarity-2', rarityAccent[art.rarity] || rarityColor[art.rarity]);
+      root.style.setProperty('--gemglow', rgba(art.gem.main[1], 0.38));
+      root.style.setProperty('--resonance', art.resonance + '%');
+
+      $('artifactName').textContent = art.name;
+      $('eyebrow').innerHTML = [
+        pill('military_tech', art.rarity, 'rarity'),
+        pill(art.typeIcon, art.form),
+        pill('local_library', art.school),
+        pill('shield', art.suggestedLevel)
       ].join('');
 
-      metaGrid.innerHTML = [
-        meta('military_tech', 'Rarity', artifact.rarity, artifact.dormant ? 'Dormant state at this tier' : 'Full current profile'),
-        meta('swords', 'Combat profile', artifact.combat, `${artifact.type} · ${artifact.attunement} attunement`),
-        meta('weight', 'Weight', artifact.weight, `${artifact.material.name} body with ${artifact.gem.name} setting`),
-        meta('star', 'Signature feature', artifact.signature, `${artifact.finish} · ${artifact.motif}`)
+      $('metaGrid').innerHTML = [
+        metaCard('military_tech', 'Rarity', art.rarity,
+          art.dormant ? `Dormant until tier ${roman(wakesAtTier(art.rawIndex))}` : 'Full current profile'),
+        metaCard('swords', 'Combat profile', art.combat,
+          art.combatNote || `${art.form} · ${art.school}`),
+        metaCard('link', 'Attunement', art.attunement,
+          art.attunement === 'Required' ? 'One creature at a time' : 'Anyone may use it'),
+        metaCard('weight', 'Weight', art.weight, `${art.material.name} body, ${art.gem.name} setting`)
       ].join('');
 
-      appearanceChips.innerHTML = [
-        chip('inventory_2', `Material: ${artifact.material.name}`),
-        chip('diamond', `Gemstone: ${artifact.gem.name}`),
-        chip('palette', `Main color: ${artifact.material.main[0]}`, artifact.material.main[1]),
-        chip('palette', `Accent: ${artifact.gem.main[0]}`, artifact.gem.main[1]),
-        chip('texture', `Texture: ${artifact.material.texture}`),
-        chip('gesture', `Motif: ${artifact.motif}`)
+      $('ledgerTable').innerHTML = [
+        ledgerRow('School', art.school, 'Form', art.form),
+        ledgerRow('Material', art.material.name, 'Gemstone', art.gem.name),
+        ledgerRow('Tier', `${roman(art.tier)} · ${art.suggestedLevel}`, 'Power', art.powerBand),
+        ledgerRow('Model', art.modelLabel, 'Effect', art.effect.label),
+        ledgerRow('Attunement', art.attunement, 'Weight', art.weight)
+      ].join('');
+      $('resonanceValue').textContent = `${art.resonance}%`;
+      $('resonanceNote').textContent = art.dormant
+        ? `Contained until tier ${roman(wakesAtTier(art.rawIndex))}.`
+        : `Stable for ${art.suggestedLevel.toLowerCase()}.`;
+
+      $('appearanceChips').innerHTML = [
+        chip('inventory_2', `Material: ${art.material.name}`),
+        chip('diamond', `Gemstone: ${art.gem.name}`, art.gem.main[1]),
+        chip('palette', `Main: ${art.material.main[0]}`, art.material.main[1]),
+        chip('palette', `Trim: ${art.material.accent[0]}`, art.material.accent[1]),
+        chip('texture', `Texture: ${art.material.texture}`),
+        chip('gesture', `Motif: ${art.motif}`),
+        chip('view_in_ar', `Model: ${art.modelLabel}`),
+        chip('auto_awesome', `Effect: ${art.effect.label}`)
       ].join('');
 
-      patternPreview.style.setProperty('--pattern-bg', artifact.pattern.bg);
-      patternPreview.style.setProperty('--pattern-overlay', artifact.pattern.overlay);
-      patternLabel.textContent = `${artifact.pattern.label} · ${artifact.finish}`;
+      const preview = $('patternPreview');
+      preview.style.setProperty('--pattern-bg', art.pattern.bg);
+      preview.style.setProperty('--pattern-overlay', art.pattern.overlay);
+      $('patternLabel').textContent = `${art.pattern.label} · ${art.finish}`;
+      $('signatureText').textContent = art.signature;
 
-      rulesList.innerHTML = [
-        listEntry('Suggested wielder', artifact.suggestedLevel),
-        listEntry('Attunement', artifact.attunement),
-        ...artifact.spellPackage.map(entry => listEntry(entry.label, entry.text)),
-        listEntry('School cap', artifact.spellCap === 0 ? 'Cantrip-scale effect only' : `Supports spells up to level ${artifact.spellCap} at this tier`)
+      $('rulesList').innerHTML = [
+        listEntry('Suggested wielder', art.suggestedLevel),
+        listEntry('Attunement', art.attunement),
+        ...art.spellPackage.map(e => listEntry(e.label, e.text)),
+        listEntry('Spell capacity', capacityLine(art))
       ].join('');
 
-      boonsList.innerHTML = [
-        ...artifact.boons.map(text => listText(text)),
-        listText(artifact.signature)
-      ].join('');
+      /* The signature feature already headlines the meta grid; repeating it
+         here padded the list without adding an ability. */
+      $('boonsList').innerHTML = art.boons.map(listText).join('');
+      $('drawbacksList').innerHTML = art.costs.map(listText).concat(listText(art.quirk)).join('');
+      $('loreHook').textContent = art.lore;
 
-      drawbacksList.innerHTML = [
-        ...artifact.costs.map(text => listText(text)),
-        listText(artifact.quirk)
-      ].join('');
+      $('summaryPower').textContent = `Power band: ${art.powerBand}`;
+      $('summaryBalance').textContent = art.balanceLine;
+      $('summarySeed').textContent = `Seed ${art.seed}`;
 
-      loreHook.textContent = artifact.lore;
-      summaryPower.textContent = `Power band: ${artifact.powerBand}`;
-      summaryBalance.textContent = artifact.balanceLine;
-      summarySeed.textContent = `Seed ${artifact.seed}`;
-
-      dormantNote.classList.toggle('is-visible', artifact.dormant);
-      dormantNote.innerHTML = artifact.dormant
-        ? `<span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 6px;">lock</span>This ${artifact.rarity.toLowerCase()} item is intentionally throttled for ${artifact.suggestedLevel}. Stronger properties can awaken later through story progression, milestones, or a higher-tier bearer.`
+      const note = $('dormantNote');
+      note.classList.toggle('is-visible', art.dormant);
+      note.innerHTML = art.dormant
+        ? `<span class="material-symbols-outlined" aria-hidden="true">lock</span><span>This ${esc(art.rarity === 'Artifact' ? 'artifact' : art.rarity.toLowerCase() + ' item')} is throttled to an effective ${esc(rarityOptions[art.effectiveIndex + 1].toLowerCase())} profile for ${esc(art.suggestedLevel)}. Its full properties wake at tier ${roman(wakesAtTier(art.rawIndex))} &mdash; through story progression, a milestone, or a stronger bearer.</span>`
         : '';
 
-      lastArtifact = artifact;
+      relicCaption.textContent = `${art.form} · ${art.modelLabel.replace(' silhouette', '')} · ${art.material.name} · ${art.gem.name}`;
+      relicCanvas.setAttribute('aria-label',
+        `Pixel-art portrait of ${art.name}, ${art.article} ${art.rarity.toLowerCase()} ${art.form.toLowerCase()} of ${art.material.name} set with ${art.gem.name}.`);
+      drawRelic(art);
+
+      seedInput.value = String(art.seed);
+      updateUrl(art);
+      liveStatus.textContent = `${art.name}. ${art.rarity} ${art.form}, ${art.modelLabel}, ${art.school}, ${art.suggestedLevel}.`;
     }
 
-    function pill(icon, text) {
-      return `<span class="pill"><span class="material-symbols-outlined">${icon}</span>${text}</span>`;
+    /* ------------------------------------------------------------- relic -- */
+
+    const CELL = 7;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function drawRelic(art) {
+      const grid = modelGrid(art);
+      const palette = spritePalette(art);
+      const ctx = sizeCanvas(relicCanvas, CELL);
+      paint(ctx, grid, palette, CELL, 0, art.effect, 0);
+
+      if (pulse) { cancelAnimationFrame(pulse); pulse = null; }
+      if (reduceMotion.matches) return;
+
+      /* Only the gemstone breathes -- a whole-sprite animation at this size
+         reads as flicker rather than magic. */
+      const start = performance.now();
+      let last = -1;
+      const step = now => {
+        const t = (Math.sin((now - start) / 900) + 1) / 2;
+        const quantized = Math.round(t * 4) / 4;
+        if (quantized !== last) {
+          last = quantized;
+          paint(ctx, grid, palette, CELL, quantized * 0.34, art.effect, quantized);
+        }
+        pulse = requestAnimationFrame(step);
+      };
+      pulse = requestAnimationFrame(step);
     }
 
-    function meta(icon, label, value, note) {
-      return `<div class="meta-card"><div class="meta-top"><span class="material-symbols-outlined">${icon}</span>${label}</div><div class="meta-value">${value}</div><div class="meta-note">${note}</div></div>`;
+    function slug(text) {
+      return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     }
 
-    function chip(icon, text, swatchHex = null) {
-      const swatch = swatchHex ? `<span class="swatch" style="background:${swatchHex}"></span>` : '';
-      return `<span class="chip"><span class="material-symbols-outlined">${icon}</span>${swatch}${text}</span>`;
-    }
-
-    function listEntry(prefix, text) {
-      return `<li><span class="rule-prefix">${prefix}:</span>${text}</li>`;
-    }
-
-    function listText(text) {
-      return `<li>${text}</li>`;
-    }
-
-    function copyArtifact() {
-      if (!lastArtifact) return;
-      const lines = [
-        `${lastArtifact.name}`,
-        `${lastArtifact.rarity} ${lastArtifact.type} · ${lastArtifact.school}`,
-        `Suggested Level: ${lastArtifact.suggestedLevel}`,
-        `Attunement: ${lastArtifact.attunement}`,
-        `Combat Profile: ${lastArtifact.combat}`,
-        `Material: ${lastArtifact.material.name} (${lastArtifact.material.main[0]})`,
-        `Gemstone: ${lastArtifact.gem.name} (${lastArtifact.gem.main[0]})`,
-        `Texture: ${lastArtifact.material.texture}`,
-        `Motif: ${lastArtifact.motif}`,
-        '',
-        'Spellcraft & Rules',
-        ...Array.from(rulesList.querySelectorAll('li')).map(li => `- ${li.textContent.trim()}`),
-        '',
-        'Enhancements',
-        ...lastArtifact.boons.map(item => `- ${item}`),
-        `- ${lastArtifact.signature}`,
-        '',
-        'Costs, Drawbacks & Quirks',
-        ...lastArtifact.costs.map(item => `- ${item}`),
-        `- ${lastArtifact.quirk}`,
-        '',
-        'Lore Hook',
-        lastArtifact.lore,
-        '',
-        `Seed: ${lastArtifact.seed}`
-      ].join('\n');
-
-      navigator.clipboard.writeText(lines).then(() => {
-        const previous = copyButton.innerHTML;
-        copyButton.innerHTML = '<span class="material-symbols-outlined">check</span>Copied';
-        setTimeout(() => copyButton.innerHTML = previous, 1400);
+    function downloadSprite() {
+      if (!current) return;
+      const off = document.createElement('canvas');
+      const cell = 12;
+      off.width = SW * cell;
+      off.height = SH * cell;
+      const ctx = off.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      paint(ctx, modelGrid(current), spritePalette(current), cell, 0, current.effect, 0.5);
+      off.toBlob(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = slug(current.name) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
       });
     }
 
-    function refresh() {
-      const artifact = buildArtifact();
-      renderArtifact(artifact);
+    /* ------------------------------------------------------------- shelf -- */
+
+    const SHELF_KEY = 'arcane-artifact-shelf';
+    const SHELF_MAX = 12;
+    let shelfItems = [];
+
+    function validEntry(entry) {
+      return !!entry && typeof entry === 'object'
+        && Number.isFinite(entry.seed)
+        && !!entry.filters && typeof entry.filters === 'object'
+        && schoolOptions.indexOf(entry.filters.school) >= 0
+        && rarityOptions.indexOf(entry.filters.rarity) >= 0
+        && tierOptions.some(t => t.value === entry.filters.tier)
+        && paletteProfiles[entry.filters.palette || 'seeded'];
     }
+
+    function loadShelf() {
+      shelfItems = [];
+      try {
+        const raw = window.localStorage.getItem(SHELF_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        /* Anything written by an older schema, or half-written, is dropped
+           rather than allowed to throw on the next render. */
+        if (Array.isArray(parsed)) shelfItems = parsed.filter(validEntry).slice(0, SHELF_MAX);
+      } catch (err) { shelfItems = []; }
+    }
+
+    function saveShelf() {
+      try { window.localStorage.setItem(SHELF_KEY, JSON.stringify(shelfItems)); }
+      catch (err) { /* private mode; the shelf just won't survive a reload */ }
+    }
+
+    const shelfKey = entry =>
+      `${entry.seed}|${entry.filters.school}|${entry.filters.rarity}|${entry.filters.tier}|${entry.filters.palette || 'seeded'}`;
+
+    function pushShelf(art) {
+      const entry = {
+        seed: art.seed, filters: art.filters, name: art.name,
+        rarity: art.rarity, sprite: art.sprite
+      };
+      const key = shelfKey(entry);
+      shelfItems = shelfItems.filter(i => shelfKey(i) !== key);
+      shelfItems.unshift(entry);
+      shelfItems = shelfItems.slice(0, SHELF_MAX);
+      saveShelf();
+      renderShelf();
+    }
+
+    /* Thumbnails are keyed by seed+filters and reused, so a reroll repaints one
+       new canvas instead of the whole rail. */
+    const shelfNodes = new Map();
+
+    function shelfNode(entry) {
+      const key = shelfKey(entry);
+      const cached = shelfNodes.get(key);
+      if (cached) return cached;
+
+      const art = buildArtifact(entry.seed, entry.filters);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'shelf-item';
+      button.style.setProperty('--slot-rarity', rarityColor[art.rarity]);
+      button.title = `${art.name} — ${art.rarity} ${art.form}`;
+      const canvas = document.createElement('canvas');
+      paint(sizeCanvas(canvas, 2), modelGrid(art), spritePalette(art), 2, 0, art.effect, 0.5);
+      const label = document.createElement('span');
+      label.textContent = art.name;
+      button.append(canvas, label);
+      button.addEventListener('click', () => {
+        schoolSelect.value = entry.filters.school;
+        raritySelect.value = entry.filters.rarity;
+        tierSelect.value = entry.filters.tier;
+        paletteSelect.value = entry.filters.palette || 'seeded';
+        renderArtifact(art);
+        artifactCard.focus();
+      });
+      shelfNodes.set(key, button);
+      return button;
+    }
+
+    function renderShelf() {
+      shelf.classList.toggle('is-visible', shelfItems.length > 1);
+      const live = new Set(shelfItems.map(shelfKey));
+      shelfNodes.forEach((node, key) => { if (!live.has(key)) shelfNodes.delete(key); });
+      shelfRail.replaceChildren(...shelfItems.map(shelfNode));
+    }
+
+    /* --------------------------------------------------------- clipboard -- */
+
+    function writeClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      /* file:// and plain http still need the old path. */
+      return new Promise((resolve, reject) => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+        ta.remove();
+        ok ? resolve() : reject(new Error('copy blocked'));
+      });
+    }
+
+    const restingLabel = new WeakMap();
+    const flashTimer = new WeakMap();
+
+    function flash(button, icon, label) {
+      if (!restingLabel.has(button)) restingLabel.set(button, button.innerHTML);
+      clearTimeout(flashTimer.get(button));
+      button.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">${icon}</span>${label}`;
+      flashTimer.set(button, setTimeout(() => {
+        button.innerHTML = restingLabel.get(button);
+      }, 1500));
+    }
+
+    function entryText(art) {
+      return [
+        art.name,
+        `${art.rarity} ${art.form} · ${art.school}`,
+        `Suggested Level: ${art.suggestedLevel}`,
+        `Attunement: ${art.attunement}`,
+        `Combat Profile: ${art.combat}${art.combatNote ? '. ' + art.combatNote : ''}`,
+        `Weight: ${art.weight}`,
+        `Material: ${art.material.name} (${art.material.main[0]} / ${art.material.accent[0]})`,
+        `Gemstone: ${art.gem.name}`,
+        `Texture: ${art.material.texture}`,
+        `Motif: ${art.motif}, ${art.finish}`,
+        `Model: ${art.modelLabel}`,
+        `Forge effect: ${art.effect.label}`,
+        `Palette: ${paletteProfile(art).label}`,
+        '',
+        'Spellcraft & Rules',
+        `- Suggested wielder: ${art.suggestedLevel}`,
+        `- Attunement: ${art.attunement}`,
+        ...art.spellPackage.map(e => `- ${e.label}: ${e.text}`),
+        `- Spell capacity: ${capacityLine(art)}`,
+        '',
+        'Signature Feature',
+        `- ${art.signature}`,
+        '',
+        'Enhancements',
+        ...art.boons.map(b => `- ${b}`),
+        '',
+        'Costs, Drawbacks & Quirks',
+        ...art.costs.map(c => `- ${c}`),
+        `- ${art.quirk}`,
+        '',
+        'Lore Hook',
+        art.lore,
+        ...(art.dormant ? ['', `Dormant: throttled for ${art.suggestedLevel}; wakes at tier ${roman(wakesAtTier(art.rawIndex))}.`] : []),
+        '',
+        `Seed: ${art.seed} (${art.filters.school} / ${art.filters.rarity} / tier ${art.filters.tier})`
+      ].join('\n');
+    }
+
+    /* ------------------------------------------------------------- state -- */
+
+    function readFilters() {
+      return { school: schoolSelect.value, rarity: raritySelect.value, tier: tierSelect.value, palette: paletteSelect.value };
+    }
+
+    /* The filters shape the roll as much as the seed does, so a shareable link
+       carries every active choice or the recipient sees a different item. */
+    function updateUrl(art) {
+      const params = new URLSearchParams();
+      params.set('seed', String(art.seed));
+      if (art.filters.school !== 'Any') params.set('school', art.filters.school);
+      if (art.filters.rarity !== 'Any') params.set('rarity', art.filters.rarity);
+      if (art.filters.tier !== 'Auto') params.set('tier', art.filters.tier);
+      if (art.filters.palette && art.filters.palette !== 'seeded') params.set('palette', art.filters.palette);
+      const url = location.pathname + '?' + params.toString();
+      try { history.replaceState(null, '', url); } catch (err) { /* file:// */ }
+    }
+
+    function applyUrl() {
+      const params = new URLSearchParams(location.search);
+      const school = params.get('school');
+      const rarity = params.get('rarity');
+      const tier = params.get('tier');
+      const palette = params.get('palette');
+      if (school && schoolOptions.indexOf(school) >= 0) schoolSelect.value = school;
+      if (rarity && rarityOptions.indexOf(rarity) >= 0) raritySelect.value = rarity;
+      if (tier && tierOptions.some(t => t.value === tier)) tierSelect.value = tier;
+      if (palette && paletteProfiles[palette]) paletteSelect.value = palette;
+      const seed = params.get('seed');
+      return seed === null ? null : normalizeSeed(seed);
+    }
+
+    function generate(seed) {
+      const filters = readFilters();
+      const art = buildArtifact(seed === undefined || seed === null ? randomSeed() : seed, filters);
+      renderArtifact(art);
+      pushShelf(art);
+    }
+
+    /* --------------------------------------------------------------- go --- */
+
+    const optionMarkup = (items, map) => items.map(item => {
+      const o = map ? map(item) : { value: item, label: item };
+      return `<option value="${esc(o.value)}">${esc(o.label)}</option>`;
+    }).join('');
 
     schoolSelect.innerHTML = optionMarkup(schoolOptions);
     raritySelect.innerHTML = optionMarkup(rarityOptions);
-    tierSelect.innerHTML = optionMarkup(tierOptions, item => ({ value: item.value, label: item.label }));
-
-    raritySelect.value = 'Any';
+    tierSelect.innerHTML = optionMarkup(tierOptions, t => ({ value: t.value, label: t.label }));
+    paletteSelect.innerHTML = optionMarkup(paletteOptions, p => ({ value: p.value, label: p.label }));
     schoolSelect.value = 'Any';
+    raritySelect.value = 'Any';
     tierSelect.value = 'Auto';
+    paletteSelect.value = 'seeded';
 
-    rerollButton.addEventListener('click', refresh);
-    copyButton.addEventListener('click', copyArtifact);
-    schoolSelect.addEventListener('change', refresh);
-    raritySelect.addEventListener('change', refresh);
-    tierSelect.addEventListener('change', refresh);
+    const reroll = () => generate();
+    const requery = () => generate(current ? current.seed : undefined);
 
-    refresh();
+    rerollButton.addEventListener('click', reroll);
+    schoolSelect.addEventListener('change', requery);
+    raritySelect.addEventListener('change', requery);
+    tierSelect.addEventListener('change', requery);
+    paletteSelect.addEventListener('change', requery);
+
+    seedInput.addEventListener('change', () => {
+      const raw = seedInput.value.trim();
+      generate(raw === '' ? randomSeed() : normalizeSeed(raw));
+    });
+    seedInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); seedInput.dispatchEvent(new Event('change')); }
+    });
+
+    copyButton.addEventListener('click', () => {
+      if (!current) return;
+      writeClipboard(entryText(current))
+        .then(() => flash(copyButton, 'check', 'Copied'))
+        .catch(() => flash(copyButton, 'error', 'Blocked'));
+    });
+
+    linkButton.addEventListener('click', () => {
+      writeClipboard(location.href)
+        .then(() => flash(linkButton, 'check', 'Link copied'))
+        .catch(() => flash(linkButton, 'error', 'Blocked'));
+    });
+
+    spriteButton.addEventListener('click', downloadSprite);
+
+    clearShelf.addEventListener('click', () => {
+      shelfItems = current ? [{
+        seed: current.seed, filters: current.filters, name: current.name,
+        rarity: current.rarity, sprite: current.sprite
+      }] : [];
+      saveShelf();
+      renderShelf();
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const tag = (event.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+      if (event.key === 'r' || event.key === 'R') { event.preventDefault(); generate(); }
+    });
+
+    /* Pause the gem while the tab is hidden rather than burning frames. */
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (pulse) { cancelAnimationFrame(pulse); pulse = null; }
+      } else if (current && !reduceMotion.matches) {
+        drawRelic(current);
+      }
+    });
+
+    /* Reveal icons only once the face has actually arrived; offline they stay
+       hidden rather than painting their ligature names as words. */
+    const iconFont = '24px "Material Symbols Outlined"';
+    document.documentElement.classList.add('icons-pending');
+    const revealIcons = () => {
+      if (!document.fonts || document.fonts.check(iconFont)) {
+        document.documentElement.classList.remove('icons-pending');
+        return true;
+      }
+      return false;
+    };
+    if (!revealIcons() && document.fonts) {
+      document.fonts.ready.then(revealIcons);
+      document.fonts.load(iconFont).then(revealIcons).catch(() => {});
+    }
+
+    loadShelf();
+    generate(applyUrl());
+  })();
   </script>
 </body>
 </html>
