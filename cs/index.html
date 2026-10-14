@@ -585,12 +585,14 @@
             });
         }
 
+        function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
         function renderInventory() {
             const grid = document.getElementById('inventoryGrid'); grid.innerHTML = ''; let totalWt = 0;
             inventoryData.forEach((item, idx) => {
                 const slot = document.createElement('div'); slot.className = `inv-slot ${!item ? 'empty' : ''}`; slot.onclick = () => openItemModal(idx);
                 if (item) {
-                    slot.innerHTML = `<span>${item.icon}</span>${item.qty > 1 ? `<span class="inv-qty">${item.qty}</span>` : ''}`;
+                    slot.innerHTML = `<span>${escapeHtml(item.icon)}</span>${item.qty > 1 ? `<span class="inv-qty">${escapeHtml(item.qty)}</span>` : ''}`;
                     totalWt += (parseFloat(item.weight)||0) * (parseFloat(item.qty)||1);
                 } else { slot.innerHTML = `<i class="fas fa-plus text-[var(--text-muted)] text-sm opacity-50 hover:opacity-100 transition"></i>`; }
                 grid.appendChild(slot);
@@ -635,7 +637,7 @@
         }
         function addAttack(data={}) {
             const row = document.createElement('tr'); row.className = "border-b border-[var(--line)] group";
-            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${data.n||'Weapon'}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${data.h||'+0'}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${data.d||'1d6'}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
+            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${escapeHtml(data.n||'Weapon')}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${escapeHtml(data.h||'+0')}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${escapeHtml(data.d||'1d6')}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
             document.getElementById('attacksList').appendChild(row);
         }
         function openItemModal(idx) {
@@ -679,7 +681,7 @@
             if(data.spells) { data.spells.forEach((s, i) => { const idx = i+1; document.getElementById(`sp_u_${idx}`).value = s.u; document.getElementById(`sp_m_${idx}`).value = s.m; document.getElementById(`sp_n_${idx}`).value = s.n; }); }
         }
         function exportData() { saveData(); const blob = new Blob([localStorage.getItem('dndSheet_v7_Isaiah')], {type: "application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `agent_${document.getElementById('charName').value}.json`; a.click(); }
-        function importData(input) { const r = new FileReader(); r.onload = e => { localStorage.setItem('dndSheet_v7_Isaiah', e.target.result); location.reload(); }; r.readAsText(input.files[0]); }
+        function importData(input) { const r = new FileReader(); r.onload = e => { let parsed; try { parsed = JSON.parse(e.target.result); } catch(err) { parsed = null; } if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) { alert('Invalid character file.'); input.value = ''; return; } localStorage.setItem('dndSheet_v7_Isaiah', JSON.stringify(parsed)); location.reload(); }; r.readAsText(input.files[0]); }
     </script>
 </body>
 </html>
