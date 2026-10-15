@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Loom of Fates — Complete Character Generator</title>
+<title>The Loom of Fates — D&amp;D 5e Character Generator</title>
+<meta name="description" content="The Loom of Fates is the D&amp;D 5e character generator for dnd.isaiart.com: random race, class, subclass, ability scores, AC, HP, saving throws, skills, senses, languages, spells, gear, appearance, personality and backstory. Save characters to your roster and revisit them later.">
+<link rel="canonical" href="https://dnd.isaiart.com/loom-of-fates/">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral+SC:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--m:#58180D;--ml:#7A3021;--g:#C9AD6A;--gd:#B89956;--p:#EDE5CE;--pl:#F7F2E5;--pd:#E0D5B8;--sb:#F8F1E0;--t:#1A1A1A;--td:#6B6B5E;--r:#9C2B1B}
@@ -82,13 +84,80 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .backstory::first-letter{font-family:'Spectral SC',serif;font-size:2.2rem;font-weight:800;color:var(--m);float:left;line-height:.8;margin:4px 6px 0 0}
 /* Footer */
 .foot{text-align:center;padding:20px;color:var(--td);font-style:italic;font-size:.8rem;border-top:2px solid var(--g);max-width:900px;margin:0 auto}
-@media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr)}.two-col,.equip-grid,.pers-grid{grid-template-columns:1fr}.sh-top{grid-template-columns:1fr}.gen-controls{flex-direction:column}}
+/* Tool row (save / copy / navigate) */
+.tool-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-top:16px}
+.tool-btn{font-family:'Spectral SC',serif;font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);background:var(--pl);border:1.5px solid var(--pd);padding:6px 12px;cursor:pointer;transition:all .2s}
+.tool-btn:hover:not([disabled]){border-color:var(--m);background:var(--sb)}
+.tool-btn[disabled]{opacity:.35;cursor:default}
+.tool-btn.saved{background:var(--m);color:var(--p);border-color:var(--g)}
+.tool-sep{width:1px;height:20px;background:var(--pd);margin:0 4px}
+.page-ind{font-family:'Spectral SC',serif;font-size:.7rem;font-weight:700;color:var(--m);min-width:54px;text-align:center}
+/* Roster (saved characters + session history) */
+.roster{max-width:800px;margin:18px auto 0;text-align:left;background:var(--pl);border:2px solid var(--pd);position:relative}
+.roster::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--m),var(--r),var(--m))}
+.roster summary{font-family:'Spectral SC',serif;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);padding:12px 16px 10px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.roster summary::-webkit-details-marker{display:none}
+.roster summary::before{content:'▸';margin-right:8px;transition:transform .2s;display:inline-block}
+.roster[open] summary::before{transform:rotate(90deg)}
+.roster summary .r-title{flex:1}
+.roster summary .r-count{font-family:'Spectral',serif;font-style:italic;text-transform:none;letter-spacing:0;font-weight:400;color:var(--td);font-size:.8rem}
+.roster-body{padding:0 16px 14px}
+.roster-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.roster-h{font-family:'Spectral SC',serif;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);border-bottom:2px solid var(--g);padding-bottom:3px;margin-bottom:6px}
+.roster-list{max-height:260px;overflow-y:auto}
+.sb-empty{font-size:.75rem;font-style:italic;color:var(--td);padding:4px 0}
+.sb-entry{display:flex;align-items:center;gap:8px;padding:5px 8px;border-left:3px solid transparent;cursor:pointer;transition:background .15s}
+.sb-entry:hover{background:var(--sb);border-left-color:var(--gd)}
+.sb-entry.active{background:var(--sb);border-left-color:var(--m)}
+.sb-info{flex:1;min-width:0}
+.sb-name{font-family:'Spectral SC',serif;font-size:.78rem;font-weight:700;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-meta{font-size:.68rem;font-style:italic;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-lvl{font-family:'Spectral SC',serif;font-size:.62rem;font-weight:700;color:var(--p);background:var(--m);padding:1px 6px;min-width:22px;text-align:center}
+.sb-del{background:none;border:1px solid transparent;color:var(--td);cursor:pointer;font-size:.8rem;line-height:1;padding:2px 6px}
+.sb-del:hover{color:var(--r);border-color:var(--r)}
+.prefix-row{display:flex;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--pd)}
+.prefix-row label{font-family:'Spectral SC',serif;font-size:.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);white-space:nowrap}
+.prefix-row input{flex:1;min-width:0;font-family:'Libre Baskerville',serif;font-size:.75rem;padding:5px 10px;background:var(--p);color:var(--t);border:1.5px solid var(--pd)}
+.prefix-row input:focus{outline:none;border-color:var(--m)}
+.kbd-hint{font-size:.68rem;font-style:italic;color:var(--td);margin-top:8px}
+.kbd-hint kbd{font-family:'Spectral SC',serif;font-style:normal;font-size:.6rem;border:1px solid var(--pd);background:var(--sb);padding:0 4px}
+/* Saving throws + proficiencies */
+.save-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px}
+.save-box{text-align:center;padding:5px 4px;border:1px solid var(--pd);background:rgba(255,255,255,.25)}
+.save-box.prof{border-color:var(--m);background:var(--sb)}
+.save-box .sv-n{font-family:'Spectral SC',serif;font-size:.48rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--m)}
+.save-box .sv-v{font-family:'Spectral SC',serif;font-size:.95rem;font-weight:800}
+.save-box.prof .sv-v::before{content:'● ';font-size:.5rem;color:var(--r);vertical-align:middle}
+.prof-list .flav{margin-bottom:6px}
+/* Toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--m);color:var(--p);border:2px solid var(--g);font-family:'Spectral SC',serif;font-size:.72rem;letter-spacing:1px;padding:9px 18px;opacity:0;pointer-events:none;transition:all .3s;z-index:50;max-width:calc(100vw - 32px);text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Characters saved in the retired Character Forge keep their original markup; restyle it to match the Loom */
+.legacy-note{font-family:'Spectral',serif;font-style:italic;font-size:.75rem;color:var(--td);margin-bottom:10px}
+.legacy-sheet .gradient-bar{height:4px;background:linear-gradient(90deg,var(--m),var(--g),var(--m));margin:0 0 10px}
+.legacy-sheet .gradient-bar.bottom{margin:16px 0 0}
+.legacy-sheet .char-name{font-family:'Spectral SC',serif;font-size:1.8rem;font-weight:800;color:var(--m);line-height:1.2}
+.legacy-sheet .char-meta{font-family:'Spectral',serif;font-style:italic;font-size:.9rem;color:var(--td);margin-bottom:6px}
+.legacy-sheet .tapered-rule{height:2px;border:none;background:linear-gradient(90deg,transparent,var(--r),transparent);margin:10px 0}
+.legacy-sheet .prop-line{font-size:.82rem;line-height:1.6}
+.legacy-sheet .prop-label,.legacy-sheet .app-label,.legacy-sheet .p-label{font-family:'Spectral SC',serif;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m)}
+.legacy-sheet .ability-scores{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;text-align:center}
+.legacy-sheet .ability-score{border:2px solid var(--m);padding:6px 4px}
+.legacy-sheet .ability-score .label{display:block;font-family:'Spectral SC',serif;font-size:.55rem;font-weight:700;letter-spacing:1.5px;color:var(--m)}
+.legacy-sheet .ability-score .value{font-family:'Spectral SC',serif;font-size:.9rem;font-weight:700}
+.legacy-sheet .section-header{font-family:'Spectral SC',serif;font-size:.9rem;font-weight:700;color:var(--m);letter-spacing:1.5px;text-transform:uppercase;border-bottom:2px solid var(--g);padding-bottom:4px;margin:16px 0 8px}
+.legacy-sheet .action-entry{font-size:.82rem;line-height:1.5;margin-bottom:6px;padding-left:12px;border-left:3px solid var(--g)}
+.legacy-sheet .action-name{font-weight:700;font-style:italic;color:var(--m)}
+.legacy-sheet .appearance-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}
+.legacy-sheet .app-item{font-size:.8rem;line-height:1.5;border-bottom:1px dotted var(--pd)}
+.legacy-sheet .equipment-list,.legacy-sheet .p-item{font-size:.82rem;line-height:1.6}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(3,1fr)}.save-row{grid-template-columns:repeat(3,1fr)}.two-col,.equip-grid,.pers-grid,.roster-cols,.legacy-sheet .appearance-grid{grid-template-columns:1fr}.legacy-sheet .ability-scores{grid-template-columns:repeat(3,1fr)}.sh-top{grid-template-columns:1fr}.gen-controls{flex-direction:column}.gen-btn{padding:14px 20px;max-width:100%}.sheet-page{padding:20px 16px}.gen-area,.sheet{padding:0 16px}.roster{margin-left:0;margin-right:0}}
 </style>
 </head>
 <body>
 <header class="header">
 <h1>The Loom of Fates</h1>
-<div class="sub">Complete Character Forge — Every Subclass, Every Spell, Every Detail</div>
+<div class="sub">The Character Generator — Every Race, Every Subclass, Every Spell, Every Detail</div>
 </header>
 
 <div class="gen-area">
@@ -97,9 +166,32 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option></select></div>
 <div><label>Class</label><br><select id="inClass"><option value="random">Random</option></select></div>
 <div><label>Race</label><br><select id="inRace"><option value="random">Random</option></select></div>
+<div><label>Gender</label><br><select id="inGender"><option value="random">Random</option><option value="Male">Male</option><option value="Female">Female</option><option value="Non-binary">Non-binary</option></select></div>
 </div>
-<button class="gen-btn" onclick="generate()">◆ Forge a Character ◆</button>
+<button class="gen-btn" id="genBtn" onclick="generate()">◆ Forge a Character ◆</button>
+<div class="tool-row">
+<button class="tool-btn" id="navPrev" title="Previous character (←)" disabled>◂ Prev</button>
+<span class="page-ind" id="pageInd">—</span>
+<button class="tool-btn" id="navNext" title="Next character (→)" disabled>Next ▸</button>
+<span class="tool-sep"></span>
+<button class="tool-btn" id="saveBtn" title="Save to roster (S)" disabled>☆ Save</button>
+<button class="tool-btn" id="copyBtn" title="Copy the sheet as text" disabled>Copy Sheet</button>
+<button class="tool-btn" id="copyPortraitBtn" title="Copy an AI art prompt (white background portrait)" disabled>Portrait Prompt</button>
+<button class="tool-btn" id="copySceneBtn" title="Copy an AI art prompt (character in a scene)" disabled>Scene Prompt</button>
 </div>
+<details class="roster" id="roster">
+<summary><span class="r-title">Character Roster</span><span class="r-count" id="rosterCount">0 saved · 0 forged</span></summary>
+<div class="roster-body">
+<div class="roster-cols">
+<div><div class="roster-h">Saved</div><div class="roster-list" id="savedList"><div class="sb-empty">No saved characters yet</div></div></div>
+<div><div class="roster-h">History (this visit)</div><div class="roster-list" id="historyList"><div class="sb-empty">No history yet</div></div></div>
+</div>
+<div class="prefix-row"><label for="prefixInput">Art prompt prefix</label><input type="text" id="prefixInput" placeholder="e.g. digital painterly art style, dramatic lighting" spellcheck="false"></div>
+<div class="kbd-hint"><kbd>Space</kbd> forge · <kbd>←</kbd> <kbd>→</kbd> browse · <kbd>S</kbd> save · <kbd>B</kbd> roster. Saved characters stay in this browser.</div>
+</div>
+</details>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <div class="sheet" id="sheet"></div>
 <div class="foot"><em>The Loom of Fates — may the dice favor the bold.</em></div>
@@ -168,7 +260,8 @@ const CLASSES={
     {name:"Arcana Domain",src:"SCAG",desc:"Serves gods of magic — Mystra, Boccob — wielding arcane spells through divine faith"},
     {name:"Order Domain",src:"TCE",desc:"Enforces divine law, compelling obedience and smiting the chaotic"},
     {name:"Peace Domain",src:"TCE",desc:"Forges supernatural bonds between allies, sharing strength and protection"},
-    {name:"Twilight Domain",src:"TCE",desc:"Guards against the terrors of the night, providing comfort in darkness"}
+    {name:"Twilight Domain",src:"TCE",desc:"Guards against the terrors of the night, providing comfort in darkness"},
+    {name:"Death Domain",src:"DMG",desc:"Serves gods of death and decay, wielding necrotic power and touching two foes with a single reaping strike"}
   ]
 },
 "Druid":{hd:8,primary:"WIS",saves:["INT","WIS"],armor:"medium (no metal)",
@@ -302,6 +395,14 @@ const CLASSES={
     {name:"Battle Smith",src:"TCE/EBR",desc:"Fights alongside a Steel Defender construct, using INT for weapon attacks"},
     {name:"Armorer",src:"TCE",desc:"Infuses armor with magic — Guardian mode (tank) or Infiltrator mode (stealth striker)"}
   ]
+},
+"Blood Hunter":{hd:10,primary:"STR",saves:["DEX","INT"],armor:"medium",
+  subclasses:[
+    {name:"Order of the Ghostslayer",src:"CR",desc:"Hunts the undead, searing them with radiant rites and stepping between life and death"},
+    {name:"Order of the Lycan",src:"CR",desc:"Has embraced a controlled lycanthropic curse, unleashing a hybrid beast form in battle"},
+    {name:"Order of the Mutant",src:"CR",desc:"Brews dangerous mutagens that warp the body for strength, speed, and resilience — at a price"},
+    {name:"Order of the Profane Soul",src:"CR",desc:"Bargained with a dark patron for pact magic, channeling forbidden power through their crimson rites"}
+  ]
 }
 };
 
@@ -429,6 +530,7 @@ const WEAPONS_DETAIL={
 "Sorcerer":[{n:"Dagger",d:"A crystalline dagger that changes color with the sorcerer's mood — red when angry, blue when calm, white when casting"},{n:"Arcane Focus (Crystal)",d:"A fist-sized crystal geode that pulses with their bloodline's element, warm to their touch and cold to everyone else's"},{n:"Quarterstaff",d:"A glass-smooth staff of petrified wood shot through with veins of their innate magical energy"}],
 "Warlock":[{n:"Pact Blade",d:"Manifests as a weapon of shadow and starlight — its form shifts subtly each time it's summoned, reflecting their patron's will"},{n:"Rod of the Pact Keeper",d:"A twisted iron rod wrapped in their patron's sigil, warm and faintly vibrating, as if something inside is breathing"},{n:"Eldritch Blast",d:"Not a weapon in the traditional sense — a beam of crackling force that tears reality at the seams, colored by their patron's domain"}],
 "Wizard":[{n:"Quarterstaff (Arcane)",d:"A staff of polished ash capped with a caged crystal that serves as their arcane focus, humming faintly with stored abjurations"},{n:"Wand",d:"A slender wand of rowan wood with a core of dragon heartstring, 11 inches, slightly flexible — an extension of their intellect"},{n:"Dagger (Ritual)",d:"A silver athame used for inscribing protective circles, the blade etched with mathematical formulae rather than runes"}],
+"Blood Hunter":[{n:"Greatsword",d:"A heavy blade with a blood-groove etched in runes that drink the hunter's own blood when the Crimson Rite ignites"},{n:"Hand Crossbow + Shortsword",d:"A blackened hand crossbow and a short stabbing blade, both inscribed with sigils against the things that hunt in the dark"},{n:"Scimitar",d:"A curved hunter's blade with a hollow hilt holding a vial of the wielder's blood, ready to anoint the edge"}],
 "Artificer":[{n:"Light Crossbow (Infused)",d:"A repeating crossbow with brass fittings, self-loading mechanism, and a scope made from a modified monocle of true seeing"},{n:"Warhammer (Tool)",d:"A smithing hammer modified for combat — one face flat for forging, one spiked for fighting, both enchanted with returning"},{n:"Shield + Returning Weapon",d:"A shield built from salvaged warforged plating and a boomerang-axe that returns to a magnetic gauntlet"}]
 };
 
@@ -479,6 +581,507 @@ const ALIGNS=["Lawful Good","Neutral Good","Chaotic Good","Lawful Neutral","True
 // AGES
 const AGES=["Young (barely old enough to adventure)","Young adult (proving themselves)","Established (experienced, reputation forming)","Prime (peak of their power)","Middle-aged (wiser, some regrets)","Veteran (body slowing, mind sharp)","Elder (every day borrowed time)","Unnaturally preserved (looks young, remembers empires)","Ageless (time is abstract)","Indeterminate (no one can tell)"];
 
+// ======================================================================
+// MERGED TABLES — folded in from the two retired generators:
+//   /newchar/          "D20 Character Forge" (appearance + personality roll tables)
+//   /character-forge/  "D&D Character Forge" (racial looks, background ideals/bonds, scene prompts)
+// Lists for the same thing are unioned into the Loom's own and deduped on
+// their lead phrase (text before " — "), keeping the fuller wording.
+// ======================================================================
+const NC={"gender": ["Male, masculine presentation","Female, feminine presentation","Male, androgynous presentation","Female, androgynous presentation","Non-binary, androgynous","Non-binary, feminine lean","Non-binary, masculine lean","Fluid — varies day to day","Male, feminine presentation","Female, masculine presentation","Agender, utilitarian presentation","Deliberately ambiguous — player's choice"],"age": ["Very young — barely adult (17–19)","Young adult (20–25)","Mid twenties (26–30)","Established adult (31–40)","Middle aged (41–55)","Older adult (56–70)","Elderly (71–90)","Ancient for race — near limit","Unnaturally old — secret reason"],"build": ["Very short, very slight — almost invisible in crowds","Short, lean — wiry and quick","Short, stocky — dense and grounded","Average height, lean build","Average height, average build","Average height, broad and muscular","Tall, lean — almost too thin","Tall, athletic and proportioned","Very tall, imposing frame","Unusual for race — note-worthy in any crowd"],"skin": ["Pale as bone — almost translucent","Fair with rosy undertone","Light with cool undertone","Light olive, Mediterranean warm","Medium warm brown","Medium-deep warm brown","Deep brown, rich undertone","Very deep brown — near black","Ashen grey — unusual, striking","Blue-black (Drow lineage or Genasi)","Faintly blue or silver tinted","Warm bronze-gold cast","Deep red or burgundy cast (Tiefling)","Iridescent — shifts in light"],"hair": ["Shaved or bald — by choice or necessity","Close-cropped, jet black","Short, dark brown — practical cut","Short, warm brown, slightly wavy","Medium, chestnut — often tied back","Long, straight black — severe and clean","Long, wavy dark brown","Curly, tight coils, dark","Loose curls, warm auburn","Fiery red, medium length","Blonde, fine and straight","Dirty blonde, perpetually disheveled","Prematurely grey — fully silver","Pure white — natural or magical","Locs, dark — well kept","Braids, dark with decorative elements","Unnatural colour — deep blue or violet","Unnatural colour — silver-white with glow","Wild and untamed — a force of nature","Something deeply unusual — player defines"],"eyes": ["Deep brown — warm and readable","Dark brown — nearly black","Hazel — shifts green to brown","Green — clear and sharp","Grey-blue — cold and assessing","Blue — pale, almost icy","Amber — unsettlingly warm","Violet — rare, always noticed","Silver — like polished coins","Red — inheritance of something","Solid white — no visible pupil","Gold — catch light like flame","Heterochromia — two different colours","Faintly glowing — magical origin"],"face": ["Sharp jaw, high cheekbones — severe beauty","Round face, soft features — disarmingly gentle","Long narrow face — aristocratic","Square jaw, blunt — honest face","Heart-shaped — wide forehead, narrow chin","Heavy brow, deep-set eyes — intense","Strong nose, commanding presence","Fine features — almost too symmetrical","Weather-worn — lines from wind and sun","Young-looking — consistently underestimated","Notable scar — across one cheek or brow","Tattoo — face or neck, meaningful","Full beard or strong facial hair","Freckles — heavy across nose and cheeks","Dimples — unexpected warmth","Burn scarring — partial face","Unusual for race — horns, points, markings","Perpetual expression — always looks amused","Striking in an indefinable way — people stare","Unforgettable — define one truly unusual feature"],"background": ["Acolyte — raised in temple service","Criminal — knows the wrong people","Folk Hero — ordinary person, extraordinary moment","Noble — born to privilege","Sage — educated, academic","Soldier — trained for war","Outlander — raised beyond civilization","Charlatan — professional deceiver","Entertainer — performer by trade","Guild Artisan — skilled craftsperson","Hermit — years of solitude and reflection","Sailor — the sea was home","Urchin — survived the streets alone","Spy — trained in secrets","Far Traveller — from somewhere distant","Haunted One — touched by something dark","Knight — sworn to a cause or lord","Pirate — law is optional at sea","Archaeologist — seeker of ancient things","Custom — define something unusual"],"personality": ["Relentlessly optimistic — sometimes infuriatingly","Deeply cynical — seen too much","Intensely curious — cannot leave a mystery alone","Protective — positions between others and danger","Ambitious — always calculating the next step","Reckless — considers consequences an afterthought","Meticulous — everything has a proper place","Warm — genuinely interested in everyone","Guarded — trust is earned over years","Irreverent — nothing is too sacred for a joke","Earnest — means everything they say","Detached — observes more than participates","Fierce — passionate about everything","Patient — willing to wait for the right moment","Charismatic — rooms change when they enter","Haunted — something follows them everywhere","Pragmatic — solutions matter, not feelings","Idealistic — the world should be better","Restless — cannot stay still for long","Contradictory — two opposing traits at war"],"motivation": ["Revenge — something was taken","Redemption — something was done","Protection — someone needs keeping safe","Knowledge — the answer is out there","Belonging — searching for a place to be home","Power — raw, honest ambition","Freedom — from something specific","Duty — sworn to something larger","Survival — day by day, nothing more","Love — for a person, place, or ideal","Curiosity — pure intellectual hunger","Legacy — to be remembered after death","Justice — the scales need balancing","Escape — from identity, past, expectation","Wealth — honest mercenary drive","Faith — the divine demands it","Curiosity about self — who am I really","A secret — they're looking for something specific","Nothing yet — the motivation is still forming","Something they won't admit even to themselves"],"flaw": ["Pride — cannot admit being wrong","Cowardice in one specific area","Addiction — substance, gambling, something","Obsession — one thing above all reason","Dishonesty — lies even when truth would work","Arrogance — underestimates everything","Cruelty — enjoys power over others","Naivety — cannot read bad intentions","Paranoia — trusts no one, not even allies","Recklessness — no sense of consequence","Greed — always wants more","Jealousy — cannot celebrate others","Guilt — crippled by past action","Stubbornness — will not change course","Impulsiveness — acts before thinking","Detachment — cannot connect emotionally","Ruthlessness — ends justify any means","Self-destruction — unconsciously sabotages success","Denial — refuses to see a fundamental truth","The flaw is a strength taken too far"],"voice": ["Quiet — people lean in to hear","Loud — fills every room naturally","Precise — every word chosen carefully","Rambling — gets there eventually","Formal — always sounds educated","Crude — blunt and unfiltered","Poetic — speaks in images and metaphors","Dry — flat delivery, devastating wit","Warm — makes everyone feel heard","Clipped — minimal, impatient with words","Laughs often — even at wrong moments","Rarely speaks — actions first","Accent — from somewhere distant and identifiable","Uses archaic language — sounds older than they are","Questions everything — answers a question with a question","Story-teller — turns everything into a narrative","Whispers when most serious","Speaks to themselves — not always quietly","Unusual speech pattern — a specific verbal habit","Changes register completely depending on audience"],"secret": ["False identity — not who they claim to be","Wanted — a crime, real or fabricated","Hidden bloodline — noble, monstrous, or divine","Former allegiance to the enemy","Knows something that would destroy someone","Killed someone they weren't supposed to","Owes a dangerous debt — to someone or something","Doesn't believe what they claim to believe","Has a family no one knows about","Has died before — and remembers it","Is being watched — they can feel it","Carries something they shouldn't have","Made a deal with something ancient","Caused a disaster — no one knows it was them","Loves someone they shouldn't","Has a power they hide completely","Was someone else entirely — before","Knows how this ends — and hasn't said","Something follows them — has for years","The secret isn't theirs — they're protecting someone"]};
+const NC_NAMES={
+  male: ["Aldric","Brennan","Caelum","Draveth","Evander","Faeron","Gaius","Harkon","Ioreth","Jareth","Kael","Lysander","Maren","Nox","Oryn","Phelan","Quillon","Raeth","Soren","Thalion","Ulric","Varen","Wulfric","Xavius","Yael","Zephyrin","Aldous","Bastian","Corvin","Draven","Emrys","Finnegan","Gideon","Hadwin","Idris","Jorah","Kasimir","Lazaro","Malachai","Niall","Osric","Perrin","Riordan","Stellan","Tobias","Umberto","Vesper","Warrick","Yorick"],
+  female: ["Aelindra","Brynn","Caelith","Devara","Elowen","Faelith","Gwyneth","Hariel","Isadora","Jessamine","Kira","Lysa","Morrigan","Niamh","Orenda","Phaedra","Quenara","Riven","Sable","Thalia","Ursula","Vexara","Wren","Xanthe","Ysolde","Zara","Aelith","Briar","Corinna","Daeva","Elara","Fenna","Galena","Hestia","Isolde","Jael","Kassia","Lyric","Maevis","Nira","Ondine","Petra","Rowena","Seren","Tessa","Umbriel","Vesna","Willow","Ysabel"],
+  neutral: ["Aelin","Braith","Caer","Dax","Ember","Flint","Grey","Haze","Ink","Jax","Kestrel","Lark","Mist","Nael","Onyx","Pike","Quill","Riven","Sage","Thorn","Vex","Wren","Ash","Bay","Cedar","Drake","Echo","Fern","Gale","Hex","Iven","Jet","Kit","Lune","Mare","Nox","Orin","Pyre","Rue","Skye","Talon","Vale","Wisp"]
+};
+const NC_SURNAMES=["Ashveil","Blackthorn","Coldmere","Darksong","Embervale","Frostwhisper","Greymantle","Hollowbrook","Ironveil","Jadewarden","Kindlemark","Lorekeep","Moonwhisper","Nightfall","Oathkeeper","Pyreborn","Quicksilver","Ravenmoor","Shadowend","Thornwall","Undying","Voidmarch","Winterborn","Ironwood","Stonewall","Goldenveil","Darkwater","Brightwall","Ashwood","Coldfire","Silvermark","Starfall","Dawnbreak","Evenfall","Midwinter","Longstride","Farwalker","Deepstone","Highcrest","Lowmere"];
+const CF_RACES=[
+  {name:"Human",type:"Humanoid",sizes:["Medium"],speed:30,langs:["Common"],bonus:{any:2},
+    skinTones:["pale","fair","light","olive","tan","brown","dark brown","deep brown","ebony"],
+    hairColors:["black","dark brown","brown","auburn","red","blonde","sandy","gray","white"],
+    eyeColors:["brown","dark brown","hazel","green","blue","gray","amber"],
+    hairStyles:["short cropped","shoulder length","long flowing","braided","tied back in a ponytail","shaved on the sides","curly","wavy","straight","dreadlocked","in a bun","loose and wild"],
+    buildRange:["lean","average","stocky","muscular","heavyset","wiry","athletic","slim","broad-shouldered"],
+    heightRange:[60,76],ageRange:[18,75],lifespan:"80 years"},
+  {name:"High Elf",type:"Humanoid (Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish"],bonus:{dex:2,int:1},
+    skinTones:["pale","alabaster","fair","light","golden","bronze","light copper"],
+    hairColors:["silver","platinum blonde","golden blonde","copper","auburn","black","white","pale blue","honey"],
+    eyeColors:["green","blue","violet","gold","silver","amber","emerald"],
+    hairStyles:["long and straight","flowing past shoulders","elegantly braided","half-up with silver clasps","loose with thin braids woven through","in an elaborate updo","long and sleek"],
+    buildRange:["slender","lithe","graceful","willowy","lean","athletic"],
+    heightRange:[62,74],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Wood Elf",type:"Humanoid (Elf)",sizes:["Medium"],speed:35,langs:["Common","Elvish"],bonus:{dex:2,wis:1},
+    skinTones:["copper","tan","olive","light brown","brown","golden brown","umber","tawny"],
+    hairColors:["brown","dark brown","black","auburn","copper red","mossy green","chestnut","dark auburn"],
+    eyeColors:["green","hazel","brown","amber","golden","copper","dark green"],
+    hairStyles:["long and wild","braided with leaves","tied back","dreadlocked with beads","short and practical","loose and windswept","woven with vines","in two long braids"],
+    buildRange:["lean","athletic","wiry","lithe","toned","rangy"],
+    heightRange:[60,72],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Drow",type:"Humanoid (Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish","Undercommon"],bonus:{dex:2,cha:1},
+    skinTones:["obsidian","charcoal","dark gray","deep purple-black","slate gray","midnight blue-black","ash gray","jet black"],
+    hairColors:["white","silver","pale blonde","stark white","pale lavender","platinum","pale gray","snow white"],
+    eyeColors:["red","crimson","pale lavender","amber","pink","pale yellow","violet","magenta"],
+    hairStyles:["long and straight","pulled back tightly","in an elaborate high ponytail","wild and flowing","short and severe","in intricate braids","swept to one side","cropped close"],
+    buildRange:["slender","lithe","lean","wiry","graceful","compact","athletic"],
+    heightRange:[58,70],ageRange:[100,700],lifespan:"750 years"},
+  {name:"Hill Dwarf",type:"Humanoid (Dwarf)",sizes:["Medium"],speed:25,langs:["Common","Dwarvish"],bonus:{con:2,wis:1},
+    skinTones:["tan","ruddy","pale","light brown","weathered brown","bronze","fair","rosy"],
+    hairColors:["black","brown","dark brown","red","auburn","gray","white","ginger","rust","sandy"],
+    eyeColors:["brown","dark brown","amber","hazel","green","gray","blue"],
+    hairStyles:["long braided beard","thick braided beard and hair","wild bushy beard","neatly trimmed beard","massive forked beard","elaborate beard with metal rings","short cropped with full beard","mohawk with braided beard"],
+    buildRange:["stocky","broad","stout","heavyset","barrel-chested","thick","muscular","compact"],
+    heightRange:[44,52],ageRange:[50,340],lifespan:"350 years"},
+  {name:"Mountain Dwarf",type:"Humanoid (Dwarf)",sizes:["Medium"],speed:25,langs:["Common","Dwarvish"],bonus:{con:2,str:2},
+    skinTones:["pale","fair","ruddy","tan","weathered","light bronze","rosy"],
+    hairColors:["black","dark brown","red","auburn","gray","white","rust","iron gray","copper"],
+    eyeColors:["brown","dark brown","steel gray","blue","green","amber"],
+    hairStyles:["massive braided beard","war-braids in beard and hair","iron-clasped beard","thick beard with runes carved into beads","wild mane and thick beard","short cropped with imposing beard","elaborate braided mohawk"],
+    buildRange:["stocky","broad","muscular","powerful","barrel-chested","thick","hulking","compact and dense"],
+    heightRange:[46,54],ageRange:[50,340],lifespan:"350 years"},
+  {name:"Lightfoot Halfling",type:"Humanoid (Halfling)",sizes:["Small"],speed:25,langs:["Common","Halfling"],bonus:{dex:2,cha:1},
+    skinTones:["fair","tan","ruddy","light","olive","warm brown","rosy"],
+    hairColors:["brown","sandy","auburn","black","chestnut","honey","red","curly brown"],
+    eyeColors:["brown","hazel","green","blue","amber"],
+    hairStyles:["curly and wild","short and messy","neatly combed","in loose curls","tied back casually","fluffy and unkempt","parted to the side","in a messy bun"],
+    buildRange:["small and nimble","slight","compact","round-bellied","lean","wiry","plump","quick-footed"],
+    heightRange:[30,38],ageRange:[20,150],lifespan:"150 years"},
+  {name:"Stout Halfling",type:"Humanoid (Halfling)",sizes:["Small"],speed:25,langs:["Common","Halfling"],bonus:{dex:2,con:1},
+    skinTones:["fair","ruddy","tan","rosy","light brown","weathered","warm"],
+    hairColors:["brown","dark brown","sandy","auburn","black","chestnut","red"],
+    eyeColors:["brown","hazel","green","dark brown","amber"],
+    hairStyles:["curly and thick","short and practical","messy and windswept","neatly trimmed","bushy sideburns","wild curls","in a low ponytail"],
+    buildRange:["compact","sturdy","round","stocky","stout","thick","solid","hardy"],
+    heightRange:[30,38],ageRange:[20,150],lifespan:"150 years"},
+  {name:"Rock Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish"],bonus:{int:2,con:1},
+    skinTones:["tan","ruddy","fair","light brown","rosy","pale"],
+    hairColors:["white","gray","sandy","red","orange","auburn","brown","wild white"],
+    eyeColors:["blue","green","brown","hazel","amber","bright blue","sparkling green"],
+    hairStyles:["wild and spiky","unkempt mad-scientist style","long and flyaway","neatly groomed with a pointed beard","bushy eyebrows and wild hair","in a messy topknot","sticking out at all angles","elaborate with goggles perched on top"],
+    buildRange:["small","wiry","slight","compact","lean","skinny","nimble"],
+    heightRange:[36,42],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Forest Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish"],bonus:{int:2,dex:1},
+    skinTones:["tan","bark-brown","fair","olive","earthy brown","ruddy"],
+    hairColors:["brown","dark brown","mossy green","auburn","sandy","gray","chestnut"],
+    eyeColors:["green","hazel","brown","amber","bright green","golden brown"],
+    hairStyles:["wild with twigs and leaves","long and tangled","braided with natural fibers","short and messy","adorned with small flowers","loose and flowing","in a practical braid"],
+    buildRange:["small","slight","nimble","wiry","compact","tiny","lean"],
+    heightRange:[34,40],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Deep Gnome",type:"Humanoid (Gnome)",sizes:["Small"],speed:25,langs:["Common","Gnomish","Undercommon"],bonus:{int:2,dex:1},
+    skinTones:["gray","dark gray","stone gray","slate","medium gray","ash gray","charcoal gray"],
+    hairColors:["bald","gray","pale gray","white","sparse white","thin gray"],
+    eyeColors:["dark","gray","pale gray","black","dark brown"],
+    hairStyles:["bald","sparse and wispy","thin and close-cropped","completely smooth","slight fuzz","thin strands combed over"],
+    buildRange:["wiry","gaunt","compact","lean","slight","bony","small and tough"],
+    heightRange:[34,40],ageRange:[40,450],lifespan:"500 years"},
+  {name:"Tiefling",type:"Humanoid (Tiefling)",sizes:["Medium"],speed:30,langs:["Common","Infernal"],bonus:{cha:2,int:1},
+    skinTones:["red","crimson","deep red","maroon","purple","lavender","dark purple","dusky rose","ash gray","blue-gray","pale with reddish hue","dark magenta","burnt sienna","slate blue"],
+    hairColors:["black","dark red","deep purple","crimson","midnight blue","dark brown","white","silver","blood red","charcoal"],
+    eyeColors:["solid gold","solid red","solid silver","solid black","solid white","solid amber","pale yellow","fiery orange","pale violet","glowing red"],
+    hairStyles:["long and wild framing horns","swept back between curved horns","in a high ponytail draped past horns","shaved on sides with long top","braided and wrapped around horns","short and spiky between small horns","flowing loose with horns prominently displayed","in elaborate twists adorned with dark jewelry"],
+    buildRange:["lean","athletic","lithe","average","slender","toned","wiry","sinuous"],
+    heightRange:[60,74],ageRange:[18,100],lifespan:"110 years",
+    extraFeatures:["curved horns","small pointed horns","ram-like horns","swept-back horns","spiraling horns","long curving horns"],
+    tailDesc:["long thin prehensile tail","thick tail ending in a spaded tip","whip-like tail","coiled muscular tail","slender tail with a forked tip"]},
+  {name:"Dragonborn",type:"Humanoid (Dragonborn)",sizes:["Medium"],speed:30,langs:["Common","Draconic"],bonus:{str:2,cha:1},
+    skinTones:["brass","bronze","copper","gold","silver","red","blue","green","black","white","scarlet","cobalt","emerald","obsidian","pearl","amber","sapphire","verdant","crimson","iron gray"],
+    hairColors:["none"],
+    eyeColors:["red","gold","amber","orange","silver","blue","green","pale yellow","slitted gold","burning orange","ice blue"],
+    hairStyles:["no hair, scaled crest","no hair, ridged frill along skull","no hair, smooth scaled head","no hair, bony head ridges","no hair, small horn-like protrusions","no hair, fin-like crest"],
+    buildRange:["tall and muscular","broad and powerful","imposing","massive","athletic and scaled","towering","bulky","thick-limbed"],
+    heightRange:[66,80],ageRange:[15,80],lifespan:"80 years",
+    extraFeatures:["brass draconic ancestry","bronze draconic ancestry","copper draconic ancestry","gold draconic ancestry","silver draconic ancestry","red draconic ancestry","blue draconic ancestry","green draconic ancestry","black draconic ancestry","white draconic ancestry"]},
+  {name:"Half-Elf",type:"Humanoid (Half-Elf)",sizes:["Medium"],speed:30,langs:["Common","Elvish"],bonus:{cha:2},
+    skinTones:["pale","fair","light","olive","tan","light brown","bronze","golden","warm brown"],
+    hairColors:["black","dark brown","brown","auburn","red","blonde","silver-streaked","honey","chestnut","copper"],
+    eyeColors:["green","blue","hazel","violet","brown","amber","gray","emerald","bright blue"],
+    hairStyles:["long and flowing","shoulder-length and wavy","short and stylish","braided elegantly","loose with elven-style braids","tied back","wild and windswept","half-up with decorative pins","long and straight"],
+    buildRange:["lean","athletic","slender","average","graceful","lithe","medium","toned"],
+    heightRange:[60,74],ageRange:[20,180],lifespan:"180 years"},
+  {name:"Half-Orc",type:"Humanoid (Half-Orc)",sizes:["Medium"],speed:30,langs:["Common","Orc"],bonus:{str:2,con:1},
+    skinTones:["gray-green","pale green","olive green","grayish","greenish brown","light gray","sallow green","ashen","dusky green","muddy green"],
+    hairColors:["black","dark brown","dark gray","dark red","brown","iron gray"],
+    eyeColors:["brown","dark brown","red","amber","yellow-green","gray","dark","golden"],
+    hairStyles:["shaved with a topknot","wild and unkempt","in a mohawk","short and bristly","long and pulled back tight","braided with bones","cropped close","loose and tangled","tied in warrior braids"],
+    buildRange:["massive","muscular","broad","powerful","hulking","thick","imposing","brawny","heavy-set","towering"],
+    heightRange:[66,80],ageRange:[18,75],lifespan:"75 years",
+    extraFeatures:["prominent lower tusks","small lower fangs","one broken tusk","large jutting tusks","small but visible tusks"]},
+  {name:"Aasimar",type:"Humanoid (Aasimar)",sizes:["Medium"],speed:30,langs:["Common","Celestial"],bonus:{cha:2,wis:1},
+    skinTones:["luminous pale","golden","silver-tinged","warm bronze","radiant brown","glowing fair","opalescent","sun-kissed","ivory with faint shimmer","deep brown with golden undertones"],
+    hairColors:["silver","gold","platinum","white","pale blonde","radiant copper","shimmering auburn","luminous black","pale gold","celestial white"],
+    eyeColors:["solid gold","solid silver","pale blue","luminous white","bright amber","pale violet","shimmering green","radiant gold","glowing topaz"],
+    hairStyles:["long and luminous","flowing with an ethereal quality","braided with golden threads","short and radiant","swept back elegantly","loose and shimmering","in a celestial crown braid","wild and light-catching"],
+    buildRange:["graceful","athletic","lean","statuesque","imposing","elegant","strong","lithe"],
+    heightRange:[60,76],ageRange:[18,160],lifespan:"160 years"},
+  {name:"Fire Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,int:1},
+    skinTones:["red","deep red","orange-red","charcoal","ashen with ember cracks","dark red","coal black","burnt umber","flame-orange","smoldering bronze"],
+    hairColors:["flames","flickering fire","smoldering embers","red-orange","bright red","living fire","charcoal with glowing tips","none"],
+    eyeColors:["fiery orange","bright red","molten gold","ember red","yellow-orange","blazing amber","glowing coal"],
+    hairStyles:["literally flames rising from the head","smoldering embers for hair","fire-like flickering strands","shaved with glowing rune tattoos","wild flame-like hair","short with ember-glowing tips","flickering flame mohawk"],
+    buildRange:["lean","athletic","wiry","average","warm to the touch","radiating heat","toned","fit"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Water Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,wis:1},
+    skinTones:["blue","sea-green","teal","pale blue","aquamarine","deep ocean blue","blue-green","turquoise","seafoam"],
+    hairColors:["blue","sea-green","flowing water-like","deep blue","kelp-green","ocean blue","translucent blue","teal"],
+    eyeColors:["deep blue","sea green","pale blue","aquamarine","dark ocean blue","teal","glowing blue"],
+    hairStyles:["flowing like water","moves as if underwater","in wave-like patterns","dripping wet perpetually","sleek and water-slicked","long and flowing like a river","short and constantly damp","wild like crashing waves"],
+    buildRange:["lean","lithe","athletic","average","swimmer's build","sleek","graceful","fluid"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Earth Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,str:1},
+    skinTones:["stone gray","brown like packed earth","sandy","granite","clay","dusty brown","rough gray","slate","deep brown like rich soil","rocky tan"],
+    hairColors:["none","stone-like protrusions","crystalline growths","iron gray","earth brown","like jagged rocks","sandy brown","slate gray"],
+    eyeColors:["brown","dark brown","gemstone green","amber","obsidian black","golden","crystal blue","earthy brown"],
+    hairStyles:["no hair with rocky protrusions","crystalline formations instead of hair","rough stone-like ridges","short and coarse like gravel","thin and stiff like dried grass","bald with visible mineral veins","stone-like spikes"],
+    buildRange:["stocky","broad","heavy","dense","muscular","thick","powerful","solid as rock","immovable"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Air Genasi",type:"Humanoid (Genasi)",sizes:["Medium"],speed:30,langs:["Common","Primordial"],bonus:{con:2,dex:1},
+    skinTones:["pale blue","light blue","sky blue","pale","almost translucent","cloud white","pale gray","light lavender","ice blue"],
+    hairColors:["white","pale blue","translucent","wind-blown white","silver","wispy cloud-like","pale lavender","ethereal white"],
+    eyeColors:["pale blue","sky blue","white","silver","light gray","pale violet","cloud white","pale cyan"],
+    hairStyles:["constantly moving as if in a breeze","floating and weightless","wild and windswept","flowing upward","billowing like clouds","short and perpetually tousled","streaming behind like a banner","light and airy"],
+    buildRange:["lean","lithe","light","airy","slender","willowy","graceful","thin","ethereal"],
+    heightRange:[60,76],ageRange:[18,120],lifespan:"120 years"},
+  {name:"Goliath",type:"Humanoid (Goliath)",sizes:["Medium"],speed:30,langs:["Common","Giant"],bonus:{str:2,con:1},
+    skinTones:["gray","light gray","stone gray","pale gray with darker patches","mottled gray","blue-gray","granite"],
+    hairColors:["black","dark brown","none","bald","white","gray"],
+    eyeColors:["blue","bright blue","pale blue","green","gray","dark brown","ice blue"],
+    hairStyles:["bald with lithoderms","bald","short and dark","shaved clean","braided close to the scalp","thin mohawk","cropped tight"],
+    buildRange:["massive","towering","hugely muscular","broad","powerful","imposing","enormous","thick-limbed"],
+    heightRange:[84,96],ageRange:[18,100],lifespan:"100 years",
+    extraFeatures:["dark lithoderm patches on skin","bony growths on forehead","lithoderm markings on arms and torso"]},
+  {name:"Tabaxi",type:"Humanoid (Tabaxi)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{dex:2,cha:1},
+    skinTones:["covered in fur"],
+    hairColors:["tawny","spotted leopard","black panther","orange tabby","gray","snow white","calico","brown striped","silver","golden","russet","smoky gray"],
+    eyeColors:["yellow","green","amber","bright green","gold","copper","bright yellow","slitted green","slitted amber"],
+    hairStyles:["short sleek fur covering entire body","thick mane-like fur around neck and head","spotted fur pattern","striped fur pattern","solid colored fur","tufted ears and short fur","long fur with dark rosettes","tabby-patterned fur"],
+    buildRange:["lean","lithe","agile","slender","athletic","graceful","nimble","quick","feline"],
+    heightRange:[60,74],ageRange:[15,80],lifespan:"80 years",
+    extraFeatures:["retractable claws","long feline tail","tufted ears","whiskers","cat-like nose"]},
+  {name:"Kenku",type:"Humanoid (Kenku)",sizes:["Medium"],speed:30,langs:["Common","Auran"],bonus:{dex:2,wis:1},
+    skinTones:["covered in feathers"],
+    hairColors:["black feathers","dark gray feathers","iridescent black feathers","crow-black feathers","raven feathers","dark brown feathers","glossy black feathers"],
+    eyeColors:["black","dark brown","beady black","bright black","dark"],
+    hairStyles:["sleek black plumage","ruffled feathered crest","smooth dark feathers","ragged molting feathers","glossy well-preened feathers","patchy feathers","thick feathered ruff around neck"],
+    buildRange:["slight","lean","hunched","wiry","small","compact","thin","birdlike"],
+    heightRange:[56,64],ageRange:[12,60],lifespan:"60 years",
+    extraFeatures:["corvid beak","dark feathered wings (vestigial)","taloned feet","beady eyes"]},
+  {name:"Firbolg",type:"Humanoid (Firbolg)",sizes:["Medium"],speed:30,langs:["Common","Elvish","Giant"],bonus:{wis:2,str:1},
+    skinTones:["pinkish","pale","blue-gray","earthy","light gray","ruddy","flushed pink","soft blue"],
+    hairColors:["red","auburn","brown","blond","white","gray","copper","fiery red","strawberry blonde"],
+    eyeColors:["blue","green","brown","amber","gray","pale blue","gentle brown"],
+    hairStyles:["long and wild","thick and bushy beard","braided with natural materials","loose and flowing","unkempt and nature-touched","long with flowers woven in","massive beard and long hair","tangled with leaves"],
+    buildRange:["tall","broad","gentle giant","large","soft","hulking but gentle","heavy","big-boned","lumbering"],
+    heightRange:[84,96],ageRange:[30,500],lifespan:"500 years"},
+  {name:"Lizardfolk",type:"Humanoid (Lizardfolk)",sizes:["Medium"],speed:30,langs:["Common","Draconic"],bonus:{con:2,wis:1},
+    skinTones:["green","dark green","olive green","brown","gray-green","mottled green","swamp green","blue-green","dark olive"],
+    hairColors:["none"],
+    eyeColors:["yellow","orange","red","amber","yellow with slitted pupils","golden","green with slitted pupils"],
+    hairStyles:["no hair, smooth scaled head","no hair, frilled crest","no hair, ridged scales","no hair, bony head plate","no hair, small horn nubs"],
+    buildRange:["lean","muscular","athletic","thick-tailed","broad","powerful","reptilian","sinewy"],
+    heightRange:[66,78],ageRange:[14,60],lifespan:"60 years",
+    extraFeatures:["thick muscular tail","frilled neck","sharp claws","rows of small teeth"]},
+  {name:"Goblin",type:"Humanoid (Goblinoid)",sizes:["Small"],speed:30,langs:["Common","Goblin"],bonus:{dex:2,con:1},
+    skinTones:["green","yellow-green","orange","sickly yellow","olive","dark green","brownish green","yellow","muddy green"],
+    hairColors:["black","dark brown","none","wiry black","patchy brown","greasy black"],
+    eyeColors:["yellow","red","amber","orange","dark","bright yellow","beady red"],
+    hairStyles:["bald","patchy tufts","wild and spiky","greasy and unkempt","thin and scraggly","messy topknot","ratty mohawk"],
+    buildRange:["scrawny","wiry","small","bony","lean","runty","quick","compact"],
+    heightRange:[36,44],ageRange:[8,60],lifespan:"60 years",
+    extraFeatures:["large pointed ears","flat nose","sharp teeth","beady eyes"]},
+  {name:"Hobgoblin",type:"Humanoid (Goblinoid)",sizes:["Medium"],speed:30,langs:["Common","Goblin"],bonus:{con:2,int:1},
+    skinTones:["red-orange","dark orange","ruddy red","brick red","dark red-brown","dusky orange","burnt orange"],
+    hairColors:["black","dark brown","dark red","iron gray","brown"],
+    eyeColors:["dark brown","yellow","red","amber","dark"],
+    hairStyles:["short and military","shaved","cropped tight","in a strict topknot","braided tightly","severe and short","regulation cut"],
+    buildRange:["muscular","athletic","disciplined","broad","solid","sturdy","imposing","military bearing"],
+    heightRange:[60,72],ageRange:[18,80],lifespan:"80 years"},
+  {name:"Bugbear",type:"Humanoid (Goblinoid)",sizes:["Medium"],speed:30,langs:["Common","Goblin"],bonus:{str:2,dex:1},
+    skinTones:["yellow-brown","dark brown","tawny","ruddy brown","orangish brown"],
+    hairColors:["brown","dark brown","tawny","reddish brown","coarse brown","shaggy brown"],
+    eyeColors:["yellow","green-yellow","brown","amber","red-brown"],
+    hairStyles:["shaggy all over","wild and matted","coarse fur-like hair","unkempt and thick","tangled with debris","long and shaggy like a mane"],
+    buildRange:["large","powerful","lanky but strong","brutish","tall and gangly","hulking","long-armed","rangy"],
+    heightRange:[72,84],ageRange:[16,80],lifespan:"80 years",
+    extraFeatures:["large pointed ears","long arms","covered in coarse fur","flat nose","wedge-shaped ears"]},
+  {name:"Orc",type:"Humanoid (Orc)",sizes:["Medium"],speed:30,langs:["Common","Orc"],bonus:{str:2,con:1},
+    skinTones:["gray","gray-green","green","dark gray","grayish-brown","olive gray","greenish gray","dark green"],
+    hairColors:["black","dark brown","dark red","gray","none","iron gray"],
+    eyeColors:["red","dark red","brown","yellow","amber","bloodshot dark"],
+    hairStyles:["shaved with a topknot","wild and unkempt","in a tall mohawk","braided war-braids","cropped brutally short","long and matted","in a warrior's knot","dreadlocked"],
+    buildRange:["massive","muscular","brutish","hulking","broad","powerful","thick","towering","scarred"],
+    heightRange:[68,82],ageRange:[18,50],lifespan:"50 years",
+    extraFeatures:["prominent lower tusks","sloping forehead","heavy brow ridge","scarred face","jutting jaw with tusks"]},
+  {name:"Kobold",type:"Humanoid (Kobold)",sizes:["Small"],speed:30,langs:["Common","Draconic"],bonus:{dex:2},
+    skinTones:["rusty brown","red-brown","dark brown","orange-brown","reddish","scaly brown","dull red","dark reddish-brown"],
+    hairColors:["none"],
+    eyeColors:["red","orange","amber","burning red","bright orange","yellow"],
+    hairStyles:["no hair, smooth scaled head","no hair, tiny horn nubs","no hair, small head crest","no hair, bony ridges"],
+    buildRange:["tiny","scrawny","small and wiry","slight","bony","diminutive","compact","quick"],
+    heightRange:[24,30],ageRange:[6,120],lifespan:"120 years",
+    extraFeatures:["small draconic snout","vestigial wings (sometimes)","long thin tail","small horns","dog-like snout"]},
+  {name:"Warforged",type:"Humanoid (Construct)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{con:2},
+    skinTones:["dark metal","burnished steel","iron gray","copper-plated","bronze","wooden and metal composite","mithral-laced","dark iron","oxidized copper","polished steel"],
+    hairColors:["none"],
+    eyeColors:["glowing blue","glowing yellow","glowing green","glowing red","glowing white","dim amber","bright cyan","pulsing violet"],
+    hairStyles:["no hair, smooth metal head","no hair, with a crest-like ridge","no hair, flat metal plate","no hair, exposed gears at temple","no hair, rune-etched forehead"],
+    buildRange:["heavy","bulky","imposing","thick","angular","broad","solid","mechanical","articulated"],
+    heightRange:[66,78],ageRange:[2,30],lifespan:"indeterminate"},
+  {name:"Changeling",type:"Humanoid (Changeling)",sizes:["Medium"],speed:30,langs:["Common"],bonus:{cha:2},
+    skinTones:["pale white","ghostly pale","nearly colorless","ashen","very light gray","milk-white"],
+    hairColors:["white","silver","pale","colorless","light gray","shifting"],
+    eyeColors:["pale","white","silver","colorless","very light gray","faintly luminous"],
+    hairStyles:["short and nondescript","shoulder-length and plain","currently shifted to appear normal","in their natural form featureless","sleek and simple","shifting subtly"],
+    buildRange:["average","nondescript","lean","slim","medium","unremarkable","adaptable"],
+    heightRange:[60,72],ageRange:[18,100],lifespan:"100 years"}
+];
+const CF_BACKGROUNDS=[
+  {name:"Acolyte",skills:["Insight","Religion"],traits:["devout","scholarly","sheltered","ritualistic"],
+    ideals:["Faith","Tradition","Change","Power","Charity","Aspiration"],
+    bonds:["my temple","an ancient text I protect","a deity I serve","a holy relic I guard","the community I serve"],
+    flaws:["I judge others harshly","I trust too easily","I am inflexible","I am secretly faithless","I am holier-than-thou"]},
+  {name:"Charlatan",skills:["Deception","Sleight of Hand"],traits:["charming","sly","quick-witted","smooth-talking"],
+    ideals:["Independence","Fairness","Charity","Creativity","Friendship","Ambition"],
+    bonds:["a con gone wrong","a rival I must outdo","a debt I owe","a secret identity I protect","someone I swindled who seeks revenge"],
+    flaws:["I can't resist a pretty face","I always have an exit plan","I lie compulsively","I can't help pushing my luck","I betrayed someone close"]},
+  {name:"Criminal",skills:["Deception","Stealth"],traits:["suspicious","resourceful","daring","street-smart"],
+    ideals:["Honor among thieves","Freedom","Greed","Power","Redemption","Loyalty"],
+    bonds:["my criminal contacts","a heist gone wrong","a partner I abandoned","a debt to a crime lord","a stolen item I can't fence"],
+    flaws:["I have a tell when I lie","I turn tail at the first sign of trouble","I can't trust anyone","I'm wanted in several cities","I never forgive a slight"]},
+  {name:"Entertainer",skills:["Acrobatics","Performance"],traits:["dramatic","flamboyant","attention-seeking","captivating"],
+    ideals:["Beauty","Tradition","Creativity","Greed","Fame","Honesty"],
+    bonds:["my instrument","a fan who helped me","a rival performer","the troupe I left behind","a venue where I got my big break"],
+    flaws:["I'm a sucker for flattery","I can't keep a secret","I'm an insufferable egotist","I'll do anything for fame","I turn hostile when upstaged"]},
+  {name:"Folk Hero",skills:["Animal Handling","Survival"],traits:["humble","determined","rustic","brave"],
+    ideals:["Respect","Fairness","Freedom","Might","Sincerity","Destiny"],
+    bonds:["my home village","the tyrant I oppose","the people who believe in me","a family heirloom","the land I was raised on"],
+    flaws:["I'm convinced of my own destiny","I'm naive about the wider world","I'm too trusting","I have a weakness for vice","I secretly doubt myself"]},
+  {name:"Guild Artisan",skills:["Insight","Persuasion"],traits:["industrious","proud","meticulous","ambitious"],
+    ideals:["Community","Generosity","Freedom","Greed","Knowledge","Aspiration"],
+    bonds:["my workshop","my guild","a masterpiece I'm working on","the artisan who trained me","my guild's reputation"],
+    flaws:["I overcharge for my work","I'm a perfectionist to a fault","I'm jealous of rival artisans","I'll do anything for money","I look down on manual labor"]},
+  {name:"Hermit",skills:["Medicine","Religion"],traits:["reclusive","contemplative","eccentric","insightful"],
+    ideals:["Knowledge","Self-Knowledge","Logic","Free Thinking","Power","Inquiry"],
+    bonds:["a secret discovery","the place of my seclusion","an inner vision I pursue","nature itself","a truth the world isn't ready for"],
+    flaws:["I'm dogmatic about my beliefs","I have no social skills","I'm paranoid","I harbor dark thoughts","I'm out of touch with reality"]},
+  {name:"Noble",skills:["History","Persuasion"],traits:["refined","entitled","commanding","eloquent"],
+    ideals:["Responsibility","Power","Tradition","Reform","Duty","Noble Obligation"],
+    bonds:["my family name","a political rival","a loyal retainer","my ancestral estate","a family secret"],
+    flaws:["I'm vain","I believe everyone is beneath me","I can't stand insults","I crave luxury","I have a shameful secret"]},
+  {name:"Outlander",skills:["Athletics","Survival"],traits:["self-reliant","wild","wary of civilization","nomadic"],
+    ideals:["Change","Might","Nature","Glory","Honor","Freedom"],
+    bonds:["my tribe","a sacred grove","a trophy from a great hunt","the wilderness itself","a creature I once saved"],
+    flaws:["I'm slow to trust city-dwellers","I'm reckless","I remember every insult","I'm uncomfortable indoors","I'm easily distracted by nature"]},
+  {name:"Sage",skills:["Arcana","History"],traits:["curious","bookish","absent-minded","analytical"],
+    ideals:["Knowledge","Beauty","Logic","Power","Self-Improvement","Inquiry"],
+    bonds:["a rare text I seek","a library I protect","a mentor who taught me","an unsolved mystery","an academic rival"],
+    flaws:["I'm easily distracted by knowledge","I speak without thinking","I believe I'm the smartest person","I overlook obvious solutions","I can't keep a secret if it's interesting"]},
+  {name:"Sailor",skills:["Athletics","Perception"],traits:["sea-weathered","superstitious","boisterous","loyal"],
+    ideals:["Freedom","Fairness","Adventure","Wealth","Mastery","Comradeship"],
+    bonds:["my old ship","a crew I sailed with","the sea itself","a port I call home","a treasure map"],
+    flaws:["I follow orders even when wrong","I drink too much","I can't resist a dare","I'm haunted by a shipwreck","I never learned to swim"]},
+  {name:"Soldier",skills:["Athletics","Intimidation"],traits:["disciplined","battle-scarred","direct","tactical"],
+    ideals:["Greater Good","Responsibility","Independence","Might","Honor","Duty"],
+    bonds:["my unit","a fallen comrade","a commanding officer","a war I fought in","a weapon I carried through battle"],
+    flaws:["I obey orders without question","I'd rather fight than talk","I'm haunted by what I've done","I'm inflexible","I'm slow to trust outsiders"]},
+  {name:"Urchin",skills:["Sleight of Hand","Stealth"],traits:["scrappy","street-smart","mistrustful","resourceful"],
+    ideals:["Respect","Community","Change","Retribution","Freedom","Survival"],
+    bonds:["a street gang","the city I grew up in","a mentor who showed me kindness","a stolen memento","a friend still living on the streets"],
+    flaws:["I can't trust anyone with money","I hoard everything","I run from fights","I have trouble with authority","I steal when I don't need to"]},
+  {name:"Spy",skills:["Deception","Stealth"],traits:["paranoid","observant","manipulative","resourceful"],
+    ideals:["Freedom","Truth","Loyalty","Information","Survival","Greater Good"],
+    bonds:["my handler","a secret I carry","a cover identity","the network I serve","a target I couldn't eliminate"],
+    flaws:["I trust no one completely","I see enemies everywhere","I've told so many lies I forget the truth","I'm addicted to risk","I have multiple identities and lose myself"]},
+  {name:"Merchant",skills:["Insight","Persuasion"],traits:["shrewd","well-traveled","negotiating","calculating"],
+    ideals:["Wealth","Community","Fairness","Ambition","Generosity","Progress"],
+    bonds:["my trade route","a business partner","a rare commodity I seek","my family's trade legacy","a rival merchant house"],
+    flaws:["I see everyone as a potential customer","I cut corners","I value coin over people","I can't resist a bargain","I embellish my goods' quality"]}
+];
+const CF_FIRST_M=["Aldric","Bran","Caelum","Dorian","Edrin","Faelan","Gareth","Hadrian","Ivor","Jareth","Kael","Lucian","Merric","Nolan","Orin","Percival","Quillan","Rowan","Sylas","Thorn","Ulric","Valen","Wren","Xander","Yorick","Zephyr","Theron","Cormac","Dain","Elric","Fenris","Gideon","Halvar","Iskander","Jorin","Kaelen","Lysander","Magnus","Niall","Osric","Pelham","Rennick","Silas","Tavish","Uriel","Vidar","Wyatt","Alaric","Bastian","Cedric","Darian","Eamon","Flynn","Galen","Holt","Idris","Jasper"];
+const CF_FIRST_F=["Aelara","Brynn","Calista","Dahlia","Elara","Fiora","Gwendolyn","Haleth","Isolde","Jessa","Kaira","Lyra","Mira","Nyx","Orla","Phaedra","Quinn","Ravenna","Senna","Thalia","Ursa","Vespera","Willow","Xyla","Yara","Zara","Seraphina","Althea","Brielle","Celeste","Daphne","Eowyn","Freya","Gwyneth","Helena","Ilona","Juniper","Kira","Liriel","Morrigan","Nessa","Ophelia","Petra","Rhiannon","Soraya","Talindra","Undine","Vivienne","Wynn","Astrid","Beatrix","Cordelia","Drusilla","Elowen","Faye","Greta","Hestia","Iris"];
+const CF_LAST=["Ashford","Blackthorn","Crestfall","Dawnforge","Emberheart","Frostwind","Goldmantle","Hawkwood","Ironvale","Jadeblade","Kingsward","Lightbringer","Moonwhisper","Nighthollow","Oakenshield","Pinebrook","Quicksilver","Ravencrest","Stormrider","Thornwall","Underhill","Voidwalker","Windrunner","Ashwood","Brightwater","Copperfield","Darkmore","Elmshadow","Foxglove","Greywood","Hollowbone","Ivythorn","Kettelburn","Longstrider","Mosshill","Northwind","Oathkeeper","Pyreborn","Redmantle","Silverspire","Trueforge","Umbrawood","Vesperion","Wolfsbane","Starweaver","Battleborn","Cinderveil","Deeproot","Everhart","Firebrand"];
+const CF_SCARS=["a jagged scar across the left cheek","a long scar down the right arm","burn scars on both hands","a thin scar over one eye","a bite-mark scar on the neck","claw-mark scars across the chest","no visible scars","a faded scar on the chin","a missing chunk from one ear","whip-mark scars across the back"];
+const CF_FEATURES=["a prominent nose","high cheekbones","a strong jawline","freckles across the nose","a beauty mark","a crooked smile","a gap-toothed grin","deep-set eyes","a broad forehead","a cleft chin","laugh lines around the eyes","sharp angular features","soft rounded features","weathered sun-worn skin","a perpetual smirk","a warm gentle expression","an intense focused gaze","a tired weary look","a youthful face","crow's feet around the eyes"];
+const CF_ACCESSORIES=["a silver ring on the left hand","a leather cord necklace with a small charm","a worn belt pouch","a tattered cloak","a feather tucked behind the ear","an eye patch","fingerless gloves","a holy symbol pendant","a well-worn hat","a braided leather bracelet","a gem-studded earring","a bandolier of vials","a quill behind the ear","a set of reading spectacles","a tattoo on the forearm","ritual scarification marks","an old military insignia pin","a small bone talisman","a flower tucked in the hair","nothing particularly noteworthy"];
+const SCENE_LOCATIONS={
+  "Acolyte":["inside a candlelit temple","at a stone altar surrounded by incense","in a monastery courtyard at dawn","before a stained glass window","in a shadowy crypt beneath a cathedral"],
+  "Charlatan":["in a crowded marketplace stall","in a dimly lit tavern corner","at a card table in a gambling den","on a busy city street","in a back alley leaning against a wall"],
+  "Criminal":["in a dark alley at night","in an underground thieves' guild hideout","on a moonlit rooftop overlooking the city","in a smoky den","in a cramped sewer tunnel"],
+  "Entertainer":["on a tavern stage with lantern light","at a royal court performing","in a town square during a festival","backstage at a grand theater","around a campfire under the stars"],
+  "Folk Hero":["in a sunlit village square","standing in a golden wheat field","at the edge of a farmstead","on a country road at sunset","in a rustic tavern surrounded by villagers"],
+  "Guild Artisan":["in a busy workshop surrounded by tools","at a forge with glowing embers","in a cluttered artisan's studio","at a market stall displaying wares","in a well-lit crafting hall"],
+  "Hermit":["in a secluded forest clearing","at the mouth of a cave","beside a tranquil woodland pond","in a tiny woodland cottage","on a misty mountain peak"],
+  "Noble":["in a grand manor hall","on a balcony overlooking a city","in an ornate study surrounded by books","at a formal banquet table","in a courtyard with manicured gardens"],
+  "Outlander":["in a wild untamed wilderness","on a rocky mountain trail","beside a roaring river","in a dense ancient forest","on a windswept plain under a vast sky"],
+  "Sage":["in a vast library surrounded by towering bookshelves","at a cluttered desk covered in scrolls","in an arcane study with floating candles","in a university lecture hall","in a dusty archive"],
+  "Sailor":["on the deck of a sailing ship","at a harbor dock at sunset","in a portside tavern","standing at a ship's wheel","on a rocky shoreline looking out to sea"],
+  "Soldier":["on a muddy battlefield","at a military encampment","standing guard at a fortress gate","in a war room over a map table","marching on a dusty road in formation"],
+  "Urchin":["in a narrow city alley","on a crowded slum rooftop","huddled in a doorway","picking through a market crowd","in the shadow of a towering city wall"],
+  "Spy":["in a shadowy corner of a crowded tavern","on a moonlit balcony","disguised in a busy marketplace","in a secret meeting room","peering through a window at night"],
+  "Merchant":["behind a market stall piled with goods","on a trade caravan at sunset","in a well-appointed counting house","negotiating in a bustling bazaar","in a warehouse full of crates"]
+};
+
+function headKey(s){
+  return String(s).split(' — ')[0].split(' (')[0].toLowerCase().replace(/-/g,' ').replace(/[^a-z0-9 ]/g,'')
+    .split(/\s+/).filter(Boolean).map(function(w){return w.replace(/s$/,'');}).join(' ');
+}
+function unionInto(target){
+  for(var a=1;a<arguments.length;a++){
+    (arguments[a]||[]).forEach(function(item){
+      var k=headKey(item),hit=-1;
+      for(var i=0;i<target.length;i++){if(headKey(target[i])===k){hit=i;break;}}
+      if(hit<0)target.push(item);
+      else if(String(item).length>String(target[hit]).length)target[hit]=item;
+    });
+  }
+  return target;
+}
+function tidy(s){s=String(s).replace(/^(a|an) /i,'');return s.charAt(0).toUpperCase()+s.slice(1);}
+function head(s){return String(s).split(' — ')[0];}
+
+// Appearance
+unionInto(SKIN,NC.skin);
+unionInto(BUILDS,NC.build,["Striking silhouette — immediately noticed"]);
+unionInto(HAIR,NC.hair);
+unionInto(EYES,NC.eyes);
+unionInto(MARKS,CF_SCARS.filter(function(s){return s!=="no visible scars";}).map(tidy));
+const FACES=unionInto([],NC.face,CF_FEATURES.map(tidy));
+const ACCESSORIES=unionInto([],CF_ACCESSORIES.filter(function(s){return s!=="nothing particularly noteworthy";}).map(tidy));
+const GENDERS=unionInto([],NC.gender);
+unionInto(AGES,NC.age);
+// Identity
+unionInto(ALIGNS,["Unaligned — beyond mortal moral framework","In transition — was one thing, becoming another"]);
+unionInto(BACKGROUNDS,NC.background.map(head).filter(function(b){return b.indexOf("Custom")<0&&b!=="Far Traveller";}),["Merchant"]);
+// Personality
+const TRAITS=unionInto([],NC.personality);
+unionInto(MOTIVATIONS,NC.motivation);
+const FLAWS=unionInto([],NC.flaw);
+unionInto(VOICES,NC.voice);
+unionInto(SECRETS,NC.secret);
+const BG_PERSONA={};CF_BACKGROUNDS.forEach(function(b){BG_PERSONA[b.name]=b;});
+const IDEALS=unionInto.apply(null,[[]].concat(CF_BACKGROUNDS.map(function(b){return b.ideals;})));
+const BONDS=unionInto.apply(null,[[]].concat(CF_BACKGROUNDS.map(function(b){return b.bonds.map(tidy);})));
+// Names
+unionInto(NAMES.Human.m,NC_NAMES.male,CF_FIRST_M);
+unionInto(NAMES.Human.f,NC_NAMES.female,CF_FIRST_F);
+unionInto(NAMES.Human.l,NC_SURNAMES,CF_LAST);
+NAMES.neutral=NC_NAMES.neutral.slice();
+
+// Racial looks: the Character Forge catalog, plus the Loom races it lacked.
+const RACE_LOOKS={};
+CF_RACES.forEach(function(r){RACE_LOOKS[r.name]=r;});
+[
+ {name:"Duergar",skinTones:["ash gray","slate gray","dull gray","charcoal"],hairColors:["none"],hairStyles:["bald with a long braided beard","shaved scalp and a forked gray beard","bald with a cropped iron-gray beard"],eyeColors:["dark","black","faintly red"],buildRange:["stocky","broad","dense","hard-muscled"]},
+ {name:"Tortle",skinTones:["olive-green beneath a mossy shell","gray-green beneath a dark brown shell","sea-green beneath a barnacle-crusted shell","mottled khaki beneath a ridged shell"],hairColors:["none"],hairStyles:["no hair, smooth beaked head","no hair, wrinkled leathery head"],eyeColors:["black","amber","dark green","gold"],buildRange:["broad and shelled","stout","heavy","solid"],extraFeatures:["a domed shell carved with tribal marks","a shell scarred by old blades","a hooked beak"]},
+ {name:"Thri-kreen",skinTones:["sandy chitin","jade-green chitin","ochre chitin","gray-blue chitin that shifts to match its surroundings"],hairColors:["none"],hairStyles:["no hair, a chitinous head with twitching antennae"],eyeColors:["black compound","emerald compound","amber compound"],buildRange:["lanky and six-limbed","insectile and angular"],extraFeatures:["a second pair of arms","twitching antennae","mandibles that click when amused"]},
+ {name:"Owlin",skinTones:["covered in feathers"],hairColors:["tawny feathers","snowy white feathers","barred brown feathers","gray-speckled feathers","russet feathers"],hairStyles:["a round feathered facial disc","tufted ear-feathers","sleek plumage"],eyeColors:["huge amber","round golden","dark","pale yellow"],buildRange:["light-boned","compact","lean"],extraFeatures:["broad feathered wings","a hooked beak","silent flight feathers"]},
+ {name:"Harengon",skinTones:["covered in fur"],hairColors:["brown fur","white fur","gray fur","black fur","dappled fur","sandy fur"],hairStyles:["long upright ears","one floppy ear","ears pierced with rings"],eyeColors:["brown","amber","black","pink"],buildRange:["lean and springy","long-legged","wiry"],extraFeatures:["powerful hind legs","a twitching nose","a cotton tail"]},
+ {name:"Plasmoid",skinTones:["translucent green ooze","milky violet ooze","amber gel","pale blue ooze"],hairColors:["none"],hairStyles:["no hair, a smooth amorphous head"],eyeColors:["two floating dark motes for","glowing pinprick"],buildRange:["amorphous, holding a humanoid shape","blobby","fluidly shifting"],extraFeatures:["small objects visibly suspended inside its body","pseudopod arms"]},
+ {name:"Hadozee",skinTones:["covered in fur"],hairColors:["brown fur","black fur","ginger fur","gray fur"],hairStyles:["a fuzzy crest","a long simian face"],eyeColors:["brown","amber","dark"],buildRange:["long-armed","lean","agile"],extraFeatures:["gliding membranes between the limbs","dexterous hand-like feet"]},
+ {name:"Autognome",skinTones:["brass plating","copper plating","riveted iron casing","polished bronze shell"],hairColors:["none"],hairStyles:["no hair, a domed metal head","no hair, a head of exposed gears"],eyeColors:["glowing blue lens","amber glass lens","green optic-crystal"],buildRange:["small and boxy","compact clockwork","squat and sturdy"],extraFeatures:["a ticking heart-spring","a wind-up key in the back"]},
+ {name:"Yuan-Ti Pureblood",skinTones:["olive with faint scale patterns","bronze with patches of green scales","pale with serpentine mottling","dark brown with glossy scales at the neck"],hairColors:["black","dark green","none"],hairStyles:["slicked flat to the skull","long and straight","shaved smooth"],eyeColors:["slitted gold","slitted green","serpentine yellow"],buildRange:["sinuous","lean","lithe"],extraFeatures:["a forked tongue","patches of scales","serpentine pupils"]},
+ {name:"Githyanki",skinTones:["yellow-green","mottled yellow","sallow olive","jaundiced green"],hairColors:["black","russet","dark red"],hairStyles:["pulled back in a severe topknot","in a war-braid","shaved but for a single queue"],eyeColors:["black","yellow","dark"],buildRange:["gaunt","lean","angular"],extraFeatures:["a long, flat nose","sharply pointed ears","an ornate silver sword hilt at the hip"]},
+ {name:"Githzerai",skinTones:["yellow","pale yellow","mottled ochre"],hairColors:["none","black"],hairStyles:["shaved bald","a single long braid"],eyeColors:["gray","pale","black"],buildRange:["ascetic and thin","lean","wiry"],extraFeatures:["a serene, unblinking stare","pointed ears"]},
+ {name:"Satyr",skinTones:["tan","ruddy","olive","brown"],hairColors:["curly brown","black","auburn","chestnut"],hairStyles:["wild curls between small horns","tousled around curling ram horns"],eyeColors:["golden","green","amber","brown"],buildRange:["lean","wiry","athletic"],extraFeatures:["goat legs and cloven hooves","curling ram horns"]},
+ {name:"Fairy",skinTones:["pale","rosy","lavender-tinged","sun-golden","leaf-green tinted"],hairColors:["silver","pink","pale blue","golden","violet"],hairStyles:["floating loose","adorned with petals","in tiny braids"],eyeColors:["violet","emerald","silver","golden"],buildRange:["tiny and slight","delicate"],extraFeatures:["gossamer butterfly wings","dragonfly wings","dusky moth wings"]},
+ {name:"Kalashtar",extraFeatures:["eyes that glow faintly when emotions run high","a serene, faraway expression","a soft psychic hum others feel more than hear"]},
+ {name:"Shifter",extraFeatures:["prominent canines","wild, bristling sideburns","feral, reflective eyes","pointed, tufted ears"]}
+].forEach(function(r){RACE_LOOKS[r.name]=r;});
+// Races whose looks can also come from the general tables (half the time); every other race always uses its own palette.
+const MIXED_LOOKS={"Human":1,"High Elf":1,"Wood Elf":1,"Half-Elf":1,"Lightfoot Halfling":1,"Stout Halfling":1,"Hill Dwarf":1,"Mountain Dwarf":1,"Rock Gnome":1,"Forest Gnome":1,"Aasimar":1,"Tiefling":1,"Kalashtar":1,"Shifter":1};
+
+// Race mechanics: [size, speed, darkvision ft, languages ("+N" = N of choice), height in (min,max), age yrs (min,max), extra movement]
+const RACE_INFO={
+"Human":["Medium",30,0,"Common,+1",60,76,18,75],
+"High Elf":["Medium",30,60,"Common,Elvish,+1",62,74,100,700],
+"Wood Elf":["Medium",35,60,"Common,Elvish",60,72,100,700],
+"Drow":["Medium",30,120,"Common,Elvish,Undercommon",58,70,100,700],
+"Hill Dwarf":["Medium",25,60,"Common,Dwarvish",44,52,50,340],
+"Mountain Dwarf":["Medium",25,60,"Common,Dwarvish",46,54,50,340],
+"Duergar":["Medium",25,120,"Common,Dwarvish,Undercommon",44,52,50,340],
+"Lightfoot Halfling":["Small",25,0,"Common,Halfling",30,38,20,150],
+"Stout Halfling":["Small",25,0,"Common,Halfling",30,38,20,150],
+"Half-Elf":["Medium",30,60,"Common,Elvish,+1",60,74,20,180],
+"Half-Orc":["Medium",30,60,"Common,Orc",66,80,14,75],
+"Tiefling":["Medium",30,60,"Common,Infernal",60,74,18,100],
+"Dragonborn":["Medium",30,0,"Common,Draconic",66,80,15,80],
+"Forest Gnome":["Small",25,60,"Common,Gnomish",34,40,40,450],
+"Rock Gnome":["Small",25,60,"Common,Gnomish",36,42,40,450],
+"Deep Gnome":["Small",25,120,"Common,Gnomish,Undercommon",34,40,40,450],
+"Goliath":["Medium",30,0,"Common,Giant",84,96,18,100],
+"Aasimar":["Medium",30,60,"Common,Celestial",60,76,18,160],
+"Fire Genasi":["Medium",30,60,"Common,Primordial",60,76,18,120],
+"Water Genasi":["Medium",30,60,"Common,Primordial",60,76,18,120,"swim 30 ft."],
+"Earth Genasi":["Medium",30,60,"Common,Primordial",60,76,18,120],
+"Air Genasi":["Medium",35,60,"Common,Primordial",60,76,18,120],
+"Tabaxi":["Medium",30,60,"Common,+1",60,74,15,80,"climb 30 ft."],
+"Kenku":["Medium",30,0,"Common,Auran",56,64,12,60],
+"Tortle":["Medium",30,0,"Common,Aquan",60,72,15,50],
+"Firbolg":["Medium",30,0,"Common,Elvish,Giant",84,96,30,500],
+"Bugbear":["Medium",30,60,"Common,Goblin",72,84,16,80],
+"Goblin":["Small",30,60,"Common,Goblin",36,44,8,60],
+"Hobgoblin":["Medium",30,60,"Common,Goblin",60,72,18,80],
+"Kobold":["Small",30,60,"Common,Draconic",24,30,6,120],
+"Lizardfolk":["Medium",30,0,"Common,Draconic",66,78,14,60,"swim 30 ft."],
+"Orc":["Medium",30,60,"Common,Orc",68,82,12,50],
+"Yuan-Ti Pureblood":["Medium",30,60,"Common,Abyssal,Draconic",60,74,18,90],
+"Changeling":["Medium",30,0,"Common,+2",60,72,18,100],
+"Kalashtar":["Medium",30,0,"Common,Quori,+1",60,74,18,100],
+"Shifter":["Medium",30,60,"Common",60,74,10,70],
+"Warforged":["Medium",30,0,"Common,+1",66,78,2,30],
+"Githyanki":["Medium",30,0,"Common,Gith,+1",60,74,18,100],
+"Githzerai":["Medium",30,0,"Common,Gith,+1",60,74,18,100],
+"Satyr":["Medium",35,0,"Common,Sylvan",56,72,18,100],
+"Fairy":["Small",30,0,"Common,Sylvan",24,36,18,100,"fly 30 ft."],
+"Harengon":["Medium",30,0,"Common,Sylvan",54,70,15,80],
+"Owlin":["Medium",30,120,"Common,Sylvan",56,72,15,80,"fly 30 ft."],
+"Autognome":["Small",30,0,"Common,Gnomish",36,42,1,300],
+"Plasmoid":["Medium",30,60,"Common,+1",48,72,1,60],
+"Hadozee":["Medium",30,0,"Common,+1",54,70,12,70,"climb 30 ft."],
+"Thri-kreen":["Medium",30,60,"Common,Thri-kreen (telepathic)",66,84,6,40]
+};
+function raceKey(race){return race.replace(/\s*\(.*\)$/,'');}
+function raceInfo(race){
+  var r=RACE_INFO[race]||RACE_INFO[raceKey(race)]||RACE_INFO.Human;
+  return {size:r[0],speed:r[1],dv:r[2],langs:r[3].split(','),h:[r[4],r[5]],a:[r[6],r[7]],move:r[8]||''};
+}
+const LANG_POOL=["Elvish","Dwarvish","Draconic","Celestial","Infernal","Sylvan","Undercommon","Giant","Gnomish","Goblin","Halfling","Orc","Primordial","Abyssal","Deep Speech"];
+
+// Skills & proficiencies
+const SKILLS={"Acrobatics":"DEX","Animal Handling":"WIS","Arcana":"INT","Athletics":"STR","Deception":"CHA","History":"INT","Insight":"WIS","Intimidation":"CHA","Investigation":"INT","Medicine":"WIS","Nature":"INT","Perception":"WIS","Performance":"CHA","Persuasion":"CHA","Religion":"INT","Sleight of Hand":"DEX","Stealth":"DEX","Survival":"WIS"};
+const CLASS_SKILLS={
+"Barbarian":[2,["Animal Handling","Athletics","Intimidation","Nature","Perception","Survival"]],
+"Bard":[3,Object.keys(SKILLS)],
+"Cleric":[2,["History","Insight","Medicine","Persuasion","Religion"]],
+"Druid":[2,["Arcana","Animal Handling","Insight","Medicine","Nature","Perception","Religion","Survival"]],
+"Fighter":[2,["Acrobatics","Animal Handling","Athletics","History","Insight","Intimidation","Perception","Survival"]],
+"Monk":[2,["Acrobatics","Athletics","History","Insight","Religion","Stealth"]],
+"Paladin":[2,["Athletics","Insight","Intimidation","Medicine","Persuasion","Religion"]],
+"Ranger":[3,["Animal Handling","Athletics","Insight","Investigation","Nature","Perception","Stealth","Survival"]],
+"Rogue":[4,["Acrobatics","Athletics","Deception","Insight","Intimidation","Investigation","Perception","Performance","Persuasion","Sleight of Hand","Stealth"]],
+"Sorcerer":[2,["Arcana","Deception","Insight","Intimidation","Persuasion","Religion"]],
+"Warlock":[2,["Arcana","Deception","History","Intimidation","Investigation","Nature","Religion"]],
+"Wizard":[2,["Arcana","History","Insight","Investigation","Medicine","Religion"]],
+"Artificer":[2,["Arcana","History","Investigation","Medicine","Nature","Perception","Sleight of Hand"]],
+"Blood Hunter":[3,["Acrobatics","Arcana","Athletics","History","Insight","Investigation","Religion","Survival"]]
+};
+// Background skill proficiencies, plus how many extra languages the background grants
+const BG_SKILLS={
+"Acolyte":["Insight","Religion",2],"Charlatan":["Deception","Sleight of Hand",0],"Criminal":["Deception","Stealth",0],"Entertainer":["Acrobatics","Performance",0],
+"Folk Hero":["Animal Handling","Survival",0],"Guild Artisan":["Insight","Persuasion",1],"Hermit":["Medicine","Religion",1],"Noble":["History","Persuasion",1],
+"Outlander":["Athletics","Survival",1],"Sage":["Arcana","History",2],"Sailor":["Athletics","Perception",0],"Soldier":["Athletics","Intimidation",0],
+"Urchin":["Sleight of Hand","Stealth",0],"Haunted One":["Investigation","Religion",2],"Far Traveler":["Insight","Perception",1],"Clan Crafter":["History","Insight",1],
+"Courtier":["Insight","Persuasion",2],"Faction Agent":["Insight","Persuasion",2],"Knight":["History","Persuasion",1],"Pirate":["Athletics","Perception",0],
+"Gladiator":["Acrobatics","Performance",0],"Failed Merchant":["Investigation","Persuasion",1],"Ruined":["Stealth","Survival",0],"Rewarded":["Insight","Persuasion",1],
+"Refugee":["Insight","Survival",1],"Archaeologist":["History","Survival",1],"City Watch":["Athletics","Insight",2],"Mercenary Veteran":["Athletics","Persuasion",0],
+"Inheritor":["Survival","Arcana",1],"Witchlight Hand":["Performance","Sleight of Hand",1],"Anthropologist":["Insight","Religion",2],"Athlete":["Acrobatics","Athletics",1],
+"Celebrity Adventurer":["Performance","Persuasion",0],"Feylost":["Deception","Survival",1],"Investigator":["Insight","Investigation",0],"Marine":["Athletics","Survival",0],
+"Smuggler":["Athletics","Deception",0],"Spy":["Deception","Stealth",0],"Shipwright":["History","Perception",0],"Astral Drifter":["Insight","Religion",1],
+"Merchant":["Insight","Persuasion",1]
+};
+const SPELL_ABIL={"Wizard":"INT","Artificer":"INT","Cleric":"WIS","Druid":"WIS","Ranger":"WIS","Bard":"CHA","Sorcerer":"CHA","Warlock":"CHA","Paladin":"CHA"};
+// Armor class by worn armor: [base, max DEX bonus]
+const ARMOR_AC={"Chain Mail":[16,0],"Splint Mail":[17,0],"Plate Armor":[18,0],"Half Plate":[15,2],"Scale Mail":[14,2],"Breastplate":[14,2],"Hide Armor":[12,2],"Leather Armor":[11,99],"Studded Leather":[12,99],"Padded Armor":[11,99]};
+
+
 // === POPULATE DROPDOWNS ===
 document.addEventListener('DOMContentLoaded',function(){
   var cs=document.getElementById('inClass');
@@ -489,8 +1092,8 @@ document.addEventListener('DOMContentLoaded',function(){
 
 // === MAX SPELL LEVEL BY CLASS LEVEL ===
 function maxSpellLevel(cls,lvl){
-  if(["Barbarian","Fighter","Monk","Rogue"].indexOf(cls)>=0){
-    if(cls==="Fighter"||cls==="Rogue")return lvl>=19?4:lvl>=13?3:lvl>=7?2:lvl>=3?1:0;
+  if(["Barbarian","Fighter","Monk","Rogue","Blood Hunter"].indexOf(cls)>=0){
+    if(cls==="Fighter"||cls==="Rogue"||cls==="Blood Hunter")return lvl>=19?4:lvl>=13?3:lvl>=7?2:lvl>=3?1:0;
     return 0;
   }
   if(["Paladin","Ranger","Artificer"].indexOf(cls)>=0)return lvl>=17?5:lvl>=13?4:lvl>=9?3:lvl>=5?2:lvl>=2?1:0;
@@ -536,6 +1139,7 @@ function assignStats(cls){
     case"Warlock":order=["CHA","CON","DEX","WIS","INT","STR"];break;
     case"Wizard":order=["INT","CON","DEX","WIS","CHA","STR"];break;
     case"Artificer":order=["INT","CON","DEX","WIS","CHA","STR"];break;
+    case"Blood Hunter":order=["STR","CON","DEX","INT","WIS","CHA"];break;
     default:order=["STR","DEX","CON","INT","WIS","CHA"];
   }
   var stats={};
@@ -552,102 +1156,187 @@ function calcHP(cls,lvl,conMod){
 }
 
 // === NAME GENERATOR ===
-function genName(race){
-  var key="Human";
-  if(race.indexOf("Elf")>=0||race.indexOf("Drow")>=0||race.indexOf("Half-Elf")>=0)key="Elf";
-  else if(race.indexOf("Dwarf")>=0||race.indexOf("Duergar")>=0)key="Dwarf";
-  else if(race.indexOf("Halfling")>=0)key="Halfling";
-  else if(race.indexOf("Tiefling")>=0)key="Tiefling";
-  else if(race.indexOf("Dragonborn")>=0)key="Dragonborn";
-  else if(race.indexOf("Gnome")>=0)key="Gnome";
-  else if(race.indexOf("Half-Orc")>=0||race.indexOf("Goliath")>=0||race.indexOf("Orc")>=0||race.indexOf("Bugbear")>=0||race.indexOf("Firbolg")>=0||race.indexOf("Goblin")>=0||race.indexOf("Hobgoblin")>=0||race.indexOf("Lizardfolk")>=0||race.indexOf("Tabaxi")>=0||race.indexOf("Kenku")>=0||race.indexOf("Tortle")>=0||race.indexOf("Warforged")>=0||race.indexOf("Kobold")>=0)key="Other";
-  else key="Human";
-  var d=NAMES[key];
-  var g=Math.random()>.5?"m":"f";
-  var first=R(d[g]);
+function nameKey(race){
+  if(race.indexOf("Elf")>=0||race.indexOf("Drow")>=0)return"Elf";
+  if(race.indexOf("Dwarf")>=0||race.indexOf("Duergar")>=0)return"Dwarf";
+  if(race.indexOf("Halfling")>=0)return"Halfling";
+  if(race.indexOf("Tiefling")>=0)return"Tiefling";
+  if(race.indexOf("Dragonborn")>=0)return"Dragonborn";
+  if(race.indexOf("Gnome")>=0)return"Gnome";
+  if(/Orc|Goliath|Bugbear|Firbolg|Goblin|Lizardfolk|Tabaxi|Kenku|Tortle|Warforged|Kobold/.test(race))return"Other";
+  return"Human";
+}
+// g: 'm' | 'f' | 'n' (neutral: a gender-neutral first name, or either list)
+function genName(race,g){
+  var d=NAMES[nameKey(race)];
+  var first;
+  if(g==='n'){first=Math.random()<.6?R(NAMES.neutral):R(d[Math.random()>.5?"m":"f"]);}
+  else first=R(d[g]);
   var last=d.l&&d.l.length>0?" "+R(d.l):"";
   return first+last;
 }
+function genderCat(g){if(/^Male/.test(g))return'm';if(/^Female/.test(g))return'f';return'n';}
+function pickGender(sel){
+  if(sel==='random')return R(GENDERS);
+  var pool=GENDERS.filter(function(g){return g.indexOf(sel)===0;});
+  return pool.length?R(pool):sel;
+}
 
-// === GENERATE ===
-function generate(){
+// === SMALL HELPERS ===
+const fm=function(n){return n>=0?'+'+n:''+n;};
+const cap=function(s){s=String(s);return s.charAt(0).toUpperCase()+s.slice(1);};
+const esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+const RN=function(a,b){return Math.floor(Math.random()*(b-a+1))+a;};
+function pickN(arr,n){var p=arr.slice(),o=[];while(p.length&&o.length<n)o.push(p.splice(Math.floor(Math.random()*p.length),1)[0]);return o;}
+function ordinal(n){return n===1?'1st':n===2?'2nd':n===3?'3rd':n+'th';}
+
+// Age in years, guided by the rolled age category so "Elder" isn't 19.
+function ageYears(cat,range){
+  var c=cat.toLowerCase(),lo=range[0],hi=range[1],span=hi-lo,f;
+  if(/unnatural|ageless|indeterminate|ancient/.test(c))return null;
+  if(/very young|barely/.test(c))f=[0,.06];
+  else if(/young adult|young/.test(c))f=[.04,.15];
+  else if(/mid twent/.test(c))f=[.08,.2];
+  else if(/established|prime/.test(c))f=[.15,.4];
+  else if(/middle/.test(c))f=[.4,.6];
+  else if(/older|veteran/.test(c))f=[.6,.8];
+  else if(/elder/.test(c))f=[.8,1];
+  else f=[.1,.6];
+  return Math.round(lo+span*(f[0]+Math.random()*(f[1]-f[0])));
+}
+
+// === APPEARANCE ===
+function rollLooks(race){
+  var key=raceKey(race),L=RACE_LOOKS[key]||null,o={};
+  var racial=L&&L.skinTones&&(!MIXED_LOOKS[key]||Math.random()<.5);
+  if(racial){
+    var sk=R(L.skinTones);
+    if(key==="Dragonborn"){var m=race.match(/\((\w+)\)/);sk=(m?R(["deep ","bright ","burnished ",""])+m[1].toLowerCase():sk)+" scales";}
+    else if(key==="Lizardfolk"||key==="Kobold")sk+=" scales";
+    else if(key==="Warforged")sk+=" plating";
+    o.skin=cap(sk);
+    var hc=R(L.hairColors),hs=R(L.hairStyles);
+    o.hair=cap((hc==="none"||hc==="bald"||/^no hair|^bald/.test(hs))?hs:hc+", "+hs);
+    o.eyes=cap(R(L.eyeColors));
+    o.build=MIXED_LOOKS[key]?R(BUILDS):cap(R(L.buildRange));
+  } else {
+    o.skin=R(SKIN);o.hair=R(HAIR);o.eyes=R(EYES);o.build=R(BUILDS);
+  }
+  o.extra=L&&L.extraFeatures?cap(R(L.extraFeatures)):null;
+  if(key==="Dragonborn")o.extra=null; // ancestry is already in the race name
+  o.tail=L&&L.tailDesc?cap(R(L.tailDesc)):null;
+  return o;
+}
+
+// === FIRST IMPRESSION (from the D20 Character Forge) ===
+function firstImpression(first,eyes,motivation,flaw){
+  var openers=["The first thing people notice about "+first+" is",first+" enters a room and people notice","There is something about "+first+" that draws the eye:","People who meet "+first+" for the first time often note",first+" carries themselves with"];
+  var middles=["the "+head(eyes).toLowerCase().replace(/ eyes?$/,'')+" eyes that seem to be calculating something","the quiet confidence of someone who has survived worse than this","a quality of complete attention — when they look at you, nothing else exists","the weight of something unfinished that they carry without acknowledgment","an ease with discomfort that suggests extensive practice","the particular stillness of someone accustomed to danger","something guarded behind a deliberately open expression"];
+  var ends=["It is not immediately clear whether this is an invitation or a warning.","The "+head(motivation).toLowerCase()+" behind their eyes is easy to read, if you know what you're looking for.","They are, without question, exactly what they appear to be. Probably.","Whatever they are searching for, they have not found it yet.","The "+head(flaw).toLowerCase()+" surfaces later. It always does.","There is a story here. They are not telling it yet."];
+  return R(openers)+" "+R(middles)+". "+R(ends);
+}
+
+// === BUILD ONE CHARACTER ===
+function buildCharacter(){
   var lvlSel=document.getElementById('inLevel').value;
   var clsSel=document.getElementById('inClass').value;
   var raceSel=document.getElementById('inRace').value;
-  var level=lvlSel==='random'?Math.floor(Math.random()*20)+1:parseInt(lvlSel);
+  var genSel=document.getElementById('inGender').value;
+  var level=lvlSel==='random'?Math.floor(Math.random()*20)+1:parseInt(lvlSel,10);
   var cls=clsSel==='random'?R(Object.keys(CLASSES)):clsSel;
   var race=raceSel==='random'?R(RACES):raceSel;
   var cd=CLASSES[cls];
   var sub=R(cd.subclasses);
   var bg=R(BACKGROUNDS);
   var align=R(ALIGNS);
-  var name=genName(race);
+  var gender=pickGender(genSel);
+  var name=genName(race,genderCat(gender));
+  var first=name.split(' ')[0];
   var stats=assignStats(cls);
-  var conMod=Math.floor((stats.CON-10)/2);
-  var dexMod=Math.floor((stats.DEX-10)/2);
-  var hp=calcHP(cls,level,conMod);
+  var M={};["STR","DEX","CON","INT","WIS","CHA"].forEach(function(s){M[s]=Math.floor((stats[s]-10)/2);});
+  var ri=raceInfo(race);
+  var hp=calcHP(cls,level,M.CON);
   var pb=profBonus(level);
-  var ac=10;
-  var armorType=cd.armor==="heavy"?"heavy":cd.armor==="medium"?"medium":cd.armor==="light"?"light":"none";
-  var armorPick=R(ARMOR_DETAIL[armorType]);
-  if(armorType==="heavy")ac=R([14,16,17,18]);
-  else if(armorType==="medium")ac=R([13,14,15])+Math.min(dexMod,2);
-  else if(armorType==="light")ac=11+dexMod;
-  else{if(cls==="Monk")ac=10+dexMod+Math.floor((stats.WIS-10)/2);else if(cls==="Barbarian")ac=10+dexMod+conMod;else ac=10+dexMod;}
-  var speed=30;if(race.indexOf("Dwarf")>=0||race.indexOf("Halfling")>=0||race.indexOf("Gnome")>=0)speed=25;if(race.indexOf("Wood Elf")>=0)speed=35;
-  var deity=R(DEITIES);
-  var origin=R(ORIGINS);
-  var skin=R(SKIN);var build=R(BUILDS);var hair=R(HAIR);var eyes=R(EYES);var mark=R(MARKS);var clothing=R(CLOTHING);var fabric=R(FABRICS);
-  var color=R(COLORS);var age=R(AGES);var quirk=R(QUIRKS);var vice=R(VICES);var fear=R(FEARS);var trinket=R(TRINKETS);var voice=R(VOICES);var secret=R(SECRETS);var motivation=R(MOTIVATIONS);
-  var weapon=R(WEAPONS_DETAIL[cls]||WEAPONS_DETAIL["Fighter"]);
-  var spellbook=null;
-  if(cls==="Wizard")spellbook=R(SPELLBOOKS);
 
-  // BUILD SPELL LIST
+  // --- Equipment & armor class ---
+  var armorType=cd.armor.indexOf("heavy")===0?"heavy":cd.armor.indexOf("medium")===0?"medium":cd.armor==="light"?"light":"none";
+  var armorPick=cls==="Druid"?R([ARMOR_DETAIL.medium[3],ARMOR_DETAIL.light[0]]):R(ARMOR_DETAIL[armorType]);
+  var weapon=R(WEAPONS_DETAIL[cls]||WEAPONS_DETAIL["Fighter"]);
+  var shield=/Shield/.test(weapon.n);
+  var ac,acNote;
+  if(ARMOR_AC[armorPick.n]){var aa=ARMOR_AC[armorPick.n];ac=aa[0]+Math.min(M.DEX,aa[1]);acNote=armorPick.n;}
+  else if(cls==="Monk"){ac=10+M.DEX+M.WIS;acNote="Unarmored Defense";}
+  else if(cls==="Barbarian"){ac=10+M.DEX+M.CON;acNote="Unarmored Defense";}
+  else if(cls==="Sorcerer"&&sub.name==="Draconic Bloodline"){ac=13+M.DEX;acNote="Draconic Resilience";}
+  else {ac=10+M.DEX;acNote="Unarmored";}
+  if(shield){ac+=2;acNote+=" + shield";}
+
+  // --- Proficiencies (from the D&D Character Forge, expanded to every class & background) ---
+  var bgs=BG_SKILLS[bg]||null;
+  var profSkills=bgs?[bgs[0],bgs[1]]:[];
+  var cs=CLASS_SKILLS[cls]||[2,Object.keys(SKILLS)];
+  pickN(cs[1].filter(function(s){return profSkills.indexOf(s)<0;}),cs[0]).forEach(function(s){profSkills.push(s);});
+  if(race.indexOf("Half-Elf")===0)pickN(Object.keys(SKILLS).filter(function(s){return profSkills.indexOf(s)<0;}),2).forEach(function(s){profSkills.push(s);});
+  if(/Elf|Drow/.test(race)&&race.indexOf("Half-Elf")<0&&profSkills.indexOf("Perception")<0)profSkills.push("Perception");
+  if(/Half-Orc|Orc/.test(race)&&profSkills.indexOf("Intimidation")<0)profSkills.push("Intimidation");
+  var expertise=[];
+  var nExp=cls==="Rogue"?(level>=6?4:2):cls==="Bard"?(level>=10?4:level>=3?2:0):0;
+  if(nExp)expertise=pickN(profSkills,nExp);
+  profSkills.sort();
+  var skillBonus=function(s){var b=M[SKILLS[s]];if(profSkills.indexOf(s)>=0)b+=expertise.indexOf(s)>=0?pb*2:pb;return b;};
+  var passive=10+skillBonus("Perception");
+  var senses=[];
+  if(ri.dv)senses.push((ri.dv>=120&&/Drow|Duergar|Deep Gnome/.test(race)?"Superior Darkvision ":"Darkvision ")+ri.dv+" ft.");
+  if(cls==="Ranger"&&sub.name==="Gloom Stalker"&&level>=3)senses.push(ri.dv?"Umbral Sight (darkvision +30 ft.)":"Umbral Sight (darkvision 60 ft.)");
+  senses.push("Passive Perception "+passive);
+  var langs=[];var extraLang=(bgs?bgs[2]:0);
+  ri.langs.forEach(function(l){if(l.charAt(0)==='+')extraLang+=parseInt(l.slice(1),10);else langs.push(l);});
+  pickN(LANG_POOL.filter(function(l){return langs.indexOf(l)<0;}),extraLang).forEach(function(l){langs.push(l);});
+  if(cls==="Druid")langs.push("Druidic");
+  if(cls==="Rogue")langs.push("Thieves' Cant");
+
+  // --- Spells ---
   var spellHTML='';
   var msl=maxSpellLevel(cls,level);
-  var isCaster=msl>0;
   var isEK=cls==="Fighter"&&sub.name==="Eldritch Knight";
   var isAT=cls==="Rogue"&&sub.name==="Arcane Trickster";
-  var spellClass=cls;
-  if(isEK||isAT)spellClass="Wizard";
-
-  if(isCaster||isEK||isAT){
-    var nc=numCantrips(isEK||isAT?spellClass:cls,level);
+  var isPS=cls==="Blood Hunter"&&sub.name==="Order of the Profane Soul";
+  var thirdCaster=["Fighter","Rogue","Blood Hunter"].indexOf(cls)>=0;
+  var spellClass=isEK||isAT?"Wizard":isPS?"Warlock":cls;
+  if(thirdCaster&&!(isEK||isAT||isPS))msl=0;
+  if(msl>0){
+    var nc=numCantrips(thirdCaster?spellClass:cls,level);
+    if(thirdCaster)nc=Math.min(nc,3);
     if(SPELLS.cantrips[spellClass]){
-      var clist=SPELLS.cantrips[spellClass].slice();
-      var picked=[];for(var c=0;c<Math.min(nc,clist.length);c++){var idx=Math.floor(Math.random()*clist.length);picked.push(clist.splice(idx,1)[0]);}
-      spellHTML+='<div class="spell-level-h">Cantrips</div><div class="spell-list">'+picked.join(', ')+'</div>';
+      var picked=pickN(SPELLS.cantrips[spellClass],nc);
+      if(picked.length)spellHTML+='<div class="spell-level-h">Cantrips</div><div class="spell-list">'+picked.join(', ')+'</div>';
     }
     for(var sl=1;sl<=msl;sl++){
-      var key='L'+sl;
-      var pool=SPELLS[key]&&SPELLS[key][spellClass]?SPELLS[key][spellClass]:null;
+      var pool=SPELLS['L'+sl]&&SPELLS['L'+sl][spellClass]?SPELLS['L'+sl][spellClass]:null;
       if(!pool)continue;
-      pool=pool.slice();
       var num=Math.min(Math.max(2,Math.floor(level/2)+1),pool.length);
       if(sl>6)num=Math.min(2,pool.length);
-      var spells=[];for(var s=0;s<num;s++){var si=Math.floor(Math.random()*pool.length);spells.push(pool.splice(si,1)[0]);}
-      var slLabel=sl===1?'1st Level':sl===2?'2nd Level':sl===3?'3rd Level':sl+'th Level';
-      spellHTML+='<div class="spell-level-h">'+slLabel+' Spells</div><div class="spell-list">'+spells.join(', ')+'</div>';
+      spellHTML+='<div class="spell-level-h">'+ordinal(sl)+' Level Spells</div><div class="spell-list">'+pickN(pool,num).join(', ')+'</div>';
     }
   }
+  var spellAbil=spellHTML?(SPELL_ABIL[cls]||"INT"):null;
 
-  // FIGHTING STYLE
+  // --- Fighting style / rage ---
   var fightStyle='';
   if(cls==="Fighter"&&cd.fightingStyles)fightStyle=R(cd.fightingStyles);
-  if(cls==="Paladin")fightStyle=R(["Defense — +1 AC while wearing armor","Dueling — +2 damage with one-handed weapon","Great Weapon Fighting — rerolls low damage dice","Protection — shield imposes disadvantage on attacks against allies","Blessed Warrior — learns two cleric cantrips","Blind Fighting — 10ft blindsight","Interception — reduces damage to nearby allies"]);
-  if(cls==="Ranger")fightStyle=R(["Archery — +2 to ranged attacks","Dueling — +2 damage one-handed","Two-Weapon Fighting — adds modifier to off-hand","Defense — +1 AC","Druidic Warrior — learns two druid cantrips","Thrown Weapon Fighting — +2 thrown damage"]);
+  if(cls==="Paladin"&&level>=2)fightStyle=R(["Defense — +1 AC while wearing armor","Dueling — +2 damage with one-handed weapon","Great Weapon Fighting — rerolls low damage dice","Protection — shield imposes disadvantage on attacks against allies","Blessed Warrior — learns two cleric cantrips","Blind Fighting — 10ft blindsight","Interception — reduces damage to nearby allies"]);
+  if(cls==="Ranger"&&level>=2)fightStyle=R(["Archery — +2 to ranged attacks","Dueling — +2 damage one-handed","Two-Weapon Fighting — adds modifier to off-hand","Defense — +1 AC","Druidic Warrior — learns two druid cantrips","Thrown Weapon Fighting — +2 thrown damage"]);
+  if(cls==="Blood Hunter"&&level>=2)fightStyle=R(["Archery — +2 to ranged attacks","Dueling — +2 damage one-handed","Great Weapon Fighting — rerolls low damage dice","Two-Weapon Fighting — adds modifier to off-hand"]);
+  if(/^Defense/.test(fightStyle)&&ARMOR_AC[armorPick.n]){ac+=1;acNote+=", Defense style";}
+  var rageReason=cls==="Barbarian"&&cd.rageReasons?R(cd.rageReasons):'';
 
-  // RAGE REASON
-  var rageReason='';
-  if(cls==="Barbarian"&&cd.rageReasons)rageReason=R(cd.rageReasons);
-
-  // COMBAT STYLE DESCRIPTION
-  var combatDesc='';
-  if(cls==="Barbarian")combatDesc="Charges headlong into the fray, '+weapon.n+' swinging in wide devastating arcs. Relies on fury and endurance over finesse. "+rageReason?"What triggers their rage: "+rageReason:"";
-  else if(cls==="Fighter")combatDesc="A disciplined combatant who controls the battlefield. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
-  else if(cls==="Paladin")combatDesc="Leads from the front, divine energy radiating through every smite. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
-  else if(cls==="Ranger")combatDesc="Patient and lethal, striking from optimal range or ambush. "+fightStyle?"Fighting Style: "+fightStyle+".":"";
+  var combatDesc;
+  var styleLine=fightStyle?" Fighting Style: "+fightStyle+".":"";
+  if(cls==="Barbarian")combatDesc="Charges headlong into the fray, "+weapon.n.toLowerCase()+" swinging in wide devastating arcs. Relies on fury and endurance over finesse."+(rageReason?" What triggers their rage: "+rageReason.charAt(0).toLowerCase()+rageReason.slice(1)+".":"");
+  else if(cls==="Fighter")combatDesc="A disciplined combatant who controls the battlefield."+styleLine;
+  else if(cls==="Paladin")combatDesc="Leads from the front, divine energy radiating through every smite."+styleLine;
+  else if(cls==="Ranger")combatDesc="Patient and lethal, striking from optimal range or ambush."+styleLine;
+  else if(cls==="Blood Hunter")combatDesc="Bleeds to win — igniting a Crimson Rite along their weapon and laying blood curses on the monsters they stalk. Pays for power in their own hit points."+styleLine;
   else if(cls==="Rogue")combatDesc="Never fights fair. Exploits positioning, surprise, and a single devastating strike. Disengages the moment they're exposed.";
   else if(cls==="Monk")combatDesc="A blur of precise strikes, flowing between offense and defense. Uses ki to enhance speed, stun opponents, and deflect projectiles.";
   else if(cls==="Wizard")combatDesc="Stays at range, layering battlefield control and devastating evocations. Uses Shield and Counterspell defensively, conserving high-level slots for decisive moments.";
@@ -659,42 +1348,94 @@ function generate(){
   else if(cls==="Artificer")combatDesc="Fights with ingenuity — infused weapons, magical gadgets, and constructs. Always has the right tool, because they built it themselves.";
   else combatDesc="A capable combatant who adapts to the situation at hand.";
 
-  // BUILD HTML
+  // --- Computed combat features (from the D&D Character Forge, corrected to 5e tables) ---
+  var feats=[];
+  var wMod=cd.primary==="STR"?M.STR:Math.max(M.STR,M.DEX);
+  if(!/Eldritch Blast|Arcane Focus|Rod of the Pact|Unarmed/.test(weapon.n))feats.push(['Weapon Attack',weapon.n+': '+fm(wMod+pb)+' to hit, '+fm(wMod)+' to damage.']);
+  if(spellAbil){
+    var sm=M[spellAbil];
+    var sc='Spell save DC '+(8+pb+sm)+', spell attack '+fm(pb+sm)+' ('+spellAbil+').';
+    if(cls==="Warlock"||isPS){var pl=isPS?Math.max(1,Math.ceil(msl)):Math.min(5,Math.ceil(level/2));var ps=isPS?(level>=11?2:1):(level>=17?4:level>=11?3:level>=2?2:1);sc+=' Pact Magic: '+ps+' slot'+(ps>1?'s':'')+' of '+ordinal(pl)+' level.';}
+    feats.push(['Spellcasting',sc]);
+  }
+  if(cls==="Warlock"){var beams=level>=17?4:level>=11?3:level>=5?2:1;feats.push(['Eldritch Blast',beams+' beam'+(beams>1?'s':'')+', '+fm(pb+M.CHA)+' to hit, 1d10 force each, range 120 ft.']);}
+  if(cls==="Rogue")feats.push(['Sneak Attack',Math.ceil(level/2)+'d6 extra damage once per turn with advantage or an ally adjacent to the target.']);
+  if(cls==="Barbarian"){var ru=level>=20?'unlimited':level>=17?6:level>=12?5:level>=6?4:level>=3?3:2;feats.push(['Rage','+'+(level>=16?4:level>=9?3:2)+' melee damage, resistance to bludgeoning, piercing and slashing; '+ru+' uses per long rest.']);}
+  if(cls==="Monk"){feats.push(['Martial Arts','Unarmed strikes deal '+(level>=17?'1d10':level>=11?'1d8':level>=5?'1d6':'1d4')+' '+fm(M.DEX)+'.'+(level>=2?' Ki points: '+level+', save DC '+(8+pb+M.WIS)+'.':'')]);}
+  if(cls==="Fighter"){feats.push(['Second Wind','Bonus action: regain 1d10 + '+level+' hit points, once per short rest.']);if(level>=2)feats.push(['Action Surge',(level>=17?2:1)+' use'+(level>=17?'s':'')+' per short rest.']);}
+  if(cls==="Paladin"){feats.push(['Lay on Hands','Healing pool of '+(5*level)+' hit points per long rest.']);if(level>=2)feats.push(['Divine Smite','Expend a spell slot for +2d8 radiant (+1d8 per slot level above 1st, +1d8 vs. undead or fiends).']);}
+  if(cls==="Bard")feats.push(['Bardic Inspiration','d'+(level>=15?12:level>=10?10:level>=5?8:6)+', '+Math.max(1,M.CHA)+' use'+(Math.max(1,M.CHA)>1?'s':'')+' per '+(level>=5?'short':'long')+' rest.']);
+  if(cls==="Druid"&&level>=2)feats.push(['Wild Shape','2 uses per short rest'+(sub.name==="Circle of the Moon"?' (Circle of the Moon forms)':'')+'.']);
+  if(cls==="Sorcerer"&&level>=2)feats.push(['Sorcery Points',level+' points per long rest.']);
+  if(cls==="Cleric"&&level>=2)feats.push(['Channel Divinity',(level>=18?3:level>=6?2:1)+' use'+(level>=6?'s':'')+' per short rest.']);
+  if(cls==="Blood Hunter"){var hd=level>=17?'1d10':level>=11?'1d8':level>=5?'1d6':'1d4';feats.push(['Crimson Rite','Lose '+hd+' hit points to add '+hd+' elemental damage to weapon attacks.']);feats.push(['Blood Maledict',(level>=17?4:level>=13?3:level>=6?2:1)+' use'+(level>=6?'s':'')+' per short rest, save DC '+(8+pb+M.INT)+'.']);}
+
+  // --- Appearance (union of Loom, D20 Character Forge and D&D Character Forge tables) ---
+  var look=rollLooks(race);
+  var age=R(AGES);
+  var years=ageYears(age,ri.a);
+  var hIn=RN(ri.h[0],ri.h[1]);
+  var height=Math.floor(hIn/12)+"'"+(hIn%12)+'"';
+  var face=R(FACES),mark=R(MARKS),accessory=R(ACCESSORIES);
+  var clothing=R(CLOTHING),fabric=R(FABRICS),color=R(COLORS);
+
+  // --- Personality ---
+  var trait=R(TRAITS),quirk=R(QUIRKS),vice=R(VICES),fear=R(FEARS),trinket=R(TRINKETS),voice=R(VOICES),secret=R(SECRETS),motivation=R(MOTIVATIONS);
+  var bp=BG_PERSONA[bg];
+  var ideal=bp?R(bp.ideals):R(IDEALS);
+  var bond=bp?tidy(R(bp.bonds)):R(BONDS);
+  var flaw=bp&&Math.random()<.4?tidy(R(bp.flaws)):R(FLAWS);
+  var deity=R(DEITIES),origin=R(ORIGINS);
+  var spellbook=cls==="Wizard"?R(SPELLBOOKS):null;
+  var impression=firstImpression(first,look.eyes,motivation,flaw);
+
+  // === BUILD HTML ===
   var h='';
   h+='<div class="sheet-page">';
-  // HEADER
   h+='<div class="sh-top"><div><div class="sh-name">'+name+'</div>';
   h+='<div class="sh-title">'+race+' '+cls+' — '+sub.name+' <em>('+sub.src+')</em></div></div>';
   h+='<div class="sh-level-badge">Level<span class="lvl">'+level+'</span></div></div>';
-  // INFO BAR
   h+='<div class="info-bar">';
-  h+='<span class="info-chip">'+align+'</span>';
-  h+='<span class="info-chip">'+bg+'</span>';
-  h+='<span class="info-chip">'+age+'</span>';
-  h+='<span class="info-chip">'+origin.w+' — '+origin.l+'</span>';
+  [align,bg,head(gender).split(',')[0],ri.size,head(age).replace(/\s*\(.*\)$/,''),origin.w+' — '+origin.l].forEach(function(c){h+='<span class="info-chip">'+c+'</span>';});
   h+='</div>';
-  // STATS
   h+='<div class="stats-row">';
   ["STR","DEX","CON","INT","WIS","CHA"].forEach(function(s){
     h+='<div class="stat-box"><div class="stat-name">'+s+'</div><div class="stat-score">'+stats[s]+'</div><div class="stat-mod">'+mod(stats[s])+'</div></div>';
   });
   h+='</div>';
-  // COMBAT
   h+='<div class="combat-row">';
-  h+='<div class="combat-stat"><div class="cs-label">AC</div><div class="cs-val">'+ac+'</div></div>';
+  h+='<div class="combat-stat" title="'+acNote+'"><div class="cs-label">AC</div><div class="cs-val">'+ac+'</div></div>';
   h+='<div class="combat-stat"><div class="cs-label">HP</div><div class="cs-val">'+hp+'</div></div>';
   h+='<div class="combat-stat"><div class="cs-label">Hit Dice</div><div class="cs-val">'+level+'d'+cd.hd+'</div></div>';
   h+='<div class="combat-stat"><div class="cs-label">Initiative</div><div class="cs-val">'+mod(stats.DEX)+'</div></div>';
-  h+='<div class="combat-stat"><div class="cs-label">Speed</div><div class="cs-val">'+speed+' ft</div></div>';
+  h+='<div class="combat-stat"><div class="cs-label">Speed</div><div class="cs-val">'+ri.speed+' ft</div></div>';
   h+='<div class="combat-stat"><div class="cs-label">Prof. Bonus</div><div class="cs-val">+'+pb+'</div></div>';
+  h+='</div>';
+  h+='<div class="sec-h">Saving Throws</div><div class="save-row">';
+  ["STR","DEX","CON","INT","WIS","CHA"].forEach(function(s){
+    var p=cd.saves.indexOf(s)>=0;
+    h+='<div class="save-box'+(p?' prof':'')+'"'+(p?' title="Proficient"':'')+'><div class="sv-n">'+s+'</div><div class="sv-v">'+fm(M[s]+(p?pb:0))+'</div></div>';
+  });
+  h+='</div>';
+  h+='<div class="sec-h">Proficiencies &amp; Senses</div><div class="prof-list">';
+  h+='<div class="flav"><strong>Skills:</strong> '+profSkills.map(function(s){return s+' '+fm(skillBonus(s))+(expertise.indexOf(s)>=0?' <em>(expertise)</em>':'');}).join(', ')+'</div>';
+  h+='<div class="flav"><strong>Armor Class:</strong> '+ac+' <em>('+acNote+')</em></div>';
+  h+='<div class="flav"><strong>Senses:</strong> '+senses.join(', ')+'</div>';
+  if(ri.move)h+='<div class="flav"><strong>Movement:</strong> walk '+ri.speed+' ft., '+ri.move+'</div>';
+  h+='<div class="flav"><strong>Languages:</strong> '+langs.join(', ')+'</div>';
+  h+='<div class="flav"><strong>Armor Training:</strong> '+cap(cd.armor)+(cd.armor==="none"?'':' armor')+'</div>';
   h+='</div>';
   h+='</div>'; // end page 1
 
   // PAGE 2 — APPEARANCE & EQUIPMENT
   h+='<div class="sheet-page">';
   h+='<div class="sec-h">Physical Appearance</div>';
-  h+='<div class="flav"><strong>Build:</strong> '+build+'<br><strong>Skin:</strong> '+skin+'<br><strong>Hair:</strong> '+hair+'<br><strong>Eyes:</strong> '+eyes+'<br><strong>Distinguishing Mark:</strong> '+mark+'</div>';
-  h+='<div class="flav"><strong>Clothing:</strong> '+clothing+', made primarily of '+fabric+'.<br><strong>Favorite Color:</strong> '+color+'</div>';
+  h+='<div class="flav"><strong>Gender:</strong> '+gender+'<br><strong>Age:</strong> '+(years?years+' years — '+age.replace(/\s*\(\d[^)]*\)/,''):age)+'<br><strong>Height &amp; Build:</strong> '+height+' — '+look.build+'<br><strong>Skin:</strong> '+look.skin+'<br><strong>Hair:</strong> '+look.hair+'<br><strong>Eyes:</strong> '+look.eyes+'<br><strong>Face:</strong> '+face+'<br><strong>Distinguishing Mark:</strong> '+mark;
+  if(look.extra)h+='<br><strong>Racial Feature:</strong> '+look.extra;
+  if(look.tail)h+='<br><strong>Tail:</strong> '+look.tail;
+  h+='</div>';
+  h+='<div class="flav"><strong>Clothing:</strong> '+clothing+', made primarily of '+fabric+'.<br><strong>Accessory:</strong> '+accessory+'<br><strong>Favorite Color:</strong> '+color+'</div>';
+  h+='<div class="flav-block"><div class="fb-title">First Impression</div>'+impression+'</div>';
 
   h+='<div class="sec-h">Equipment</div>';
   h+='<div class="equip-grid">';
@@ -705,21 +1446,22 @@ function generate(){
     h+='<div class="equip-card"><div class="ec-label">Pages</div><div class="ec-name">Organization</div><div class="ec-desc">'+spellbook.pages+'</div></div>';
   }
   h+='<div class="equip-card"><div class="ec-label">Keepsake</div><div class="ec-name">Trinket</div><div class="ec-desc">'+trinket+'</div></div>';
-  h+='</div>'; // end equip grid
+  h+='</div>';
 
-  // SUBCLASS
   h+='<div class="sec-h">'+sub.name+' <em style="font-size:.7rem;text-transform:none">('+sub.src+')</em></div>';
   h+='<div class="flav">'+sub.desc+'</div>';
-
-  // COMBAT STYLE
   h+='<div class="flav-block"><div class="fb-title">Combat Style</div>'+combatDesc+'</div>';
-
+  if(feats.length){
+    h+='<div class="sec-h">Combat Features</div><ul class="feat-list">';
+    feats.forEach(function(f){h+='<li><strong>'+f[0]+'.</strong> '+f[1]+'</li>';});
+    h+='</ul>';
+  }
   h+='</div>'; // end page 2
 
-  // PAGE 3 — SPELLS (if caster)
+  // PAGE 3 — SPELLS
   if(spellHTML){
     h+='<div class="sheet-page">';
-    h+='<div class="sec-h">Spells</div>';
+    h+='<div class="sec-h">Spells'+(isPS?' <em style="font-size:.7rem;text-transform:none">(Profane Soul pact magic)</em>':'')+'</div>';
     h+=spellHTML;
     h+='</div>';
   }
@@ -728,15 +1470,12 @@ function generate(){
   h+='<div class="sheet-page">';
   h+='<div class="sec-h">Personality</div>';
   h+='<div class="pers-grid">';
-  h+='<div class="pers-box"><div class="pb-label">Personality Quirk</div><div class="pb-text">'+quirk+'</div></div>';
-  h+='<div class="pers-box"><div class="pb-label">Vice</div><div class="pb-text">'+vice+'</div></div>';
-  h+='<div class="pers-box"><div class="pb-label">Fear</div><div class="pb-text">'+fear+'</div></div>';
-  h+='<div class="pers-box"><div class="pb-label">Voice</div><div class="pb-text">'+voice+'</div></div>';
-  h+='<div class="pers-box"><div class="pb-label">Motivation</div><div class="pb-text">'+motivation+'</div></div>';
-  h+='<div class="pers-box"><div class="pb-label">Hidden Secret</div><div class="pb-text">'+secret+'</div></div>';
+  [["Dominant Trait",trait],["Personality Quirk",quirk],["Ideal",ideal],["Bond",bond],["Flaw",flaw],["Vice",vice],["Fear",fear],["Voice &amp; Manner",voice],["Core Motivation",motivation],["Hidden Secret",secret]].forEach(function(p){
+    h+='<div class="pers-box"><div class="pb-label">'+p[0]+'</div><div class="pb-text">'+p[1]+'</div></div>';
+  });
   h+='</div>';
 
-  h+='<div class="sec-h">Faith & Deity</div>';
+  h+='<div class="sec-h">Faith &amp; Deity</div>';
   if(deity.n.indexOf("None")<0&&deity.n!=="Ancestor Spirits"&&deity.n!=="The Primal Spirits"&&deity.n!=="Patron (Warlock)"){
     h+='<div class="flav"><strong>Deity:</strong> '+deity.n+' — '+deity.desc+'<br><strong>Domain:</strong> '+deity.d+'<br><strong>Holy Symbol:</strong> '+deity.t+'<br><strong>Setting:</strong> '+deity.w+'</div>';
   } else {
@@ -744,21 +1483,170 @@ function generate(){
   }
 
   h+='<div class="sec-h">Backstory Hook</div>';
-  var bsHook='Born in '+origin.l+' ('+origin.w+'), '+name+' grew up as a '+bg.toLowerCase()+'. ';
-  bsHook+='Driven by '+motivation.toLowerCase()+', they took up the path of the '+cls+'. ';
+  var why=motivation.indexOf(' — ')>0?motivation.split(' — ')[1]:head(motivation).toLowerCase();
+  var bsHook='Born in '+origin.l+' ('+origin.w+'), '+name+' grew up as '+(/^[AEIOU]/.test(bg)?'an ':'a ')+bg.toLowerCase()+'. ';
+  bsHook+='Driven by '+head(motivation).toLowerCase()+', they took up the path of the '+cls+'. ';
   bsHook+='Their '+sub.name+' training shaped them into something more than ordinary. ';
-  bsHook+='They carry '+trinket.toLowerCase()+' — a reminder of what they left behind. ';
-  bsHook+='Beneath the surface, '+secret.toLowerCase()+'. ';
-  bsHook+='But what keeps them going is simple: '+motivation.toLowerCase()+'.';
+  bsHook+='They carry '+trinket.charAt(0).toLowerCase()+trinket.slice(1)+' — a reminder of what they left behind. ';
+  bsHook+='Beneath the surface: '+secret.charAt(0).toLowerCase()+secret.slice(1)+'. ';
+  bsHook+='But what keeps them going is simple: '+why+'.';
   h+='<div class="backstory">'+bsHook+'</div>';
-
   h+='</div>'; // end page 4
 
-  var sheet=document.getElementById('sheet');
-  sheet.innerHTML=h;
-  sheet.classList.add('visible');
-  sheet.scrollIntoView({behavior:'smooth',block:'start'});
+  // --- AI art prompts (from the D&D Character Forge) ---
+  var prefix=(document.getElementById('prefixInput').value||'').trim();
+  var phys=head(gender).split(',')[0].toLowerCase()+' '+race.toLowerCase()+', '+look.skin.toLowerCase()+' skin, '+head(look.hair).toLowerCase()+' hair, '+head(look.eyes).toLowerCase()+' eyes, '+head(look.build).toLowerCase()+', '+height+' tall';
+  if(look.extra)phys+=', '+look.extra.toLowerCase();
+  if(look.tail)phys+=', '+look.tail.toLowerCase();
+  phys+=', '+head(face).toLowerCase()+', '+head(mark).toLowerCase();
+  var gear='wearing '+armorPick.n.toLowerCase()+' and '+head(clothing).toLowerCase()+', carrying '+weapon.n.toLowerCase();
+  var portrait=phys+', '+gear+', '+cls.toLowerCase()+' class, D&D character portrait, white background, full body, highly detailed, fantasy art';
+  var scene=phys+', '+gear+', '+cls.toLowerCase()+' class, '+R(SCENE_LOCATIONS[bg]||["in a dramatic fantasy setting","in a medieval tavern","on a forest path","in a dungeon corridor","at a castle gate"])+', D&D character art, dramatic lighting, highly detailed, fantasy illustration';
+  if(prefix){portrait=prefix+'\n'+portrait;scene=prefix+'\n'+scene;}
+
+  return {id:newId(),v:2,name:name,race:race,cls:cls,sub:sub.name,level:level,gender:gender,bg:bg,
+    html:h,portraitPrompt:portrait,scenePrompt:scene,created:Date.now(),saved:false};
 }
+
+// ======================================================================
+// ROSTER — saved characters + this visit's history
+// (ported from the D&D Character Forge; it used localStorage key "charforge-saved",
+//  which is migrated into "loom-of-fates-saved" on load)
+// ======================================================================
+var STORE_KEY='loom-of-fates-saved',LEGACY_KEY='charforge-saved';
+var chars=[],cur=-1;
+function newId(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function storeGet(k){try{return window.localStorage.getItem(k);}catch(e){return null;}}
+function storeSet(k,v){try{window.localStorage.setItem(k,v);return true;}catch(e){console.warn('Loom of Fates: could not write saved characters',e);return false;}}
+function storeDel(k){try{window.localStorage.removeItem(k);}catch(e){}}
+function parseList(raw){if(!raw)return[];try{var a=JSON.parse(raw);return Array.isArray(a)?a:[];}catch(e){return[];}}
+function validEntry(e){return e&&typeof e==='object'&&typeof e.html==='string'&&e.html&&e.name;}
+function sig(e){return [e.name,e.race,e.cls,e.level,e.html.length].join('|');}
+function persistSaved(){
+  var ok=storeSet(STORE_KEY,JSON.stringify(chars.filter(function(e){return e.saved;})));
+  if(!ok)toast('Could not save — browser storage is unavailable or full');
+  return ok;
+}
+function loadSaved(){
+  var mine=parseList(storeGet(STORE_KEY)).filter(validEntry);
+  var legacyRaw=storeGet(LEGACY_KEY);
+  var seen={};mine.forEach(function(e){seen[sig(e)]=1;});
+  var migrated=0;
+  parseList(legacyRaw).filter(validEntry).forEach(function(e){
+    if(seen[sig(e)])return;seen[sig(e)]=1;
+    e.legacy=true;e.created=e.created||0;mine.push(e);migrated++;
+  });
+  mine.forEach(function(e){e.saved=true;if(!e.id)e.id=newId();chars.push(e);});
+  // Move Character Forge saves into the Loom's key, then retire the old key so
+  // characters deleted here don't come back on the next visit.
+  if(legacyRaw!==null){
+    if(storeSet(STORE_KEY,JSON.stringify(mine)))storeDel(LEGACY_KEY);
+  }
+  if(mine.length){
+    document.getElementById('roster').open=true;
+    toast('Loaded '+mine.length+' saved character'+(mine.length>1?'s':'')+(migrated?' ('+migrated+' from the old Character Forge)':''));
+  }
+}
+
+function show(i){
+  if(i<0||i>=chars.length)return;
+  cur=i;
+  var e=chars[i],sheet=document.getElementById('sheet');
+  sheet.innerHTML=e.legacy?'<div class="sheet-page legacy-sheet"><div class="legacy-note">Saved in the old Character Forge — shown as it was saved.</div>'+e.html+'</div>':e.html;
+  sheet.classList.add('visible');
+  updateUI();
+}
+function updateUI(){
+  var n=chars.length,has=cur>=0&&cur<n,e=has?chars[cur]:null;
+  document.getElementById('pageInd').textContent=has?(cur+1)+' / '+n:'—';
+  document.getElementById('navPrev').disabled=!has||cur===0;
+  document.getElementById('navNext').disabled=!has||cur>=n-1;
+  ['saveBtn','copyBtn'].forEach(function(id){document.getElementById(id).disabled=!has;});
+  document.getElementById('copyPortraitBtn').disabled=!(e&&e.portraitPrompt);
+  document.getElementById('copySceneBtn').disabled=!(e&&e.scenePrompt);
+  var sb=document.getElementById('saveBtn');
+  sb.classList.toggle('saved',!!(e&&e.saved));
+  sb.textContent=e&&e.saved?'★ Saved':'☆ Save';
+  renderRoster();
+}
+function rosterRow(e,i,withDelete){
+  var meta=e.race+' '+e.cls+(e.gender?' · '+head(e.gender).split(',')[0]:'')+(e.legacy?' · old forge':'');
+  return '<div class="sb-entry'+(i===cur?' active':'')+'" data-index="'+i+'" tabindex="0">'
+    +'<div class="sb-info"><div class="sb-name">'+esc(e.name)+'</div><div class="sb-meta">'+esc(meta)+'</div></div>'
+    +'<div class="sb-lvl">'+esc(e.level)+'</div>'
+    +(withDelete?'<button class="sb-del" data-remove="'+i+'" title="Remove from saved">✕</button>':'')
+    +'</div>';
+}
+function renderRoster(){
+  var savedIdx=[],histIdx=[];
+  chars.forEach(function(e,i){(e.saved?savedIdx:histIdx).push(i);});
+  savedIdx.sort(function(a,b){return (chars[b].created||0)-(chars[a].created||0)||b-a;});
+  histIdx.reverse();
+  document.getElementById('savedList').innerHTML=savedIdx.length?savedIdx.map(function(i){return rosterRow(chars[i],i,true);}).join(''):'<div class="sb-empty">No saved characters yet</div>';
+  document.getElementById('historyList').innerHTML=histIdx.length?histIdx.map(function(i){return rosterRow(chars[i],i,false);}).join(''):'<div class="sb-empty">'+(chars.length?'All characters are saved':'No history yet')+'</div>';
+  document.getElementById('rosterCount').textContent=savedIdx.length+' saved · '+chars.length+' forged';
+}
+function toggleSave(){
+  if(cur<0)return;
+  var e=chars[cur];e.saved=!e.saved;
+  if(e.saved&&!e.created)e.created=Date.now();
+  persistSaved();
+  toast(e.saved?'Saved to roster':'Removed from roster');
+  updateUI();
+}
+
+var toastTimer;
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},2500);}
+function copyText(text,msg){
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){toast(msg);},function(){fbCopy(text,msg);});}
+  else fbCopy(text,msg);
+}
+function fbCopy(text,msg){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();
+  var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);toast(ok?msg:'Copy failed — select the text manually');
+}
+
+// === GENERATE ===
+function generate(){
+  var e=buildCharacter();
+  chars.push(e);
+  show(chars.length-1);
+  document.getElementById('sheet').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// === EVENTS ===
+document.getElementById('navPrev').addEventListener('click',function(){show(cur-1);});
+document.getElementById('navNext').addEventListener('click',function(){show(cur+1);});
+document.getElementById('saveBtn').addEventListener('click',toggleSave);
+document.getElementById('copyBtn').addEventListener('click',function(){if(cur<0)return;copyText(document.getElementById('sheet').innerText,'Character sheet copied');});
+document.getElementById('copyPortraitBtn').addEventListener('click',function(){var e=chars[cur];if(e&&e.portraitPrompt)copyText(e.portraitPrompt,'Portrait prompt copied (white background)');});
+document.getElementById('copySceneBtn').addEventListener('click',function(){var e=chars[cur];if(e&&e.scenePrompt)copyText(e.scenePrompt,'Scene prompt copied');});
+document.getElementById('roster').addEventListener('click',function(ev){
+  var del=ev.target.closest('.sb-del');
+  if(del){ev.stopPropagation();var i=parseInt(del.dataset.remove,10);if(chars[i]){chars[i].saved=false;persistSaved();toast('Removed from roster');updateUI();}return;}
+  var row=ev.target.closest('.sb-entry');
+  if(row)show(parseInt(row.dataset.index,10));
+});
+document.getElementById('roster').addEventListener('keydown',function(ev){
+  var row=ev.target.closest&&ev.target.closest('.sb-entry');
+  if(row&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();ev.stopPropagation();show(parseInt(row.dataset.index,10));}
+});
+document.addEventListener('keydown',function(ev){
+  if(ev.ctrlKey||ev.metaKey||ev.altKey)return;
+  var a=document.activeElement,tag=a?a.tagName:'';
+  if(['SELECT','INPUT','TEXTAREA','BUTTON','SUMMARY'].indexOf(tag)>=0||(a&&a.isContentEditable)||(a&&a.classList&&a.classList.contains('sb-entry')))return;
+  if(ev.code==='Space'){ev.preventDefault();generate();}
+  else if(ev.code==='ArrowLeft'){if(cur>0){ev.preventDefault();show(cur-1);}}
+  else if(ev.code==='ArrowRight'){if(cur<chars.length-1){ev.preventDefault();show(cur+1);}}
+  else if(ev.code==='KeyS'){toggleSave();}
+  else if(ev.code==='KeyB'){var r=document.getElementById('roster');r.open=!r.open;}
+});
+
+// === INIT ===
+loadSaved();
+renderRoster();
+
 </script>
 </body>
 </html>

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D&D 5e Character Sheet</title>
+    <title>Characters — Sheet &amp; Roster</title>
+    <meta name="description" content="Characters: a roster of saved D&amp;D 5e character sheets and heroes from the Archives of the Forgotten. Open any hero, roll a new one, or start a blank sheet with dice roller, rests, gear and spells.">
+    <link rel="canonical" href="https://dnd.isaiart.com/cs/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗡️</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -178,14 +180,137 @@
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none; }
+
+        /* --- VIEWS (roster / sheet / archive hero) --- */
+        .view { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+        .view.hidden { display: none; }
+        .view-scroll { flex: 1 1 auto; overflow-y: auto; background: var(--bg-body); padding: 24px 16px 80px; }
+        .icon-btn { width: 32px; height: 32px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); color: var(--text-muted); transition: all 0.2s; background: transparent; cursor: pointer; }
+        .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .text-btn { height: 32px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--bg-element); color: var(--text-main); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .text-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .text-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+        .text-btn.primary:hover { opacity: 0.9; color: var(--accent-fg); }
+        .text-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
+        .page-title { font-size: 2rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 1; }
+        .page-sub { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--text-muted); margin-top: 6px; }
+
+        .r-section { margin-bottom: 40px; }
+        .r-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 16px; }
+        .r-head .label-mono { margin: 0; }
+        .r-head p { font-size: 0.75rem; color: var(--text-muted); }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+        .r-card { background: var(--bg-surface); border: 1px solid var(--line); padding: 16px; cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 128px; color: inherit; text-decoration: none; text-align: left; transition: background 0.2s, border-color 0.2s; font: inherit; }
+        .r-card:hover, .r-card:focus-visible { background: var(--bg-element); border-color: var(--accent); outline: none; }
+        .r-kind { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+        .r-name { font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; font-size: 1.1rem; line-height: 1.1; padding-right: 24px; word-break: break-word; }
+        .r-sub { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .r-meta { font-size: 0.75rem; color: var(--text-main); opacity: 0.85; }
+        .r-foot { margin-top: auto; font-size: 0.6rem; font-family: 'Courier New', monospace; color: var(--text-muted); }
+        .r-del { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.7rem; opacity: 0.5; transition: all 0.2s; }
+        .r-card:hover .r-del { opacity: 1; }
+        .r-del:hover { color: #ef4444; }
+        .r-new { border-style: dashed; align-items: center; justify-content: center; text-align: center; color: var(--text-muted); }
+        .r-new i { font-size: 1.4rem; margin-bottom: 4px; }
+        .r-new:hover { color: var(--accent); }
+        .r-feat { border-left: 3px solid var(--accent); }
+        .r-feat .r-go { position: absolute; top: 14px; right: 14px; font-size: 0.7rem; color: var(--text-muted); }
+        .r-empty { font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-top: 12px; }
+
+        /* Archive hero detail */
+        .kv { list-style: none; }
+        .kv li { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 0.85rem; line-height: 1.4; }
+        .kv li:last-child { border-bottom: none; }
+        .kv li i { width: 16px; color: var(--text-muted); margin-top: 3px; flex: 0 0 auto; text-align: center; }
+        .kv li .k { flex: 0 0 auto; min-width: 96px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding-top: 3px; }
+        .kv li .v { flex: 1 1 auto; word-break: break-word; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip { background: var(--bg-element); border: 1px solid var(--line); padding: 3px 8px; font-size: 0.75rem; }
+        .swatch { display: inline-block; width: 12px; height: 12px; border: 1px solid var(--line); border-radius: 50%; margin-left: 6px; vertical-align: middle; }
+        .stat-break { font-size: 0.55rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
 <body>
 
+    <!-- ============ ROSTER VIEW ============ -->
+    <section id="rosterView" class="view" aria-label="Character roster">
+        <header>
+            <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <a href="../" class="label-mono hover:text-[var(--accent)] transition" style="margin-bottom:8px"><i class="fas fa-arrow-left mr-1"></i> dnd.isaiart.com</a>
+                    <h1 class="page-title">Characters</h1>
+                    <div class="page-sub">Sheets you play from &middot; The Archives of the Forgotten</div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button class="text-btn primary" data-act="new"><i class="fas fa-plus"></i> New character</button>
+                    <button class="text-btn" data-act="roll"><i class="fas fa-dice-d20"></i> Roll a hero</button>
+                    <button class="icon-btn" data-act="import" title="Import sheet (.json)"><i class="fas fa-upload"></i></button>
+                    <button class="icon-btn" onclick="toggleTheme()" title="Theme"><i class="fas fa-adjust"></i></button>
+                </div>
+            </div>
+        </header>
+        <div class="view-scroll">
+            <div class="max-w-6xl mx-auto">
+                <div class="r-section">
+                    <div class="r-head"><span class="label-mono text-[var(--accent)]">Featured heroes</span><p>Full handbook pages</p></div>
+                    <div class="roster-grid">
+                        <a class="r-card r-feat" href="../fousio/">
+                            <span class="r-kind">Featured</span>
+                            <span class="r-go"><i class="fas fa-arrow-up-right-from-square"></i></span>
+                            <div class="r-name">Fousio</div>
+                            <div class="r-meta">Abjuration wizard, level 12 &middot; staff, circlet &amp; full sheet</div>
+                            <div class="r-foot">/fousio/</div>
+                        </a>
+                        <a class="r-card r-feat" href="../vision/">
+                            <span class="r-kind">Featured</span>
+                            <span class="r-go"><i class="fas fa-arrow-up-right-from-square"></i></span>
+                            <div class="r-name">Vision</div>
+                            <div class="r-meta">The Synthezoid Avenger &middot; level 20 sheet, species, subclass &amp; stat block</div>
+                            <div class="r-foot">/vision/</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="r-section">
+                    <div class="r-head"><span class="label-mono text-[var(--accent)]">Your sheets</span><p>Saved in this browser</p></div>
+                    <div class="roster-grid" id="sheetGrid"></div>
+                </div>
+                <div class="r-section">
+                    <div class="r-head"><span class="label-mono text-[var(--accent)]">The Archives of the Forgotten</span><p>Rolled heroes, scribed to the archive</p></div>
+                    <div class="roster-grid" id="archiveGrid"></div>
+                    <p class="r-empty hidden" id="archiveEmpty">The archives are empty. Roll a hero and scribe them here.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ ARCHIVE HERO VIEW (read-only) ============ -->
+    <section id="heroView" class="view hidden" aria-label="Archive hero">
+        <header>
+            <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
+                <div class="flex gap-3 items-start min-w-0">
+                    <button class="icon-btn" data-act="roster" title="Back to roster"><i class="fas fa-arrow-left"></i></button>
+                    <div class="min-w-0">
+                        <div class="r-kind" id="heroKind">The Archives of the Forgotten</div>
+                        <h1 class="page-title" id="heroName" style="word-break:break-word">Unknown Hero</h1>
+                        <div class="page-sub" id="heroSub"></div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2" id="heroActions"></div>
+            </div>
+        </header>
+        <div class="view-scroll">
+            <div class="max-w-6xl mx-auto fade-in" id="heroContent"></div>
+        </div>
+    </section>
+
+    <!-- ============ SHEET VIEW ============ -->
+    <div id="sheetView" class="view hidden">
     <!-- HEADER -->
     <header>
         <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
-            <div class="flex-grow">
+            <div class="flex-grow flex gap-3 items-start min-w-0">
+                <button data-act="roster" class="icon-btn mt-1" title="Back to roster"><i class="fas fa-arrow-left"></i></button>
+            <div class="flex-grow min-w-0">
                 <input type="text" id="charName" class="text-3xl font-black uppercase tracking-tighter w-full" placeholder="CHARACTER NAME">
                 <div class="flex gap-4 mt-2 border-t border-[var(--line)] pt-2 w-max">
                     <select id="charClass" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateClassDefaults()"></select>
@@ -193,7 +318,8 @@
                     <select id="charRace" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateRaceDefaults()"></select>
                 </div>
             </div>
-            
+            </div>
+
             <div class="flex gap-2">
                  <button onclick="openModal('restModal')" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-orange-500 hover:border-orange-500 transition" title="Rest">
                     <i class="fas fa-campground"></i>
@@ -214,7 +340,6 @@
                 <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-purple-500 hover:border-purple-500 transition" title="Export">
                     <i class="fas fa-download"></i>
                 </button>
-                <input type="file" id="fileInput" class="hidden" onchange="importData(this)">
             </div>
         </div>
     </header>
@@ -380,6 +505,9 @@
 
         </div>
     </main>
+    </div><!-- /sheetView -->
+
+    <input type="file" id="fileInput" class="hidden" accept=".json,application/json" onchange="importData(this)">
 
     <!-- ITEM MODAL -->
     <div id="itemModal" class="modal-overlay">
@@ -447,13 +575,56 @@
 
     <!-- LOGIC -->
     <script>
-        const MAX_SLOTS = 35; 
+        /* =========================================================
+           STORAGE (all localStorage access goes through these)
+           ---------------------------------------------------------
+           dndCharacters_v1 : { v:1, chars:[ <v7 sheet object> + id, updated, src? ] }
+           dndSheetTheme    : 'onyx' | 'polar' | 'midnight' | 'botanical'
+           dndRoster        : [ archive hero ]  (shared with the old /characters/ page)
+           dndSheet_v7_Isaiah : legacy single sheet, read once and migrated (left in place as a backup)
+           ========================================================= */
+        const STORE_KEY = 'dndCharacters_v1';
+        const LEGACY_KEY = 'dndSheet_v7_Isaiah';
+        const THEME_KEY = 'dndSheetTheme';
+        const ARCHIVE_KEY = 'dndRoster';
+
+        function readRaw(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+        function writeRaw(key, val) { try { localStorage.setItem(key, val); return true; } catch (e) { console.warn('Storage unavailable:', e); return false; } }
+        function readJSON(key, fallback) { const raw = readRaw(key); if (raw == null) return fallback; try { return JSON.parse(raw); } catch (e) { return fallback; } }
+        function writeJSON(key, val) { return writeRaw(key, JSON.stringify(val)); }
+
+        let store = { v: 1, chars: [] };
+        function loadStore() {
+            const s = readJSON(STORE_KEY, null);
+            if (s && Array.isArray(s.chars)) return s;
+            const fresh = { v: 1, chars: [] };
+            const legacy = readJSON(LEGACY_KEY, null);
+            if (legacy && legacy.meta) {
+                fresh.chars.push(Object.assign({}, legacy, { id: 'legacy_v7', updated: Date.now(), migratedFrom: LEGACY_KEY }));
+                if (!readRaw(THEME_KEY) && legacy.theme) writeRaw(THEME_KEY, legacy.theme);
+            }
+            writeJSON(STORE_KEY, fresh);
+            return fresh;
+        }
+        function saveStore() { return writeJSON(STORE_KEY, store); }
+        function findChar(id) { return store.chars.find(c => c.id === id); }
+        function readArchive() { const r = readJSON(ARCHIVE_KEY, []); return Array.isArray(r) ? r : []; }
+        function writeArchive(list) { return writeJSON(ARCHIVE_KEY, list); }
+
+        function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+        function genId() { return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+        function fmtDate(t) { if (!t) return ''; try { return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return ''; } }
+
+        /* =========================================================
+           SHEET DATA
+           ========================================================= */
+        const MAX_SLOTS = 35;
         const themes = ['onyx', 'polar', 'midnight', 'botanical'];
         let currentThemeIndex = 0;
         const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
         const skills = [{n:'Acrobatics', s:'dex'}, {n:'Animal Handling', s:'wis'}, {n:'Arcana', s:'int'}, {n:'Athletics', s:'str'}, {n:'Deception', s:'cha'}, {n:'History', s:'int'}, {n:'Insight', s:'wis'}, {n:'Intimidation', s:'cha'}, {n:'Investigation', s:'int'}, {n:'Medicine', s:'wis'}, {n:'Nature', s:'int'}, {n:'Perception', s:'wis'}, {n:'Performance', s:'cha'}, {n:'Persuasion', s:'cha'}, {n:'Religion', s:'int'}, {n:'Sleight of Hand', s:'dex'}, {n:'Stealth', s:'dex'}, {n:'Survival', s:'wis'}];
         const emojiList = ["⚔️","🛡️","🏹","🧪","📜","🎒","🍞","🕯️","🗝️","💍","🧿","💎","💰","🔨","🪓","🧥","👞","🪖","🎵","📓","🧊","🔥","☠️","🥩","🍷","🛌","🪵","🏺","🧬","🗡️","🔮","🦠","🦴","🧲","🧱"];
-        
+
         const dbClasses = {
             "Barbarian": { hd: 12, saves: ['str','con'] }, "Bard": { hd: 8, saves: ['dex','cha'] }, "Cleric": { hd: 8, saves: ['wis','cha'] },
             "Druid": { hd: 8, saves: ['int','wis'] }, "Fighter": { hd: 10, saves: ['str','con'] }, "Monk": { hd: 8, saves: ['str','dex'] },
@@ -467,12 +638,9 @@
             "Half-Orc": { spd: 30, bonus: "+2 STR, +1 CON" }, "Human": { spd: 30, bonus: "+1 to All" }, "Tiefling": { spd: 30, bonus: "+2 CHA, +1 INT" }
         };
 
-        let inventoryData = new Array(MAX_SLOTS).fill(null); 
-
-        window.onload = function() {
-            populateSelects(); renderUI(); loadData(); calculateAll();
-            document.querySelectorAll('input, select, textarea').forEach(el => { el.addEventListener('input', () => { calculateAll(); debouncedSave(); }); });
-        };
+        let inventoryData = new Array(MAX_SLOTS).fill(null);
+        let activeId = null;      // id of the character open in the sheet
+        let BLANK = null;         // snapshot of an empty sheet, used for "New character"
 
         function populateSelects() {
             Object.keys(dbClasses).forEach(k => document.getElementById('charClass').add(new Option(k,k)));
@@ -495,18 +663,17 @@
             const maxHp = parseInt(document.getElementById('maxHp').value) || 0;
             const cls = document.getElementById('charClass').value;
             const conMod = getMod(parseInt(document.getElementById('con').value)||10);
-            
+
             if (curHd <= 0) { alert("No Hit Dice remaining!"); return; }
             if (curHp >= maxHp) { alert("HP is already full."); return; }
-            
-            // Logic: Roll 1 HD
+
             const hdType = dbClasses[cls] ? dbClasses[cls].hd : 8;
             const roll = Math.floor(Math.random() * hdType) + 1;
             const totalHeal = Math.max(1, roll + conMod);
-            
+
             document.getElementById('currentHd').value = curHd - 1;
             document.getElementById('currentHp').value = Math.min(maxHp, curHp + totalHeal);
-            
+
             alert(`Short Rest: Rolled d${hdType} (${roll}) + CON (${conMod}). Healed ${totalHeal} HP.`);
             closeModal('restModal'); calculateAll(); debouncedSave();
         }
@@ -515,20 +682,13 @@
             const maxHp = document.getElementById('maxHp').value;
             const lvl = parseInt(document.getElementById('charLevel').value) || 1;
             const curHd = parseInt(document.getElementById('currentHd').value) || 0;
-            
-            // 1. Heal Full
             document.getElementById('currentHp').value = maxHp;
-            
-            // 2. Regain HD (half max, min 1)
             const regain = Math.max(1, Math.floor(lvl / 2));
             document.getElementById('currentHd').value = Math.min(lvl, curHd + regain);
-            
-            // 3. Reset Spells
             for(let i=1; i<=9; i++) {
                 const el = document.getElementById(`sp_u_${i}`);
                 if(el) el.value = 0;
             }
-            
             alert("Long Rest Complete: HP restored, Spell slots cleared, Hit Dice recovered.");
             closeModal('restModal'); calculateAll(); debouncedSave();
         }
@@ -559,7 +719,7 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function setAlignment(val) { document.getElementById('alignment').value = val; closeModal('alignmentModal'); debouncedSave(); }
-        
+
         function renderUI() {
             document.getElementById('abilitiesContainer').innerHTML = abilities.map(s => `
                 <div class="stat-block group flex-grow"><label class="label-mono group-hover:text-[var(--text-main)] transition">${s}</label><input type="number" id="${s}" value="10" class="stat-val text-center w-full bg-transparent"><div class="stat-mod" id="${s}Mod">+0</div></div>`).join('');
@@ -585,14 +745,13 @@
             });
         }
 
-        function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
         function renderInventory() {
             const grid = document.getElementById('inventoryGrid'); grid.innerHTML = ''; let totalWt = 0;
             inventoryData.forEach((item, idx) => {
                 const slot = document.createElement('div'); slot.className = `inv-slot ${!item ? 'empty' : ''}`; slot.onclick = () => openItemModal(idx);
                 if (item) {
-                    slot.innerHTML = `<span>${escapeHtml(item.icon)}</span>${item.qty > 1 ? `<span class="inv-qty">${escapeHtml(item.qty)}</span>` : ''}`;
+                    slot.title = item.name || '';
+                    slot.innerHTML = `<span>${esc(item.icon)}</span>${item.qty > 1 ? `<span class="inv-qty">${esc(item.qty)}</span>` : ''}`;
                     totalWt += (parseFloat(item.weight)||0) * (parseFloat(item.qty)||1);
                 } else { slot.innerHTML = `<i class="fas fa-plus text-[var(--text-muted)] text-sm opacity-50 hover:opacity-100 transition"></i>`; }
                 grid.appendChild(slot);
@@ -601,7 +760,7 @@
         }
 
         function addInvItem() { const idx = inventoryData.findIndex(x => x === null); if(idx === -1) return alert("Grid Full"); openItemModal(idx); }
-        function adj(id, delta) { const el = document.getElementById(id); let v = parseInt(el.value) || 0; el.value = v + delta; el.dispatchEvent(new Event('input')); }
+        function adj(id, delta) { const el = document.getElementById(id); let v = parseInt(el.value) || 0; el.value = v + delta; el.dispatchEvent(new Event('input', { bubbles: true })); }
         function getMod(val) { return Math.floor((val - 10) / 2); }
         function fmt(val) { return (val >= 0 ? '+' : '') + val; }
 
@@ -627,7 +786,12 @@
             document.getElementById('spellAtkBonus').textContent = fmt(pb + spellMod);
         }
 
-        function toggleTheme() { currentThemeIndex = (currentThemeIndex + 1) % themes.length; document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]); debouncedSave(); }
+        function applyTheme(t) {
+            const i = themes.indexOf(t);
+            currentThemeIndex = i === -1 ? 0 : i;
+            document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]);
+        }
+        function toggleTheme() { applyTheme(themes[(currentThemeIndex + 1) % themes.length]); writeRaw(THEME_KEY, themes[currentThemeIndex]); }
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(e => { e.classList.add('hidden'); e.classList.remove('active'); });
             document.getElementById(id).classList.remove('hidden');
@@ -637,7 +801,7 @@
         }
         function addAttack(data={}) {
             const row = document.createElement('tr'); row.className = "border-b border-[var(--line)] group";
-            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${escapeHtml(data.n||'Weapon')}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${escapeHtml(data.h||'+0')}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${escapeHtml(data.d||'1d6')}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
+            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${esc(data.n||'Weapon')}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${esc(data.h||'+0')}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${esc(data.d||'1d6')}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
             document.getElementById('attacksList').appendChild(row);
         }
         function openItemModal(idx) {
@@ -654,34 +818,535 @@
         }
         function deleteItemAction() { inventoryData[document.getElementById('modalSlotIndex').value] = null; renderInventory(); saveData(); closeModal('itemModal'); }
 
-        let saveTimer; function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
-        function saveData() {
-            const data = { v: 7, theme: document.documentElement.getAttribute('data-theme'), meta: { name: document.getElementById('charName').value, cls: document.getElementById('charClass').value, lvl: document.getElementById('charLevel').value, race: document.getElementById('charRace').value, xp: document.getElementById('xp').value, align: document.getElementById('alignment').value }, stats: abilities.map(s => document.getElementById(s).value), saves: abilities.map(s => document.getElementById(`sv_${s}_p`).checked), skills: skills.map((_,i) => document.getElementById(`sk_${i}_p`).checked), vitals: { ac: document.getElementById('armorClass').value, init: document.getElementById('initiative').value, spd: document.getElementById('speed').value, hpC: document.getElementById('currentHp').value, hpM: document.getElementById('maxHp').value, hpT: document.getElementById('tempHp').value, hdC: document.getElementById('currentHd').value }, money: [document.getElementById('gp').value, document.getElementById('sp').value, document.getElementById('cp').value], inv: inventoryData, text: { bg: document.getElementById('backstory').value, feat: document.getElementById('features').value, notes: document.getElementById('allies').value }, attacks: [] };
+        /* --- SAVE / LOAD (multi-character) --- */
+        let saveTimer = null;
+        function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
+        function flushSave() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; saveData(); } }
+
+        function collectData() {
+            const $ = id => document.getElementById(id);
+            const data = { v: 7, theme: document.documentElement.getAttribute('data-theme'), meta: { name: $('charName').value, cls: $('charClass').value, lvl: $('charLevel').value, race: $('charRace').value, xp: $('xp').value, align: $('alignment').value }, stats: abilities.map(s => $(s).value), saves: abilities.map(s => $(`sv_${s}_p`).checked), skills: skills.map((_,i) => $(`sk_${i}_p`).checked), vitals: { ac: $('armorClass').value, init: $('initiative').value, spd: $('speed').value, hpC: $('currentHp').value, hpM: $('maxHp').value, hpT: $('tempHp').value, hdC: $('currentHd').value }, money: [$('gp').value, $('sp').value, $('cp').value], inv: inventoryData.slice(), text: { bg: $('backstory').value, feat: $('features').value, notes: $('allies').value }, attacks: [], spellAbi: $('spellAbility').value };
             document.querySelectorAll('#attacksList tr').forEach(row => { const i = row.querySelectorAll('input'); data.attacks.push({ n: i[0].value, h: i[1].value, d: i[2].value }); });
-            data.spells = []; for(let i=1;i<=9;i++) { data.spells.push({ m: document.getElementById(`sp_m_${i}`).value, u: document.getElementById(`sp_u_${i}`).value, n: document.getElementById(`sp_n_${i}`).value }); }
-            localStorage.setItem('dndSheet_v7_Isaiah', JSON.stringify(data));
+            data.spells = []; for(let i=1;i<=9;i++) { data.spells.push({ m: $(`sp_m_${i}`).value, u: $(`sp_u_${i}`).value, n: $(`sp_n_${i}`).value }); }
+            return data;
         }
-        function loadData() {
-            const raw = localStorage.getItem('dndSheet_v7_Isaiah'); if(!raw) return;
-            const data = JSON.parse(raw); if(data.theme) document.documentElement.setAttribute('data-theme', data.theme);
-            document.getElementById('charName').value = data.meta.name; document.getElementById('charClass').value = data.meta.cls;
-            document.getElementById('charLevel').value = data.meta.lvl; document.getElementById('charRace').value = data.meta.race;
-            document.getElementById('xp').value = data.meta.xp; document.getElementById('alignment').value = data.meta.align;
-            abilities.forEach((s,i) => document.getElementById(s).value = data.stats[i]);
-            abilities.forEach((s,i) => document.getElementById(`sv_${s}_p`).checked = data.saves[i]);
-            skills.forEach((_,i) => document.getElementById(`sk_${i}_p`).checked = data.skills[i]);
-            document.getElementById('armorClass').value = data.vitals.ac; document.getElementById('initiative').value = data.vitals.init;
-            document.getElementById('speed').value = data.vitals.spd; document.getElementById('currentHp').value = data.vitals.hpC;
-            document.getElementById('maxHp').value = data.vitals.hpM; document.getElementById('tempHp').value = data.vitals.hpT;
-            if(data.vitals.hdC !== undefined) document.getElementById('currentHd').value = data.vitals.hdC;
-            document.getElementById('gp').value = data.money[0]; document.getElementById('sp').value = data.money[1]; document.getElementById('cp').value = data.money[2];
-            if(data.inv) inventoryData = data.inv;
-            document.getElementById('backstory').value = data.text.bg; document.getElementById('features').value = data.text.feat; document.getElementById('allies').value = data.text.notes;
-            document.getElementById('attacksList').innerHTML = ''; data.attacks.forEach(a => addAttack(a));
-            if(data.spells) { data.spells.forEach((s, i) => { const idx = i+1; document.getElementById(`sp_u_${idx}`).value = s.u; document.getElementById(`sp_m_${idx}`).value = s.m; document.getElementById(`sp_n_${idx}`).value = s.n; }); }
+
+        // Writes only the fields present in `data`, so partial / older objects are safe.
+        function applyRaw(data) {
+            if (!data) return;
+            const set = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).value = v; };
+            const chk = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).checked = !!v; };
+            const m = data.meta || {}, vt = data.vitals || {}, tx = data.text || {};
+            set('charName', m.name); set('charClass', m.cls); set('charLevel', m.lvl); set('charRace', m.race); set('xp', m.xp); set('alignment', m.align);
+            if (Array.isArray(data.stats)) abilities.forEach((s,i) => set(s, data.stats[i]));
+            if (Array.isArray(data.saves)) abilities.forEach((s,i) => chk(`sv_${s}_p`, data.saves[i]));
+            if (Array.isArray(data.skills)) skills.forEach((_,i) => chk(`sk_${i}_p`, data.skills[i]));
+            set('armorClass', vt.ac); set('initiative', vt.init); set('speed', vt.spd); set('currentHp', vt.hpC); set('maxHp', vt.hpM); set('tempHp', vt.hpT); set('currentHd', vt.hdC);
+            if (Array.isArray(data.money)) { set('gp', data.money[0]); set('sp', data.money[1]); set('cp', data.money[2]); }
+            if (Array.isArray(data.inv)) { inventoryData = new Array(MAX_SLOTS).fill(null); data.inv.slice(0, MAX_SLOTS).forEach((it, i) => inventoryData[i] = it || null); }
+            set('backstory', tx.bg); set('features', tx.feat); set('allies', tx.notes);
+            if (Array.isArray(data.attacks)) { document.getElementById('attacksList').innerHTML = ''; data.attacks.forEach(a => addAttack(a)); }
+            if (Array.isArray(data.spells)) data.spells.forEach((s, i) => { const idx = i+1; if (idx > 9 || !s) return; set(`sp_u_${idx}`, s.u); set(`sp_m_${idx}`, s.m); set(`sp_n_${idx}`, s.n); });
+            if (data.spellAbi) set('spellAbility', data.spellAbi);
         }
-        function exportData() { saveData(); const blob = new Blob([localStorage.getItem('dndSheet_v7_Isaiah')], {type: "application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `agent_${document.getElementById('charName').value}.json`; a.click(); }
-        function importData(input) { const r = new FileReader(); r.onload = e => { let parsed; try { parsed = JSON.parse(e.target.result); } catch(err) { parsed = null; } if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) { alert('Invalid character file.'); input.value = ''; return; } localStorage.setItem('dndSheet_v7_Isaiah', JSON.stringify(parsed)); location.reload(); }; r.readAsText(input.files[0]); }
+        function applyData(data) { applyRaw(BLANK); applyRaw(data); renderInventory(); calculateAll(); }
+
+        function saveData() {
+            clearTimeout(saveTimer); saveTimer = null;
+            if (!activeId) return;
+            const prev = findChar(activeId);
+            const rec = Object.assign(collectData(), { id: activeId, updated: Date.now() });
+            if (prev && prev.src) rec.src = prev.src;
+            if (prev && prev.migratedFrom) rec.migratedFrom = prev.migratedFrom;
+            const i = store.chars.findIndex(c => c.id === activeId);
+            if (i === -1) store.chars.push(rec); else store.chars[i] = rec;
+            saveStore();
+        }
+
+        function openSheet(id) {
+            if (activeId !== id) flushSave();
+            activeId = id;
+            applyData(findChar(id) || null);
+            switchTab('main');
+            document.querySelector('#sheetView main').scrollTop = 0;
+        }
+
+        function exportData() {
+            saveData();
+            const rec = findChar(activeId) || collectData();
+            const blob = new Blob([JSON.stringify(rec)], {type: "application/json"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `agent_${(document.getElementById('charName').value || 'character').replace(/[^\w\- ]+/g, '')}.json`; a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+        // Import always adds a NEW character (never overwrites one you already have).
+        function importData(input) {
+            const file = input.files && input.files[0]; if (!file) return;
+            const r = new FileReader();
+            r.onload = e => {
+                input.value = '';
+                let data; try { data = JSON.parse(e.target.result); } catch (err) { alert('That file is not valid JSON.'); return; }
+                if (!data || typeof data !== 'object' || Array.isArray(data) || !data.meta) { alert('That file is not a character sheet export.'); return; }
+                flushSave();
+                const id = genId();
+                store.chars.push(Object.assign({}, data, { id, updated: Date.now() }));
+                saveStore();
+                location.hash = '#/sheet/' + encodeURIComponent(id);
+            };
+            r.readAsText(file);
+        }
+
+        /* =========================================================
+           THE ARCHIVES OF THE FORGOTTEN (hero generator data)
+           ========================================================= */
+        const races = [
+          { name: "Human", subraces: ["Standard", "Variant", "Nomad", "Imperial"] },
+          { name: "Elf", subraces: ["High Elf", "Wood Elf", "Dark Elf", "Eladrin", "Sea Elf"] },
+          { name: "Dwarf", subraces: ["Hill Dwarf", "Mountain Dwarf", "Duergar"] },
+          { name: "Halfling", subraces: ["Lightfoot", "Stout", "Ghostwise"] },
+          { name: "Dragonborn", subraces: ["Chromatic (Red)", "Chromatic (Blue)", "Metallic (Gold)", "Metallic (Silver)", "Gem"] },
+          { name: "Gnome", subraces: ["Forest Gnome", "Rock Gnome", "Deep Gnome"] },
+          { name: "Half-Orc", subraces: ["Standard", "Scarred"] },
+          { name: "Tiefling", subraces: ["Infernal", "Abyssal", "Feral"] },
+          { name: "Half-Elf", subraces: ["Standard", "Drow-Descended", "High-Descended"] }
+        ];
+        const classes = ["Fighter", "Wizard", "Rogue", "Cleric", "Bard", "Paladin", "Ranger", "Sorcerer", "Warlock", "Monk", "Druid", "Barbarian", "Artificer"];
+        const subclasses = {
+          Fighter: ["Champion", "Battle Master", "Eldritch Knight", "Samurai", "Cavalier", "Rune Knight"],
+          Wizard: ["Evocation", "Necromancy", "Illusion", "Divination", "Abjuration", "Enchantment", "Transmutation", "War Magic", "Bladesinging"],
+          Rogue: ["Thief", "Assassin", "Arcane Trickster", "Swashbuckler", "Scout", "Soulknife"],
+          Cleric: ["Life", "War", "Tempest", "Trickery", "Grave", "Nature", "Light", "Forge", "Twilight"],
+          Bard: ["Lore", "Valor", "Glamour", "Swords", "Whispers", "Creation", "Eloquence"],
+          Paladin: ["Devotion", "Vengeance", "Ancients", "Conquest", "Oathbreaker", "Redemption", "Watchers"],
+          Ranger: ["Hunter", "Beast Master", "Gloom Stalker", "Horizon Walker", "Drake Warden", "Fey Wanderer", "Swarmkeeper"],
+          Sorcerer: ["Draconic", "Wild Magic", "Storm", "Shadow", "Aberrant Mind", "Clockwork Soul", "Divine Soul"],
+          Warlock: ["Archfey", "Fiend", "Great Old One", "Celestial", "Hexblade", "Genie", "Fathomless"],
+          Monk: ["Open Hand", "Shadow", "Four Elements", "Mercy", "Drunken Master", "Astral Self", "Kensei"],
+          Druid: ["Land", "Moon", "Shepherd", "Spores", "Stars", "Wildfire", "Dreams"],
+          Barbarian: ["Berserker", "Totem Warrior", "Ancestral Guardian", "Storm Herald", "Zealot", "Wild Magic", "Beast"],
+          Artificer: ["Alchemist", "Armorer", "Artillerist", "Battle Smith"]
+        };
+        const backgrounds = ["Acolyte", "Criminal", "Folk Hero", "Noble", "Sage", "Soldier", "Urchin", "Entertainer", "Merchant", "Guild Artisan", "Hermit", "Outlander", "Charlatan", "Sailor", "Gladiator", "Spy", "Knight", "Haunted One"];
+        const alignments = ["Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "True Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil"];
+        const hairColors = ["Black", "Brown", "Blonde", "Red", "White", "Gray", "Auburn", "Silver", "Blue", "Green", "Pink", "Multicolor", "Purple", "Orange", "Teal"];
+        const hairStyles = ["Curly", "Straight", "Wavy", "Braided", "Dreadlocks", "Shaved", "Bald", "Mohawk", "Topknot", "Undercut", "Afro", "Buzzcut", "Long", "Spiky", "Pixie Cut"];
+        const eyeColors = ["Amber", "Blue", "Brown", "Green", "Gray", "Hazel", "Golden", "Heterochromatic", "Violet", "Red", "Black", "Silver"];
+        const builds = ["Slender", "Muscular", "Stocky", "Lean", "Lanky", "Athletic", "Heavyset", "Chubby", "Brawny", "Wiry"];
+        const voices = ["Boisterous", "Whispery", "Gravelly", "Melodic", "Monotone", "Singsong", "Raspy", "Clear", "Silky", "Deep", "High-Pitched", "Soft"];
+        const personalityTraits = ["Always tells jokes", "Collects strange trinkets", "Writes poetry", "Loves to gamble", "Obsessed with cleanliness", "Always humming", "Knows all the local gossip", "Prefers silence", "Believes in fate", "Can't resist a dare", "Dreams of faraway places", "Has a secret language", "Polishes armor compulsively", "Quotes ancient texts", "Talks to animals (even if they don't reply)"];
+        const ideals = ["Might: The strong must rule", "Knowledge: Secrets are meant to be uncovered", "Justice: Everyone deserves a fair trial", "Freedom: Chains are meant to be broken", "Tradition: The old ways are best", "Adventure: Life is meant to be explored", "Kindness: Treat others with compassion", "Ambition: Seize any opportunity", "Balance: Nature must be preserved"];
+        const bonds = ["Protective of siblings", "Sworn to avenge mentor", "Loyal to a noble house", "Bound by a magical oath", "Seeking a lost artifact", "Driven to protect a sacred site", "Carries a family heirloom", "Haunted by a past mistake", "Pursues an ancient prophecy", "Lost a precious friend"];
+        const flaws = ["Greedy", "Paranoid", "Cowardly", "Reckless", "Vengeful", "Distrustful", "Arrogant", "Stubborn", "Lazy", "Forgetful", "Gullible", "Envious", "Impatient", "Rude", "Suspicious"];
+        const backstoryEvents = {
+          childhood: ["Orphaned", "Noble Birth", "Apprenticed", "Raised by Wolves", "Street Urchin", "Lived in a monastery", "From a seafaring family", "Grew up in the forest", "Slave gladiator"],
+          definingEvent: ["Survived Dragon Attack", "Betrayed by Mentor", "Found a Magical Artifact", "Witnessed a great tragedy", "Made a deal with a powerful being", "Recovered an ancient tome", "Lost a loved one in a war", "Survived a shipwreck"],
+          secret: ["Wanted for Murder", "Heir to Fallen Kingdom", "Possessed by a Demon", "Member of a secret society", "Harbors forbidden knowledge", "Is a reincarnation of a legendary figure", "Spy for an enemy nation"]
+        };
+        const raceSkinTones = {
+          Human: [{name:"Pale", c:"#f5e0d4"}, {name:"Fair", c:"#eecbad"}, {name:"Tan", c:"#c68642"}, {name:"Dark", c:"#8d5524"}, {name:"Ebony", c:"#3b2219"}],
+          Elf: [{name:"Moonlight", c:"#f0f8ff"}, {name:"Golden", c:"#e6ba89"}, {name:"Copper", c:"#b87333"}, {name:"Obsidian", c:"#303030"}],
+          Dwarf: [{name:"Ruddy", c:"#d99058"}, {name:"Earthen", c:"#8f6452"}, {name:"Iron-Grey", c:"#7a7a7a"}],
+          Tiefling: [{name:"Red", c:"#aa2222"}, {name:"Purple", c:"#6a0dad"}, {name:"Blue", c:"#2222aa"}, {name:"Crimson", c:"#741b1b"}],
+          "Half-Orc": [{name:"Green", c:"#6b8e23"}, {name:"Grey", c:"#778899"}, {name:"Olive", c:"#556b2f"}],
+          Dragonborn: [{name:"Red", c:"#8b0000"}, {name:"Blue", c:"#00008b"}, {name:"Brass", c:"#b5a642"}, {name:"Black", c:"#2f2f2f"}, {name:"White", c:"#f5f5f5"}, {name:"Green", c:"#228b22"}],
+          Gnome: [{name:"Fair", c:"#ffe0bd"}, {name:"Bark", c:"#5d4037"}],
+          Halfling: [{name:"Rosy", c:"#ffb6c1"}, {name:"Nut Brown", c:"#8b4513"}]
+        };
+        const mysticalItems = ["Ring of Protection", "Amulet of Health", "Cloak of Invisibility", "Boots of Speed", "Belt of Giant Strength", "Bracers of Defense", "Staff of Power", "Wand of Magic Missiles", "Bag of Holding", "Pearl of Power", "Goggles of Night"];
+        const classSpells = {
+          Wizard: { cantrips: ["Fire Bolt", "Mage Hand", "Minor Illusion", "Prestidigitation", "Ray of Frost"], 1: ["Magic Missile", "Shield", "Mage Armor", "Sleep", "Burning Hands", "Identify"], 2: ["Misty Step", "Invisibility", "Scorching Ray", "Web", "Hold Person"], 3: ["Fireball", "Counterspell", "Fly", "Lightning Bolt", "Haste"] },
+          Cleric: { cantrips: ["Sacred Flame", "Guidance", "Thaumaturgy", "Spare the Dying"], 1: ["Bless", "Cure Wounds", "Healing Word", "Guiding Bolt", "Shield of Faith"], 2: ["Spiritual Weapon", "Hold Person", "Lesser Restoration", "Silence"], 3: ["Revivify", "Spirit Guardians", "Mass Healing Word", "Dispel Magic"] },
+          Druid: { cantrips: ["Shillelagh", "Druidcraft", "Thorn Whip", "Produce Flame"], 1: ["Entangle", "Goodberry", "Cure Wounds", "Faerie Fire"], 2: ["Moonbeam", "Pass Without Trace", "Heat Metal", "Barkskin"], 3: ["Call Lightning", "Conjure Animals", "Water Breathing"] },
+          Warlock: { cantrips: ["Eldritch Blast", "Mage Hand", "Prestidigitation", "Minor Illusion"], 1: ["Hex", "Hellish Rebuke", "Armor of Agathys", "Charm Person"], 2: ["Darkness", "Invisibility", "Misty Step", "Shatter"], 3: ["Hunger of Hadar", "Fly", "Counterspell", "Hypnotic Pattern"] },
+          Sorcerer: { cantrips: ["Fire Bolt", "Shocking Grasp", "Light", "Prestidigitation"], 1: ["Chaos Bolt", "Shield", "Magic Missile", "Thunderwave"], 2: ["Mirror Image", "Scorching Ray", "Misty Step", "Hold Person"], 3: ["Fireball", "Lightning Bolt", "Haste", "Fly"] },
+          Bard: { cantrips: ["Vicious Mockery", "Mage Hand", "Message", "True Strike"], 1: ["Healing Word", "Faerie Fire", "Thunderwave", "Dissonant Whispers"], 2: ["Heat Metal", "Invisibility", "Shatter", "Suggestion"], 3: ["Hypnotic Pattern", "Leomund's Tiny Hut", "Dispel Magic"] },
+          Paladin: { 1: ["Divine Favor", "Shield of Faith", "Bless", "Cure Wounds", "Thunderous Smite"], 2: ["Find Steed", "Aid", "Branding Smite", "Zone of Truth"], 3: ["Aura of Vitality", "Revivify", "Blinding Smite"] },
+          Ranger: { 1: ["Hunter's Mark", "Cure Wounds", "Ensnaring Strike", "Zephyr Strike"], 2: ["Pass Without Trace", "Spike Growth", "Silence"], 3: ["Lightning Arrow", "Conjure Barrage"] }
+        };
+        const nameParts = {
+          prefixes: ["Ael", "Bar", "Cael", "Dor", "Eir", "Fen", "Gor", "Hael", "Ior", "Jur", "Kar", "Loth", "Mor", "Nor", "Oth", "Pha", "Quen", "Rael", "Syl", "Thae", "Uln", "Val", "Wyr", "Xan", "Yor", "Zan", "El", "Ara", "Thor"],
+          suffixes: ["a", "ae", "us", "ix", "or", "an", "is", "in", "en", "ar", "th", "on", "as", "os", "ir", "el", "ia", "wen", "wyn", "dra", "mir", "thas"],
+          surnames: ["Moon", "Star", "Iron", "Storm", "Night", "Bright", "Fire", "Shadow", "Stone", "Silver", "Gold", "Winter", "Summer", "Spring", "Autumn", "Wind", "River", "Deep", "Hammer", "Shield", "Blade", "Weaver"]
+        };
+        const classAbilities = {
+          Fighter: { primary: "Strength", secondary: "Constitution" }, Wizard: { primary: "Intelligence", secondary: "Wisdom" },
+          Rogue: { primary: "Dexterity", secondary: "Intelligence" }, Cleric: { primary: "Wisdom", secondary: "Charisma" },
+          Bard: { primary: "Charisma", secondary: "Dexterity" }, Paladin: { primary: "Strength", secondary: "Charisma" },
+          Ranger: { primary: "Dexterity", secondary: "Wisdom" }, Sorcerer: { primary: "Charisma", secondary: "Constitution" },
+          Warlock: { primary: "Charisma", secondary: "Wisdom" }, Monk: { primary: "Dexterity", secondary: "Wisdom" },
+          Druid: { primary: "Wisdom", secondary: "Intelligence" }, Barbarian: { primary: "Strength", secondary: "Constitution" },
+          Artificer: { primary: "Intelligence", secondary: "Constitution" }
+        };
+        const ABILITY_NAMES = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
+
+        function getRandom(arr) { if (!arr || arr.length === 0) return "Unknown"; return arr[Math.floor(Math.random() * arr.length)]; }
+        function generateName() {
+          const p = getRandom(nameParts.prefixes), s = getRandom(nameParts.suffixes);
+          const surname = getRandom(nameParts.surnames) + getRandom(["son", "dottir", "field", "wood", "shield", "helm", "crest", "ford"]);
+          return `${p.charAt(0).toUpperCase() + p.slice(1)}${s} ${surname}`;
+        }
+        function getRacialBonus(race) {
+          const map = {
+            Human: { Strength:1, Dexterity:1, Constitution:1, Intelligence:1, Wisdom:1, Charisma:1 }, Elf: { Dexterity: 2 }, Dwarf: { Constitution: 2 },
+            Halfling: { Dexterity: 2 }, Dragonborn: { Strength: 2, Charisma: 1 }, Gnome: { Intelligence: 2 }, "Half-Orc": { Strength: 2, Constitution: 1 },
+            Tiefling: { Charisma: 2, Intelligence: 1 }, "Half-Elf": { Charisma: 2, Dexterity: 1, Constitution: 1 }
+          };
+          return map[race] || {};
+        }
+        function rollStats(race, primary, secondary) {
+          let stats = { Strength: 0, Dexterity: 0, Constitution: 0, Intelligence: 0, Wisdom: 0, Charisma: 0 };
+          let breakdown = {};
+          stats[primary] = 15; stats[secondary] = 14;
+          let remaining = ABILITY_NAMES.filter(k => k !== primary && k !== secondary);
+          let remainingScores = [13, 12, 10, 8].sort(() => Math.random() - 0.5);
+          remaining.forEach((stat, i) => stats[stat] = remainingScores[i]);
+          const bonuses = getRacialBonus(race);
+          for (let [stat, val] of Object.entries(stats)) { let bonus = bonuses[stat] || 0; breakdown[stat] = { base: val, race: bonus }; stats[stat] += bonus; }
+          return { final: stats, breakdown };
+        }
+        function getRandomSubarray(arr, size) {
+          let shuffled = arr.slice(0), i = arr.length, min = Math.max(0, i - size), temp, index;
+          while (i-- > min) { index = Math.floor((i + 1) * Math.random()); temp = shuffled[index]; shuffled[index] = shuffled[i]; shuffled[i] = temp; }
+          return shuffled.slice(min);
+        }
+        function generateSpells(cls, level) {
+          if (!classSpells[cls]) return null;
+          let book = {};
+          if (classSpells[cls].cantrips) book.cantrips = getRandomSubarray(classSpells[cls].cantrips, 3);
+          if (classSpells[cls][1]) book["1"] = getRandomSubarray(classSpells[cls][1], Math.max(2, Math.floor(level/2) + 1));
+          const maxSpellLvl = Math.min(Math.ceil(level/2), 3);
+          for (let i=2; i<=maxSpellLvl; i++) if (classSpells[cls][i]) book[i] = getRandomSubarray(classSpells[cls][i], 2);
+          return book;
+        }
+        function generateCharacter() {
+          const raceObj = getRandom(races); const race = raceObj.name;
+          const subrace = raceObj.subraces.length ? getRandom(raceObj.subraces) : "";
+          const cls = getRandom(classes); const subcls = getRandom(subclasses[cls]) || "Standard";
+          const bg = getRandom(backgrounds); const align = getRandom(alignments);
+          const level = Math.floor(Math.random() * 12) + 1; const name = generateName();
+          const ab = classAbilities[cls] || { primary: "Strength", secondary: "Constitution" };
+          const statData = rollStats(race, ab.primary, ab.secondary);
+          const gender = Math.random() > 0.5 ? "Male" : "Female";
+          const skin = getRandom(raceSkinTones[race] || raceSkinTones["Human"]);
+          const hair = `${getRandom(hairColors)} ${getRandom(hairStyles)}`;
+          const eyes = getRandom(eyeColors), voice = getRandom(voices), build = getRandom(builds);
+          const age = race === "Elf" ? Math.floor(Math.random()*400)+20 : Math.floor(Math.random()*60)+18;
+          const height = `${Math.floor(4 + Math.random() * 3)}'${Math.floor(Math.random() * 12)}"`;
+          const mark = getRandom(["Scar", "Tattoo", "Piercing", "Birthmark", "War Paint", "Brand", "None"]);
+          const personality = { trait: getRandom(personalityTraits), ideal: getRandom(ideals), bond: getRandom(bonds), flaw: getRandom(flaws) };
+          const backstory = { childhood: getRandom(backstoryEvents.childhood), event: getRandom(backstoryEvents.definingEvent), secret: getRandom(backstoryEvents.secret) };
+          const weapon = ["Longsword", "Dagger", "Greataxe", "Shortbow", "Quarterstaff", "Warhammer", "Rapier"];
+          const armor = ["Leather", "Chainmail", "Plate", "Robes", "Hide", "Studded Leather"];
+          const gear = [getRandom(weapon), getRandom(armor), "Adventurer's Pack", "50ft Rope", "Rations (5 days)"];
+          if (Math.random() > 0.7) gear.push(getRandom(mysticalItems));
+          const spells = generateSpells(cls, level);
+          return { id: Date.now(), name, race, subrace, cls, subcls, level, align, bg, gender, stats: statData.final, statBreakdown: statData.breakdown, appearance: { skin, hair, eyes, voice, build, age, height, mark }, personality, backstory, gear, spells };
+        }
+
+        /* --- Archive hero view --- */
+        let currentHero = null;   // hero shown in heroView
+        let heroMode = 'saved';   // 'saved' (in dndRoster) | 'rolled' (not yet scribed)
+
+        function sheetForHero(h) { return store.chars.find(c => c.src && String(c.src.archiveId) === String(h.id)); }
+
+        function renderHero() {
+          const c = currentHero; if (!c) return;
+          const ap = c.appearance || {}, pe = c.personality || {}, bs = c.backstory || {}, st = c.stats || {}, br = c.statBreakdown || {};
+          const skin = ap.skin || {};
+          document.getElementById('heroKind').textContent = heroMode === 'rolled' ? 'Freshly rolled · not yet scribed' : 'The Archives of the Forgotten';
+          document.getElementById('heroName').textContent = c.name || 'Unknown Hero';
+          document.getElementById('heroSub').textContent = `Level ${c.level} ${c.race} ${c.cls}${c.subcls ? ` (${c.subcls})` : ''}`;
+
+          const existing = sheetForHero(c);
+          let acts = '';
+          if (heroMode === 'rolled') {
+            acts += `<button class="text-btn" data-act="roll"><i class="fas fa-dice-d20"></i> Reroll</button>`;
+            acts += `<button class="text-btn" data-act="scribe"><i class="fas fa-feather-pointed"></i> Scribe to archive</button>`;
+          }
+          acts += `<button class="text-btn primary" data-act="play"><i class="fas fa-${existing ? 'arrow-right' : 'play'}"></i> ${existing ? 'Open sheet' : 'Play in sheet'}</button>`;
+          acts += `<button class="text-btn" data-act="copy"><i class="fas fa-scroll"></i> Copy</button>`;
+          if (heroMode === 'saved') acts += `<button class="text-btn danger" data-act="delete-hero"><i class="fas fa-trash"></i> Delete</button>`;
+          document.getElementById('heroActions').innerHTML = acts;
+
+          const li = (icon, k, v) => `<li><i class="fas fa-${icon}"></i><span class="k">${k}</span><span class="v">${v}</span></li>`;
+          let html = `
+            <div class="layout-grid grid-cols-3 md:grid-cols-6 mb-6">
+              ${ABILITY_NAMES.map(key => { const val = st[key]; const b = br[key] || {}; return `
+                <div class="stat-block"><label class="label-mono">${key.substring(0,3)}</label><div class="stat-val">${esc(val)}</div><div class="stat-mod">${fmt(getMod(val))}</div>
+                <div class="stat-break">Base ${esc(b.base)}${b.race ? ` · Race +${esc(b.race)}` : ''}</div></div>`; }).join('')}
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Identity</label><ul class="kv">
+                ${li('venus-mars', 'Gender', esc(c.gender))}
+                ${li('balance-scale', 'Alignment', esc(c.align))}
+                ${li('landmark', 'Background', esc(c.bg))}
+                ${li('dna', 'Subrace', esc(c.subrace || 'None'))}
+                ${li('hat-wizard', 'Subclass', esc(c.subcls))}
+              </ul></div>
+              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Appearance</label><ul class="kv">
+                ${li('ruler-vertical', 'Height', `${esc(ap.height)} (${esc(ap.build)})`)}
+                ${li('hourglass-half', 'Age', `${esc(ap.age)} years`)}
+                ${li('eye', 'Eyes', esc(ap.eyes))}
+                ${li('cut', 'Hair', esc(ap.hair))}
+                ${li('palette', 'Skin', `${esc(skin.name)}${skin.c ? `<span class="swatch" style="background-color:${esc(skin.c)}"></span>` : ''}`)}
+                ${li('microphone-alt', 'Voice', esc(ap.voice))}
+                ${li('signature', 'Mark', esc(ap.mark))}
+              </ul></div>
+              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">The Soul</label><ul class="kv">
+                ${li('star', 'Trait', `&ldquo;${esc(pe.trait)}&rdquo;`)}
+                ${li('bullseye', 'Ideal', `&ldquo;${esc(pe.ideal)}&rdquo;`)}
+                ${li('link', 'Bond', `&ldquo;${esc(pe.bond)}&rdquo;`)}
+                ${li('heart-broken', 'Flaw', `&ldquo;${esc(pe.flaw)}&rdquo;`)}
+              </ul></div>
+              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Legend</label><ul class="kv">
+                ${li('child', 'Origin', esc(bs.childhood))}
+                ${li('meteor', 'Defining moment', esc(bs.event))}
+                ${li('mask', 'Secret', esc(bs.secret))}
+              </ul></div>
+            </div>
+            <div class="swiss-panel mb-6"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-3">Inventory</label>
+              <div class="chip-row">${(c.gear || []).map(g => `<span class="chip">${esc(g)}</span>`).join('') || '<span class="r-empty">Nothing carried.</span>'}</div>
+            </div>`;
+          if (c.spells) {
+            html += `<div class="swiss-panel mb-6"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-3">Grimoire</label>`;
+            if (c.spells.cantrips) html += `<div class="mb-4"><label class="label-mono">Cantrips (0 level)</label><div class="chip-row">${c.spells.cantrips.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div></div>`;
+            for (const [lvl, list] of Object.entries(c.spells)) {
+              if (lvl === 'cantrips' || !Array.isArray(list)) continue;
+              html += `<div class="mb-4"><label class="label-mono">Level ${esc(lvl)} spells</label><div class="chip-row">${list.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div></div>`;
+            }
+            html += `</div>`;
+          }
+          const box = document.getElementById('heroContent');
+          box.innerHTML = html;
+          box.classList.remove('fade-in'); void box.offsetWidth; box.classList.add('fade-in');
+          box.closest('.view-scroll').scrollTop = 0;
+        }
+
+        function heroText(c) {
+          const ap = c.appearance || {}, pe = c.personality || {}, bs = c.backstory || {}, st = c.stats || {};
+          return `
+=== ${c.name} ===
+${c.race} ${c.cls} (${c.subcls}) - Level ${c.level}
+Background: ${c.bg} | Alignment: ${c.align}
+
+STATS
+Str: ${st.Strength} | Dex: ${st.Dexterity} | Con: ${st.Constitution}
+Int: ${st.Intelligence} | Wis: ${st.Wisdom} | Cha: ${st.Charisma}
+
+APPEARANCE
+${ap.height}, ${ap.build}, ${ap.age} yrs
+Hair: ${ap.hair} | Eyes: ${ap.eyes}
+Mark: ${ap.mark}
+
+PERSONALITY
+Trait: ${pe.trait}
+Ideal: ${pe.ideal}
+Bond: ${pe.bond}
+Flaw: ${pe.flaw}
+
+BACKSTORY
+Childhood: ${bs.childhood}
+Defining Event: ${bs.event}
+Secret: ${bs.secret}
+
+GEAR: ${(c.gear || []).join(', ')}
+`;
+        }
+        function copyHero() {
+          if (!currentHero) return;
+          const text = heroText(currentHero);
+          const done = () => alert("Character transcribed to clipboard.");
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => prompt('Copy the hero:', text));
+          else prompt('Copy the hero:', text);
+        }
+        function scribeHero() {
+          if (!currentHero) return null;
+          const list = readArchive();
+          if (!list.some(h => h.id === currentHero.id)) { list.push(currentHero); if (!writeArchive(list)) alert('Could not save to this browser (storage unavailable).'); }
+          heroMode = 'saved';
+          return currentHero.id;
+        }
+        function deleteHero(id) {
+          const list = readArchive(); const h = list.find(x => String(x.id) === String(id)); if (!h) return;
+          if (!confirm(`Remove ${h.name || 'this hero'} from the Archives? This can't be undone.`)) return;
+          writeArchive(list.filter(x => String(x.id) !== String(id)));
+        }
+
+        /* --- Archive hero -> playable sheet --- */
+        const FULL_CASTER = [[2],[3],[4,2],[4,3],[4,3,2],[4,3,3],[4,3,3,1],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,2],[4,3,3,3,2,1],[4,3,3,3,2,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1,1],[4,3,3,3,3,1,1,1,1],[4,3,3,3,3,2,1,1,1],[4,3,3,3,3,2,2,1,1]];
+        function slotsFor(cls, lvl) {
+          lvl = Math.max(1, Math.min(20, lvl));
+          if (['Bard','Cleric','Druid','Sorcerer','Wizard'].includes(cls)) return FULL_CASTER[lvl-1];
+          if (cls === 'Artificer') return FULL_CASTER[Math.ceil(lvl/2)-1];
+          if (['Paladin','Ranger'].includes(cls)) return lvl < 2 ? [] : FULL_CASTER[Math.ceil(lvl/2)-1];
+          if (cls === 'Warlock') { const n = lvl < 2 ? 1 : lvl < 11 ? 2 : lvl < 17 ? 3 : 4; const s = []; s[Math.min(5, Math.ceil(lvl/2))-1] = n; return s; }
+          return [];
+        }
+        const SPELL_ABI = { Wizard:'int', Artificer:'int', Cleric:'wis', Druid:'wis', Ranger:'wis', Monk:'wis', Bard:'cha', Sorcerer:'cha', Warlock:'cha', Paladin:'cha' };
+        const WEAPONS = { Longsword:['1d8','str','⚔️'], Dagger:['1d4','fin','🗡️'], Greataxe:['1d12','str','🪓'], Shortbow:['1d6','dex','🏹'], Quarterstaff:['1d6','str','🪵'], Warhammer:['1d8','str','🔨'], Rapier:['1d8','fin','🗡️'] };
+        const ARMOR = { Leather:[11,99,'🧥'], 'Studded Leather':[12,99,'🧥'], Hide:[12,2,'🧥'], Chainmail:[16,0,'🛡️'], Plate:[18,0,'🪖'], Robes:[10,99,'🧥'] };
+
+        function heroToSheet(h) {
+          const st = h.stats || {}, ap = h.appearance || {}, pe = h.personality || {}, bs = h.backstory || {};
+          const lvl = parseInt(h.level) || 1, pb = Math.ceil(lvl / 4) + 1;
+          const score = n => parseInt(st[n]) || 10, mod = n => getMod(score(n));
+          const strM = mod('Strength'), dexM = mod('Dexterity'), conM = mod('Constitution');
+          const hd = (dbClasses[h.cls] || {}).hd || 8;
+          const hp = Math.max(lvl, hd + (lvl - 1) * (hd / 2 + 1) + conM * lvl);
+          let ac = 10 + dexM;
+          const inv = new Array(MAX_SLOTS).fill(null), attacks = [];
+          (h.gear || []).forEach((g, i) => {
+            let icon = '🎒';
+            if (WEAPONS[g]) {
+              const [dmg, abi, ic] = WEAPONS[g]; icon = ic;
+              const m = abi === 'fin' ? Math.max(strM, dexM) : abi === 'dex' ? dexM : strM;
+              attacks.push({ n: g, h: fmt(pb + m), d: `${dmg}${m ? fmt(m) : ''}` });
+            } else if (ARMOR[g]) {
+              const [base, cap, ic] = ARMOR[g]; icon = ic; ac = base + Math.min(dexM, cap);
+            } else if (/Ration/.test(g)) icon = '🍞';
+            else if (/Rope/.test(g)) icon = '🪢';
+            else if (mysticalItems.includes(g)) icon = /Ring|Amulet|Pearl/.test(g) ? '💍' : '🔮';
+            if (i < MAX_SLOTS) inv[i] = { icon, name: g, weight: 0, qty: 1, desc: mysticalItems.includes(g) ? 'Magic item' : '' };
+          });
+          const slots = slotsFor(h.cls, lvl), sp = h.spells || {};
+          const spells = []; for (let i = 1; i <= 9; i++) spells.push({ m: String(slots[i-1] || 0), u: '0', n: Array.isArray(sp[i]) ? sp[i].join(', ') : '' });
+          const saves = (dbClasses[h.cls] || { saves: [] }).saves;
+          const skin = ap.skin && ap.skin.name ? ap.skin.name : '';
+          const bg = [
+            `ORIGIN: ${bs.childhood || ''}`, `DEFINING MOMENT: ${bs.event || ''}`, `SECRET: ${bs.secret || ''}`, '',
+            `TRAIT: ${pe.trait || ''}`, `IDEAL: ${pe.ideal || ''}`, `BOND: ${pe.bond || ''}`, `FLAW: ${pe.flaw || ''}`, '',
+            'APPEARANCE', `Gender: ${h.gender || ''}`, `Age: ${ap.age || ''} years`, `Height: ${ap.height || ''} (${ap.build || ''})`,
+            `Eyes: ${ap.eyes || ''} | Hair: ${ap.hair || ''}`, `Skin: ${skin}`, `Voice: ${ap.voice || ''}`, `Distinguishing mark: ${ap.mark || ''}`
+          ].join('\n');
+          const feat = [
+            `Subclass: ${h.subcls || ''}`, `Background: ${h.bg || ''}`, `Subrace: ${h.subrace || 'None'}`,
+            dbRaces[h.race] ? `Race bonus: ${dbRaces[h.race].bonus}` : '',
+            sp.cantrips ? `Cantrips: ${sp.cantrips.join(', ')}` : ''
+          ].filter(Boolean).join('\n');
+          return {
+            v: 7, meta: { name: h.name || '', cls: h.cls, lvl: String(lvl), race: h.race, xp: '', align: h.align || '' },
+            stats: ABILITY_NAMES.map(n => String(score(n))), saves: abilities.map(a => saves.includes(a)), skills: skills.map(() => false),
+            vitals: { ac: String(ac), init: String(dexM), spd: String((dbRaces[h.race] || { spd: 30 }).spd), hpC: String(hp), hpM: String(hp), hpT: '0', hdC: String(lvl) },
+            money: ['0', '0', '0'], inv, text: { bg, feat, notes: 'Scribed from The Archives of the Forgotten.' }, attacks, spells,
+            spellAbi: SPELL_ABI[h.cls] || 'int', src: { archiveId: h.id }
+          };
+        }
+        function playHero() {
+          if (!currentHero) return;
+          if (heroMode === 'rolled') scribeHero();   // keep the full hero record in the archive
+          let rec = sheetForHero(currentHero);
+          if (!rec) { rec = Object.assign(heroToSheet(currentHero), { id: genId(), updated: Date.now() }); store.chars.push(rec); saveStore(); }
+          location.hash = '#/sheet/' + encodeURIComponent(rec.id);
+        }
+
+        /* =========================================================
+           ROSTER
+           ========================================================= */
+        function renderRoster() {
+          const sheets = store.chars.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0));
+          document.getElementById('sheetGrid').innerHTML =
+            `<button class="r-card r-new" data-act="new"><i class="fas fa-plus"></i><span class="r-sub">New character</span><span class="r-foot" style="margin-top:0">Blank sheet</span></button>` +
+            sheets.map(c => {
+              const m = c.meta || {}, v = c.vitals || {};
+              return `<div class="r-card" role="link" tabindex="0" data-open-sheet="${esc(c.id)}">
+                <span class="r-kind">${c.src ? 'Sheet · from the Archives' : 'Sheet'}</span>
+                <div class="r-name">${esc(m.name || 'Unnamed character')}</div>
+                <div class="r-sub">Lvl ${esc(m.lvl || 1)} ${esc(m.race || '')} ${esc(m.cls || '')}</div>
+                <div class="r-meta">HP ${esc(v.hpC ?? 0)} / ${esc(v.hpM ?? 0)} &middot; AC ${esc(v.ac ?? 10)}${m.align ? ` &middot; ${esc(m.align)}` : ''}</div>
+                <div class="r-foot">${c.updated ? 'Edited ' + esc(fmtDate(c.updated)) : ''}</div>
+                <button class="r-del" data-del-sheet="${esc(c.id)}" title="Delete sheet" aria-label="Delete sheet"><i class="fas fa-trash"></i></button>
+              </div>`;
+            }).join('');
+
+          const archive = readArchive();
+          document.getElementById('archiveGrid').innerHTML =
+            `<button class="r-card r-new" data-act="roll"><i class="fas fa-dice-d20"></i><span class="r-sub">Roll a hero</span><span class="r-foot" style="margin-top:0">Random level 1-12 adventurer</span></button>` +
+            archive.slice().reverse().map(h => `<div class="r-card" role="link" tabindex="0" data-open-hero="${esc(h.id)}">
+                <span class="r-kind">Archive</span>
+                <div class="r-name">${esc(h.name || 'Unknown Hero')}</div>
+                <div class="r-sub">Lvl ${esc(h.level)} ${esc(h.race)} ${esc(h.cls)}</div>
+                <div class="r-meta">${esc(h.subcls || '')}${h.bg ? ` &middot; ${esc(h.bg)}` : ''}</div>
+                <div class="r-foot">${esc(h.align || '')}</div>
+                <button class="r-del" data-del-hero="${esc(h.id)}" title="Remove from archive" aria-label="Remove from archive"><i class="fas fa-trash"></i></button>
+              </div>`).join('');
+          document.getElementById('archiveEmpty').classList.toggle('hidden', archive.length > 0);
+        }
+
+        function deleteSheet(id) {
+          const c = findChar(id); if (!c) return;
+          if (!confirm(`Delete "${(c.meta && c.meta.name) || 'Unnamed character'}"? This can't be undone.`)) return;
+          store.chars = store.chars.filter(x => x.id !== id);
+          if (activeId === id) { activeId = null; clearTimeout(saveTimer); saveTimer = null; }
+          saveStore();
+        }
+
+        /* =========================================================
+           ROUTER  (#/  ·  #/new  ·  #/sheet/<id>  ·  #/hero/<id>  ·  #/rolled)
+           ========================================================= */
+        function showView(id) {
+          ['rosterView', 'heroView', 'sheetView'].forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id));
+        }
+        function route() {
+          const parts = location.hash.replace(/^#\/?/, '').split('/');
+          const kind = parts[0], id = parts[1] ? decodeURIComponent(parts[1]) : '';
+          if (kind !== 'sheet') flushSave();
+          if (kind === 'new') { location.replace('#/sheet/' + encodeURIComponent(genId())); return; }
+          if (kind === 'sheet' && id) { openSheet(id); showView('sheetView'); return; }
+          if (kind === 'hero' && id) {
+            const h = readArchive().find(x => String(x.id) === id);
+            if (h) { currentHero = h; heroMode = 'saved'; renderHero(); showView('heroView'); return; }
+          }
+          if (kind === 'rolled') {
+            if (!currentHero || heroMode !== 'rolled') { currentHero = generateCharacter(); heroMode = 'rolled'; }
+            renderHero(); showView('heroView'); return;
+          }
+          renderRoster(); showView('rosterView');
+        }
+        function rollHero() {
+          currentHero = generateCharacter(); heroMode = 'rolled';
+          if (location.hash === '#/rolled') route(); else location.hash = '#/rolled';
+        }
+
+        function onAction(e) {
+          const t = e.target.closest('[data-act],[data-del-sheet],[data-del-hero],[data-open-sheet],[data-open-hero]');
+          if (!t) return;
+          if (t.dataset.delSheet) { e.stopPropagation(); deleteSheet(t.dataset.delSheet); renderRoster(); return; }
+          if (t.dataset.delHero) { e.stopPropagation(); deleteHero(t.dataset.delHero); renderRoster(); return; }
+          if (t.dataset.openSheet) { location.hash = '#/sheet/' + encodeURIComponent(t.dataset.openSheet); return; }
+          if (t.dataset.openHero) { location.hash = '#/hero/' + encodeURIComponent(t.dataset.openHero); return; }
+          switch (t.dataset.act) {
+            case 'new': location.hash = '#/new'; break;
+            case 'roll': rollHero(); break;
+            case 'import': document.getElementById('fileInput').click(); break;
+            case 'roster': location.hash = '#/'; break;
+            case 'scribe': { const id = scribeHero(); if (id != null) location.replace('#/hero/' + encodeURIComponent(id)); break; }
+            case 'play': playHero(); break;
+            case 'copy': copyHero(); break;
+            case 'delete-hero': { const before = readArchive().length; deleteHero(currentHero && currentHero.id); if (readArchive().length < before) location.hash = '#/'; break; }
+          }
+        }
+
+        /* =========================================================
+           INIT
+           ========================================================= */
+        document.addEventListener('DOMContentLoaded', function () {
+            populateSelects(); renderUI();
+            BLANK = JSON.parse(JSON.stringify(collectData()));
+            store = loadStore();
+            applyTheme(readRaw(THEME_KEY) || 'onyx');
+            renderInventory(); calculateAll();
+
+            const sheetView = document.getElementById('sheetView');
+            sheetView.addEventListener('input', () => { calculateAll(); debouncedSave(); });
+            document.body.addEventListener('click', onAction);
+            document.body.addEventListener('keydown', e => {
+                if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-open-sheet],[data-open-hero]')) { e.preventDefault(); onAction(e); }
+            });
+            window.addEventListener('hashchange', route);
+            window.addEventListener('pagehide', flushSave);
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
+            route();
+        });
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NPC Codex</title>
+  <meta name="description" content="Generate NPCs with faces, voices and motives, and read dossiers on the Dead Three's chosen: Ketheric Thorm, Enver Gortash and Orin the Red.">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;700;900&family=Spectral:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
   <style>
@@ -136,7 +137,18 @@
     .sidebar-overlay { display:none; }
     #toast-container { position:fixed; bottom:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:99; }
     .toast { background:rgba(42,26,10,.95); color:var(--gold-bright); border:1px solid rgba(201,173,106,.2); padding:10px 14px; border-radius:4px; font-size:.82rem; box-shadow:0 8px 24px rgba(0,0,0,.28); }
-    .empty-state { display:flex; min-height:100%; align-items:center; justify-content:center; color:rgba(88,24,13,.55); font-style:italic; text-align:center; padding:40px; }
+    .empty-state { display:flex; flex-direction:column; gap:26px; min-height:100%; align-items:center; justify-content:center; color:rgba(88,24,13,.55); font-style:italic; text-align:center; padding:40px; }
+    .villains { width:100%; max-width:640px; font-style:normal; }
+    .villains-label { font-family:'Cinzel',serif; font-size:.62rem; text-transform:uppercase; letter-spacing:3px; color:var(--dnd-red-light); display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .villains-label::before, .villains-label::after { content:''; flex:1; height:1px; background:rgba(156,43,27,.3); }
+    .villain-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .villain { display:block; text-decoration:none; text-align:left; padding:12px 14px; border:1px solid rgba(156,43,27,.3); border-left:4px solid var(--vc); background:rgba(255,255,255,.28); border-radius:3px; transition:background .15s, transform .15s; }
+    .villain:hover, .villain:focus-visible { background:rgba(255,255,255,.5); transform:translateY(-1px); }
+    .villain-name { display:block; font-family:'Cinzel',serif; font-weight:700; font-size:.92rem; color:var(--vc); line-height:1.2; }
+    .villain-meta { display:block; font-size:.78rem; font-style:italic; color:var(--ink-light); margin-top:3px; }
+    .sb-villain { text-decoration:none; }
+    .sb-villain .sb-entry-icon { color:var(--vc); }
+    @media (max-width: 560px) { .villain-grid { grid-template-columns:1fr; } }
     @media (max-width: 920px) {
       .layout { max-width:100%; }
       .sidebar { position:absolute; inset:0 auto 0 0; z-index:5; }
@@ -172,6 +184,10 @@
         <div id="savedList"><div class="sb-empty">No saved entries yet</div></div>
         <div class="sb-section-label"><i class="fas fa-clock-rotate-left"></i> Recent</div>
         <div id="historyList"><div class="sb-empty">No history yet</div></div>
+        <div class="sb-section-label"><i class="fas fa-skull"></i> Featured Villains</div>
+        <a class="sb-entry sb-villain" href="ketheric/" style="--vc:#3E8C7E"><span class="sb-entry-icon"><i class="fas fa-skull"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Ketheric Thorm</span><span class="sb-entry-meta" style="display:block">Chosen of Myrkul</span></span></a>
+        <a class="sb-entry sb-villain" href="gortash/" style="--vc:#C9AD6A"><span class="sb-entry-icon"><i class="fas fa-crown"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Lord Enver Gortash</span><span class="sb-entry-meta" style="display:block">Chosen of Bane</span></span></a>
+        <a class="sb-entry sb-villain" href="orin/" style="--vc:#D0453F"><span class="sb-entry-icon"><i class="fas fa-droplet"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Orin the Red</span><span class="sb-entry-meta" style="display:block">Chosen of Bhaal</span></span></a>
       </div>
       <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 conjured</div>
     </aside>
@@ -214,7 +230,17 @@
 
       <div class="stat-scroll" id="statScroll">
         <div id="characterDisplay">
-          <div class="empty-state">Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</div>
+          <div class="empty-state">
+            <p>Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</p>
+            <nav class="villains" aria-label="Featured villains">
+              <div class="villains-label">Featured Villains &middot; The Dead Three</div>
+              <div class="villain-grid">
+                <a class="villain" href="ketheric/" style="--vc:#14403A"><span class="villain-name">Ketheric Thorm</span><span class="villain-meta">Chosen of Myrkul, Lord of Bones</span></a>
+                <a class="villain" href="gortash/" style="--vc:#6A4A12"><span class="villain-name">Lord Enver Gortash</span><span class="villain-meta">Chosen of Bane, Lord of Tyranny</span></a>
+                <a class="villain" href="orin/" style="--vc:#7A1215"><span class="villain-name">Orin the Red</span><span class="villain-meta">Chosen of Bhaal, Lord of Murder</span></a>
+              </div>
+            </nav>
+          </div>
         </div>
       </div>
 
@@ -607,7 +633,8 @@
   function currentList(){ return state.activeSource === 'saved' ? state.saved : state.history; }
   function currentEntry(){ const list = currentList(); return list[state.activeIndex] || null; }
   function setActive(source, index){ state.activeSource = source; state.activeIndex = index; const entry = currentEntry(); if (entry) renderNPC(entry); else resetDisplay(); renderSidebar(); updatePager(); persist(); }
-  function resetDisplay(){ els.display.innerHTML = `<div class="empty-state">Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</div>`; els.saveBtn.disabled = true; els.copyBtn.disabled = true; els.copyPromptBtn.disabled = true; els.promptStorage.value = ''; }
+  const EMPTY_STATE = document.getElementById('characterDisplay').innerHTML;
+  function resetDisplay(){ els.display.innerHTML = EMPTY_STATE; els.saveBtn.disabled = true; els.copyBtn.disabled = true; els.copyPromptBtn.disabled = true; els.promptStorage.value = ''; }
   function toast(msg){ const div = document.createElement('div'); div.className = 'toast'; div.textContent = msg; els.toast.appendChild(div); setTimeout(() => div.remove(), 2200); }
   function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({saved:state.saved, history:state.history, activeSource:state.activeSource, activeIndex:state.activeIndex})); }
   function load(){ try { const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); state.saved = Array.isArray(raw.saved) ? raw.saved : []; state.history = Array.isArray(raw.history) ? raw.history : []; state.activeSource = raw.activeSource || 'history'; state.activeIndex = Number.isInteger(raw.activeIndex) ? raw.activeIndex : -1; } catch(e){} }

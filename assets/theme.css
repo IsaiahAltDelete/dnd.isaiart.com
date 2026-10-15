@@ -309,6 +309,16 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 .card[hidden] { display: none; }
 
+/* the small links that sit off the main shelf */
+.extras {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px;
+  padding: 14px 20px; border-top-width: 4px;
+  font-family: var(--sans); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+}
+.extras-label { font-family: var(--mono); font-size: .6rem; color: rgba(30,26,23,.5); margin-right: 4px; }
+.extras a { color: var(--maroon); text-decoration: none; border-bottom: 1px solid transparent; }
+.extras a:hover, .extras a:focus-visible { border-bottom-color: currentColor; }
+
 .colophon {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;
   padding: 14px 20px; background: var(--parchment);

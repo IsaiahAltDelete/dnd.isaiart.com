@@ -1,0 +1,201 @@
+/* ============ Shared Player's Handbook look (Homebrewery 5ePHB assets) ============
+   Fonts and textures from naturalcrit/homebrewery. Link this file, then build pages as
+   <main><section class="page"><div class="cols">…</div><span class="foot">…</span><span class="pnum">n</span></section></main>
+   Paths are relative to this file, so any page can link ../../assets/phb/phb.css. */
+
+@font-face{font-family:'BookInsanity';src:url(fonts/Bookinsanity.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'BookInsanity';font-weight:bold;src:url('fonts/Bookinsanity Bold.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'BookInsanity';font-style:italic;src:url('fonts/Bookinsanity Italic.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'BookInsanity';font-weight:bold;font-style:italic;src:url('fonts/Bookinsanity Bold Italic.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'ScalySans';src:url('fonts/Scaly Sans.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'ScalySans';font-weight:bold;src:url('fonts/Scaly Sans Bold.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'ScalySans';font-style:italic;src:url('fonts/Scaly Sans Italic.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'ScalySans';font-weight:bold;font-style:italic;src:url('fonts/Scaly Sans Bold Italic.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'ScalySansCaps';src:url('fonts/Scaly Sans Caps.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'MrEaves';src:url('fonts/Mr Eaves Small Caps.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Solbera';src:url('fonts/Solbera Imitation Tweak.woff2') format('woff2');font-display:block}
+@font-face{font-family:'Nodesto';src:url('fonts/Nodesto Caps Condensed.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Walter';src:url('fonts/WalterTurncoat-Regular.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Overpass';src:url('fonts/Overpass Medium.woff2') format('woff2');font-display:swap}
+
+:root{
+  --parch:#EEE5CE; --accent:#E0E5C1; --gold:#C0AD6A; --rule:#9C2B1B; --head:#58180D;
+  --stat:#F2E5B5; --caption:#766649; --foot:#C9AD6A; --ink:#1b1712;
+  --desk:#1d1712; --desk2:#0f0b08; --hi:#d9a73a;
+  --page-w:880px; --pad-x:64px; --base:14.2px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body.phb{margin:0;background:var(--desk);color:var(--ink);
+  background-image:radial-gradient(1200px 700px at 50% -10%,#3a2c1f 0%,transparent 70%),radial-gradient(900px 900px at 50% 120%,var(--desk2) 0%,transparent 70%);
+  background-attachment:fixed;font-family:'BookInsanity',Georgia,serif;font-size:var(--base)}
+.phb a{color:var(--head)}
+.phb :focus-visible{outline:3px solid var(--hi);outline-offset:2px;border-radius:2px}
+.phb .skip{position:absolute;left:-999px;top:8px;background:var(--parch);padding:8px 12px;z-index:99}
+.phb .skip:focus{left:8px}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:0;z-index:50;background:rgba(15,11,8,.92);backdrop-filter:blur(6px);border-bottom:1px solid #45362a}
+.bar-in{max-width:calc(var(--page-w) + 32px);margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:18px;height:48px}
+.bar .mark{font-family:'Nodesto',serif;font-size:24px;color:#efe6cf;letter-spacing:.04em;text-decoration:none;white-space:nowrap}
+.bar .mark span{color:var(--hi)}
+.bar nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
+.bar nav::-webkit-scrollbar{display:none}
+.bar nav a{font-family:'MrEaves',serif;font-size:17px;color:#cfc7b0;text-decoration:none;padding:6px 9px;border-radius:4px;white-space:nowrap}
+.bar nav a:hover,.bar nav a.on{color:#fff;background:#3a2c20}
+.bar a.home{font-family:'MrEaves',serif;font-size:17px;color:var(--hi);text-decoration:none;white-space:nowrap}
+.bar a.home:hover{color:#fff}
+
+/* ---------- pages ---------- */
+.phb main{padding:28px 16px 80px}
+.page{position:relative;isolation:isolate;width:100%;max-width:var(--page-w);margin:0 auto 34px;background:var(--parch) url(tex/parchment.webp) center/cover;
+  padding:56px var(--pad-x) 92px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.06) inset;
+  font-size:var(--base);line-height:1.3;scroll-margin-top:60px}
+.page .cols{column-count:2;column-gap:34px;column-fill:balance}
+.page::after{content:"";position:absolute;left:0;right:0;bottom:0;height:56px;background:url(tex/PHB_footerAccent.png) bottom/100% auto no-repeat;pointer-events:none}
+.page:nth-of-type(even)::after{transform:scaleX(-1)}
+.pnum{position:absolute;bottom:20px;right:14px;font-family:'BookInsanity';font-size:13px;color:var(--foot);z-index:2}
+.foot{position:absolute;bottom:50px;right:74px;font-family:'ScalySans';font-size:11px;letter-spacing:.06em;color:var(--foot);text-transform:uppercase;z-index:2}
+.page:nth-of-type(even) .pnum{right:auto;left:14px}
+.page:nth-of-type(even) .foot{right:auto;left:74px}
+.page [id]{scroll-margin-top:60px}
+/* fixed 8.5x11 page at desktop: footers sit at the bottom of every page */
+@media (min-width:761px){.page:not(.cover){min-height:1139px}}
+
+/* ---------- chapter opener (2024 PHB style): full-bleed painting, feathered into the parchment ---------- */
+.page .opener{margin:-56px calc(-1 * var(--pad-x)) 14px;position:relative}
+.page .opener img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;
+  -webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 100%);mask-image:linear-gradient(to bottom,#000 72%,transparent 100%)}
+.page .opener.short img{aspect-ratio:2/1}
+.page .opener.band img{aspect-ratio:12/5}
+.page .opener[style] img{aspect-ratio:var(--ar)}
+.page h1 .chnum{display:block;font-family:'MrEaves',serif;font-size:21px;letter-spacing:.14em;text-transform:uppercase;color:var(--rule);margin-bottom:2px}
+
+/* ---------- type ---------- */
+.page h1,.page h2,.page h3,.page h4{font-family:'MrEaves',serif;color:var(--head);font-weight:normal;margin:0}
+.page h1{font-size:44px;line-height:1;margin-bottom:8px;column-span:all}
+.page h2{font-size:34px;line-height:1;margin:18px 0 6px;break-after:avoid}
+.page h2:first-child{margin-top:0}
+.page h3{font-size:24px;line-height:1.05;border-bottom:2px solid var(--gold);margin:14px 0 6px;break-after:avoid}
+.page h4{font-size:19px;line-height:1.05;margin:12px 0 3px;break-after:avoid}
+.page h5{font-family:'ScalySansCaps',sans-serif;font-size:16px;font-weight:normal;color:var(--ink);margin:12px 0 5px;break-after:avoid;letter-spacing:.01em}
+.page p{margin:0;line-height:1.3}
+.page p+p{text-indent:1em}
+.page p.noind,.page p.meta+p{text-indent:0}
+.page p+*:not(p){margin-top:10px}
+.page ul,.page ol{margin:6px 0 10px;padding-left:1.3em}
+.page li{margin:2px 0;line-height:1.28}
+.page strong{font-weight:bold;letter-spacing:-.01em}
+.page .lead::first-line{font-variant:small-caps}
+.dropcap::first-letter{float:left;font-family:'Solbera',serif;font-size:118px;line-height:.82;margin:4px 6px -6px -4px;padding-left:40px;margin-left:-40px;
+  color:transparent;background-image:linear-gradient(-45deg,#322814,#998250,#322814);-webkit-background-clip:text;background-clip:text}
+.wide{column-span:all}
+.avoid{break-inside:avoid}
+@media (min-width:761px){.page .colbreak{break-before:column;margin-top:0}}
+
+/* ---------- tables ---------- */
+.page table{width:100%;border-collapse:collapse;font-family:'ScalySans',sans-serif;font-size:13.2px;line-height:1.22;margin:6px 0 12px;break-inside:avoid}
+.page caption,.page h5.tcap{font-family:'MrEaves',serif;font-size:18px;color:var(--head);text-align:left;padding:0 0 3px;caption-side:top;margin:10px 0 0}
+.page th{font-weight:bold;text-align:left;vertical-align:bottom;padding:2px 4px}
+.page td{padding:2px 4px;vertical-align:top}
+.page tbody tr:nth-child(odd){background:var(--accent)}
+.page td.c,.page th.c{text-align:center}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.page .classtable{position:relative;margin:44px -6px 44px;padding:4px 0;break-inside:avoid}
+.classtable .frame{position:relative;z-index:1;background:#fff;border-style:solid;border-image:url(tex/frameBorder.png) 200 / 47px / 18px 12px stretch;padding:2px}
+.classtable::before{content:"";position:absolute;inset:-22px 0;z-index:0;background:url(tex/classTableDecoration.png) top center/contain no-repeat,url(tex/classTableDecoration.png) bottom center/contain no-repeat;opacity:.9;pointer-events:none}
+.classtable table{margin:0;font-size:12.6px}
+
+/* ---------- notes / boxed text ---------- */
+.note{font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.25;background:var(--accent);border:1px solid transparent;
+  border-image:url(tex/noteBorder.png) 12 / 11px / 9px 0 stretch;padding:9px 11px;margin:24px 0;box-shadow:1px 4px 14px #888;break-inside:avoid}
+.note h5{margin:0 0 4px;font-size:15.5px}
+.note p+p{text-indent:0;margin-top:5px}
+.note ul{margin:4px 0 0;padding-left:1.1em}
+.descriptive{font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.45;background:#FAF7EA;border:7px solid transparent;
+  border-image:url(tex/descriptiveBorder.png) 12 stretch;border-image-outset:4px;padding:6px 8px;margin:16px 0;box-shadow:0 0 6px #FAF7EA;break-inside:avoid}
+.descriptive p+p{text-indent:0;margin-top:6px}
+.quote{margin:10px 0 14px;break-inside:avoid}
+.quote p{font-style:italic;line-height:1.5}
+.quote .attr{display:block;text-align:right;font-style:normal;margin-top:2px}
+.quote .attr::before{content:"— "}
+.hr{height:16px;margin:10px auto;width:70%;background:url(tex/horizontalRule.svg) center/100% 100% no-repeat}
+
+/* ---------- magic item (DMG format) ---------- */
+.item{break-inside:avoid;margin:14px 0 12px}
+.item h4{font-size:22px;margin:0}
+.item .meta{font-style:italic;margin:1px 0 4px;text-indent:0}
+.item p{text-indent:0}
+.item p+p{margin-top:5px}
+.item p>strong:first-child,.item p>b:first-child{font-style:italic}
+
+/* ---------- stat block ---------- */
+.monster{font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.24;break-inside:avoid;margin:6px -4px 14px}
+.monster.frame{background-color:var(--stat);background-image:url(tex/parchment-gray.webp);background-blend-mode:overlay;background-size:cover;
+  border-style:solid;border-width:7px 6px;border-image:url(tex/monsterBorderFancy.png) 14 round;border-image-outset:0 2px;padding:6px 10px 10px;box-shadow:1px 4px 14px #888}
+.monster h2,.monster h4{font-family:'MrEaves';font-size:28px;color:var(--head);margin:0;line-height:1;border:0}
+.monster .type{font-style:italic;margin:2px 0 0}
+.monster .tri{height:6px;margin:6px 0;background:url(tex/redTriangle.png) center/100% 100% no-repeat}
+.monster .red{color:var(--head)}
+.monster .red p{margin:1px 0;text-indent:0}
+.monster h3{font-family:'ScalySansCaps';font-size:18px;color:var(--head);border-bottom:1.5px solid var(--head);margin:10px 0 4px}
+.monster p{text-indent:0!important;margin:4px 0}
+.monster p>strong:first-child{font-style:italic}
+
+/* ---------- art ---------- */
+.phb figure{margin:0}
+.art{position:relative;break-inside:avoid;margin:8px 0 14px;padding:18px 20px 8px}
+.art img{display:block;width:82%;height:auto;margin:0 auto;position:relative;z-index:1}
+.art .stain{position:absolute;inset:0;z-index:-1;background:center/100% 100% no-repeat;opacity:.9;pointer-events:none}
+.stain.s1{background-image:url(tex/stain1.webp)} .stain.s3{background-image:url(tex/stain3.webp)}
+.stain.s8{background-image:url(tex/stain8.webp)} .stain.s10{background-image:url(tex/stain10.webp)}
+.artist{font-family:'Walter',cursive;font-size:12.5px;color:var(--caption);text-align:center;margin-top:5px;position:relative;z-index:1}
+.art.sketch img{mix-blend-mode:multiply}
+.art.sm img{width:62%}
+.art.xs img{width:50%}
+
+/* ---------- toc ---------- */
+.toc ul{list-style:none;padding:0;margin:0}
+.toc li{display:flex;align-items:baseline;gap:6px;margin:3px 0}
+.toc li a{color:var(--ink);text-decoration:none}
+.toc li a:hover{text-decoration:underline}
+.toc li .dots{flex:1;border-bottom:2px dotted rgba(0,0,0,.55);transform:translateY(-4px)}
+.toc li.h a{font-family:'MrEaves';font-size:19px;color:var(--head)}
+.toc li.s{padding-left:14px;font-size:13.4px}
+
+/* ---------- cover ---------- */
+/* optional full-bleed cover painting: <img class="cover-art"> + <span class="shade"></span> as first children */
+.cover .cover-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.cover .shade{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,6,10,.82) 0%,rgba(8,6,10,.45) 20%,transparent 34%,transparent 70%,rgba(8,6,10,.55) 84%,rgba(8,6,10,.85) 100%)}
+.cover{padding:0;height:min(1139px,calc(100vw * 1.294));max-height:1139px;overflow:hidden;background:#211812;color:#fff}
+.cover::after{display:none}
+.cover .logo{position:absolute;top:26px;left:0;right:0;text-align:center;font-family:'Nodesto',serif;font-size:22px;letter-spacing:.32em;color:#f3ead2;-webkit-text-stroke:5px #000;paint-order:stroke;z-index:2}
+.cover h1{position:absolute;top:62px;left:0;right:0;margin:0;text-align:center;font-family:'Nodesto',serif;font-size:clamp(64px,12vw,112px);line-height:.9;color:#fff;-webkit-text-stroke:2.5px #000;paint-order:stroke;text-shadow:0 2px 3px rgba(0,0,0,.85),0 4px 14px rgba(0,0,0,.7);font-weight:normal;letter-spacing:.02em;z-index:2;column-span:none}
+.cover .banner{position:absolute;bottom:150px;left:0;z-index:2;width:min(470px,86%);padding:14px 40px 12px 36px;font-family:'Nodesto',serif;font-size:clamp(22px,3.6vw,31px);color:#fff;text-align:left;
+  background:#58180D;clip-path:polygon(0 0,100% 0,93% 50%,100% 100%,0 100%);filter:drop-shadow(2px 2px 2px #000);line-height:1}
+.cover .blurb{position:absolute;bottom:34px;left:0;right:0;margin:0 auto;width:min(620px,86%);text-align:center;font-family:'Overpass',sans-serif;font-size:16px;line-height:1.35;color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke;z-index:2}
+
+/* ---------- responsive / print ---------- */
+@media (max-width:760px){
+  :root{--pad-x:20px;--base:15px}
+  .phb main{padding:14px 8px 60px}
+  .page{padding:34px var(--pad-x) 84px}
+  .page .cols,.monster.wide{column-count:1}
+  .page h1{font-size:38px}
+  .bar .mark{display:none}
+  .bar nav{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent);padding-right:22px}
+  .page .opener{margin:-34px calc(-1 * var(--pad-x)) 12px}
+  .art img{max-width:230px}
+  .classtable{margin:24px -4px}
+  .cover{height:calc(100vw * 1.5)}
+  .cover .banner{bottom:118px;font-size:22px;padding:10px 30px 8px 22px}
+  .cover .blurb{font-size:13.5px;bottom:22px;-webkit-text-stroke:3px #000}
+}
+@media print{
+  body.phb{background:#fff}
+  .bar,.noprint{display:none!important}
+  .phb main{padding:0}
+  .page{box-shadow:none;margin:0 auto;break-after:page;max-width:none;width:8.5in}
+}

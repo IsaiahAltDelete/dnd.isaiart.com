@@ -78,15 +78,15 @@
   </div>
 
   <section class="card">
-    <div class="sec-head"><span class="rn">&#9670;</span><h2>Ways back</h2><span class="ct">09</span></div>
+    <div class="sec-head"><span class="rn">&#9670;</span><h2>Ways back</h2><span class="ct">10</span></div>
     <p class="sec-note">The places most people were actually trying to reach.</p>
     <div class="grid">
       <a class="item" href="/" style="--f:'Cinzel Decorative',serif;--c:#58180D;--fs:1.04rem">
         <span class="n">00</span><span><span class="t">The Front Page</span><span class="d">Everything, indexed</span></span><span class="go">&#8594;</span></a>
       <a class="item" href="/cs/" style="--f:'Special Elite',monospace;--c:#2B3A44;--fs:1.02rem">
-        <span class="n">01</span><span><span class="t">Character Sheet</span><span class="d">Digital record &middot; roll and track</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/characters/" style="--f:'IM Fell English SC',serif;--c:#4A1D5E;--fs:1.2rem">
-        <span class="n">02</span><span><span class="t">The Archives of the Forgotten</span><span class="d">Every hero we have played</span></span><span class="go">&#8594;</span></a>
+        <span class="n">01</span><span><span class="t">Characters</span><span class="d">Sheet &amp; roster</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/loom-of-fates/" style="--f:'Cinzel Decorative',serif;--c:#23306E;--fs:1.04rem">
+        <span class="n">02</span><span><span class="t">The Loom of Fates</span><span class="d">Character generator</span></span><span class="go">&#8594;</span></a>
       <a class="item" href="/npcs/" style="--f:'Almendra',serif;--c:#6A4A12;--fs:1.28rem">
         <span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives</span></span><span class="go">&#8594;</span></a>
       <a class="item" href="/monsters/" style="--f:'Creepster',cursive;--c:#7A1215;--fs:1.42rem;--ls:.05em">
@@ -99,6 +99,8 @@
         <span class="n">07</span><span><span class="t">The Handbooks</span><span class="d">The whole shelf</span></span><span class="go">&#8594;</span></a>
       <a class="item" href="/planes/" style="--f:'Italiana',serif;--c:#23306E;--fs:1.3rem;--ls:.06em">
         <span class="n">08</span><span><span class="t">Cosmology</span><span class="d">The planes of the Realms</span></span><span class="go">&#8594;</span></a>
+      <a class="item" href="/dice/" style="--f:'Rye',serif;--c:#8A3A12;--fs:1.08rem">
+        <span class="n">09</span><span><span class="t">Dice Roller</span><span class="d">Physical 3D dice</span></span><span class="go">&#8594;</span></a>
     </div>
   </section>
 
@@ -131,11 +133,11 @@
   if (asked && wrong) { wrong.textContent = path; asked.hidden = false; }
 
   var KNOWN = [
-    ['/cs', 'Character Sheet'], ['/characters', 'The Archives of the Forgotten'],
-    ['/npcs', 'NPC Codex'], ['/character-forge', 'Character Forge'],
-    ['/loom-of-fates', 'The Loom of Fates'], ['/newchar', 'D20 Character Forge'],
+    ['/cs', 'Characters'], ['/npcs', 'NPC Codex'],
+    ['/loom-of-fates', 'The Loom of Fates'], ['/dice', 'Dice Roller'],
     ['/artifacts', 'Arcane Artifacts'], ['/monsters', 'Monster Generator'],
-    ['/cities', 'Faerûn City Generator'], ['/humans', 'Humans of Faerûn'],
+    ['/cities', 'Faerûn City Generator'], ['/spelljammer', 'Spelljammer Worlds'],
+    ['/humans', 'Humans of Faerûn'],
     ['/phb/wizard', 'Wizard Quick Reference'],
     ['/planes', 'Cosmology'], ['/handbooks', 'The Handbooks'],
     ['/handbooks/archmage-handbook', 'The Archmage Codex'],
@@ -143,10 +145,10 @@
     ['/handbooks/arcanum-expanded', 'The Weave & Beyond'],
     ['/handbooks/dnd-5e-megabook', 'The 5e Megabook'],
     ['/handbooks/wizards', 'Forgotten Realms Wizard Handbook'],
-    ['/handbooks/sims4', 'The Sim'], ['/handbooks/crownofkarsus', 'Crown of Karsus'],
+    ['/handbooks/sims4', 'The Sim'],
     ['/handbooks/artifacts', "The Arcanist's Compendium"],
     ['/npcs/ketheric', 'Ketheric Thorm'], ['/npcs/gortash', 'Lord Enver Gortash'],
-    ['/npcs/orin', 'Orin the Red']
+    ['/npcs/orin', 'Orin the Red'], ['/fousio', 'Fousio'], ['/vision', 'Vision']
   ];
 
   function dist(a, b) {
