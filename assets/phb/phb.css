@@ -3,6 +3,97 @@
    <main><section class="page"><div class="cols">…</div><span class="foot">…</span><span class="pnum">n</span></section></main>
    Paths are relative to this file, so any page can link ../../assets/phb/phb.css. */
 
+/* ============ TOOL & SHELL KIT: class reference (rules at the end of this file) ============
+   Book-styled controls, a tool page frame, generated-output helpers, a floating card and
+   utilities, so generators and the site shell match the handbook pages.
+   * Everything is additive. Component rules are scoped under body.phb (specificity 0,2,0+),
+     so they beat the generic `.page p / ul / li / h1-h5` rules above. Override from a page
+     <style> with `.phb .x` or `.page .x`.
+   * New tokens: --phb-btn --phb-btn-hi --phb-btn-lo --phb-btn-ink (button reds and text),
+     --phb-line --phb-line-soft (thin red-brown borders), --phb-field (control fill),
+     --phb-ring (focus outline). Old tokens (--head --gold --accent --parch --ink --caption) still apply.
+   * Generic names that existing pages also use: .roster (Loom of Fates), .kv (cs), .stat,
+     .chips, .foot/.item/.skip (theme.css). Drop or rename the page's old rule when adopting the kit.
+   * Mobile (<=760px): controls grow to 44px tall with 16px text (no iOS zoom), toolbars wrap,
+     tabs scroll sideways, ability boxes go 3 across, split layouts stack.
+
+   BUTTONS
+   .phb-btn ............ primary: deep red, parchment text, MrEaves, bevel. <button>, <a> or <label>.
+                         <button class="phb-btn" type="button">Conjure</button>
+   .phb-btn.ghost ...... outlined red-brown on parchment (light outline inside .bar).
+   .phb-btn.sm / .lg ... small (28px) / large call to action (46px).  <button class="phb-btn lg">&#9670; Forge &#9670;</button>
+   .phb-btn.block ...... full width.
+   .phb-btn.icon ....... square; holds an inline <svg>, a glyph or an icon-font <i>. Needs aria-label.
+                         <button class="phb-btn icon ghost" type="button" aria-label="Save">&#9734;</button>
+   States: :disabled / [aria-disabled=true] fade; [aria-pressed=true] or .on reads as pressed in.
+   .phb-pager .......... prev / indicator / next row.  <div class="phb-pager"><button class="phb-btn ghost sm icon" aria-label="Previous">&lsaquo;</button><span class="ind">3 / 9</span><button ...>&rsaquo;</button></div>
+
+   FORM CONTROLS
+   .phb-field .......... label + control stacked. Label is a <label> child or a .lbl span; .hint is help text.
+                         <div class="phb-field"><label for="cr">Challenge</label><select id="cr">...</select></div>
+                         <label class="phb-field"><span class="lbl">Prefix</span><input type="text"></label>
+   .phb-field.inline ... label left of control.
+   .phb-input / .phb-select  the same control look without a .phb-field wrapper. Add .search for a magnifier.
+   .phb-check .......... checkbox or radio, book-styled.  <label class="phb-check"><input type="checkbox"> Legendary actions</label>
+   .phb-toolbar ........ wrapping row of fields and buttons, bottoms aligned. Children: .grow (fill),
+                         .push (shove right), <span class="sep"></span> (divider). .phb-toolbar.center centers.
+                         <div class="phb-toolbar"><div class="phb-field">...</div><button class="phb-btn">Go</button></div>
+   .phb-tabs ........... underlined MrEaves tab strip; selected tab = [aria-selected=true], [aria-current], .on or .active.
+                         Styling only: the page's own script swaps panels and aria-selected.
+                         <div class="phb-tabs" role="tablist"><button role="tab" aria-selected="true">Overview</button><button role="tab" aria-selected="false">Districts</button></div>
+   .phb-seg ............ joined toggle buttons; selected = [aria-pressed=true], [aria-checked=true], .on or .active.
+                         <div class="phb-seg"><button aria-pressed="true">Village</button><button aria-pressed="false">Town</button></div>
+   .phb-details ........ collapsible section with a red triangle marker.  <details class="phb-details"><summary>Options</summary>...</details>
+   .phb-keys ........... keyboard hint line; <kbd> inside is styled (also .phb-kbd anywhere).  <p class="phb-keys"><kbd>Space</kbd> roll</p>
+
+   TOOL PAGE FRAME
+   .page.tool .......... a parchment page that holds an app: no fixed 8.5x11 min-height, footer swoosh kept.
+   .page.tool.broad .... widens to 1160px for app + sidebar layouts.
+                         <section class="page tool" id="tool">...<span class="foot">Monster Maker</span><span class="pnum">1</span></section>
+   .tool-head .......... title block: MrEaves title, italic .sub, red tapered rule; optional .actions at right.
+                         <header class="tool-head"><h1>Monster Maker</h1><p class="sub">A bestiary that writes itself</p><div class="actions">...buttons...</div></header>
+   .tool-empty ......... empty-state panel on a watercolor wash; optional .sigil drop-cap letter, <kbd> styled.
+                         <div class="tool-empty"><span class="sigil" aria-hidden="true">M</span><h3>Awaiting Conjuration</h3><p>Choose and roll.</p></div>
+   .tool-split ......... output + sidebar grid (sidebar 250px, set --aside to change); .aside-left puts it first. Stacks on mobile.
+                         <div class="tool-split"><div>output</div><aside class="roster">...</aside></div>
+
+   GENERATED OUTPUT  (stat blocks: use the existing .monster.frame above)
+   .abil-row + .abil ... six ability boxes like the character sheet: .name, big .score, .mod in an oval tab, optional .sub.
+                         .abil-row.mod-first swaps them (big modifier, score in the oval). .abil-row.three = 3 across always.
+                         <div class="abil-row"><div class="abil"><span class="name">Str</span><span class="score">16</span><span class="mod">+3</span></div> x6 </div>
+   .stat-row + .stat ... vital boxes (AC/HP/Speed): .val, .name label, optional <small>/.sub; .stat.shield shapes AC, .stat.x2 is double width.
+                         <div class="stat-row"><div class="stat shield"><span class="val">15</span><span class="name">Armor Class</span><small>natural armor</small></div></div>
+   .kv ................. key/value list in ScalySans with PHB table stripes. .kv.ruled = dotted rules instead.
+                         <dl class="kv"><dt>Alignment</dt><dd>Chaotic good</dd><dt>Age</dt><dd>212</dd></dl>
+                         <ul class="kv"><li><span class="k">Alignment</span><span class="v">Chaotic good</span></li></ul>
+   .chips .............. small-caps tags separated by gold diamonds (no pills). Interactive: <li><button aria-pressed>
+                         (keep the <li>, or the diamond lands inside the button's underline).
+                         <ul class="chips"><li>Undead</li><li>Swamp</li><li>CR 5</li></ul>
+   .roster ............. sidebar list of saved items in the green PHB sidebar box. Heading h4/h5/.roster-h (+ .ct count);
+                         rows are li or .roster-item holding a .pick (a or button, <small> sub-line) and an optional .del button;
+                         current row = .on / .active / [aria-current]; .empty for the empty message. --roster-h caps the list height.
+                         Also works as <details class="roster"><summary>Saved <span class="ct">3</span></summary>...</details>.
+                         .roster.plain drops the box; .roster.sticky sticks under the top bar. Keeps a 10px top
+                         margin because the note border is drawn 9px outside the box.
+                         <aside class="roster"><h5>Saved <span class="ct">2</span></h5><ul><li class="on"><button class="pick">Bog Hag<small>CR 5 &middot; Fey</small></button><button class="del" aria-label="Delete Bog Hag">&times;</button></li></ul></aside>
+   .phb-grid ........... responsive auto-fit grid (--min column width, default 220px; --gap).
+   .phb-toast .......... single fixed toast, shown with .show.  <div class="phb-toast" role="status" aria-live="polite"></div>
+   .phb-toasts ......... fixed stack; every child is a toast that fades in.  <div class="phb-toasts" aria-live="polite"></div>
+
+   SITE SHELL
+   body.phb.shell ...... page laid over a fixed backdrop: plain dark body, main (and .over) sit above the backdrop.
+   .phb-backdrop ....... fixed full-viewport layer at z-index 0 (e.g. the pixel-world <canvas>).
+   .page.float ......... floating parchment card: translucent frame that lets the backdrop show through,
+                         burnished edges, deep shadow, no fixed min-height. The frame is a spread shadow
+                         (--float-frame: 9px, 6px on phones), so it takes no layout space. Combines with .tool.
+                         On phones .shell main gets 16px side gutters.
+                         <body class="phb shell"><canvas class="phb-backdrop"></canvas><main><section class="page float">...</section></main></body>
+
+   UTILITIES (use !important so they win)
+   .center (text-align) .muted (caption brown) .mt-0 .mt-1 .mt-2 .mt-3 .mt-4 .mt-5 (0/4/8/14/22/34px top margin)
+   .hide-mobile (hidden <=760px) .show-mobile (hidden >760px) .sr-only (visually hidden, still read aloud)
+   ============================================================================================ */
+
 @font-face{font-family:'BookInsanity';src:url(fonts/Bookinsanity.woff2) format('woff2');font-display:swap}
 @font-face{font-family:'BookInsanity';font-weight:bold;src:url('fonts/Bookinsanity Bold.woff2') format('woff2');font-display:swap}
 @font-face{font-family:'BookInsanity';font-style:italic;src:url('fonts/Bookinsanity Italic.woff2') format('woff2');font-display:swap}
@@ -199,3 +290,268 @@ body.phb{margin:0;background:var(--desk);color:var(--ink);
   .phb main{padding:0}
   .page{box-shadow:none;margin:0 auto;break-after:page;max-width:none;width:8.5in}
 }
+
+/* =====================================================================================
+   TOOL & SHELL KIT (additive; see the class reference at the top of this file)
+   ===================================================================================== */
+:root{
+  --phb-btn:#58180D; --phb-btn-hi:#722617; --phb-btn-lo:#3e1007; --phb-btn-ink:#F4ECD7;
+  --phb-line:rgba(88,24,13,.55); --phb-line-soft:rgba(88,24,13,.2);
+  --phb-field:rgba(255,251,238,.62); --phb-ring:#58180D;
+}
+
+/* ---------- buttons ---------- */
+.phb .phb-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;margin:0;padding:6px 16px 5px;
+  font-family:'MrEaves',serif;font-size:18px;font-weight:normal;font-style:normal;line-height:1;letter-spacing:.02em;text-indent:0;
+  color:var(--phb-btn-ink);text-decoration:none;white-space:nowrap;vertical-align:middle;cursor:pointer;user-select:none;-webkit-user-select:none;
+  background:linear-gradient(180deg,var(--phb-btn-hi) 0%,var(--phb-btn) 55%,var(--phb-btn-lo) 100%);
+  border:1px solid #2a0903;border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,222,184,.24),inset 0 -2px 0 rgba(0,0,0,.24),0 1px 2px rgba(40,18,8,.38);
+  text-shadow:0 1px 0 rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent;transition:filter .12s,transform .06s,box-shadow .12s}
+.phb .phb-btn:hover{filter:brightness(1.14)}
+.phb .phb-btn:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.4)}
+.phb .phb-btn[aria-pressed="true"],.phb .phb-btn.on{filter:brightness(.9);box-shadow:inset 0 2px 5px rgba(0,0,0,.5)}
+.phb .phb-btn svg{width:1em;height:1em;flex:none;fill:currentColor}
+.phb .phb-btn.ghost{color:var(--head);background:transparent;border-color:var(--phb-line);box-shadow:none;text-shadow:none}
+.phb .phb-btn.ghost:hover{filter:none;background:rgba(88,24,13,.08);border-color:var(--head)}
+.phb .phb-btn.ghost[aria-pressed="true"],.phb .phb-btn.ghost.on{filter:none;color:var(--phb-btn-ink);background:var(--head);border-color:var(--head);box-shadow:inset 0 2px 4px rgba(0,0,0,.35)}
+.phb .phb-btn.sm{min-height:28px;padding:4px 10px 3px;font-size:15.5px;gap:5px}
+.phb .phb-btn.lg{min-height:46px;padding:9px 28px 7px;font-size:23px;letter-spacing:.04em}
+.phb .phb-btn.block{display:flex;width:100%}
+.phb .phb-btn.icon{width:36px;min-width:36px;padding:0;font-size:19px}
+.phb .phb-btn.icon.sm{width:28px;min-width:28px;font-size:16px}
+.phb .phb-btn:disabled,.phb .phb-btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed;filter:grayscale(.35);transform:none}
+.bar .phb-btn.ghost{color:#efe6cf;border-color:rgba(239,230,207,.32)}
+.bar .phb-btn.ghost:hover{background:#3a2c20;border-color:rgba(239,230,207,.55)}
+.phb .phb-pager{display:inline-flex;align-items:center;gap:6px}
+.phb .phb-pager .ind{min-width:5.5em;text-align:center;font-family:'ScalySans',sans-serif;font-style:italic;font-size:13.5px;color:var(--caption)}
+
+/* ---------- form controls ---------- */
+.phb .phb-field{display:flex;flex-direction:column;gap:3px;min-width:0;margin:0}
+.phb .phb-field > label,.phb .phb-field > .lbl{font-family:'ScalySansCaps',sans-serif;font-size:13.5px;line-height:1.1;letter-spacing:.04em;color:var(--head)}
+.phb .phb-field .hint{font-family:'ScalySans',sans-serif;font-style:italic;font-size:12px;line-height:1.2;color:var(--caption);text-indent:0}
+.phb .phb-field.inline{flex-direction:row;align-items:center;gap:8px}
+.phb .phb-field.inline > label,.phb .phb-field.inline > .lbl{flex:none}
+.phb .phb-field :where(select,textarea,input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=button],[type=submit],[type=reset],[type=file],[type=hidden])),
+.phb .phb-input,.phb .phb-select{display:block;width:100%;min-width:0;min-height:36px;margin:0;padding:7px 10px 6px;
+  font-family:'ScalySans',sans-serif;font-size:14px;font-weight:normal;font-style:normal;line-height:1.2;color:var(--ink);
+  background-color:var(--phb-field);border:1px solid var(--phb-line);border-radius:2px;box-shadow:inset 0 1px 2px rgba(60,30,10,.16);
+  -webkit-appearance:none;appearance:none;transition:border-color .12s,box-shadow .12s}
+.phb .phb-field :where(select),.phb .phb-select{padding-right:30px;cursor:pointer;text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 7'%3E%3Cpath d='M0 0h10L5 7z' fill='%2358180D'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;background-size:10px 7px}
+.phb .phb-field :where(select) option,.phb .phb-select option{background:#F7F1DE;color:var(--ink)}
+.phb .phb-field :where(textarea),.phb textarea.phb-input{min-height:84px;resize:vertical;line-height:1.35}
+.phb .phb-field :where(input[type=search]),.phb .phb-input.search{padding-left:31px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='6.5' cy='6.5' r='5' fill='none' stroke='%2358180D' stroke-width='1.8'/%3E%3Cpath d='M10.3 10.3L15 15' stroke='%2358180D' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:10px center;background-size:14px 14px}
+.phb .phb-field :where(input,textarea)::placeholder,.phb .phb-input::placeholder{color:rgba(27,23,18,.45);font-style:italic;opacity:1}
+.phb .phb-field :where(select,textarea,input):focus,.phb .phb-input:focus,.phb .phb-select:focus{border-color:var(--head);box-shadow:inset 0 1px 2px rgba(60,30,10,.16),0 0 0 3px rgba(192,173,106,.45)}
+.phb .phb-field :where(select,textarea,input):focus-visible,.phb .phb-input:focus-visible,.phb .phb-select:focus-visible{outline:2px solid var(--phb-ring);outline-offset:1px;border-radius:2px}
+.phb .phb-field :where(select,textarea,input):disabled,.phb .phb-input:disabled,.phb .phb-select:disabled{opacity:.5;cursor:not-allowed}
+.phb .phb-field :where(input[type=range]){width:100%;accent-color:var(--head)}
+
+.phb .phb-check{display:inline-flex;align-items:center;gap:8px;min-height:36px;margin:0;font-family:'ScalySans',sans-serif;font-size:13.6px;line-height:1.2;color:var(--ink);cursor:pointer;text-indent:0}
+.phb .phb-check input{-webkit-appearance:none;appearance:none;flex:none;width:17px;height:17px;margin:0;cursor:pointer;
+  background:#F5EEDA no-repeat center/12px 12px;border:1.5px solid var(--head);border-radius:2px;box-shadow:inset 0 1px 2px rgba(60,30,10,.2)}
+.phb .phb-check input[type=checkbox]:checked{background-color:var(--head);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.4l2.7 2.7L10.2 3' fill='none' stroke='%23F4ECD7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.phb .phb-check input[type=radio]{border-radius:50%}
+.phb .phb-check input[type=radio]:checked{background:var(--head);box-shadow:inset 0 0 0 3px #F5EEDA}
+.phb .phb-check input:disabled,.phb .phb-check input:disabled + *{opacity:.5;cursor:not-allowed}
+.phb .phb-check input:focus-visible{outline:2px solid var(--phb-ring);outline-offset:2px;border-radius:2px}
+.phb .phb-check input[type=radio]:focus-visible{border-radius:50%}
+
+.phb .phb-toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 12px;margin:10px 0 16px}
+.phb .phb-toolbar > .phb-field{flex:1 1 150px}
+.phb .phb-toolbar > .phb-check,.phb .phb-toolbar > .phb-btn,.phb .phb-toolbar > .phb-seg,.phb .phb-toolbar > .phb-pager{flex:none}
+.phb .phb-toolbar > .grow{flex:1 1 auto}
+.phb .phb-toolbar > .push{margin-left:auto}
+.phb .phb-toolbar > .sep{align-self:stretch;width:1px;margin:2px 2px;background:var(--phb-line-soft)}
+.phb .phb-toolbar.center{justify-content:center}
+
+/* tabs: the strip's gold rule is an inset shadow so the scroller does not clip the red marker */
+.phb .phb-tabs{display:flex;gap:2px;margin:6px 0 14px;padding:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;box-shadow:inset 0 -2px 0 var(--gold)}
+.phb .phb-tabs::-webkit-scrollbar{display:none}
+.phb .phb-tabs > a,.phb .phb-tabs > button{position:relative;flex:none;margin:0;padding:7px 12px 7px;border:0;border-radius:3px 3px 0 0;background:none;
+  font-family:'MrEaves',serif;font-size:19px;line-height:1;color:#6d5440;text-decoration:none;white-space:nowrap;cursor:pointer}
+.phb .phb-tabs > a:hover,.phb .phb-tabs > button:hover{color:var(--head);background:rgba(88,24,13,.06)}
+.phb .phb-tabs > [aria-selected="true"],.phb .phb-tabs > [aria-current]:not([aria-current="false"]),.phb .phb-tabs > .on,.phb .phb-tabs > .active{color:var(--head)}
+.phb .phb-tabs > [aria-selected="true"]::after,.phb .phb-tabs > [aria-current]:not([aria-current="false"])::after,.phb .phb-tabs > .on::after,.phb .phb-tabs > .active::after{
+  content:"";position:absolute;left:6px;right:6px;bottom:0;height:3px;background:var(--head);border-radius:2px 2px 0 0}
+
+.phb .phb-seg{display:inline-flex;max-width:100%;overflow-x:auto;scrollbar-width:none;vertical-align:middle;border:1px solid var(--phb-line);border-radius:3px;background:var(--phb-field)}
+.phb .phb-seg::-webkit-scrollbar{display:none}
+.phb .phb-seg > a,.phb .phb-seg > button{flex:none;min-height:34px;margin:0;padding:6px 13px 5px;border:0;border-left:1px solid var(--phb-line-soft);border-radius:0;background:none;
+  font-family:'ScalySansCaps',sans-serif;font-size:13.5px;line-height:1.1;letter-spacing:.03em;color:var(--head);text-decoration:none;white-space:nowrap;cursor:pointer}
+.phb .phb-seg > :first-child{border-left:0}
+.phb .phb-seg > a:hover,.phb .phb-seg > button:hover{background:rgba(88,24,13,.08)}
+.phb .phb-seg > [aria-pressed="true"],.phb .phb-seg > [aria-checked="true"],.phb .phb-seg > .on,.phb .phb-seg > .active{color:var(--phb-btn-ink);background:var(--head)}
+
+.phb .phb-details{margin:10px 0;border-top:1px solid var(--phb-line-soft);border-bottom:1px solid var(--phb-line-soft)}
+.phb .phb-details[open]{padding-bottom:10px}
+.phb .phb-details > summary,.phb details.roster > summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer}
+.phb .phb-details > summary{padding:8px 2px 7px;font-family:'MrEaves',serif;font-size:19px;line-height:1.1;color:var(--head)}
+.phb .phb-details > summary::-webkit-details-marker,.phb details.roster > summary::-webkit-details-marker{display:none}
+.phb .phb-details > summary::before,.phb details.roster > summary::before{content:"";flex:none;width:0;height:0;border-left:7px solid var(--head);border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .15s}
+.phb .phb-details[open] > summary::before,.phb details.roster[open] > summary::before{transform:rotate(90deg)}
+
+.phb .phb-keys{font-family:'ScalySans',sans-serif;font-size:12.5px;line-height:1.9;color:var(--caption);text-indent:0}
+.phb .phb-keys kbd,.phb .tool-empty kbd,.phb kbd.phb-kbd{display:inline-block;min-width:1.9em;margin:0 1px;padding:2px 6px 1px;font-family:'ScalySans',sans-serif;font-size:11.5px;font-style:normal;line-height:1.2;text-align:center;
+  color:var(--ink);background:rgba(255,251,238,.7);border:1px solid var(--phb-line);border-bottom-width:2px;border-radius:3px}
+
+/* focus: a dark red ring reads on parchment (the global gold ring is kept on the dark bar).
+   :where() keeps this at 0,2,0 so the variants below can refine it */
+.phb :where(.phb-btn,.phb-tabs > a,.phb-tabs > button,.phb-seg > a,.phb-seg > button,.chips button,.chips a,.roster button,.roster a,.phb-details > summary,details.roster > summary):focus-visible{outline:2px solid var(--phb-ring);outline-offset:2px;border-radius:3px}
+.phb .bar .phb-btn:focus-visible{outline-color:var(--hi)}
+/* tabs and segments sit in sideways scrollers that would clip an outside ring: draw it inside instead */
+.phb .phb-tabs > a:focus-visible,.phb .phb-tabs > button:focus-visible,.phb .phb-seg > a:focus-visible,.phb .phb-seg > button:focus-visible{outline-offset:-2px;box-shadow:inset 0 0 0 4px var(--phb-btn-ink)}
+
+/* ---------- tool page frame ---------- */
+@media (min-width:761px){.page.tool:not(.cover),.page.float:not(.cover){min-height:0}}
+.page.tool.broad{max-width:1160px}
+.phb .tool-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:18px;align-items:end;margin:0 0 16px}
+.phb .tool-head > *{grid-column:1;min-width:0}
+.phb .tool-head > .actions{grid-column:2;grid-row:1 / span 2;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:0}
+.phb .tool-head h1,.phb .tool-head h2{margin:0;font-family:'MrEaves',serif;font-weight:normal;font-size:44px;line-height:.95;color:var(--head);border:0}
+.phb .tool-head .sub{margin:4px 0 0;font-family:'BookInsanity',serif;font-style:italic;font-size:15px;line-height:1.3;color:#5b4a35;text-indent:0}
+.phb .tool-head::after{content:"";grid-column:1 / -1;height:6px;margin-top:9px;background:url(tex/redTriangle.png) center/100% 100% no-repeat}
+.phb .tool-empty{position:relative;isolation:isolate;margin:14px 0;padding:40px 24px 34px;text-align:center}
+.phb .tool-empty::before{content:"";position:absolute;inset:0 8%;z-index:-1;background:url(tex/stain3.webp) center/100% 100% no-repeat;opacity:.5;pointer-events:none}
+.phb .tool-empty .sigil{display:block;margin:0 auto 6px;font-family:'Solbera',serif;font-size:100px;line-height:.9;color:transparent;
+  background-image:linear-gradient(-45deg,#322814,#998250,#322814);-webkit-background-clip:text;background-clip:text}
+.phb .tool-empty h2,.phb .tool-empty h3,.phb .tool-empty h4{margin:0 0 6px;font-family:'MrEaves',serif;font-weight:normal;font-size:28px;line-height:1.05;color:var(--head);border:0}
+.phb .tool-empty p{max-width:44ch;margin:0 auto;text-indent:0;font-style:italic}
+.phb .tool-empty p + p,.phb .tool-empty p + .phb-keys{margin-top:10px}
+.phb .tool-empty .phb-keys{font-style:normal}
+.phb .tool-split{display:grid;grid-template-columns:minmax(0,1fr) var(--aside,250px);gap:26px;align-items:start}
+.phb .tool-split.aside-left{grid-template-columns:var(--aside,250px) minmax(0,1fr)}
+
+/* ---------- generated output ---------- */
+.phb .abil-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px 10px;margin:10px 0 24px;break-inside:avoid}
+.phb .abil-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.phb .abil{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0;padding:7px 4px 18px;text-align:center;
+  background:rgba(255,251,238,.45);border:1.5px solid var(--head);border-radius:7px 7px 16px 16px / 7px 7px 12px 12px;
+  box-shadow:inset 0 0 0 2px rgba(238,229,206,.9),inset 0 0 0 3px rgba(88,24,13,.28)}
+.phb .abil .name{font-family:'ScalySansCaps',sans-serif;font-size:12.5px;line-height:1;letter-spacing:.07em;color:var(--head)}
+.phb .abil .score,.phb .abil-row.mod-first .abil .mod{margin-top:3px;font-family:'BookInsanity',serif;font-size:27px;font-weight:normal;line-height:1.05;color:var(--ink)}
+.phb .abil .mod,.phb .abil-row.mod-first .abil .score{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);min-width:44px;margin:0;padding:3px 8px 2px;
+  font-family:'ScalySans',sans-serif;font-size:13.5px;font-weight:bold;line-height:1.1;color:var(--ink);background:#F3ECD8;border:1.5px solid var(--head);border-radius:999px}
+.phb .abil-row.mod-first .abil .mod{position:static;transform:none;order:1;min-width:0;padding:0;background:none;border:0}
+.phb .abil .sub{order:2;margin-top:1px;font-family:'ScalySans',sans-serif;font-size:11px;line-height:1.15;color:var(--caption)}
+
+.phb .stat-row{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 14px}
+.phb .stat{flex:1 1 92px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:7px 8px 7px;text-align:center;
+  background:rgba(255,251,238,.45);border:1.5px solid var(--head);border-radius:4px;box-shadow:inset 0 0 0 2px rgba(238,229,206,.9),inset 0 0 0 3px rgba(88,24,13,.28)}
+.phb .stat.x2{flex-grow:2}
+.phb .stat.shield{border-radius:5px 5px 50% 50% / 5px 5px 34% 34%;padding-bottom:13px}
+.phb .stat .val{font-family:'BookInsanity',serif;font-size:24px;line-height:1.05;color:var(--ink)}
+.phb .stat .name{margin-top:2px;font-family:'ScalySansCaps',sans-serif;font-size:11.5px;line-height:1.1;letter-spacing:.06em;color:var(--head)}
+.phb .stat small,.phb .stat .sub{font-family:'ScalySans',sans-serif;font-style:italic;font-size:11px;line-height:1.15;color:var(--caption)}
+
+.phb .kv{margin:6px 0 12px;padding:0;font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.25;break-inside:avoid}
+.phb dl.kv{display:grid;grid-template-columns:minmax(6.5em,max-content) minmax(0,1fr)}
+.phb dl.kv > dt,.phb dl.kv > dd{margin:0;padding:3px 6px}
+.phb dl.kv > dt,.phb .kv > li > .k{font-weight:bold;color:var(--head)}
+.phb dl.kv > dt:nth-of-type(odd),.phb dl.kv > dd:nth-of-type(odd),.phb .kv > li:nth-child(odd){background:var(--accent)}
+.phb ul.kv,.phb ol.kv{list-style:none}
+.phb .kv > li{display:flex;gap:12px;margin:0;padding:3px 6px;line-height:1.25}
+.phb .kv > li > .k{flex:0 0 auto;min-width:7em}
+.phb .kv > li > .v{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.phb .kv.ruled > dt,.phb .kv.ruled > dd,.phb .kv.ruled > li{background:none;border-bottom:1px dotted rgba(88,24,13,.35)}
+
+.phb .chips{display:flex;flex-wrap:wrap;align-items:baseline;margin:4px 0 10px;padding:0;list-style:none;
+  font-family:'ScalySansCaps',sans-serif;font-size:13.5px;line-height:1.4;letter-spacing:.03em;color:var(--head)}
+.phb .chips > *{margin:0;padding:0}
+.phb .chips > * + *::before{content:"\25C6";display:inline-block;margin:0 .6em;font-family:sans-serif;font-size:.55em;vertical-align:.22em;color:var(--gold)}
+.phb .chips button,.phb .chips a{margin:0;padding:2px 0 1px;font:inherit;letter-spacing:inherit;color:inherit;text-decoration:none;background:none;border:0;border-bottom:2px solid transparent;cursor:pointer}
+.phb .chips button:hover,.phb .chips a:hover{border-bottom-color:var(--gold)}
+.phb .chips [aria-pressed="true"],.phb .chips button.on,.phb .chips a.on,.phb .chips button.active,.phb .chips a.active{color:var(--ink);border-bottom-color:var(--head)}
+
+/* the note border image is drawn 9px outside the box (border-image-outset), hence the top margin */
+.phb .roster{margin:10px 0 18px;padding:9px 11px;font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.25;
+  background:var(--accent);border:1px solid transparent;border-image:url(tex/noteBorder.png) 12 / 11px / 9px 0 stretch;box-shadow:1px 4px 14px #888}
+.phb .roster > h4,.phb .roster > h5,.phb .roster .roster-h,.phb details.roster > summary{display:flex;align-items:baseline;gap:8px;margin:0 0 5px;padding:0;
+  font-family:'ScalySansCaps',sans-serif;font-size:15.5px;font-weight:normal;line-height:1.15;color:var(--ink);border:0}
+.phb .roster > h4 ~ h4,.phb .roster > h5 ~ h5,.phb .roster .roster-h ~ .roster-h{margin-top:12px}
+.phb .roster .ct{margin-left:auto;font-family:'ScalySans',sans-serif;font-style:italic;font-size:12px;color:var(--caption);white-space:nowrap}
+.phb .roster ul,.phb .roster ol,.phb .roster .roster-list{max-height:var(--roster-h,none);margin:0;padding:0;list-style:none;overflow-y:auto}
+.phb .roster li,.phb .roster .roster-item{display:flex;align-items:stretch;gap:2px;margin:0;border-top:1px solid rgba(88,24,13,.14);line-height:1.2}
+.phb .roster li:first-child,.phb .roster .roster-item:first-child{border-top:0}
+.phb .roster :is(li,.roster-item) > a,.phb .roster :is(li,.roster-item) > button:not(.del),.phb .roster .pick{flex:1 1 auto;display:block;min-width:0;margin:0;padding:6px 6px 5px;
+  font:inherit;text-align:left;color:var(--ink);text-decoration:none;background:none;border:0;border-radius:2px;cursor:pointer}
+.phb .roster :is(li,.roster-item) > a:hover,.phb .roster :is(li,.roster-item) > button:not(.del):hover,.phb .roster .pick:hover{background:rgba(255,255,255,.42)}
+.phb .roster :is(li,.roster-item):is(.on,.active,[aria-current="true"]),.phb .roster .pick:is(.on,.active,[aria-current="true"]){background:rgba(255,255,255,.55);box-shadow:inset 3px 0 0 var(--head)}
+.phb .roster small,.phb .roster .meta{display:block;margin-top:1px;font-size:11.5px;font-style:italic;line-height:1.2;color:var(--caption)}
+.phb .roster .del{flex:none;width:28px;margin:0;padding:0;font-family:'ScalySans',sans-serif;font-size:18px;line-height:1;color:var(--head);background:none;border:0;border-radius:2px;opacity:.55;cursor:pointer}
+.phb .roster .del:hover,.phb .roster .del:focus-visible{opacity:1;background:rgba(88,24,13,.1)}
+.phb .roster .empty{margin:0;padding:6px 4px;font-style:italic;color:var(--caption);text-indent:0}
+.phb .roster p{text-indent:0}
+.phb .roster.plain{padding:0;background:none;border:0;border-image:none;box-shadow:none}
+.phb .roster.sticky{position:sticky;top:64px}
+.phb details.roster:not([open]) > summary{margin-bottom:0}
+
+.phb .phb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,220px)),1fr));gap:var(--gap,14px 22px)}
+
+.phb .phb-toast,.phb .phb-toasts > *{padding:8px 16px 7px;font-family:'MrEaves',serif;font-size:17px;line-height:1.15;letter-spacing:.02em;text-align:center;
+  color:var(--phb-btn-ink);background:var(--head);border:1px solid var(--gold);border-radius:3px;box-shadow:0 10px 28px rgba(0,0,0,.42)}
+.phb .phb-toast{position:fixed;left:50%;bottom:22px;z-index:200;max-width:calc(100vw - 32px);opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .25s,transform .25s}
+.phb .phb-toast.show{opacity:1;transform:translate(-50%,0)}
+.phb .phb-toasts{position:fixed;left:50%;bottom:22px;z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px;width:max-content;max-width:calc(100vw - 32px);transform:translateX(-50%);pointer-events:none}
+.phb .phb-toasts > *{animation:phb-toast-in .25s ease-out both}
+@keyframes phb-toast-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- site shell: a floating page over a fixed backdrop ---------- */
+body.phb.shell{background:#0d0b09}
+.phb-backdrop{position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%}
+.phb.shell main,.phb.shell .over{position:relative;z-index:2}
+/* the translucent frame is a spread shadow, so it needs no border and leaves layout alone */
+.page.float{--float-frame:9px;
+  box-shadow:0 0 0 1px rgba(10,7,5,.45),0 0 0 var(--float-frame) rgba(238,229,206,.32),
+    0 34px 80px -6px rgba(0,0,0,.6),0 12px 26px -4px rgba(0,0,0,.4)}
+.page.float::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(88,24,13,.3),inset 0 0 70px rgba(120,78,30,.3),inset 0 0 16px rgba(120,78,30,.22)}
+
+/* ---------- utilities ---------- */
+.phb .center{text-align:center!important}
+.phb .muted{color:var(--caption)!important}
+.phb .mt-0{margin-top:0!important} .phb .mt-1{margin-top:4px!important} .phb .mt-2{margin-top:8px!important}
+.phb .mt-3{margin-top:14px!important} .phb .mt-4{margin-top:22px!important} .phb .mt-5{margin-top:34px!important}
+.phb .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+@media (min-width:761px){.phb .show-mobile{display:none!important}}
+
+/* ---------- kit: mobile ---------- */
+@media (max-width:760px){
+  .phb .hide-mobile{display:none!important}
+  .phb .phb-btn{min-height:44px;font-size:19px}
+  .phb .phb-btn.sm{min-height:40px;font-size:16.5px}
+  .phb .phb-btn.lg{min-height:50px;font-size:22px;padding:9px 20px 7px}
+  .phb .phb-btn.icon{width:44px;min-width:44px}
+  .phb .phb-btn.icon.sm{width:40px;min-width:40px}
+  .phb .phb-field :where(select,textarea,input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=button],[type=submit],[type=reset],[type=file],[type=hidden])),
+  .phb .phb-input,.phb .phb-select{min-height:44px;font-size:16px}
+  .phb .phb-check{min-height:44px}
+  .phb .phb-check input{width:20px;height:20px}
+  .phb .phb-toolbar > .phb-field{flex:1 1 calc(50% - 6px)}
+  .phb .phb-toolbar > .grow{flex:1 1 100%}
+  .phb .phb-toolbar > .phb-btn:not(.icon){flex:1 1 auto}
+  .phb .phb-toolbar > .sep{display:none}
+  .phb .phb-tabs{-webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent);padding-right:24px}
+  .phb .phb-tabs > a,.phb .phb-tabs > button{padding:12px 12px 11px}
+  .phb .phb-seg > a,.phb .phb-seg > button{min-height:44px}
+  .phb .phb-details > summary{min-height:44px}
+  .phb .tool-head{grid-template-columns:minmax(0,1fr)}
+  .phb .tool-head > .actions{grid-column:1;grid-row:auto;order:2;justify-content:flex-start;margin-top:12px}
+  .phb .tool-head::after{order:1}
+  .phb .tool-head h1,.phb .tool-head h2{font-size:36px}
+  .phb .tool-empty{padding:30px 10px 26px}
+  .phb .tool-empty .sigil{font-size:80px}
+  .phb .tool-split,.phb .tool-split.aside-left{grid-template-columns:minmax(0,1fr)}
+  .phb .abil-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .phb .roster :is(li,.roster-item) > a,.phb .roster :is(li,.roster-item) > button:not(.del),.phb .roster .pick{padding:11px 6px 10px}
+  .phb .roster .del{width:44px}
+  .phb .roster.sticky{position:static}
+  .phb.shell main{padding-left:16px;padding-right:16px}
+  .page.float{--float-frame:6px}
+}
+@media print{.phb-toast,.phb-toasts,.phb-backdrop{display:none!important}.page.float{box-shadow:none}.page.float::before{display:none}}

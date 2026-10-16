@@ -3,263 +3,286 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NPC Codex</title>
+  <title>The Character Codex</title>
   <meta name="description" content="Generate NPCs with faces, voices and motives, and read dossiers on the Dead Three's chosen: Ketheric Thorm, Enver Gortash and Orin the Red.">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;700;900&family=Spectral:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/phb/phb.css">
   <style>
-    :root {
-      --dnd-red: #58180D;
-      --dnd-red-light: #7A200D;
-      --parchment: #EFE5D0;
-      --parchment-dark: #E0D5C0;
-      --parchment-deep: #D4C4A8;
-      --ink: #1A1A1A;
-      --ink-light: #333;
-      --gold: #C9AD6A;
-      --gold-bright: #E8D5A3;
-      --gold-dim: #A08940;
-      --rule-color: #9C2B1B;
-      --wood-dark: #2A1A0A;
-      --wood-mid: #3E2415;
-      --wood-light: #5D3A1A;
-      --sidebar-w: 280px;
+    /* ---------- the world beyond the page (same pixel road as the library) ---------- */
+    body.phb.shell{overflow-x:hidden}
+    .codex-world{image-rendering:pixelated;image-rendering:crisp-edges;background:#0d0b09}
+    .codex-world.scene-failed{background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 2px,transparent 2px 4px),
+      linear-gradient(180deg,#1b2740 0%,#33405c 46%,#6d5740 62%,#2a1d14 100%)}
+    /* legibility shading lives in a fixed layer so it never drags a hard edge across the art */
+    .codex-veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:linear-gradient(180deg,rgba(15,11,8,.55) 0%,rgba(15,11,8,.12) 12%,rgba(15,11,8,0) 32%,rgba(15,11,8,.16) 55%,rgba(15,11,8,.46) 78%,rgba(15,11,8,.66) 100%)}
+    .phb.shell main{padding-top:24px}
+
+    /* ---------- page frame ---------- */
+    .bar-in{max-width:1192px}
+    .bar .mark{font-size:22px}
+    .codex{scroll-margin-top:56px}
+    .codex .tool-head .kick{display:block;margin:0 0 4px;font-family:'MrEaves',serif;font-size:19px;letter-spacing:.14em;color:var(--rule)}
+    .codex .tool-head h1{font-size:50px}
+    .codex .tool-head .actions .phb-btn svg{width:15px;height:15px}
+    .codex .tool-head .actions .phb-btn[aria-expanded="true"]{color:var(--phb-btn-ink);background:var(--head);border-color:var(--head)}
+
+    /* toolbar: the Draft button is the call to action */
+    .codex .draft-bar{padding:12px 14px 14px;margin:0 0 14px;background:rgba(255,251,238,.32);border:1px solid var(--phb-line-soft);border-radius:2px;
+      box-shadow:inset 0 0 0 3px rgba(238,229,206,.6),inset 0 0 0 4px rgba(88,24,13,.12)}
+    .codex .draft-bar .phb-btn.lg{min-width:160px}
+    .codex .draft-bar .phb-btn.lg::before,.codex .draft-bar .phb-btn.lg::after{content:"\25C6";font-size:.5em;color:var(--gold)}
+
+    /* folio line above the entry: running caption + pager */
+    .codex .codex-out{scroll-margin-top:60px}
+    .codex .folio{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 4px;padding:0 0 6px;border-bottom:1px solid var(--phb-line-soft)}
+    .codex .folio .cap{font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--caption);white-space:nowrap}
+    .codex .folio .phb-pager{gap:4px}
+
+    /* output + index */
+    .codex .codex-split{--aside:276px}
+    .codex .codex-split.index-closed{grid-template-columns:minmax(0,1fr)}
+    .codex .codex-split.index-closed > #sidebar{display:none}
+    #statScroll{container-type:inline-size;min-width:0}
+    .sidebar-overlay{display:none}
+
+    /* ---------- empty state ---------- */
+    .codex .tool-empty h3{font-size:32px}
+    .codex .tool-empty p{font-size:15px}
+
+    /* Featured Villains: a dramatis personae, set like the cast list at the front of an adventure */
+    .villains{margin:4px 0 10px}
+    .villains .v-kick{display:block;margin:0 0 3px;font-family:'ScalySansCaps',sans-serif;font-size:12.5px;letter-spacing:.2em;color:var(--caption);text-align:center}
+    .villains .v-h{display:flex;align-items:center;gap:14px;margin:0 0 10px;font-family:'MrEaves',serif;font-weight:normal;font-size:21px;line-height:1.1;
+      letter-spacing:.05em;color:var(--head);text-align:center;text-wrap:balance}
+    /* tapered gold rules that widen toward the title, no red */
+    .villains .v-h::before,.villains .v-h::after{content:"";flex:1 1 40px;height:4px;background:linear-gradient(90deg,rgba(192,173,106,0),var(--gold));
+      clip-path:polygon(0 50%,100% 0,100% 100%)}
+    .villains .v-h::after{background:linear-gradient(270deg,rgba(192,173,106,0),var(--gold));clip-path:polygon(0 0,100% 50%,0 100%)}
+    .villain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:3px double var(--gold);border-bottom:3px double var(--gold)}
+    .codex a.villain{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-content:center;
+      padding:12px 14px 12px 10px;text-decoration:none;color:var(--ink);transition:background-color .15s}
+    .codex a.villain + a.villain{border-left:1px solid rgba(192,173,106,.75)}
+    .codex a.villain::before{content:attr(data-init);grid-column:1;grid-row:1 / span 2;align-self:center;font-family:'Solbera',serif;font-size:64px;line-height:.86;
+      color:transparent;background-image:linear-gradient(-45deg,#322814,#998250,#322814);-webkit-background-clip:text;background-clip:text}
+    .villain-name{grid-column:2;align-self:end;display:block;font-family:'MrEaves',serif;font-size:22px;line-height:1;color:var(--vc);
+      text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;text-decoration-thickness:1px;transition:text-decoration-color .15s}
+    .villain-meta{grid-column:2;align-self:start;display:block;margin-top:4px;font-style:italic;font-size:13.5px;line-height:1.3;color:#4a3b2a}
+    .codex a.villain:hover,.codex a.villain:focus-visible{background-color:rgba(255,251,238,.5)}
+    .codex a.villain:hover .villain-name,.codex a.villain:focus-visible .villain-name{text-decoration-color:currentColor}
+    .codex a.villain:focus-visible{outline-offset:-3px}
+
+    /* ---------- the NPC write-up ---------- */
+    .npc{padding-top:6px}
+    .npc-head{margin:2px 0 14px}
+    .npc-head .npc-name{margin:0;font-family:'MrEaves',serif;font-weight:normal;font-size:40px;line-height:.95;color:var(--head)}
+    .npc-head .npc-name:focus{outline:none}
+    .npc-head .npc-name:focus-visible{outline:2px solid var(--phb-ring);outline-offset:3px}
+    .npc-head .npc-type{margin:4px 0 0;font-style:italic;font-size:15.5px;text-indent:0}
+    .npc-head::after{content:"";display:block;height:6px;margin-top:10px;background:url(../assets/phb/tex/redTriangle.png) center/100% 100% no-repeat}
+    .npc-cols{column-gap:30px;column-fill:balance}
+    @container (min-width:600px){.npc-cols{column-count:2}}
+    .npc .monster.frame{margin:10px 0 18px}
+    .npc .monster > h4{font-size:26px;line-height:1.05;overflow-wrap:anywhere}
+    .npc .monster .red p>strong:first-child{font-style:normal}
+    .npc .monster .grp{margin:2px 0}
+    .npc .monster h3{margin-top:12px}
+    .npc .monster em{font-style:italic}
+    .abil-g{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));text-align:center;color:var(--head);margin:2px 0}
+    .abil-g b{display:block;font-weight:bold}
+    .abil-g span{display:block;color:var(--ink);white-space:nowrap;font-size:13px}
+    @container (max-width:330px){.abil-g{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:6px}}
+    .npc h3{break-after:avoid}
+    .npc .lead-in p{margin:0 0 5px;text-indent:0}
+    .npc .lead-in p>strong:first-child{font-style:italic}
+    .npc .note{margin:26px 0 22px}
+    .npc .note h5{font-size:17px}
+    .npc .note p{margin:0 0 4px;text-indent:0}
+    .npc .note p>strong:first-child{font-style:italic}
+    .npc dl.kv{margin-top:4px}
+    .npc .chips{margin-top:6px}
+    .npc section{break-inside:avoid-column}
+    .npc section.flow{break-inside:auto}
+
+    /* ---------- the Character Index (sidebar) ---------- */
+    #sidebar{align-self:start}
+    .ix-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px}
+    .phb .roster .ix-title{margin:0;font-family:'MrEaves',serif;font-size:23px;line-height:1;color:var(--head)}
+    .phb .roster .ix-close{width:28px;min-width:28px;min-height:28px;font-size:17px}
+    .phb .roster h5.roster-h{margin-top:12px;padding-bottom:2px;border-bottom:1px solid rgba(88,24,13,.25)}
+    .phb .roster h5.roster-h:first-of-type{margin-top:6px}
+    #savedList{--roster-h:260px} #historyList{--roster-h:330px}
+    .phb .roster .roster-item > button.pick{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:center}
+    .phb .roster .pick .nm{grid-column:1;font-family:'ScalySans',sans-serif;font-weight:bold;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .phb .roster .pick small{grid-column:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .phb .roster .pick .lv{grid-column:2;grid-row:1 / span 2;font-family:'ScalySansCaps',sans-serif;font-size:12px;letter-spacing:.04em;color:var(--head);
+      padding:2px 6px 1px;border:1px solid rgba(88,24,13,.35);border-radius:2px;background:rgba(255,255,255,.35)}
+    .phb .roster .roster-item > a.pick.v{display:block;padding-left:22px;position:relative}
+    .phb .roster a.pick.v::before{content:"\25C6";position:absolute;left:6px;top:7px;font-size:10px;color:var(--gold)}
+    .phb .roster a.pick.v .nm{display:block;color:var(--vc)}
+    .ix-foot{margin:10px 0 0 !important;padding-top:6px;border-top:1px solid rgba(88,24,13,.25);font-family:'ScalySansCaps',sans-serif;font-size:12.5px;letter-spacing:.06em;color:var(--caption);text-align:center}
+
+    /* tablets and narrow windows: the entry keeps the full measure, the toolbar sets as a 4-up grid */
+    @media (min-width:761px) and (max-width:1060px){
+      .phb .codex .tool-head{grid-template-columns:minmax(0,1fr)}
+      .phb .codex .tool-head > .actions{grid-column:1;grid-row:auto;order:2;justify-content:flex-start;margin-top:12px}
+      .phb .codex .tool-head::after{order:1}
+      .codex .draft-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 12px}
+      .codex .draft-bar .phb-btn.lg{grid-column:1 / -1}
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; }
-    body {
-      background-image: url('https://i.imgur.com/B1kEKpW.png');
-      background-repeat: repeat;
-      background-size: 400px;
-      font-family: 'Spectral', serif;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: scrollBackground 60s linear infinite;
-      padding: 12px;
+
+    /* up to 1060px the index is a drawer that slides in under the top bar */
+    @media (max-width:1060px){
+      .codex .codex-split,.codex .codex-split.index-closed{grid-template-columns:minmax(0,1fr)}
+      .codex .codex-split.index-closed > #sidebar{display:block}
+      #sidebar{position:fixed;top:48px;right:0;bottom:0;z-index:80;align-self:stretch;height:auto;width:min(340px,88vw);margin:0;padding:16px 16px 28px;
+        overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+        border:0;border-image:none;border-left:3px solid var(--gold);background:var(--accent) url(../assets/phb/tex/parchment.webp) center/cover;
+        box-shadow:-12px 0 40px rgba(0,0,0,.5);transform:translateX(105%);visibility:hidden;transition:transform .25s ease,visibility .25s}
+      /* visible at once on open (so focus can land in it), hidden only after the slide-out */
+      #sidebar:not(.collapsed){transform:none;visibility:visible;transition:transform .25s ease,visibility 0s}
+      .sidebar-overlay.active{display:block;position:fixed;inset:0;z-index:79;background:rgba(10,7,5,.55)}
+      #savedList,#historyList{--roster-h:none}
     }
-    @keyframes scrollBackground { from { background-position: 0 0; } to { background-position: 400px 0; } }
-    .layout { display:flex; height:calc(100vh - 24px); max-width:1080px; width:100%; position:relative; }
-    .sidebar {
-      width: var(--sidebar-w); min-width: var(--sidebar-w); height: 100%; background: var(--wood-dark);
-      border-radius: 3px 0 0 3px; display:flex; flex-direction:column; overflow:hidden;
-      box-shadow: inset -8px 0 20px rgba(0,0,0,0.3), -2px 0 10px rgba(0,0,0,0.3);
-      transition: margin-left 0.3s ease, opacity 0.3s ease;
-      background-image: radial-gradient(ellipse at 30% 20%, rgba(80,50,20,0.3) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(60,35,10,0.2) 0%, transparent 50%);
-      background-color: var(--wood-dark);
+
+    @media (max-width:760px){
+      .codex .tool-head h1{font-size:40px}
+      .codex .tool-head .kick{font-size:16px}
+      .codex .tool-head .actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+      .codex .draft-bar{padding:10px}
+      .codex .draft-bar .phb-btn.lg{flex:1 1 100%}
+      .codex .folio{flex-wrap:wrap}
+      .codex .folio .phb-pager{width:100%;justify-content:space-between}
+      .villains .v-h{display:block;font-size:18px}
+      .villains .v-h::before{display:none}
+      .villains .v-h::after{display:block;width:62%;max-width:200px;height:5px;margin:7px auto 0;background:var(--gold);clip-path:polygon(0 50%,50% 0,100% 50%,50% 100%)}
+      .villain-grid{grid-template-columns:1fr}
+      .codex a.villain{padding:10px 6px}
+      .codex a.villain + a.villain{border-left:0;border-top:1px dotted rgba(118,102,73,.7)}
+      .codex a.villain::before{font-size:56px}
+      .npc-head .npc-name{font-size:34px}
+      .npc .monster > h4{font-size:24px}
+      .phb .roster .ix-close{width:44px;min-width:44px;min-height:44px}
     }
-    .sidebar.collapsed { margin-left: calc(var(--sidebar-w) * -1); opacity:0; pointer-events:none; }
-    .sidebar-header { padding:14px 16px 10px; border-bottom:1px solid rgba(201,173,106,0.2); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-    .sidebar-header h2 { font-family:'Cinzel',serif; font-weight:700; font-size:.75rem; color:var(--gold); text-transform:uppercase; letter-spacing:2px; }
-    .sidebar-close { background:none; border:none; color:var(--gold-dim); cursor:pointer; font-size:.8rem; padding:4px; transition:color .2s; }
-    .sidebar-close:hover { color:var(--gold-bright); }
-    .sidebar-sections { flex:1; overflow-y:auto; padding:8px 0; scrollbar-width:thin; scrollbar-color: var(--wood-light) transparent; }
-    .sidebar-sections::-webkit-scrollbar { width:4px; }
-    .sidebar-sections::-webkit-scrollbar-thumb { background:var(--wood-light); border-radius:2px; }
-    .sb-section-label { font-family:'Cinzel',serif; font-size:.55rem; text-transform:uppercase; letter-spacing:2px; color:var(--gold-dim); padding:10px 16px 4px; display:flex; align-items:center; gap:6px; }
-    .sb-section-label::after { content:''; flex:1; height:1px; background:rgba(201,173,106,0.15); }
-    .sb-empty { padding:8px 16px; font-size:.7rem; color:rgba(201,173,106,0.3); font-style:italic; }
-    .sb-entry { display:flex; align-items:center; gap:10px; padding:7px 16px; cursor:pointer; transition:background .15s; border-left:3px solid transparent; }
-    .sb-entry:hover { background:rgba(255,255,255,0.04); border-left-color:var(--gold-dim); }
-    .sb-entry.active { background:rgba(201,173,106,0.08); border-left-color:var(--gold); }
-    .sb-entry-icon { font-size:.65rem; color:var(--gold-dim); width:14px; text-align:center; flex-shrink:0; }
-    .sb-entry-info { flex:1; min-width:0; }
-    .sb-entry-name { font-family:'Cinzel',serif; font-size:.72rem; font-weight:700; color:var(--gold-bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }
-    .sb-entry-meta { font-size:.6rem; color:var(--gold-dim); font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .sb-entry-level { font-family:'Cinzel',serif; font-size:.6rem; font-weight:700; color:var(--dnd-red-light); background:rgba(201,173,106,0.15); padding:1px 5px; border-radius:2px; flex-shrink:0; min-width:30px; text-align:center; }
-    .sb-entry-actions { display:flex; gap:2px; flex-shrink:0; opacity:0; transition:opacity .15s; }
-    .sb-entry:hover .sb-entry-actions { opacity:1; }
-    .sb-action-btn { background:none; border:none; color:var(--gold-dim); cursor:pointer; font-size:.6rem; padding:2px 4px; border-radius:2px; transition:all .15s; }
-    .sb-action-btn:hover { color:var(--gold-bright); background:rgba(255,255,255,0.06); }
-    .sb-action-btn.delete:hover { color:#e74c3c; }
-    .sidebar-footer { padding:10px 16px; border-top:1px solid rgba(201,173,106,0.15); font-family:'Cinzel',serif; font-size:.55rem; color:var(--gold-dim); text-align:center; letter-spacing:1px; flex-shrink:0; }
-    .book-page {
-      flex:1; min-width:0; height:100%; display:flex; flex-direction:column; background:var(--parchment); border-radius:0 3px 3px 0; position:relative;
-      box-shadow:0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(0,0,0,0.06);
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,108,74,0.04) 28px, rgba(139,108,74,0.04) 29px), radial-gradient(ellipse at 20% 50%, rgba(139,108,74,0.06) 0%, transparent 70%), radial-gradient(ellipse at 80% 50%, rgba(139,108,74,0.04) 0%, transparent 70%);
-      background-color: var(--parchment); transition:border-radius .3s ease;
-    }
-    .sidebar.collapsed + .book-page { border-radius:3px; }
-    .book-page::before {
-      content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1;
-      background: linear-gradient(to right, rgba(120,80,40,0.12) 0%, transparent 3%), linear-gradient(to left, rgba(120,80,40,0.08) 0%, transparent 2%), linear-gradient(to bottom, rgba(120,80,40,0.08) 0%, transparent 2%), linear-gradient(to top, rgba(120,80,40,0.1) 0%, transparent 3%);
-    }
-    .page-header { flex-shrink:0; padding:12px 20px 9px; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--dnd-red); position:relative; z-index:2; }
-    .page-header::after { content:''; position:absolute; bottom:-5px; left:0; right:0; height:1px; background:var(--dnd-red); opacity:.4; }
-    .header-left { display:flex; align-items:center; gap:12px; }
-    .sidebar-toggle, .tool-btn {
-      background:none; border:1.5px solid var(--dnd-red); border-radius:3px; color:var(--dnd-red); width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:.75rem; transition:all .2s; padding:0;
-    }
-    .sidebar-toggle:hover, .tool-btn:hover { background:var(--dnd-red); color:var(--parchment); }
-    .tool-btn:disabled { opacity:.45; cursor:not-allowed; }
-    .tool-btn:disabled:hover { background:none; color:var(--dnd-red); }
-    .header-title { font-family:'Cinzel Decorative',serif; font-weight:900; font-size:1.25rem; color:var(--dnd-red); letter-spacing:2px; text-transform:uppercase; line-height:1; }
-    .header-subtitle { font-family:'Spectral',serif; font-style:italic; font-size:.65rem; color:var(--dnd-red-light); letter-spacing:1px; margin-top:1px; }
-    .header-tools { display:flex; gap:5px; }
-    .filter-bar { flex-shrink:0; padding:10px 20px 12px; display:flex; gap:10px; align-items:flex-end; border-bottom:1px solid rgba(88,24,13,.25); position:relative; z-index:2; flex-wrap:wrap; }
-    .filter-group { display:flex; flex-direction:column; gap:3px; }
-    .filter-label { font-family:'Cinzel',serif; font-size:.55rem; text-transform:uppercase; letter-spacing:2px; color:var(--dnd-red-light); }
-    .filter-bar select {
-      min-width:120px; height:28px; border:1px solid rgba(88,24,13,.25); background:#f5ecd9; color:var(--ink-light); font-family:'Spectral',serif; padding:0 26px 0 10px; font-size:.9rem; appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--dnd-red-light) 50%), linear-gradient(135deg, var(--dnd-red-light) 50%, transparent 50%); background-position: calc(100% - 16px) 11px, calc(100% - 10px) 11px; background-size:6px 6px, 6px 6px; background-repeat:no-repeat;
-    }
-    .conjure-btn {
-      margin-left:auto; height:32px; padding:0 20px; border:2px solid var(--dnd-red); background:var(--dnd-red); color:var(--parchment); font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:2px; font-weight:700; border-radius:4px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:8px;
-    }
-    .conjure-btn:hover { filter:brightness(1.1); }
-    .stat-scroll { flex:1; min-height:0; overflow:auto; position:relative; z-index:2; scrollbar-width:thin; scrollbar-color: var(--dnd-red-light) transparent; }
-    .stat-scroll::-webkit-scrollbar { width:8px; }
-    .stat-scroll::-webkit-scrollbar-thumb { background:rgba(88,24,13,.5); border-radius:4px; }
-    .entry-wrap { padding:18px 26px 26px; }
-    .top-rule, .mid-rule, .bottom-rule { height:4px; background:var(--dnd-red); opacity:.9; margin:0 0 12px; }
-    .top-rule { margin-top:6px; }
-    .entry-name { font-family:'Cinzel Decorative',serif; font-weight:900; font-size:1.9rem; color:var(--dnd-red); letter-spacing:1px; text-transform:uppercase; line-height:1.1; }
-    .entry-lineage { font-style:italic; color:var(--dnd-red-light); font-size:1rem; margin-top:2px; }
-    .meta-grid { margin-top:12px; border-top:1px solid rgba(156,43,27,.35); border-bottom:1px solid rgba(156,43,27,.35); padding:10px 0; }
-    .meta-grid p { font-size:1rem; line-height:1.45; }
-    .meta-grid strong { color:var(--dnd-red); }
-    .ability-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; text-align:center; margin:12px 0 10px; border-bottom:1px solid rgba(156,43,27,.35); padding-bottom:12px; }
-    .ability-label { font-family:'Cinzel',serif; font-size:.78rem; color:var(--dnd-red); text-transform:uppercase; letter-spacing:1px; }
-    .ability-score { font-size:1.1rem; }
-    .section-header { margin-top:14px; border-bottom:2px solid var(--dnd-red); color:var(--dnd-red); font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:1px; font-size:1.1rem; padding-bottom:3px; }
-    .detail-block { margin-top:7px; line-height:1.5; font-size:1rem; }
-    .detail-block strong, .detail-line strong { color:var(--dnd-red); }
-    .detail-line { margin-top:4px; line-height:1.5; }
-    .twocol { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-top:8px; }
-    .phys-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; border-bottom:1px dotted rgba(156,43,27,.25); padding:4px 0; }
-    .pill-line { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-    .pill { font-size:.8rem; padding:2px 7px; border:1px solid rgba(156,43,27,.28); border-radius:999px; color:var(--dnd-red-light); background:rgba(255,255,255,.25); }
-    .page-footer { flex-shrink:0; border-top:1px solid rgba(156,43,27,.25); padding:9px 18px; display:flex; align-items:center; justify-content:space-between; color:rgba(88,24,13,.45); font-size:.7rem; font-style:italic; position:relative; z-index:2; }
-    .page-controls { display:flex; align-items:center; gap:8px; }
-    .nav-btn { width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(88,24,13,.2); background:rgba(255,255,255,.25); color:var(--dnd-red); cursor:pointer; }
-    .nav-btn:disabled { opacity:.35; cursor:not-allowed; }
-    .page-indicator { min-width:34px; text-align:center; color:var(--dnd-red); font-family:'Cinzel',serif; font-style:normal; }
-    .sidebar-overlay { display:none; }
-    #toast-container { position:fixed; bottom:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:99; }
-    .toast { background:rgba(42,26,10,.95); color:var(--gold-bright); border:1px solid rgba(201,173,106,.2); padding:10px 14px; border-radius:4px; font-size:.82rem; box-shadow:0 8px 24px rgba(0,0,0,.28); }
-    .empty-state { display:flex; flex-direction:column; gap:26px; min-height:100%; align-items:center; justify-content:center; color:rgba(88,24,13,.55); font-style:italic; text-align:center; padding:40px; }
-    .villains { width:100%; max-width:640px; font-style:normal; }
-    .villains-label { font-family:'Cinzel',serif; font-size:.62rem; text-transform:uppercase; letter-spacing:3px; color:var(--dnd-red-light); display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .villains-label::before, .villains-label::after { content:''; flex:1; height:1px; background:rgba(156,43,27,.3); }
-    .villain-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-    .villain { display:block; text-decoration:none; text-align:left; padding:12px 14px; border:1px solid rgba(156,43,27,.3); border-left:4px solid var(--vc); background:rgba(255,255,255,.28); border-radius:3px; transition:background .15s, transform .15s; }
-    .villain:hover, .villain:focus-visible { background:rgba(255,255,255,.5); transform:translateY(-1px); }
-    .villain-name { display:block; font-family:'Cinzel',serif; font-weight:700; font-size:.92rem; color:var(--vc); line-height:1.2; }
-    .villain-meta { display:block; font-size:.78rem; font-style:italic; color:var(--ink-light); margin-top:3px; }
-    .sb-villain { text-decoration:none; }
-    .sb-villain .sb-entry-icon { color:var(--vc); }
-    @media (max-width: 560px) { .villain-grid { grid-template-columns:1fr; } }
-    @media (max-width: 920px) {
-      .layout { max-width:100%; }
-      .sidebar { position:absolute; inset:0 auto 0 0; z-index:5; }
-      .sidebar-overlay.active { display:block; position:absolute; inset:0; background:rgba(0,0,0,.22); z-index:4; }
-      .book-page { border-radius:3px; }
-      .conjure-btn { margin-left:0; }
-    }
-    @media (max-width: 760px) {
-      .ability-grid, .twocol, .phys-row { grid-template-columns:1fr 1fr; }
-      .ability-grid { gap:10px 6px; }
-      .entry-wrap { padding:16px 16px 22px; }
-    }
-    @media (max-width: 560px) {
-      .ability-grid, .twocol, .phys-row { grid-template-columns:1fr; }
-      .page-header { padding:10px 12px 8px; }
-      .filter-bar { padding:10px 12px 12px; }
-      .header-title { font-size:1rem; }
-      .filter-bar select { min-width:100px; }
-      .entry-name { font-size:1.5rem; }
-    }
-  </style>
+      /* credit line, set as in the handbooks */
+    .page .credits{font-family:'ScalySans',sans-serif;font-size:11.5px;line-height:1.35;color:var(--caption);text-align:center;margin-top:18px;font-style:italic;text-indent:0}
+</style>
 </head>
-<body>
-  <div class="layout">
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar collapsed" id="sidebar">
-      <div class="sidebar-header">
-        <h2>Character Index</h2>
-        <button class="sidebar-close" id="sidebarCloseBtn" title="Close index"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="sidebar-sections" id="sidebarSections">
-        <div class="sb-section-label"><i class="fas fa-bookmark"></i> Saved</div>
-        <div id="savedList"><div class="sb-empty">No saved entries yet</div></div>
-        <div class="sb-section-label"><i class="fas fa-clock-rotate-left"></i> Recent</div>
-        <div id="historyList"><div class="sb-empty">No history yet</div></div>
-        <div class="sb-section-label"><i class="fas fa-skull"></i> Featured Villains</div>
-        <a class="sb-entry sb-villain" href="ketheric/" style="--vc:#3E8C7E"><span class="sb-entry-icon"><i class="fas fa-skull"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Ketheric Thorm</span><span class="sb-entry-meta" style="display:block">Chosen of Myrkul</span></span></a>
-        <a class="sb-entry sb-villain" href="gortash/" style="--vc:#C9AD6A"><span class="sb-entry-icon"><i class="fas fa-crown"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Lord Enver Gortash</span><span class="sb-entry-meta" style="display:block">Chosen of Bane</span></span></a>
-        <a class="sb-entry sb-villain" href="orin/" style="--vc:#D0453F"><span class="sb-entry-icon"><i class="fas fa-droplet"></i></span><span class="sb-entry-info"><span class="sb-entry-name" style="display:block">Orin the Red</span><span class="sb-entry-meta" style="display:block">Chosen of Bhaal</span></span></a>
-      </div>
-      <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 conjured</div>
-    </aside>
+<body class="phb shell">
+  <a class="skip" href="#codex">Skip to the Character Codex</a>
 
-    <main class="book-page">
-      <div class="page-header">
-        <div class="header-left">
-          <button class="sidebar-toggle" id="sidebarToggle" title="Open Character Index"><i class="fas fa-book-open"></i></button>
-          <div>
-            <div class="header-title">CHARACTER CODEX</div>
-            <div class="header-subtitle">Arcane Census & Adventurer Registry</div>
-          </div>
-        </div>
-        <div class="header-tools">
-          <button class="tool-btn" id="saveBtn" title="Save Character" disabled><i class="fas fa-bookmark"></i></button>
-          <button class="tool-btn" id="copyBtn" title="Copy Character Sheet" disabled><i class="fas fa-scroll"></i></button>
-          <button class="tool-btn" id="copyPromptBtn" title="Copy Art Prompt" disabled><i class="fas fa-paint-brush"></i></button>
-        </div>
-      </div>
+  <canvas class="phb-backdrop codex-world" id="scene" aria-hidden="true"></canvas>
+  <div class="codex-veil" aria-hidden="true"></div>
 
-      <div class="filter-bar">
-        <div class="filter-group">
-          <div class="filter-label">Race</div>
+  <header class="bar noprint">
+    <div class="bar-in">
+      <a class="mark" href="#codex">Character <span>Codex</span></a>
+      <nav aria-label="Sections">
+        <a href="#codex">Draft</a>
+        <a href="#sidebar" data-open-index>Character Index</a>
+        <a href="#villains" data-open-index>Featured Villains</a>
+      </nav>
+      <a class="home" href="../">&larr; Home</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page tool broad float codex" id="codex">
+      <header class="tool-head">
+        <h1><span class="kick">Arcane Census &amp; Adventurer Registry</span>Character Codex</h1>
+        <p class="sub">Choose a people, a calling, a level and a homeland, then draft a soul onto the page.</p>
+        <div class="actions">
+          <button class="phb-btn ghost sm" type="button" id="sidebarToggle" title="Open Character Index" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 2.5h4.5A2.5 2.5 0 0 1 8 5v9a2 2 0 0 0-2-2H1zM15 2.5h-4.5A2.5 2.5 0 0 0 8 5v9a2 2 0 0 1 2-2h5z"/></svg>Index</button>
+          <button class="phb-btn ghost sm" type="button" id="saveBtn" title="Save Character" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1h9v14L8 11.5 3.5 15z"/></svg>Save</button>
+          <button class="phb-btn ghost sm" type="button" id="copyBtn" title="Copy Character Sheet" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1h6l3 3v8H4zM2 4h1v10h8v1H2z"/></svg>Copy Sheet</button>
+          <button class="phb-btn ghost sm" type="button" id="copyPromptBtn" title="Copy Art Prompt" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M14.6 1.4c-.6-.6-4.6 3-7.2 6.1l1.1 1.1c3.1-2.6 6.7-6.6 6.1-7.2zM6.6 8.3C4.8 8.3 4 9.6 3.8 11 3.6 12.3 2.6 13 1 13.4c2.4 1.9 6.4 1.3 6.9-1.7.2-1-.1-1.9-.6-2.6z"/></svg>Art Prompt</button>
+        </div>
+      </header>
+
+      <div class="phb-toolbar draft-bar">
+        <div class="phb-field">
+          <label for="raceSelect">Race</label>
           <select id="raceSelect"></select>
         </div>
-        <div class="filter-group">
-          <div class="filter-label">Class</div>
+        <div class="phb-field">
+          <label for="classSelect">Class</label>
           <select id="classSelect"></select>
         </div>
-        <div class="filter-group">
-          <div class="filter-label">Level</div>
+        <div class="phb-field">
+          <label for="levelSelect">Level</label>
           <select id="levelSelect"></select>
         </div>
-        <div class="filter-group">
-          <div class="filter-label">Origin</div>
+        <div class="phb-field">
+          <label for="originSelect">Origin</label>
           <select id="originSelect"></select>
         </div>
-        <button class="conjure-btn" id="generateBtn"><i class="fas fa-feather-pointed"></i> Draft</button>
+        <button class="phb-btn lg" type="button" id="generateBtn">Draft</button>
       </div>
 
-      <div class="stat-scroll" id="statScroll">
-        <div id="characterDisplay">
-          <div class="empty-state">
-            <p>Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</p>
-            <nav class="villains" aria-label="Featured villains">
-              <div class="villains-label">Featured Villains &middot; The Dead Three</div>
-              <div class="villain-grid">
-                <a class="villain" href="ketheric/" style="--vc:#14403A"><span class="villain-name">Ketheric Thorm</span><span class="villain-meta">Chosen of Myrkul, Lord of Bones</span></a>
-                <a class="villain" href="gortash/" style="--vc:#6A4A12"><span class="villain-name">Lord Enver Gortash</span><span class="villain-meta">Chosen of Bane, Lord of Tyranny</span></a>
-                <a class="villain" href="orin/" style="--vc:#7A1215"><span class="villain-name">Orin the Red</span><span class="villain-meta">Chosen of Bhaal, Lord of Murder</span></a>
+      <div class="tool-split codex-split" id="codexSplit">
+        <div class="codex-out">
+          <div class="folio">
+            <span class="cap">Gazetteer Vivens</span>
+            <div class="phb-pager" role="group" aria-label="Leaf through entries">
+              <button class="phb-btn ghost sm icon" type="button" id="navFirst" title="First page" aria-label="First page" disabled>&laquo;</button>
+              <button class="phb-btn ghost sm icon" type="button" id="navPrev" title="Previous page" aria-label="Previous page" disabled>&lsaquo;</button>
+              <span class="ind" id="pageIndicator" aria-live="polite">--</span>
+              <button class="phb-btn ghost sm icon" type="button" id="navNext" title="Next page" aria-label="Next page" disabled>&rsaquo;</button>
+              <button class="phb-btn ghost sm icon" type="button" id="navLast" title="Last page" aria-label="Last page" disabled>&raquo;</button>
+            </div>
+          </div>
+
+          <div class="stat-scroll" id="statScroll">
+            <div id="characterDisplay">
+              <div class="empty-state">
+                <div class="tool-empty">
+                  <span class="sigil" aria-hidden="true">C</span>
+                  <h3>The Pages Lie Blank</h3>
+                  <p>Conjure a wandering soul, a local barkeep, a rival mage, or your next favorite side character.</p>
+                </div>
+                <nav class="villains" aria-label="Featured villains">
+                  <span class="v-kick" aria-hidden="true">Dramatis Personae</span>
+                  <h4 class="v-h">Featured Villains &middot; The Dead Three</h4>
+                  <div class="villain-grid">
+                    <a class="villain" href="ketheric/" data-init="K" style="--vc:#14403A"><span class="villain-name">Ketheric Thorm</span><span class="villain-meta">Chosen of Myrkul, Lord of Bones</span></a>
+                    <a class="villain" href="gortash/" data-init="G" style="--vc:#6A4A12"><span class="villain-name">Lord Enver Gortash</span><span class="villain-meta">Chosen of Bane, Lord of Tyranny</span></a>
+                    <a class="villain" href="orin/" data-init="O" style="--vc:#7A1215"><span class="villain-name">Orin the Red</span><span class="villain-meta">Chosen of Bhaal, Lord of Murder</span></a>
+                  </div>
+                </nav>
               </div>
-            </nav>
+            </div>
           </div>
         </div>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="roster sidebar collapsed" id="sidebar" aria-label="Character Index">
+          <div class="ix-head">
+            <h4 class="ix-title">Character Index</h4>
+            <button class="phb-btn ghost sm icon ix-close" type="button" id="sidebarCloseBtn" title="Close index" aria-label="Close index">&times;</button>
+          </div>
+          <div class="sidebar-sections" id="sidebarSections">
+            <h5 class="roster-h">Saved</h5>
+            <div class="roster-list" id="savedList"><p class="empty">No saved entries yet</p></div>
+            <h5 class="roster-h">Recent</h5>
+            <div class="roster-list" id="historyList"><p class="empty">No history yet</p></div>
+            <h5 class="roster-h" id="villains">Featured Villains</h5>
+            <div class="roster-list">
+              <div class="roster-item"><a class="pick v" href="ketheric/" style="--vc:#14403A"><span class="nm">Ketheric Thorm</span><small>Chosen of Myrkul</small></a></div>
+              <div class="roster-item"><a class="pick v" href="gortash/" style="--vc:#6A4A12"><span class="nm">Lord Enver Gortash</span><small>Chosen of Bane</small></a></div>
+              <div class="roster-item"><a class="pick v" href="orin/" style="--vc:#7A1215"><span class="nm">Orin the Red</span><small>Chosen of Bhaal</small></a></div>
+            </div>
+          </div>
+          <p class="ix-foot" id="sidebarFooter">0 saved &middot; 0 conjured</p>
+        </aside>
       </div>
 
-      <div class="page-footer">
-        <div>Chapter V: Peoples of the Realms</div>
-        <div class="page-controls">
-          <button class="nav-btn" id="navFirst" title="First page" disabled><i class="fas fa-angles-left"></i></button>
-          <button class="nav-btn" id="navPrev" title="Previous page" disabled><i class="fas fa-chevron-left"></i></button>
-          <span class="page-indicator" id="pageIndicator">--</span>
-          <button class="nav-btn" id="navNext" title="Next page" disabled><i class="fas fa-chevron-right"></i></button>
-          <button class="nav-btn" id="navLast" title="Last page" disabled><i class="fas fa-angles-right"></i></button>
-        </div>
-        <div>Gazetteer Vivens</div>
-      </div>
-    </main>
-  </div>
+      <p class="credits">Fonts and textures from Homebrewery (naturalcrit, MIT license). Unofficial fan content, not affiliated with or endorsed by Wizards of the Coast.</p>
+
+      <span class="foot">Chapter V: Peoples of the Realms</span><span class="pnum">5</span>
+    </section>
+  </main>
 
   <input type="hidden" id="imagePromptStorage" value="">
-  <div id="toast-container"></div>
+  <div id="toast-container" class="phb-toasts" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
@@ -545,85 +568,109 @@
     npc.prompt = buildPrompt(npc);
     return npc;
   }
+  function cap(str){ str = String(str); return str.charAt(0).toUpperCase() + str.slice(1); }
+  function leadIn(label, value){ return `<p><strong>${label}.</strong> ${value}</p>`; }
+  // display only (sheetText keeps formatSigned): printed books set negatives with a true minus sign
+  const MARTIAL = ['Fighter','Rogue','Barbarian','Monk'];
+  function trueMinus(str){ return String(str).replace(/(^|[\s(])-(?=\d)/g, '$1−'); }
+  function signedText(n){ return trueMinus(formatSigned(n)); }
+  function bookTitle(str){ return String(str).split(' ').map((w, i) => i && /^(of|the|and|a|an|to|in|on|or)$/.test(w) ? w : cap(w)).join(' '); }
   function renderNPC(npc){
     els.promptStorage.value = npc.prompt;
+    const keys = ['STR','DEX','CON','INT','WIS','CHA'];
+    // display only: spells are set in italics as in the books, martial techniques stay roman in Title Case
+    const spells = list => list.length ? list.map(s => `<em>${escapeHtml(s)}</em>`).join(', ') : 'None';
+    const techniques = list => list.length ? list.map(s => escapeHtml(bookTitle(s))).join(', ') : 'None';
+    const knownSpells = MARTIAL.includes(npc.className) ? techniques : spells;
     els.display.innerHTML = `
-      <div class="entry-wrap">
-        <div class="top-rule"></div>
-        <div class="entry-name">${escapeHtml(npc.name)}</div>
-        <div class="entry-lineage">${escapeHtml(npc.race)} ${escapeHtml(npc.className.toLowerCase())} (${escapeHtml(npc.subclass)}), ${npc.alignment}, ${npc.rarity}</div>
-
-        <div class="meta-grid">
-          <p><strong>Armor Class</strong> ${npc.ac}</p>
-          <p><strong>Hit Points</strong> ${npc.hp}</p>
-          <p><strong>Speed</strong> ${npc.speed} ft.</p>
-          <p><strong>Initiative</strong> ${formatSigned(npc.init)}</p>
-          <p><strong>Level</strong> ${npc.level} (${npc.xp.toLocaleString()} XP benchmark)</p>
-          <p><strong>Proficiency Bonus</strong> ${formatSigned(npc.pb)}</p>
-        </div>
-
-        <div class="ability-grid">
-          ${['STR','DEX','CON','INT','WIS','CHA'].map(key => `<div><div class="ability-label">${key}</div><div class="ability-score">${npc.stats[key]} (${formatSigned(mod(npc.stats[key]))})</div></div>`).join('')}
-        </div>
-
-        <div class="detail-line"><strong>Saving Throws</strong> ${escapeHtml(npc.saves)}</div>
-        <div class="detail-line"><strong>Skills</strong> ${escapeHtml(npc.skills)}</div>
-        <div class="detail-line"><strong>Senses</strong> ${escapeHtml(npc.vision)}, passive Perception ${10 + mod(npc.stats.WIS) + (npc.className === 'Ranger' ? npc.pb : 0)}</div>
-        <div class="detail-line"><strong>Languages</strong> ${escapeHtml(npc.languages.join(', '))}</div>
-
-        <div class="section-header">Identity & Bearing</div>
-        <div class="twocol">
-          <div>
-            <div class="detail-block"><strong>Gender</strong> ${escapeHtml(titleCase(npc.gender))} (${escapeHtml(npc.pronouns)})</div>
-            <div class="detail-block"><strong>Age</strong> ${npc.age}</div>
-            <div class="detail-block"><strong>Hometown</strong> ${escapeHtml(npc.hometown)}</div>
-            <div class="detail-block"><strong>Background</strong> ${escapeHtml(npc.background)}</div>
-            <div class="detail-block"><strong>Role</strong> ${escapeHtml(npc.role)}</div>
+      <article class="npc">
+        <header class="npc-head">
+          <h2 class="npc-name" tabindex="-1">${escapeHtml(npc.name)}</h2>
+          <p class="npc-type">${escapeHtml(npc.race)} ${escapeHtml(npc.className.toLowerCase())} (${escapeHtml(npc.subclass)}), ${escapeHtml(npc.rarity)}</p>
+        </header>
+        <div class="npc-cols">
+          <div class="monster frame">
+            <h4>${escapeHtml(npc.name)}</h4>
+            <p class="type">${escapeHtml(npc.size || 'Medium')} humanoid (${escapeHtml(String(npc.race).toLowerCase())}), ${escapeHtml(npc.alignment)}</p>
+            <div class="tri"></div>
+            <div class="red">
+              <p><strong>Armor Class</strong> ${npc.ac}</p>
+              <p><strong>Hit Points</strong> ${npc.hp}</p>
+              <p><strong>Speed</strong> ${npc.speed} ft.</p>
+              <p><strong>Initiative</strong> ${signedText(npc.init)}</p>
+            </div>
+            <div class="tri"></div>
+            <div class="abil-g">
+              ${keys.map(key => `<div><b>${key}</b><span>${npc.stats[key]} (${signedText(mod(npc.stats[key]))})</span></div>`).join('')}
+            </div>
+            <div class="tri"></div>
+            <div class="red">
+              <p><strong>Saving Throws</strong> ${trueMinus(escapeHtml(npc.saves))}</p>
+              <p><strong>Skills</strong> ${escapeHtml(npc.skills)}</p>
+              <p><strong>Senses</strong> ${escapeHtml(npc.vision)}, passive Perception ${10 + mod(npc.stats.WIS) + (npc.className === 'Ranger' ? npc.pb : 0)}</p>
+              <p><strong>Languages</strong> ${escapeHtml(npc.languages.join(', '))}</p>
+              <p><strong>Level</strong> ${npc.level} (${npc.xp.toLocaleString()} XP benchmark)</p>
+              <p><strong>Proficiency Bonus</strong> ${formatSigned(npc.pb)}</p>
+            </div>
+            <h3>Talents &amp; Magic</h3>
+            ${leadIn('Signature Features', escapeHtml(npc.features.join(', ')))}
+            ${leadIn('Cantrips / Tricks', spells(npc.magic.cantrips))}
+            ${leadIn('Known Spells / Techniques', knownSpells(npc.magic.spells))}
+            ${npc.deity ? leadIn('Deity', escapeHtml(npc.deity)) : ''}
+            ${npc.patron ? leadIn('Patron', escapeHtml(cap(npc.patron))) : ''}
           </div>
-          <div>
-            <div class="detail-block"><strong>Build</strong> ${escapeHtml(npc.appearance.silhouette)}</div>
-            <div class="detail-block"><strong>Voice</strong> ${escapeHtml(npc.voice)}</div>
-            <div class="detail-block"><strong>Weight</strong> ${npc.weight} lb.</div>
-            <div class="detail-block"><strong>Size</strong> ${escapeHtml(npc.size)}</div>
-            <div class="detail-block"><strong>Style</strong> ${escapeHtml(npc.appearance.style)}</div>
+
+          <section>
+            <h3>Identity &amp; Bearing</h3>
+            <dl class="kv">
+              <dt>Gender</dt><dd>${escapeHtml(titleCase(npc.gender))} (${escapeHtml(npc.pronouns)})</dd>
+              <dt>Age</dt><dd>${npc.age}</dd>
+              <dt>Hometown</dt><dd>${escapeHtml(npc.hometown)}</dd>
+              <dt>Background</dt><dd>${escapeHtml(npc.background)}</dd>
+              <dt>Role</dt><dd>${escapeHtml(cap(npc.role))}</dd>
+              <dt>Build</dt><dd>${escapeHtml(cap(npc.appearance.silhouette))}</dd>
+              <dt>Voice</dt><dd>${escapeHtml(cap(npc.voice))}</dd>
+              <dt>Weight</dt><dd>${npc.weight} lb.</dd>
+              <dt>Size</dt><dd>${escapeHtml(npc.size)}</dd>
+              <dt>Style</dt><dd>${escapeHtml(cap(npc.appearance.style))}</dd>
+            </dl>
+          </section>
+
+          <section class="lead-in flow">
+            <h3>Appearance &amp; Kit</h3>
+            ${leadIn('Features', escapeHtml(cap([npc.appearance.hair, npc.appearance.eyes, npc.appearance.pattern].join(', '))))}
+            ${leadIn('Clothing', escapeHtml(cap(npc.gear.clothing)))}
+            ${leadIn('Accents', escapeHtml(cap(npc.gear.accents)))}
+            ${leadIn('Primary Gear', escapeHtml(cap(npc.gear.primary)))}
+            ${leadIn('Secondary Gear', escapeHtml(cap(npc.gear.secondary)))}
+            ${leadIn('Tools', escapeHtml(cap(npc.tools.join(', '))))}
+            ${leadIn('Familiar / Companion', escapeHtml(cap(npc.familiar)))}
+          </section>
+
+          <div class="note">
+            <h5>Temperament &amp; Hooks</h5>
+            ${leadIn('Personality', escapeHtml(cap(npc.personality)))}
+            ${leadIn('Ideal', escapeHtml(cap(npc.ideal)))}
+            ${leadIn('Bond', escapeHtml(cap(npc.bond)))}
+            ${leadIn('Flaw', escapeHtml(cap(npc.flaw)))}
+            ${leadIn('Quirk', escapeHtml(cap(npc.quirk)))}
+            ${leadIn('Detail', escapeHtml(cap(npc.notes)))}
           </div>
+
+          <section>
+            <h3>Field Tags</h3>
+            <ul class="chips">
+              <li>${escapeHtml(npc.race)}</li>
+              <li>${escapeHtml(npc.className)}</li>
+              <li>${escapeHtml(npc.subclass)}</li>
+              <li>Level ${npc.level}</li>
+              <li>${escapeHtml(cap(npc.rarity))}</li>
+              <li>${escapeHtml(npc.background)}</li>
+              <li>${escapeHtml(bookTitle(npc.role))}</li>
+            </ul>
+          </section>
         </div>
-
-        <div class="section-header">Appearance & Kit</div>
-        <div class="detail-line"><strong>Features</strong> ${escapeHtml([npc.appearance.hair, npc.appearance.eyes, npc.appearance.pattern].join(', '))}</div>
-        <div class="detail-line"><strong>Clothing</strong> ${escapeHtml(npc.gear.clothing)}</div>
-        <div class="detail-line"><strong>Accents</strong> ${escapeHtml(npc.gear.accents)}</div>
-        <div class="detail-line"><strong>Primary Gear</strong> ${escapeHtml(npc.gear.primary)}</div>
-        <div class="detail-line"><strong>Secondary Gear</strong> ${escapeHtml(npc.gear.secondary)}</div>
-        <div class="detail-line"><strong>Tools</strong> ${escapeHtml(npc.tools.join(', '))}</div>
-        <div class="detail-line"><strong>Familiar / Companion</strong> ${escapeHtml(npc.familiar)}</div>
-
-        <div class="section-header">Talents & Magic</div>
-        <div class="detail-line"><strong>Signature Features</strong> ${escapeHtml(npc.features.join(', '))}</div>
-        <div class="detail-line"><strong>Cantrips / Tricks</strong> ${escapeHtml(npc.magic.cantrips.length ? npc.magic.cantrips.join(', ') : 'None')}</div>
-        <div class="detail-line"><strong>Known Spells / Techniques</strong> ${escapeHtml(npc.magic.spells.length ? npc.magic.spells.join(', ') : 'None')}</div>
-        ${npc.deity ? `<div class="detail-line"><strong>Deity</strong> ${escapeHtml(npc.deity)}</div>` : ''}
-        ${npc.patron ? `<div class="detail-line"><strong>Patron</strong> ${escapeHtml(npc.patron)}</div>` : ''}
-
-        <div class="section-header">Temperament & Hooks</div>
-        <div class="detail-line"><strong>Personality</strong> ${escapeHtml(npc.personality)}</div>
-        <div class="detail-line"><strong>Ideal</strong> ${escapeHtml(npc.ideal)}</div>
-        <div class="detail-line"><strong>Bond</strong> ${escapeHtml(npc.bond)}</div>
-        <div class="detail-line"><strong>Flaw</strong> ${escapeHtml(npc.flaw)}</div>
-        <div class="detail-line"><strong>Quirk</strong> ${escapeHtml(npc.quirk)}</div>
-        <div class="detail-line"><strong>Detail</strong> ${escapeHtml(npc.notes)}</div>
-
-        <div class="section-header">Field Tags</div>
-        <div class="pill-line">
-          <span class="pill">${escapeHtml(npc.race)}</span>
-          <span class="pill">${escapeHtml(npc.className)}</span>
-          <span class="pill">${escapeHtml(npc.subclass)}</span>
-          <span class="pill">Level ${npc.level}</span>
-          <span class="pill">${escapeHtml(npc.rarity)}</span>
-          <span class="pill">${escapeHtml(npc.background)}</span>
-          <span class="pill">${escapeHtml(npc.role)}</span>
-        </div>
-      </div>
+      </article>
     `;
     els.saveBtn.disabled = false;
     els.copyBtn.disabled = false;
@@ -642,22 +689,24 @@
   function saveCurrent(){ const entry = currentEntry(); if (!entry) return; if (state.saved.some(s => s.id === entry.id)) { toast('Already saved to the codex'); return; } state.saved.unshift(entry); state.activeSource = 'saved'; state.activeIndex = 0; persist(); renderSidebar(); updatePager(); toast('Saved to the codex'); }
   function removeSaved(id){ const idx = state.saved.findIndex(s => s.id === id); if (idx === -1) return; state.saved.splice(idx,1); if (state.activeSource === 'saved') state.activeIndex = clamp(state.activeIndex, 0, state.saved.length - 1); persist(); renderSidebar(); updatePager(); if (state.activeSource === 'saved' && state.saved.length) renderNPC(currentEntry()); else if (state.activeSource === 'saved') resetDisplay(); toast('Removed from saved'); }
   function renderSidebarList(container, items, source){
-    if (!items.length) { container.innerHTML = `<div class="sb-empty">No ${source === 'saved' ? 'saved entries yet' : 'history yet'}</div>`; return; }
+    if (!items.length) { container.innerHTML = `<p class="empty">No ${source === 'saved' ? 'saved entries yet' : 'history yet'}</p>`; return; }
     container.innerHTML = '';
     items.forEach((item, index) => {
       const row = document.createElement('div');
-      row.className = 'sb-entry' + (state.activeSource === source && state.activeIndex === index ? ' active' : '');
+      const active = state.activeSource === source && state.activeIndex === index;
+      row.className = 'roster-item sb-entry' + (active ? ' on active' : '');
       row.innerHTML = `
-        <div class="sb-entry-icon"><i class="fas ${source === 'saved' ? 'fa-bookmark' : 'fa-feather-pointed'}"></i></div>
-        <div class="sb-entry-info">
-          <div class="sb-entry-name">${escapeHtml(item.name)}</div>
-          <div class="sb-entry-meta">${escapeHtml(item.race)} ${escapeHtml(item.className)} · ${escapeHtml(item.hometown)}</div>
-        </div>
-        <div class="sb-entry-level">Lv ${item.level}</div>
-        <div class="sb-entry-actions">${source === 'saved' ? '<button class="sb-action-btn delete" title="Remove"><i class="fas fa-trash"></i></button>' : ''}</div>`;
+        <button class="pick" type="button"${active ? ' aria-current="true"' : ''}>
+          <span class="nm">${escapeHtml(item.name)}</span>
+          <small>${escapeHtml(item.race)} ${escapeHtml(item.className)} · ${escapeHtml(item.hometown)}</small>
+          <span class="lv">Lv ${item.level}</span>
+        </button>
+        ${source === 'saved' ? `<button class="del delete" type="button" title="Remove" aria-label="Remove ${escapeHtml(item.name)}">&times;</button>` : ''}`;
       row.addEventListener('click', (e) => {
         if (e.target.closest('.delete')) return;
         setActive(source, index);
+        // in the drawer, close it so the chosen entry is not left hidden underneath
+        if (drawer.matches && state.sidebarOpen) { openSidebar(false); revealEntry(); }
       });
       const del = row.querySelector('.delete');
       if (del) del.addEventListener('click', (e) => { e.stopPropagation(); removeSaved(item.id); });
@@ -684,11 +733,59 @@
     fillSelect(els.originSelect, origins);
   }
   function fillSelect(el, options){ el.innerHTML = options.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join(''); }
-  function openSidebar(open){ state.sidebarOpen = open; els.sidebar.classList.toggle('collapsed', !open); els.overlay.classList.toggle('active', open); }
+  const split = $('codexSplit');
+  // up to 1060px the Character Index is a drawer over the page; wider, it sits beside the entry
+  const drawer = window.matchMedia('(max-width: 1060px)');
+  // the reader's open/closed choice for the side-by-side index (kept apart from npc_codex_state_v1)
+  const INDEX_PREF_KEY = 'npc_codex_index_open';
+  function readIndexPref(){ try { const v = localStorage.getItem(INDEX_PREF_KEY); return v === null ? true : v === '1'; } catch(e){ return true; } }
+  function writeIndexPref(open){ try { localStorage.setItem(INDEX_PREF_KEY, open ? '1' : '0'); } catch(e){} }
+  function openSidebar(open, opts = {}){
+    const hadFocus = els.sidebar.contains(document.activeElement);
+    state.sidebarOpen = open; els.sidebar.classList.toggle('collapsed', !open); els.overlay.classList.toggle('active', open && drawer.matches); split.classList.toggle('index-closed', !open); els.sidebarToggle.setAttribute('aria-expanded', String(open)); els.sidebarToggle.title = open ? 'Close Character Index' : 'Open Character Index';
+    if (opts.remember && !drawer.matches) writeIndexPref(open);
+    if (open && opts.focus && drawer.matches) els.sidebarCloseBtn.focus({preventScroll:true});
+    if (!open && (opts.focus || hadFocus)) els.sidebarToggle.focus({preventScroll:true});
+  }
+  function revealEntry(){
+    requestAnimationFrame(() => {
+      const out = els.display.closest('.codex-out');
+      const r = out.getBoundingClientRect();
+      if (r.top < 48 || r.top > window.innerHeight * .5) out.scrollIntoView({block:'start'});
+      const head = els.display.querySelector('.npc-name');
+      if (head) head.focus({preventScroll:true});
+    });
+  }
+  function focusables(){ return Array.from(els.sidebar.querySelectorAll('a[href], button:not([disabled])')).filter(el => el.getClientRects().length); }
 
-  els.sidebarToggle.addEventListener('click', () => openSidebar(!state.sidebarOpen));
-  els.sidebarCloseBtn.addEventListener('click', () => openSidebar(false));
-  els.overlay.addEventListener('click', () => openSidebar(false));
+  els.sidebarToggle.addEventListener('click', () => openSidebar(!state.sidebarOpen, {focus:true, remember:true}));
+  els.sidebarCloseBtn.addEventListener('click', () => openSidebar(false, {focus:true, remember:true}));
+  els.overlay.addEventListener('click', () => openSidebar(false, {focus:true}));
+  document.addEventListener('keydown', (e) => {
+    if (!state.sidebarOpen || !drawer.matches) return;
+    if (e.key === 'Escape') { openSidebar(false, {focus:true}); return; }
+    if (e.key !== 'Tab') return;
+    // keep Tab inside the open drawer instead of walking the page behind the overlay
+    const f = focusables(); if (!f.length) return;
+    const first = f[0], last = f[f.length - 1], at = document.activeElement;
+    if (!els.sidebar.contains(at)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    else if (e.shiftKey && at === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
+  });
+  document.querySelectorAll('[data-open-index]').forEach(link => link.addEventListener('click', (e) => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    openSidebar(true, {focus:true, remember:true});
+    requestAnimationFrame(() => {
+      if (drawer.matches) {
+        // scroll the drawer itself, never the page underneath it
+        els.sidebar.scrollTop = target === els.sidebar ? 0 : target.getBoundingClientRect().top - els.sidebar.getBoundingClientRect().top + els.sidebar.scrollTop - 8;
+      } else {
+        target.scrollIntoView({block:'start'});
+      }
+    });
+  }));
   els.generateBtn.addEventListener('click', () => addHistory(generateNPC()));
   els.saveBtn.addEventListener('click', saveCurrent);
   els.copyBtn.addEventListener('click', () => { const entry = currentEntry(); if (entry) copyText(sheetText(entry), 'Character sheet copied'); });
@@ -703,10 +800,29 @@
   }
 
   load();
+  openSidebar(drawer.matches ? false : readIndexPref());
+  // a resize or rotation never pops the drawer open, and returning to a wide window restores the reader's own choice
+  drawer.addEventListener('change', e => openSidebar(e.matches ? false : readIndexPref()));
   populateSelects();
   renderSidebar();
   if (currentEntry()) renderNPC(currentEntry()); else resetDisplay();
   updatePager();
+})();
+</script>
+<script src="../assets/world.js?v=3" defer></script>
+<script>
+/* the pixel road behind the page: the same local world as the library, no network */
+(function () {
+  'use strict';
+  var cvs = document.getElementById('scene');
+  if (!cvs) return;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function boot() {
+    if (!window.IsaiWorld || typeof window.IsaiWorld.mount !== 'function') { cvs.classList.add('scene-failed'); return; }
+    window.IsaiWorld.mount(cvs, { reduced: reduced });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>
 </body>

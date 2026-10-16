@@ -6,7 +6,7 @@
 <title>404 — This room isn't on the map | Isaiart's D&amp;D Resources</title>
 <meta name="description" content="You have wandered off the edge of the map. Here is the way back to the D&amp;D tools, generators and handbooks at dnd.isaiart.com.">
 <meta name="theme-color" content="#14100E">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <meta name="robots" content="noindex, follow">
 
 <meta property="og:type" content="website">
@@ -16,110 +16,149 @@
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Almendra:wght@400;700&family=Barlow+Condensed:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Italiana&family=Marcellus+SC&family=MedievalSharp&family=Press+Start+2P&family=Rye&family=Special+Elite&family=Uncial+Antiqua&display=swap" rel="stylesheet">
 <!-- absolute: GitHub Pages serves this file from arbitrary URLs -->
-<link rel="stylesheet" href="/assets/theme.css?v=3">
+<link rel="stylesheet" href="/assets/phb/phb.css">
+<link rel="stylesheet" href="/assets/theme.css?v=6">
 </head>
-<body>
+<body class="phb shell">
 
 <a class="skip" href="#ways-back">Skip to the ways back</a>
 
-<canvas class="world" id="scene" aria-hidden="true"></canvas>
+<canvas class="world phb-backdrop" id="scene" aria-hidden="true"></canvas>
 <div class="veil" aria-hidden="true"></div>
 
-<div class="rail">
-  <a class="rail-brand" href="/"><b>DND.ISAIART</b><span>Resources</span></a>
-  <div class="rail-ticker" aria-hidden="true">
-    <div class="ticker-track">
-      <span>The DM is improvising</span><span>Roll a survival check</span><span>You are off the map</span>
-      <span>There is nothing drawn here</span><span>Somebody fetch the pencil</span>
-      <span>The DM is improvising</span><span>Roll a survival check</span><span>You are off the map</span>
-      <span>There is nothing drawn here</span><span>Somebody fetch the pencil</span>
+<header class="bar">
+  <div class="bar-in">
+    <a class="mark" href="#lost">Off the <span>Map</span></a>
+    <nav aria-label="Sections">
+      <a href="#lost">The Wrong Turn</a>
+      <a href="#survival">Survival Check</a>
+      <a href="#ways-back">Ways Back</a>
+    </nav>
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>The Dungeon Master is stalling</span><span>Make a Wisdom (Survival) check</span><span>Here there be dragons</span>
+        <span>Naught is inked here</span><span>Someone fetch the quill</span>
+        <span>The Dungeon Master is stalling</span><span>Make a Wisdom (Survival) check</span><span>Here there be dragons</span>
+        <span>Naught is inked here</span><span>Someone fetch the quill</span>
+      </div>
     </div>
+    <a class="home" href="/">&larr; Home</a>
   </div>
-  <a class="rail-out" href="https://isaiart.com">isaiart.com &#8599;</a>
-</div>
+</header>
 
-<header class="hero">
-  <h1 class="hero-title">404 &mdash; <em>Off the map</em></h1>
-  <p class="hero-sub">The party walked past the last drawn room. There is only blank paper
-    out here, and the DM is stalling.</p>
+<div class="hero over">
+  <p class="logo">Error 404</p>
+  <h1>Off the <em>Map</em></h1>
+  <p class="banner">Here There Be Dragons</p>
 
-  <dl class="hud" id="hud">
-    <div><dt>Light</dt><dd id="hud-phase">&mdash;</dd></div>
-    <div><dt>Moon</dt><dd id="hud-moon">&mdash;</dd></div>
-    <div><dt>Weather</dt><dd id="hud-weather">&mdash;</dd></div>
+  <dl class="almanac" id="hud" aria-label="The table">
+    <div><dt>The Light</dt><dd id="hud-phase">&mdash;</dd></div>
+    <div><dt>The Moon</dt><dd id="hud-moon">&mdash;</dd></div>
+    <div><dt>The Sky</dt><dd id="hud-weather">&mdash;</dd></div>
     <div><dt>Initiative</dt><dd id="hud-extra">&mdash;</dd></div>
   </dl>
 
   <div class="hero-actions" id="hero-actions" hidden>
-    <button class="btn" type="button" id="btn-roll">Throw the dice</button>
+    <button class="phb-btn" type="button" id="btn-roll">Cast the Dice</button>
   </div>
-</header>
+</div>
 
-<main class="shelf" id="ways-back">
+<main id="ways-back-page">
+<section class="page float" id="lost" aria-labelledby="lost-title">
 
-  <div class="card">
-    <div class="lost-head">
-      <p>Whatever you were looking for, it isn't here. Either it was never drawn,
-        or it has been moved somewhere the map remembers better.</p>
-      <p id="asked" hidden>You asked for <span class="wrongpath" id="wrongpath"></span></p>
-      <p id="guess" hidden></p>
+  <header class="tool-head">
+    <h2 id="lost-title"><span class="chnum">Error 404 &middot; Off the Map</span>A Wrong Turn</h2>
+    <p class="sub">In which the party strays past the last inked room, and must find its way home.</p>
+  </header>
 
-      <div class="roll-line" id="roll-line" hidden>
-        <span>Survival check:</span>
-        <b id="d20">—</b>
-        <span id="verdict"></span>
-        <button class="btn dark" type="button" id="btn-reroll">Roll again</button>
+  <div class="descriptive">
+    <p>The party has wandered past the last room inked upon the map. Beyond lies only blank vellum. The candle gutters low, and the Dungeon Master is plainly stalling for time.</p>
+  </div>
+
+  <div class="prologue">
+    <p class="lead dropcap">Whatever you sought, it is not here. Either it was never drawn, or it has been moved to some place the map remembers better. Take heart: every road set down below leads somewhere that is drawn, and the d20 may yet be kind.</p>
+    <div class="quote">
+      <p>The map ends here. The world, alas, does not; it only stops troubling to explain itself.</p>
+      <span class="attr">A note in the margin of an unfinished map</span>
+    </div>
+  </div>
+  <p class="noind mt-2" id="asked" hidden>You sought <span class="wrongpath" id="wrongpath"></span></p>
+  <p class="noind guess" id="guess" hidden></p>
+
+  <div id="survival">
+    <div class="check" id="roll-line" hidden>
+      <div class="d20"><b id="d20">—</b></div>
+      <div aria-live="polite">
+        <span class="what">Wisdom (Survival) Check</span>
+        <p class="verdict" id="verdict"></p>
       </div>
+      <button class="phb-btn ghost sm" type="button" id="btn-reroll">Roll Again</button>
     </div>
   </div>
 
-  <section class="card">
-    <div class="sec-head"><span class="rn">&#9670;</span><h2>Ways back</h2><span class="ct">10</span></div>
-    <p class="sec-note">The places most people were actually trying to reach.</p>
-    <div class="grid">
-      <a class="item" href="/" style="--f:'Cinzel Decorative',serif;--c:#58180D;--fs:1.04rem">
-        <span class="n">00</span><span><span class="t">The Front Page</span><span class="d">Everything, indexed</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/cs/" style="--f:'Special Elite',monospace;--c:#2B3A44;--fs:1.02rem">
-        <span class="n">01</span><span><span class="t">Characters</span><span class="d">Sheet &amp; roster</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/loom-of-fates/" style="--f:'Cinzel Decorative',serif;--c:#23306E;--fs:1.04rem">
-        <span class="n">02</span><span><span class="t">The Loom of Fates</span><span class="d">Character generator</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/npcs/" style="--f:'Almendra',serif;--c:#6A4A12;--fs:1.28rem">
-        <span class="n">03</span><span><span class="t">NPC Codex</span><span class="d">Faces, voices and motives</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/monsters/" style="--f:'Creepster',cursive;--c:#7A1215;--fs:1.42rem;--ls:.05em">
-        <span class="n">04</span><span><span class="t">Monster Generator</span><span class="d">CR-balanced statblocks</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/artifacts/" style="--f:'Uncial Antiqua',serif;--c:#3D2A6B;--fs:1.12rem">
-        <span class="n">05</span><span><span class="t">Arcane Artifacts</span><span class="d">Legendary items with a history</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/cities/" style="--f:'Marcellus SC',serif;--c:#1E4620;--fs:1.08rem">
-        <span class="n">06</span><span><span class="t">Faerûn City Generator</span><span class="d">Settlements and the people in them</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/handbooks/" style="--f:'MedievalSharp',cursive;--c:#33302B;--fs:1.3rem">
-        <span class="n">07</span><span><span class="t">The Handbooks</span><span class="d">The whole shelf</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/planes/" style="--f:'Italiana',serif;--c:#23306E;--fs:1.3rem;--ls:.06em">
-        <span class="n">08</span><span><span class="t">Cosmology</span><span class="d">The planes of the Realms</span></span><span class="go">&#8594;</span></a>
-      <a class="item" href="/dice/" style="--f:'Rye',serif;--c:#8A3A12;--fs:1.08rem">
-        <span class="n">09</span><span><span class="t">Dice Roller</span><span class="d">Physical 3D dice</span></span><span class="go">&#8594;</span></a>
+  <section class="chap mt-5" id="ways-back">
+    <h2><span class="kick">The Roads Home</span>Ways Back</h2><span class="ct">ten roads</span>
+    <p class="sec-note">The roads most travellers were truly seeking.</p>
+    <div class="cols ways">
+      <a class="entry" href="/">
+        <span class="ln"><span class="t">The Front Page</span><span class="dots"></span><span class="n">&mdash;</span></span>
+        <span class="d">The whole archive, catalogued</span></a>
+      <a class="entry" href="/cs/">
+        <span class="ln"><span class="t">Characters</span><span class="dots"></span><span class="n">1</span></span>
+        <span class="d">Sheet &amp; roster</span></a>
+      <a class="entry" href="/loom-of-fates/">
+        <span class="ln"><span class="t">The Loom of Fates</span><span class="dots"></span><span class="n">2</span></span>
+        <span class="d">Character generator</span></a>
+      <a class="entry" href="/npcs/">
+        <span class="ln"><span class="t">NPC Codex</span><span class="dots"></span><span class="n">3</span></span>
+        <span class="d">Faces, voices and motives</span></a>
+      <a class="entry" href="/monsters/">
+        <span class="ln"><span class="t">Monster Maker</span><span class="dots"></span><span class="n">4</span></span>
+        <span class="d">CR-balanced stat blocks</span></a>
+      <a class="entry" href="/artifacts/">
+        <span class="ln"><span class="t">Arcane Artifacts</span><span class="dots"></span><span class="n">5</span></span>
+        <span class="d">Legendary items with a history</span></a>
+      <a class="entry" href="/cities/">
+        <span class="ln"><span class="t">Faerûn City Generator</span><span class="dots"></span><span class="n">6</span></span>
+        <span class="d">Settlements and the people in them</span></a>
+      <a class="entry" href="/handbooks/">
+        <span class="ln"><span class="t">The Handbooks</span><span class="dots"></span><span class="n">7</span></span>
+        <span class="d">The whole shelf</span></a>
+      <a class="entry" href="/planes/">
+        <span class="ln"><span class="t">Cosmology</span><span class="dots"></span><span class="n">8</span></span>
+        <span class="d">The planes of the Realms</span></a>
+      <a class="entry" href="/dice/">
+        <span class="ln"><span class="t">Dice Roller</span><span class="dots"></span><span class="n">9</span></span>
+        <span class="d">Physical 3D dice</span></a>
     </div>
   </section>
 
-  <div class="card colophon">
-    <span>Nothing was lost that a pencil cannot fix</span>
-    <span>dnd.isaiart.com</span>
+  <div class="colophon">
+    <div class="hr" aria-hidden="true"></div>
+    <p>Naught is lost that a quill cannot mend</p>
+    <p>dnd.isaiart.com</p>
   </div>
+
+  <span class="foot">Off the Map | Ways Back</span><span class="pnum">404</span>
+</section>
 </main>
 
-<footer class="foot">
+<footer class="site-foot over">
   <b>Isaiart</b>
-  <nav>
-    <a href="https://isaiart.com">Home</a>
-    <a href="/">D&amp;D</a>
-    <a href="https://music.isaiart.com">Music</a>
+  <nav aria-label="Isaiart">
+    <a href="https://isaiart.com" title="isaiart.com">The Keep</a>
+    <a href="/" title="D&amp;D resources">The Realms</a>
+    <a href="https://music.isaiart.com" title="music.isaiart.com">The Minstrel&#8217;s Hall</a>
   </nav>
-  <i>Not affiliated with Wizards of the Coast</i>
+  <i>Fonts and textures from Homebrewery (naturalcrit, MIT license). Unofficial fan content, not affiliated with or endorsed by Wizards of the Coast.</i>
 </footer>
 
+<script>
+/* table.js still calls setStat() from an older layout whose stat strip is gone;
+   the almanac above gets the same news through onState, so this is a no-op */
+window.setStat = window.setStat || function () {};
+</script>
 <script src="/assets/table.js?v=3" defer></script>
 <script>
 /* ── what did they ask for, and did they nearly get it right? ─────────── */
@@ -132,19 +171,20 @@
   var wrong = document.getElementById('wrongpath');
   if (asked && wrong) { wrong.textContent = path; asked.hidden = false; }
 
+  /* [path, name, full address to send them to if it has moved] */
   var KNOWN = [
     ['/cs', 'Characters'], ['/npcs', 'NPC Codex'],
     ['/loom-of-fates', 'The Loom of Fates'], ['/dice', 'Dice Roller'],
-    ['/artifacts', 'Arcane Artifacts'], ['/monsters', 'Monster Generator'],
+    ['/artifacts', 'Arcane Artifacts'], ['/monsters', 'Monster Maker'],
     ['/cities', 'Faerûn City Generator'], ['/spelljammer', 'Spelljammer Worlds'],
     ['/humans', 'Humans of Faerûn'],
-    ['/phb/wizard', 'Wizard Quick Reference'],
+    ['/phb/wizard', 'The Weave & Beyond', '/handbooks/arcanum-expanded/#wizard-glance'],
     ['/planes', 'Cosmology'], ['/handbooks', 'The Handbooks'],
     ['/handbooks/archmage-handbook', 'The Archmage Codex'],
     ['/handbooks/grand-theologica', 'The Grand Theologica'],
     ['/handbooks/arcanum-expanded', 'The Weave & Beyond'],
-    ['/handbooks/dnd-5e-megabook', 'The 5e Megabook'],
-    ['/handbooks/wizards', 'Forgotten Realms Wizard Handbook'],
+    ['/handbooks/dnd-5e-megabook', 'Everything D&D'],
+    ['/handbooks/wizards', 'The Weave & Beyond', '/handbooks/arcanum-expanded/#wizard'],
     ['/handbooks/sims4', 'The Sim'],
     ['/handbooks/artifacts', "The Arcanist's Compendium"],
     ['/npcs/ketheric', 'Ketheric Thorm'], ['/npcs/gortash', 'Lord Enver Gortash'],
@@ -178,8 +218,12 @@
   if (best && want.length >= 4 && bestD <= Math.max(2, Math.floor(want.length * 0.34))) {
     var g = document.getElementById('guess');
     if (g) {
-      g.innerHTML = 'Did you mean <a href="' + best[0] + '/" style="color:#58180D">' +
-                    best[1] + '</a>?';
+      var a = document.createElement('a');
+      a.href = best[2] || (best[0] + '/');
+      a.textContent = best[1];
+      g.textContent = 'Perhaps you meant ';
+      g.appendChild(a);
+      g.appendChild(document.createTextNode('?'));
       g.hidden = false;
     }
   }
@@ -189,13 +233,13 @@
 (function () {
   'use strict';
   var VERDICTS = [
-    [1,  'Natural 1. You are somehow more lost than before.'],
-    [5,  'You find a wall. It is the same wall.'],
-    [10, 'You find footprints. They are yours.'],
-    [14, 'North. Probably north.'],
-    [17, 'You spot the trail back to the map.'],
-    [19, 'You know exactly where you are, and choose not to say.'],
-    [20, 'Natural 20. The DM sighs and draws you a new room.']
+    [1,  'Natural 1. Somehow you are more lost than before.'],
+    [5,  'You find a wall. It is the selfsame wall.'],
+    [10, 'You find footprints in the dust. They are your own.'],
+    [14, 'North, by the moss upon the stones. Probably north.'],
+    [17, 'You spy the old road winding back onto the map.'],
+    [19, 'You know full well where you stand, and choose to say naught.'],
+    [20, 'Natural 20. The Dungeon Master sighs, and inks you a new room.']
   ];
   var d20 = document.getElementById('d20');
   var verdict = document.getElementById('verdict');

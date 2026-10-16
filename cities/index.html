@@ -1,1139 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faerûn City Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
-    <style>
-        :root {
-            --wood-dark: #1e1510;
-            --wood-mid: #2c1e14;
-            --wood-light: #3e2b1f;
-            --parchment: #ede5d5;
-            --parchment-dark: #d8cdb8;
-            --parchment-light: #f5f0e8;
-            --ink: #1e120a;
-            --ink-faded: #4a3020;
-            --crimson: #8a1c1c;
-            --crimson-light: #b02525;
-            --gold: #c5a059;
-            --gold-light: #e0bf7a;
-            --gold-dark: #8f7236;
-            --aged-paper: rgba(62,43,31,0.08);
-        }
-
-        * { box-sizing: border-box; }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'IM Fell English', serif;
-            background-color: var(--wood-dark);
-            background-image:
-                repeating-linear-gradient(87deg, transparent, transparent 8px, rgba(0,0,0,0.03) 8px, rgba(0,0,0,0.03) 9px),
-                repeating-linear-gradient(3deg, transparent, transparent 12px, rgba(255,255,255,0.015) 12px, rgba(255,255,255,0.015) 13px),
-                linear-gradient(160deg, #2a1a10 0%, #1a0e08 40%, #231508 100%);
-            color: var(--ink);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ── Scroll wrapper ── */
-        .page-wrap {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1rem 3rem;
-        }
-
-        /* ── Parchment paper effect ── */
-        .parchment {
-            background-color: var(--parchment);
-            background-image:
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E"),
-                radial-gradient(ellipse at 20% 20%, rgba(255,240,200,0.4) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 80%, rgba(180,140,90,0.12) 0%, transparent 50%);
-            position: relative;
-        }
-
-        .parchment::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(ellipse at center, transparent 60%, rgba(62,43,31,0.18) 100%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* ── HEADER ── */
-        .site-header {
-            background: linear-gradient(180deg, var(--wood-dark) 0%, rgba(30,21,16,0.97) 100%);
-            border-bottom: 2px solid var(--gold-dark);
-            position: sticky; top: 0; z-index: 100;
-            padding: 0.6rem 1rem;
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 1rem;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 1px 0 rgba(197,160,89,0.3) inset;
-        }
-
-        .header-title {
-            font-family: 'Cinzel Decorative', cursive;
-            color: var(--gold);
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 30px rgba(197,160,89,0.3);
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-
-        .header-title svg { flex-shrink: 0; }
-
-        .header-controls {
-            display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
-        }
-
-        /* ── FANTASY BUTTONS ── */
-        .btn {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 0.8rem;
-            letter-spacing: 0.06em;
-            padding: 0.5rem 1.25rem;
-            border: none; cursor: pointer;
-            display: flex; align-items: center; gap: 0.4rem;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.1s, box-shadow 0.1s, filter 0.2s;
-            text-transform: uppercase;
-            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
-        }
-
-        .btn::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .btn:hover::after { opacity: 1; }
-
-        .btn-dark {
-            background: linear-gradient(160deg, #4a332a, #2c1e14);
-            color: #dcbfa6;
-            box-shadow: 0 4px 0 #100908, 0 6px 14px rgba(0,0,0,0.5);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-        }
-        .btn-dark:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #100908, 0 8px 18px rgba(0,0,0,0.5); filter: brightness(1.1); }
-        .btn-dark:active { transform: translateY(3px); box-shadow: 0 1px 0 #100908; }
-
-        .btn-gold {
-            background: linear-gradient(160deg, #d4b36e, #8f7236);
-            color: #1e120a;
-            box-shadow: 0 4px 0 #5c4923, 0 6px 14px rgba(0,0,0,0.4);
-        }
-        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #5c4923, 0 8px 18px rgba(0,0,0,0.4); filter: brightness(1.1); }
-        .btn-gold:active { transform: translateY(3px); box-shadow: 0 1px 0 #5c4923; }
-
-        /* Shimmer animation on btn-gold */
-        .btn-gold::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 60%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transform: skewX(-20deg);
-            animation: shimmer 3s infinite 1s;
-        }
-        @keyframes shimmer { 0%,100%{left:-100%} 50%{left:150%} }
-
-        /* Spin animation for generate */
-        .btn-generating .icon-gen { animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── MAIN PARCHMENT SHEET ── */
-        .main-sheet {
-            margin-top: 1rem;
-            border: 1px solid var(--parchment-dark);
-            box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 120px rgba(0,0,0,0.4), inset 0 0 80px rgba(62,43,31,0.12);
-            overflow: hidden;
-        }
-
-        /* ── CITY HERO BLOCK ── */
-        .city-hero {
-            position: relative;
-            padding: 2rem 2rem 1.5rem;
-            border-bottom: 2px solid var(--parchment-dark);
-            background: linear-gradient(180deg, var(--parchment-light) 0%, var(--parchment) 100%);
-            overflow: hidden;
-        }
-
-        .city-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle at 10% 50%, rgba(138,28,28,0.06) 0%, transparent 50%),
-                radial-gradient(circle at 90% 50%, rgba(197,160,89,0.08) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .city-hero-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-            position: relative; z-index: 1;
-        }
-
-        .city-name-block { flex: 1; min-width: 0; }
-
-        #cityName {
-            font-family: 'Cinzel Decorative', cursive;
-            font-weight: 900;
-            color: var(--crimson);
-            text-shadow: 2px 3px 0 rgba(0,0,0,0.12), 0 0 40px rgba(138,28,28,0.2);
-            line-height: 1;
-            font-size: clamp(2rem, 5vw, 4rem);
-            transition: all 0.4s ease;
-        }
-
-        #cityTagline {
-            font-family: 'IM Fell English', serif;
-            font-style: italic;
-            color: var(--ink-faded);
-            font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-            display: block;
-            margin-top: 0.5rem;
-            opacity: 0.85;
-        }
-
-        .hero-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            margin-top: 0.75rem;
-        }
-
-        .hero-badge {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.6rem;
-            background: var(--ink);
-            color: var(--parchment);
-            border: 1px solid var(--gold-dark);
-            letter-spacing: 0.04em;
-            opacity: 0.9;
-        }
-
-        /* ── TAB NAVIGATION ── */
-        .tabs-bar {
-            display: flex;
-            border-bottom: 2px solid var(--parchment-dark);
-            background: linear-gradient(180deg, var(--parchment-light), var(--parchment));
-            overflow-x: auto;
-            scrollbar-width: none;
-            position: sticky; top: var(--header-h, 53px); z-index: 50;
-            box-shadow: 0 2px 8px rgba(62,43,31,0.15);
-        }
-        .tabs-bar::-webkit-scrollbar { display: none; }
-
-        .tab-btn {
-            font-family: 'Cinzel', serif;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            padding: 0.6rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--ink-faded);
-            cursor: pointer;
-            white-space: nowrap;
-            position: relative;
-            transition: color 0.2s, background 0.2s;
-            display: flex; align-items: center; gap: 0.3rem;
-        }
-
-        .tab-btn::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--crimson);
-            transform: scaleX(0);
-            transition: transform 0.25s cubic-bezier(.4,0,.2,1);
-        }
-
-        .tab-btn.active {
-            color: var(--crimson);
-            background: rgba(138,28,28,0.06);
-        }
-        .tab-btn.active::after { transform: scaleX(1); }
-        .tab-btn:hover:not(.active) { color: var(--ink); background: rgba(0,0,0,0.03); }
-
-        .tab-btn .material-symbols-outlined { font-size: 1rem; }
-
-        /* ── TAB PANELS ── */
-        .tab-panel {
-            display: none;
-            padding: 1.25rem;
-            animation: fadePanel 0.3s ease;
-        }
-        .tab-panel.active { display: block; }
-        @keyframes fadePanel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ── CARDS ── */
-        .card {
-            border: 1.5px solid rgba(93,64,55,0.4);
-            background: rgba(255,255,255,0.18);
-            padding: 1rem 1.1rem;
-            position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border: 1px solid rgba(93,64,55,0.2);
-            margin: 3px;
-            pointer-events: none;
-        }
-
-        /* Ink corner accents */
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 5px; right: 5px;
-            width: 10px; height: 10px;
-            border-top: 2px solid var(--crimson);
-            border-right: 2px solid var(--crimson);
-            opacity: 0.5;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(62,43,31,0.2);
-            background: rgba(255,255,255,0.28);
-        }
-
-        /* Staggered card entrance animation */
-        @keyframes cardReveal {
-            from { opacity: 0; transform: translateY(16px) scale(0.98); }
-            to   { opacity: 1; transform: translateY(0)  scale(1); }
-        }
-
-        .card.animate-in {
-            animation: cardReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
-        .card-title {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 0.75rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--crimson);
-            display: flex; align-items: center; gap: 0.35rem;
-            padding-bottom: 0.5rem;
-            margin-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(93,64,55,0.35);
-        }
-        .card-title .material-symbols-outlined { font-size: 1rem; }
-
-        /* ── STATS ROW ── */
-        .stat-row {
-            display: flex; justify-content: space-between; align-items: baseline;
-            padding: 0.25rem 0;
-            border-bottom: 1px dotted rgba(93,64,55,0.2);
-        }
-        .stat-row:last-child { border-bottom: none; }
-
-        .stat-label {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.78rem;
-            color: var(--ink-faded);
-            font-weight: 600;
-        }
-        .stat-value {
-            font-style: italic;
-            font-size: 0.85rem;
-            color: var(--ink);
-            text-align: right;
-            max-width: 55%;
-        }
-
-        /* ── PROGRESS BARS ── */
-        .bar-track {
-            height: 5px;
-            background: var(--parchment-dark);
-            border: 1px solid rgba(93,64,55,0.25);
-            overflow: hidden;
-        }
-        .bar-fill {
-            height: 100%;
-            transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-            width: 0%;
-        }
-        .bar-gold { background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); }
-        .bar-crimson { background: linear-gradient(90deg, #6a1212, var(--crimson-light)); }
-        .bar-violet { background: linear-gradient(90deg, #4a148c, #7b1fa2); }
-
-        /* ── DEMOGRAPHICS ── */
-        .demo-row {
-            display: grid; grid-template-columns: 80px 1fr 32px; gap: 0.4rem; align-items: center;
-            margin-bottom: 0.35rem;
-        }
-        .demo-name {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.72rem;
-            color: var(--ink-faded);
-            text-align: right;
-            padding-right: 0.4rem;
-        }
-        .demo-pct {
-            font-size: 0.72rem;
-            font-style: italic;
-            color: var(--ink-faded);
-        }
-
-        /* ── NPC CARDS ── */
-        .npc-card {
-            display: flex; gap: 0.75rem; align-items: flex-start;
-            padding: 0.8rem;
-            border: 1.5px solid rgba(93,64,55,0.35);
-            background: rgba(255,255,255,0.12);
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .npc-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 3px; height: 100%;
-            background: var(--crimson);
-            transform: scaleY(0);
-            transform-origin: bottom;
-            transition: transform 0.25s ease;
-        }
-        .npc-card:hover::before { transform: scaleY(1); }
-        .npc-card:hover { background: rgba(255,255,255,0.22); transform: translateX(2px); }
-
-        .npc-avatar {
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: white;
-            flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,0.2);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .npc-name {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--crimson);
-            line-height: 1.2;
-        }
-        .npc-role {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.7rem;
-            color: var(--gold-dark);
-            letter-spacing: 0.04em;
-        }
-        .npc-sub {
-            font-size: 0.78rem;
-            font-style: italic;
-            color: var(--ink-faded);
-            margin-top: 0.15rem;
-        }
-
-        /* ── DISTRICTS ── */
-        .district-item {
-            padding: 0.5rem 0.6rem;
-            border-left: 3px solid var(--gold-dark);
-            margin-bottom: 0.5rem;
-            background: rgba(255,255,255,0.1);
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .district-item:hover { border-left-color: var(--crimson); background: rgba(255,255,255,0.18); }
-        .district-name {
-            font-family: 'Cinzel', serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--ink);
-        }
-        .district-desc {
-            font-size: 0.78rem;
-            font-style: italic;
-            color: var(--ink-faded);
-            margin-top: 0.15rem;
-        }
-
-        /* ── CHRONICLES (description block) ── */
-        .chronicle-block {
-            background: linear-gradient(135deg, var(--parchment-light), var(--parchment));
-            border: 1.5px solid rgba(93,64,55,0.35);
-            padding: 1.25rem 1.5rem;
-            position: relative;
-        }
-        .chronicle-block::before {
-            content: '"';
-            position: absolute;
-            top: -0.5rem; left: 0.5rem;
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 4rem;
-            color: var(--crimson);
-            opacity: 0.15;
-            line-height: 1;
-        }
-        #cityDescription {
-            font-size: 0.95rem;
-            line-height: 1.8;
-            color: var(--ink);
-            text-align: justify;
-            position: relative; z-index: 1;
-        }
-        #cityDescription::first-letter {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 3rem;
-            float: left;
-            line-height: 0.8;
-            margin-right: 0.4rem;
-            color: var(--crimson);
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-        }
-
-        /* ── THREAT BLOCK ── */
-        .threat-block {
-            border: 2px solid var(--crimson);
-            padding: 0.85rem 1rem;
-            background: rgba(138,28,28,0.06);
-            position: relative;
-            overflow: hidden;
-        }
-        .threat-block::before {
-            content: '⚠';
-            position: absolute;
-            right: 1rem; bottom: 0.5rem;
-            font-size: 3rem;
-            opacity: 0.05;
-            line-height: 1;
-        }
-
-        /* ── RUMOR BLOCK ── */
-        .rumor-text {
-            font-style: italic;
-            font-size: 0.88rem;
-            color: var(--ink-faded);
-            padding: 0.75rem 1rem;
-            background: rgba(0,0,0,0.04);
-            border-left: 3px solid var(--gold-dark);
-            line-height: 1.6;
-        }
-
-        /* ── LAW BLOCK ── */
-        .law-block {
-            border-left: 4px solid var(--crimson);
-            padding: 0.6rem 0.8rem;
-            background: rgba(138,28,28,0.05);
-            font-size: 0.85rem;
-        }
-        .law-label {
-            font-family: 'Cinzel', serif;
-            font-size: 0.65rem;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-            color: var(--crimson);
-            text-transform: uppercase;
-            margin-bottom: 0.25rem;
-        }
-
-        /* ── SECTION DIVIDERS ── */
-        .divider {
-            display: flex; align-items: center; gap: 0.75rem;
-            margin: 1rem 0;
-            opacity: 0.5;
-        }
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, var(--ink), transparent);
-        }
-        .divider span {
-            color: var(--crimson);
-            font-size: 1rem;
-        }
-
-        /* ── TOAST ── */
-        .toast {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(4rem);
-            background: linear-gradient(135deg, #2c1e14, #1e1510);
-            color: var(--gold-light);
-            font-family: 'Cinzel', serif;
-            font-size: 0.78rem;
-            letter-spacing: 0.06em;
-            padding: 0.6rem 1.5rem;
-            border: 1px solid var(--gold-dark);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            z-index: 9999;
-            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s;
-            opacity: 0;
-            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
-        }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* ── GRID LAYOUTS ── */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } .city-hero-inner { flex-direction: column; } }
-
-        /* ── SCROLL PROGRESS BAR ── */
-        #scroll-progress {
-            position: fixed; top: 0; left: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--crimson));
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.1s;
-            box-shadow: 0 0 6px rgba(197,160,89,0.6);
-        }
-
-        /* ── GENERATE FLASH ── */
-        @keyframes pageFlash {
-            0% { background-color: rgba(197,160,89,0); }
-            15% { background-color: rgba(197,160,89,0.12); }
-            100% { background-color: rgba(197,160,89,0); }
-        }
-        .main-sheet.generating { animation: pageFlash 0.6s ease; }
-
-        /* ── INLINE TAG ── */
-        .tag-pill {
-            display: inline-block;
-            background: rgba(62,43,31,0.1);
-            border: 1px solid rgba(93,64,55,0.3);
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.7rem;
-            padding: 0.1rem 0.4rem;
-            margin: 0.1rem;
-            color: var(--ink-faded);
-        }
-
-        /* Loading skeleton */
-        .skeleton { animation: pulse 1.5s ease-in-out infinite; background: rgba(62,43,31,0.08); border-radius: 3px; }
-        @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
-
-        /* ══ HERALDRY ══ */
-        .hero-arms {
-            width: 122px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
-            animation: armsRise 0.6s cubic-bezier(0.22,1,0.36,1) both;
-        }
-        .hero-arms:hover { transform: translateY(-3px) scale(1.03); }
-        .hero-arms svg { width: 100%; height: auto; display: block; }
-        @keyframes armsRise { from { opacity: 0; transform: translateY(14px) scale(0.94); } to { opacity: 1; transform: none; } }
-
-        .arms-stage {
-            display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr);
-            gap: 0.75rem;
-            align-items: stretch;
-        }
-        .arms-side { display: grid; grid-template-rows: 1.35fr 1fr; gap: 0.75rem; min-width: 0; }
-
-        .plate {
-            border: 1.5px solid rgba(93,64,55,0.4);
-            background:
-                radial-gradient(ellipse at 50% 22%, rgba(255,250,235,0.65) 0%, transparent 62%),
-                rgba(255,255,255,0.16);
-            padding: 0.9rem 0.9rem 0.7rem;
-            position: relative;
-            display: flex; flex-direction: column;
-            min-width: 0;
-            overflow: hidden;
-        }
-        .plate::before {
-            content: '';
-            position: absolute; inset: 3px;
-            border: 1px solid rgba(93,64,55,0.2);
-            pointer-events: none;
-        }
-        .plate-label {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.68rem;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: var(--ink-faded);
-            text-align: center;
-            margin-bottom: 0.5rem;
-            position: relative; z-index: 1;
-        }
-        .plate-art {
-            flex: 1;
-            display: flex; align-items: center; justify-content: center;
-            min-height: 0;
-            position: relative; z-index: 1;
-        }
-        .plate-art svg { width: 100%; height: 100%; max-height: 100%; display: block; }
-        .plate-main .plate-art svg { max-height: 460px; }
-        .plate-banner .plate-art svg { max-height: 220px; }
-        .plate-seal .plate-art svg { max-width: 172px; }
-
-        .plate-note {
-            font-family: 'IM Fell English', serif;
-            font-style: italic;
-            font-size: 0.72rem;
-            color: var(--ink-faded);
-            text-align: center;
-            margin-top: 0.4rem;
-            position: relative; z-index: 1;
-        }
-
-        /* Chip rows for shape / flag pickers */
-        .chip-row { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; margin-top: 0.55rem; position: relative; z-index: 1; }
-        .chip {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.63rem;
-            letter-spacing: 0.05em;
-            padding: 0.18rem 0.5rem;
-            border: 1px solid rgba(93,64,55,0.4);
-            background: rgba(62,43,31,0.05);
-            color: var(--ink-faded);
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
-        }
-        .chip:hover { background: rgba(138,28,28,0.1); color: var(--ink); }
-        .chip.active { background: var(--ink); color: var(--parchment); border-color: var(--gold-dark); }
-
-        /* Blazon */
-        .blazon {
-            font-family: 'IM Fell English', serif;
-            font-size: 0.95rem;
-            line-height: 1.65;
-            color: var(--ink);
-            text-align: justify;
-        }
-        .blazon::first-letter {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 2.1rem;
-            float: left;
-            line-height: 0.86;
-            padding: 0.1rem 0.35rem 0 0;
-            color: var(--crimson);
-        }
-        .motto-line {
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            letter-spacing: 0.08em;
-            color: var(--crimson);
-        }
-        .motto-gloss { font-style: italic; font-size: 0.8rem; color: var(--ink-faded); }
-
-        /* Livery swatches */
-        .livery-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
-        .livery-chip { display: flex; align-items: center; gap: 0.35rem; }
-        .livery-swatch {
-            width: 26px; height: 26px;
-            border: 1.5px solid var(--ink);
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.3);
-        }
-        .livery-name { font-family: 'IM Fell English SC', serif; font-size: 0.7rem; color: var(--ink-faded); }
-
-        /* Symbolism list */
-        .symbol-item {
-            display: flex; gap: 0.5rem;
-            padding: 0.4rem 0;
-            border-bottom: 1px dotted rgba(93,64,55,0.28);
-            font-size: 0.82rem;
-        }
-        .symbol-item:last-child { border-bottom: none; }
-        .symbol-what { font-family: 'Cinzel', serif; font-weight: 600; color: var(--ink); white-space: nowrap; }
-        .symbol-why { font-style: italic; color: var(--ink-faded); }
-
-        /* Workshop button row */
-        .workshop { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .workshop .btn { font-size: 0.72rem; padding: 0.42rem 0.9rem; }
-
-        /* Seed strip in the header */
-        .seed-strip {
-            display: flex; align-items: center; gap: 0.35rem;
-            font-family: 'IM Fell English SC', serif;
-            font-size: 0.68rem;
-            color: var(--gold-dark);
-            letter-spacing: 0.08em;
-        }
-        .seed-strip input {
-            width: 92px;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid var(--gold-dark);
-            color: var(--gold-light);
-            font-family: inherit; font-size: 0.68rem;
-            padding: 0.22rem 0.4rem;
-            letter-spacing: 0.06em;
-        }
-        .seed-strip input:focus { outline: none; border-color: var(--gold-light); }
-
-        @media (max-width: 900px) { .arms-stage { grid-template-columns: 1fr; } }
-        @media (max-width: 600px) {
-            .hero-arms { width: 96px; margin-top: 1rem; }
-            .plate-main .plate-art svg { max-height: 360px; }
-        }
-
-        /* ══ NARROW HEADER ══
-           The header wraps on small screens; the tabs bar follows its real
-           height through --header-h rather than a hard-coded offset. */
-        @media (max-width: 700px) {
-            .site-header { flex-wrap: wrap; padding: 0.5rem 0.7rem; gap: 0.5rem; }
-            .header-title { font-size: 0.9rem; letter-spacing: 0.02em; }
-            .header-controls { width: 100%; gap: 0.4rem; }
-            .header-controls .btn { font-size: 0.68rem; padding: 0.4rem 0.7rem; flex: 1 1 auto; justify-content: center; }
-            .seed-strip { order: 3; }
-            .seed-strip input { width: 74px; }
-        }
-        @media (max-width: 380px) {
-            .header-title { font-size: 0.78rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faerûn City Generator</title>
+<meta name="description" content="Faerûn City Generator: a Dungeon Master's gazetteer that conjures villages, towns and cities of the Forgotten Realms from a single shareable seed, with districts, demographics, factions, heraldry, threats and notable residents.">
+<link rel="stylesheet" href="../assets/phb/phb.css">
+<!-- Cinzel and IM Fell English are drawn inside the heraldry SVGs (motto scroll, seal rim) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ===== Faerûn City Generator: page-specific additions on top of phb.css ===== */
+:root{--bar-h:48px}
+#scroll-progress{position:fixed;top:0;left:0;z-index:70;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--hi));box-shadow:0 0 6px rgba(217,167,58,.5);pointer-events:none;transition:width .1s}
+.bar .mark{font-size:22px}
+.bar #barConjure{flex:none}
+.page [id],.page.tool{scroll-margin-top:calc(var(--header-h,48px) + 12px)}
+
+/* ---------- title + controls ---------- */
+.phb .tool-head h1{column-span:none}
+.phb .tool-head h1 .chnum{font-size:17px;letter-spacing:.16em;margin-bottom:4px}
+.phb .gen-bar{align-items:flex-end;margin:4px 0 6px}
+.phb .gen-bar .seed-field{flex:0 1 230px}
+.phb .gen-bar .seed-field input{font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.phb .gen-bar .icon-gen{display:inline-block;font-family:sans-serif;font-size:.62em;color:var(--gold);transition:transform .6s}
+.phb .btn-generating .icon-gen{animation:gen-spin .6s linear}
+@keyframes gen-spin{to{transform:rotate(360deg)}}
+.phb .gen-keys{margin:0 0 4px}
+
+/* ---------- gazetteer entry heading ---------- */
+.entry-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:26px;align-items:center;margin:30px 0 0}
+.entry-head .kicker{font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.14em;color:var(--caption);margin:0 0 2px;text-indent:0}
+.page #cityName{font-family:'MrEaves',serif;font-weight:normal;font-size:62px;line-height:.9;color:var(--head);margin:0;border:0;overflow-wrap:break-word;hyphens:auto}
+.page #cityTagline{display:block;margin:6px 0 0;font-style:italic;font-size:16px;line-height:1.3;color:#5b4a35;text-indent:0}
+.page #heroBadges{margin:10px 0 0}
+.hero-arms{position:relative;isolation:isolate;width:132px;margin:0;padding:10px 8px 6px;background:none;border:0;cursor:pointer;border-radius:4px}
+.hero-arms::before{content:"";position:absolute;inset:-14px -22px;z-index:-1;background:url(../assets/phb/tex/stain8.webp) center/100% 100% no-repeat;opacity:.7;pointer-events:none}
+.hero-arms svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 4px rgba(40,20,8,.35));transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.hero-arms:hover svg{transform:translateY(-2px) scale(1.03)}
+.entry-rule{height:6px;margin:12px 0 16px;background:url(../assets/phb/tex/redTriangle.png) center/100% 100% no-repeat}
+.page p.opening{text-indent:0;margin-bottom:6px}
+
+/* ---------- sections and ledgers ---------- */
+.page .sect > h2{margin-top:2px}
+.page .sect + .sect > h2,.page .sect + .sect > .avoid:first-child > h2{margin-top:20px}
+.page .sect > .avoid:first-child > h2{margin-top:2px}
+.page .sect > h2 .chnum{display:block;font-size:15px;letter-spacing:.16em;color:var(--rule);margin-bottom:2px}
+.page table.ledger{table-layout:fixed}
+.page table.ledger th[scope=row]{width:34%;padding-right:8px;font-weight:bold;vertical-align:top}
+.page table.ledger td{overflow-wrap:anywhere}
+.page table.ledger caption{padding-bottom:4px}
+.page .langs,.page .religions{text-indent:0;font-style:italic}
+
+/* gauges: thin inked bars for wealth, crime, magic and the census */
+.bar-track{position:relative;height:7px;margin:4px 0 2px;background:rgba(255,251,238,.6);border:1px solid rgba(88,24,13,.42);border-radius:1px;overflow:hidden;box-shadow:inset 0 1px 1px rgba(60,30,10,.15)}
+.bar-fill{height:100%;width:0;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.bar-gold{background:linear-gradient(90deg,#8f7236,var(--gold))}
+.bar-crimson{background:linear-gradient(90deg,#7c2414,var(--head))}
+.bar-violet{background:linear-gradient(90deg,#5b3a66,#3d2347)}
+.page table.census td{vertical-align:middle}
+.page table.census td:first-child{white-space:nowrap}
+.page table.census td.share{width:46%}
+.page table.census td.pct{width:3.4em;text-align:right;font-variant-numeric:tabular-nums}
+.page table.census .bar-track{margin:0}
+
+/* districts as 5e run-in entries */
+.page .district-item{text-indent:0;margin:0 0 6px}
+.page .district-item + .district-item{text-indent:0}
+.page .district-item .district-name{font-weight:bold;font-style:italic}
+
+/* ---------- arms ---------- */
+.arms-stage{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:18px 34px;align-items:start;margin:8px 0 6px}
+.arms-col{min-width:0}
+.arms-side{display:grid;gap:14px}
+.page .arms-col > h3:first-of-type,.page .arms-side h3{margin-top:4px}
+.page .arms-col .note{margin:26px 0 4px}
+.page .end-cta{margin:4px 0 0}
+.phb .end-cta .phb-btn{max-width:100%;white-space:normal;text-align:center;line-height:1.1}
+.plate{position:relative;isolation:isolate;min-width:0;margin:0;padding:16px 14px 10px;text-align:center}
+.plate::before{content:"";position:absolute;inset:0 2%;z-index:-1;background:center/100% 100% no-repeat;opacity:.62;pointer-events:none}
+.plate-main::before{background-image:url(../assets/phb/tex/stain1.webp)}
+.plate-banner::before{background-image:url(../assets/phb/tex/stain10.webp)}
+.plate-seal::before{background-image:url(../assets/phb/tex/stain3.webp)}
+.page .plate-label{margin:0 0 8px;font-family:'MrEaves',serif;font-size:20px;line-height:1;color:var(--head);border:0}
+.plate-art{display:flex;align-items:center;justify-content:center}
+.plate-art svg{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 6px rgba(40,20,8,.28))}
+.plate-main .plate-art svg{max-height:470px}
+.plate-banner .plate-art svg{max-height:230px}
+.plate-seal .plate-art svg{max-width:170px}
+.plate-note{margin-top:6px;font-family:'Walter',cursive;font-size:12.5px;color:var(--caption)}
+/* shield and banner pickers: a ruled grid of choices, no tag-cloud separators */
+.page .plate .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.4em,1fr));gap:2px 10px;align-items:start;margin:12px 0 2px;padding:8px 0 0;border-top:1px solid rgba(88,24,13,.28);font-size:12.5px;line-height:1.25;text-align:left}
+.phb .plate .chips > * + *::before{content:none}
+.page .plate .chips > li{min-width:0}
+.page .plate .chips button{display:inline-block;max-width:100%;padding:4px 0 2px;text-align:left;border-bottom-color:transparent;text-decoration:underline 2px transparent;text-underline-offset:4px}
+.page .plate .chips button:hover{border-bottom-color:transparent;text-decoration-color:var(--gold)}
+.page .plate .chips button[aria-pressed="true"]{border-bottom-color:transparent;text-decoration-color:var(--head)}
+.page .blazon{text-indent:0;font-style:italic;text-align:left;hyphens:auto}
+.motto{clear:both;margin:12px 0 12px;text-align:center}
+.motto-line{font-family:'MrEaves',serif;font-size:24px;line-height:1.05;color:var(--head);letter-spacing:.03em}
+.motto-gloss{font-style:italic;font-size:13px;color:var(--caption);margin-top:2px}
+.livery-row{display:flex;flex-wrap:wrap;gap:8px 16px;margin:4px 0 10px}
+.livery-chip{display:flex;align-items:center;gap:7px}
+.livery-swatch{width:24px;height:24px;border:1.5px solid var(--ink);border-radius:2px;box-shadow:inset 0 2px 4px rgba(255,255,255,.3),inset 0 -3px 5px rgba(0,0,0,.28)}
+.livery-name{font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.03em;color:var(--head)}
+.page table.meaning td.symbol-what{width:34%;font-weight:bold}
+.page table.meaning{margin-top:4px}
+.page .note .phb-toolbar{margin:8px 0 2px;gap:8px}
+.page .sect .note{margin:22px 0}
+
+/* ---------- threats ---------- */
+.page .threat{font-weight:bold;text-indent:0}
+.page table.rumor-roll td.rumor-text{font-style:italic}
+.page table.rumor-roll td.rumor-text::before{content:"\201C"}
+.page table.rumor-roll td.rumor-text::after{content:"\201D"}
+
+/* ---------- residents and rumors: DMG roll tables, set inside a column ---------- */
+.page table.roll th:first-child,.page table.roll td:first-child{width:3.2em;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.page table.roll.no-die thead th:first-child{display:none}
+.page table.roll.no-die td:first-child{width:auto;text-align:left;white-space:normal}
+.page table.residents td.who{width:46%}
+.page .end-cta-wrap{margin-top:8px}
+.page table.residents .npc-name{display:block;font-weight:bold;color:var(--ink)}
+.page table.residents .npc-role{display:block;font-style:italic;color:var(--caption)}
+
+/* ---------- regenerate: a quick wash of fresh ink ---------- */
+@keyframes inkIn{from{opacity:.25;filter:blur(1.5px)}to{opacity:1;filter:none}}
+.reveal{animation:inkIn .45s ease-out both}
+.generating{animation:inkIn .5s ease-out}
+body:not(.ready) .entry-page{display:none}
+
+@media (max-width:760px){
+  .bar .home{font-size:16px;padding:12px 0 12px 4px}
+  .bar nav a{padding:13px 10px 12px}
+  .phb .end-cta .phb-btn{font-size:19px;padding:9px 14px 7px}
+  .page .plate .chips{grid-template-columns:repeat(auto-fill,minmax(7.6em,1fr));gap:0 12px;margin-top:8px;font-size:13.5px}
+  .phb .tool-head h1 .chnum{font-size:14px;letter-spacing:.12em}
+  .phb .gen-bar #generateBtn{order:1}
+  .phb .gen-bar #copyBtn{order:2;margin-left:0}
+  .page .plate .chips button{display:flex;align-items:center;width:max-content;min-height:44px;padding:6px 0 4px}
+  .phb main{padding-left:16px;padding-right:16px}
+  .entry-head{grid-template-columns:minmax(0,1fr);text-align:center}
+  .entry-head > div{min-width:0}
+  .hero-arms{order:-1;justify-self:center;width:104px;margin:4px 0 10px}
+  .page #cityName{font-size:46px}
+  .page #cityTagline{font-size:15px}
+  .page #heroBadges{justify-content:center}
+  .arms-stage{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .arms-col{display:contents}
+  .arms-stage .plate{margin-bottom:14px}
+  .page .arms-col .note{order:2}
+  .plate-main .plate-art svg{max-height:380px}
+  .phb .gen-bar .seed-field{flex:1 1 100%}
+  .page table.census td.share{width:38%}
+}
+@media print{#scroll-progress{display:none}.reveal,.generating{animation:none}}
+/* credit line, set as in the handbooks */
+.page .credits{font-family:'ScalySans',sans-serif;font-size:11.5px;line-height:1.35;color:var(--caption);text-align:center;margin-top:18px;font-style:italic;text-indent:0}
+</style>
 </head>
-<body>
+<body class="phb">
+<a class="skip" href="#mainSheet">Skip to the settlement</a>
+<div id="scroll-progress" aria-hidden="true"></div>
 
-<!-- Scroll progress -->
-<div id="scroll-progress"></div>
-
-<!-- STICKY HEADER -->
-<header class="site-header">
-    <div class="header-title">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)">
-            <path d="M12 2C10 6 10 8 12 10C14 8 14 6 12 2M12 22C10.5 19 10.5 17.5 12 15.5C13.5 17.5 13.5 19 12 22M7.5 14C6.5 15.4 6.5 17 6.5 17C8 16.5 9.5 16.5 10.5 16.5C11 16 11.5 15.5 12 15.5C12.5 15.5 13 16 13.5 16.5C14.5 16.5 16 16.5 17.5 17C17.5 17 17.5 15.4 16.5 14C15.5 12.6 13.9 11.5 12 11.5C10.1 11.5 8.5 12.6 7.5 14M4.5 6.5C5.6 6.5 6.5 7.4 6.5 8.5C6.5 9.6 5.6 10.5 4.5 10.5C3.4 10.5 2.5 9.6 2.5 8.5C2.5 7.4 3.4 6.5 4.5 6.5M19.5 6.5C20.6 6.5 21.5 7.4 21.5 8.5C21.5 9.6 20.6 10.5 19.5 10.5C18.4 10.5 17.5 9.6 17.5 8.5C17.5 7.4 18.4 6.5 19.5 6.5Z"/>
-        </svg>
-        Faerûn City Generator
-    </div>
-    <div class="header-controls">
-        <label class="seed-strip" title="Every settlement is built from a seed. Type one in and press Enter to summon that exact place again.">
-            <span class="material-symbols-outlined" style="font-size:0.95rem">tag</span>
-            <input id="seedInput" type="text" spellcheck="false" aria-label="Settlement seed">
-        </label>
-        <button id="generateBtn" class="btn btn-dark">
-            <span class="material-symbols-outlined icon-gen" style="font-size:1rem">auto_awesome</span>
-            <span id="generateBtnText">Conjure Settlement</span>
-        </button>
-        <button id="copyBtn" class="btn btn-gold">
-            <span class="material-symbols-outlined" style="font-size:1rem">content_copy</span>
-            <span>Transcribe</span>
-        </button>
-    </div>
+<header class="bar noprint">
+  <div class="bar-in">
+    <a class="mark" href="#top">Faerûn <span>Cities</span></a>
+    <nav id="tabsBar" aria-label="Sections of the entry">
+      <a href="#tab-overview" data-tab="overview" class="on" aria-current="true">Overview</a>
+      <a href="#tab-society" data-tab="society">Society</a>
+      <a href="#tab-power" data-tab="power">Powers</a>
+      <a href="#tab-places" data-tab="places">Places</a>
+      <a href="#tab-arms" data-tab="arms">Arms</a>
+      <a href="#tab-lore" data-tab="lore">Lore</a>
+      <a href="#tab-threats" data-tab="threats">Threats</a>
+      <a href="#tab-people" data-tab="people">People</a>
+    </nav>
+    <button class="phb-btn ghost sm hide-mobile" id="barConjure" type="button" title="Conjure a new settlement">Conjure</button>
+    <a class="home" href="../">&larr; Home</a>
+  </div>
 </header>
 
-<div class="page-wrap">
-    <div id="mainSheet" class="main-sheet parchment" style="display:none">
+<main>
 
-        <!-- HERO -->
-        <div class="city-hero">
-            <div class="city-hero-inner">
-                <div class="city-name-block">
-                    <div id="cityName">—</div>
-                    <span id="cityTagline">Awaiting conjuration...</span>
-                    <div class="hero-badges" id="heroBadges"></div>
-                </div>
-                <div class="hero-arms" id="heroArms" title="Open the Arms roll"></div>
-            </div>
+<!-- ==================== PAGE 1: the tool, then the entry's opening ==================== -->
+<section class="page tool" id="top">
+  <header class="tool-head">
+    <h1><span class="chnum">A Dungeon Master's Gazetteer</span>Faerûn City Generator</h1>
+    <p class="sub">Every hamlet, hold, and teeming city of the Realms, set down in ink from a single seed. Share the seed, and another may summon the very same place.</p>
+  </header>
+
+  <div class="phb-toolbar gen-bar">
+    <div class="phb-field seed-field" title="Every settlement is built from a seed. Type one in and press Enter to summon that exact place again.">
+      <label for="seedInput">Seed of the Settlement</label>
+      <input id="seedInput" type="text" spellcheck="false" autocomplete="off" aria-label="Settlement seed" aria-describedby="seedHint">
+    </div>
+    <button id="copyBtn" class="phb-btn ghost push" type="button" title="Copy the whole entry as Markdown">Transcribe</button>
+    <button id="generateBtn" class="phb-btn lg" type="button"><span class="icon-gen" aria-hidden="true">&#9670;</span> <span id="generateBtnText">Conjure Settlement</span> <span class="icon-gen" aria-hidden="true">&#9670;</span></button>
+  </div>
+  <p class="phb-keys gen-keys" id="seedHint">Type any word or number as the seed and press <kbd>Enter</kbd> to recall that exact place. <span class="hide-mobile">A link to this page keeps its seed.</span></p>
+
+  <div id="mainSheet" style="display:none">
+    <div class="sect" id="tab-overview">
+      <div class="entry-head">
+        <div>
+          <p class="kicker" id="entryKicker">Gazetteer of the Realms</p>
+          <h2 id="cityName">&mdash;</h2>
+          <span id="cityTagline">Awaiting conjuration...</span>
+          <ul class="chips" id="heroBadges"></ul>
         </div>
+        <button type="button" class="hero-arms" id="heroArms" title="Open the Arms roll" aria-label="Arms of the settlement: open the roll of arms"></button>
+      </div>
+      <div class="entry-rule" aria-hidden="true"></div>
 
-        <!-- TAB NAVIGATION -->
-        <nav class="tabs-bar" id="tabsBar">
-            <button class="tab-btn active" data-tab="overview">
-                <span class="material-symbols-outlined">public</span> Overview
-            </button>
-            <button class="tab-btn" data-tab="society">
-                <span class="material-symbols-outlined">groups</span> Society
-            </button>
-            <button class="tab-btn" data-tab="power">
-                <span class="material-symbols-outlined">diversity_3</span> Powers
-            </button>
-            <button class="tab-btn" data-tab="places">
-                <span class="material-symbols-outlined">explore</span> Places
-            </button>
-            <button class="tab-btn" data-tab="arms">
-                <span class="material-symbols-outlined">shield_with_heart</span> Arms
-            </button>
-            <button class="tab-btn" data-tab="lore">
-                <span class="material-symbols-outlined">history_edu</span> Lore
-            </button>
-            <button class="tab-btn" data-tab="threats">
-                <span class="material-symbols-outlined">warning</span> Threats
-            </button>
-            <button class="tab-btn" data-tab="people">
-                <span class="material-symbols-outlined">person</span> People
-            </button>
-        </nav>
+      <div class="cols">
+        <p class="dropcap lead opening" id="cityDescription"></p>
 
-        <!-- ═══ OVERVIEW TAB ═══ -->
-        <div class="tab-panel active" id="tab-overview">
-            <div class="grid-3">
-                <!-- Vitals -->
-                <div class="card animate-in" style="animation-delay:0.04s">
-                    <div class="card-title"><span class="material-symbols-outlined">info</span> Vitals</div>
-                    <div class="stat-row"><span class="stat-label">Population</span><span class="stat-value" id="population">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Size</span><span class="stat-value" id="citySize">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Density</span><span class="stat-value" id="density">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Government</span><span class="stat-value" id="government">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Ruler</span><span class="stat-value" id="ruler">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Location</span><span class="stat-value" id="location">—</span></div>
-                </div>
-                <!-- Geography -->
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">landscape</span> Geography</div>
-                    <div class="stat-row"><span class="stat-label">Terrain</span><span class="stat-value" id="terrain">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Climate</span><span class="stat-value" id="climate">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Water</span><span class="stat-value" id="waterSource">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Elevation</span><span class="stat-value" id="elevation">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Atmosphere</span><span class="stat-value" id="atmosphere">—</span></div>
-                </div>
-                <!-- Economy -->
-                <div class="card animate-in" style="animation-delay:0.12s">
-                    <div class="card-title"><span class="material-symbols-outlined">monetization_on</span> Economy</div>
-                    <div class="stat-row"><span class="stat-label">Wealth</span><span class="stat-value" id="wealth">—</span></div>
-                    <div class="bar-track" style="margin:0.4rem 0 0.7rem"><div id="wealthBar" class="bar-fill bar-gold"></div></div>
-                    <div class="stat-row"><span class="stat-label">Industries</span><span class="stat-value" id="industries">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Exports</span><span class="stat-value" id="exports">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Partners</span><span class="stat-value" id="tradePartners">—</span></div>
-                </div>
-                <!-- Architecture -->
-                <div class="card animate-in" style="animation-delay:0.16s">
-                    <div class="card-title"><span class="material-symbols-outlined">castle</span> Architecture</div>
-                    <div class="stat-row"><span class="stat-label">Style</span><span class="stat-value" id="architectureStyle">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Features</span><span class="stat-value" id="architectureFeatures">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Materials</span><span class="stat-value" id="buildingMaterials">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Defenses</span><span class="stat-value" id="fortifications">—</span></div>
-                </div>
-                <!-- Demographics -->
-                <div class="card animate-in" style="animation-delay:0.20s" style="grid-column: span 2">
-                    <div class="card-title"><span class="material-symbols-outlined">groups</span> Demographics</div>
-                    <div id="raceDemographics" class="space-y-2"></div>
-                </div>
-                <!-- Languages -->
-                <div class="card animate-in" style="animation-delay:0.24s">
-                    <div class="card-title"><span class="material-symbols-outlined">translate</span> Languages</div>
-                    <div id="languagesDisplay" style="font-style:italic; font-size:0.85rem; line-height:1.7; color:var(--ink-faded)"></div>
-                </div>
-            </div>
+        <table class="ledger">
+          <caption>Vitals</caption>
+          <tbody>
+            <tr><th scope="row">Population</th><td id="population">&mdash;</td></tr>
+            <tr><th scope="row">Size</th><td id="citySize">&mdash;</td></tr>
+            <tr><th scope="row">Density</th><td id="density">&mdash;</td></tr>
+            <tr><th scope="row">Government</th><td id="government">&mdash;</td></tr>
+            <tr><th scope="row">Ruler</th><td id="ruler">&mdash;</td></tr>
+            <tr><th scope="row">Location</th><td id="location">&mdash;</td></tr>
+          </tbody>
+        </table>
+
+        <table class="ledger">
+          <caption>Geography</caption>
+          <tbody>
+            <tr><th scope="row">Terrain</th><td id="terrain">&mdash;</td></tr>
+            <tr><th scope="row">Climate</th><td id="climate">&mdash;</td></tr>
+            <tr><th scope="row">Water</th><td id="waterSource">&mdash;</td></tr>
+            <tr><th scope="row">Elevation</th><td id="elevation">&mdash;</td></tr>
+            <tr><th scope="row">Atmosphere</th><td id="atmosphere">&mdash;</td></tr>
+          </tbody>
+        </table>
+
+        <table class="ledger">
+          <caption>Economy</caption>
+          <tbody>
+            <tr><th scope="row">Wealth</th><td><span id="wealth">&mdash;</span><div class="bar-track" aria-hidden="true"><div id="wealthBar" class="bar-fill bar-gold"></div></div></td></tr>
+            <tr><th scope="row">Industries</th><td id="industries">&mdash;</td></tr>
+            <tr><th scope="row">Exports</th><td id="exports">&mdash;</td></tr>
+            <tr><th scope="row">Partners</th><td id="tradePartners">&mdash;</td></tr>
+          </tbody>
+        </table>
+
+        <table class="ledger">
+          <caption>Architecture</caption>
+          <tbody>
+            <tr><th scope="row">Style</th><td id="architectureStyle">&mdash;</td></tr>
+            <tr><th scope="row">Features</th><td id="architectureFeatures">&mdash;</td></tr>
+            <tr><th scope="row">Materials</th><td id="buildingMaterials">&mdash;</td></tr>
+            <tr><th scope="row">Defenses</th><td id="fortifications">&mdash;</td></tr>
+          </tbody>
+        </table>
+
+        <table class="census">
+          <caption>Demographics</caption>
+          <thead><tr><th>People</th><th>Share of the Census</th><th class="c">%</th></tr></thead>
+          <tbody id="raceDemographics"></tbody>
+        </table>
+
+        <div class="avoid">
+          <h4>Languages</h4>
+          <p class="langs" id="languagesDisplay"></p>
         </div>
+      </div>
+    </div>
+  </div>
+  <span class="foot">Faerûn City Generator</span><span class="pnum">1</span>
+</section>
 
-        <!-- ═══ SOCIETY TAB ═══ -->
-        <div class="tab-panel" id="tab-society">
-            <div class="grid-3">
-                <div class="card animate-in" style="animation-delay:0.04s">
-                    <div class="card-title"><span class="material-symbols-outlined">church</span> Religion</div>
-                    <div id="religions" style="font-style:italic; font-size:0.85rem; line-height:1.7; color:var(--ink)"></div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">gavel</span> Crime & Magic</div>
-                    <div style="margin-bottom:0.6rem">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:0.2rem">
-                            <span class="stat-label">Crime</span>
-                            <span style="font-style:italic;font-size:0.75rem;color:var(--ink-faded)" id="crime"></span>
-                        </div>
-                        <div class="bar-track"><div id="crimeBar" class="bar-fill bar-crimson"></div></div>
-                    </div>
-                    <div>
-                        <div style="display:flex;justify-content:space-between;margin-bottom:0.2rem">
-                            <span class="stat-label">Magic</span>
-                            <span style="font-style:italic;font-size:0.75rem;color:var(--ink-faded)" id="magic"></span>
-                        </div>
-                        <div class="bar-track"><div id="magicBar" class="bar-fill bar-violet"></div></div>
-                    </div>
-                    <div class="stat-row" style="margin-top:0.75rem"><span class="stat-label">Classes</span><span class="stat-value" id="popularClasses">—</span></div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.12s">
-                    <div class="card-title"><span class="material-symbols-outlined">celebration</span> Culture</div>
-                    <div class="stat-row"><span class="stat-label">Festival</span><span class="stat-value" id="festival">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Cuisine</span><span class="stat-value" id="cuisine">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Tradition</span><span class="stat-value" id="tradition">—</span></div>
-                </div>
-            </div>
+<!-- ==================== PAGE 2: society, powers, places ==================== -->
+<section class="page tool entry-page" id="pg-society">
+  <div class="cols">
+    <div class="sect" id="tab-society">
+      <h2>Society</h2>
+      <div class="avoid">
+        <h3>Religion</h3>
+        <p class="religions" id="religions"></p>
+      </div>
+
+      <table class="ledger">
+        <caption>Crime &amp; Magic</caption>
+        <tbody>
+          <tr><th scope="row">Crime</th><td><span id="crime"></span><div class="bar-track" aria-hidden="true"><div id="crimeBar" class="bar-fill bar-crimson"></div></div></td></tr>
+          <tr><th scope="row">Magic</th><td><span id="magic"></span><div class="bar-track" aria-hidden="true"><div id="magicBar" class="bar-fill bar-violet"></div></div></td></tr>
+          <tr><th scope="row">Classes</th><td id="popularClasses">&mdash;</td></tr>
+        </tbody>
+      </table>
+
+      <table class="ledger">
+        <caption>Culture</caption>
+        <tbody>
+          <tr><th scope="row">Festival</th><td id="festival">&mdash;</td></tr>
+          <tr><th scope="row">Cuisine</th><td id="cuisine">&mdash;</td></tr>
+          <tr><th scope="row">Tradition</th><td id="tradition">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sect" id="tab-power">
+      <div class="avoid">
+        <h2>Powers</h2>
+        <table class="ledger">
+          <caption>Factions &amp; Guilds</caption>
+          <tbody>
+            <tr><th scope="row">Ruling Faction</th><td id="majorFaction">&mdash;</td></tr>
+            <tr><th scope="row">Guilds</th><td id="guilds">&mdash;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <table class="ledger">
+        <caption>Shadow Powers</caption>
+        <tbody>
+          <tr><th scope="row">Secret Societies</th><td id="secretSocieties">&mdash;</td></tr>
+          <tr><th scope="row">Criminal</th><td id="criminalOrgs">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sect" id="tab-places">
+      <h2>Places</h2>
+      <h3>Districts</h3>
+      <div id="districtsList"></div>
+      <table class="ledger">
+        <caption>Notable Locations</caption>
+        <tbody>
+          <tr><th scope="row">Taverns</th><td id="taverns">&mdash;</td></tr>
+          <tr><th scope="row">Shops</th><td id="shops">&mdash;</td></tr>
+          <tr><th scope="row">Landmarks</th><td id="landmarks">&mdash;</td></tr>
+          <tr><th scope="row">Magic Sites</th><td id="magicalLocations">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <span class="foot">Faerûn City Generator</span><span class="pnum">2</span>
+</section>
+
+<!-- ==================== PAGE 3: arms ==================== -->
+<section class="page tool entry-page" id="pg-arms">
+  <div class="sect" id="tab-arms">
+    <h2><span class="chnum">Roll of Arms</span>Arms &amp; Heraldry</h2>
+    <div class="arms-stage">
+      <div class="arms-col">
+        <figure class="plate plate-main">
+          <h4 class="plate-label">Arms of the City</h4>
+          <div class="plate-art" id="armsAchievement"></div>
+          <ul class="chips" id="shapePicker" aria-label="Shield shape"></ul>
+        </figure>
+
+        <h3>Blazon</h3>
+        <p class="blazon" id="blazonText"></p>
+        <div class="motto">
+          <div class="motto-line" id="mottoText"></div>
+          <div class="motto-gloss" id="mottoGloss"></div>
         </div>
+        <table class="ledger">
+          <tbody>
+            <tr><th scope="row">Shield</th><td id="armsShapeName">&mdash;</td></tr>
+            <tr><th scope="row">Crest</th><td id="armsCrestName">&mdash;</td></tr>
+            <tr><th scope="row">Supporters</th><td id="armsSupporters">&mdash;</td></tr>
+            <tr><th scope="row">Granted</th><td id="armsGranted">&mdash;</td></tr>
+          </tbody>
+        </table>
 
-        <!-- ═══ POWERS TAB ═══ -->
-        <div class="tab-panel" id="tab-power">
-            <div class="grid-2">
-                <div class="card animate-in" style="animation-delay:0.04s">
-                    <div class="card-title"><span class="material-symbols-outlined">shield</span> Ruling Faction</div>
-                    <p id="majorFaction" style="font-weight:bold; font-size:1rem; color:var(--crimson); margin-bottom:0.6rem;font-family:'Cinzel',serif"></p>
-                    <div class="stat-row"><span class="stat-label">Guilds</span><span class="stat-value" id="guilds">—</span></div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">mask</span> Shadow Powers</div>
-                    <div class="stat-row"><span class="stat-label">Secret Soc.</span><span class="stat-value" id="secretSocieties">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Criminal</span><span class="stat-value" id="criminalOrgs">—</span></div>
-                </div>
-            </div>
+        <div class="note">
+          <h5>Herald's Workshop</h5>
+          <p>Bid the heralds draw the arms anew, or carry the arms, banner, and seal away as SVG to paint on shields and parchment.</p>
+          <div class="phb-toolbar">
+            <button class="phb-btn sm" id="rerollArmsBtn" type="button">Re-emblazon</button>
+            <button class="phb-btn ghost sm" id="downloadArmsBtn" type="button">Arms SVG</button>
+            <button class="phb-btn ghost sm" id="downloadBannerBtn" type="button">Banner SVG</button>
+            <button class="phb-btn ghost sm" id="downloadSealBtn" type="button">Seal SVG</button>
+            <button class="phb-btn ghost sm" id="copyBlazonBtn" type="button">Copy Blazon</button>
+          </div>
         </div>
+      </div>
 
-        <!-- ═══ PLACES TAB ═══ -->
-        <div class="tab-panel" id="tab-places">
-            <div class="grid-2">
-                <div class="card animate-in" style="animation-delay:0.04s">
-                    <div class="card-title"><span class="material-symbols-outlined">holiday_village</span> Districts</div>
-                    <div id="districtsList"></div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">explore</span> Notable Locations</div>
-                    <div class="stat-row"><span class="stat-label">Taverns</span><span class="stat-value" id="taverns">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Shops</span><span class="stat-value" id="shops">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Landmarks</span><span class="stat-value" id="landmarks">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Magic Sites</span><span class="stat-value" id="magicalLocations">—</span></div>
-                </div>
-            </div>
+      <div class="arms-col arms-side">
+        <figure class="plate plate-banner">
+          <h4 class="plate-label">Banner &amp; Livery</h4>
+          <div class="plate-art" id="armsBanner"></div>
+          <ul class="chips" id="flagPicker" aria-label="Banner shape"></ul>
+        </figure>
+        <figure class="plate plate-seal">
+          <h4 class="plate-label">Seal of the Council</h4>
+          <div class="plate-art" id="armsSeal"></div>
+          <figcaption class="plate-note" id="sealNote"></figcaption>
+        </figure>
+
+        <div>
+          <h3>Livery &amp; Meaning</h3>
+          <div class="livery-row" id="liveryRow"></div>
+          <table class="meaning">
+            <thead><tr><th>Element</th><th>Signifies</th></tr></thead>
+            <tbody id="symbolismList"></tbody>
+          </table>
         </div>
+      </div>
+    </div>
+  </div>
+  <span class="foot">Faerûn City Generator</span><span class="pnum">3</span>
+</section>
 
-        <!-- ═══ ARMS TAB ═══ -->
-        <div class="tab-panel" id="tab-arms">
-            <div class="arms-stage">
-                <div class="plate plate-main animate-in" style="animation-delay:0.04s">
-                    <div class="plate-label">Arms of the City</div>
-                    <div class="plate-art" id="armsAchievement"></div>
-                    <div class="chip-row" id="shapePicker"></div>
-                </div>
-                <div class="arms-side">
-                    <div class="plate plate-banner animate-in" style="animation-delay:0.08s">
-                        <div class="plate-label">Banner &amp; Livery</div>
-                        <div class="plate-art" id="armsBanner"></div>
-                        <div class="chip-row" id="flagPicker"></div>
-                    </div>
-                    <div class="plate plate-seal animate-in" style="animation-delay:0.12s">
-                        <div class="plate-label">Seal of the Council</div>
-                        <div class="plate-art" id="armsSeal"></div>
-                        <div class="plate-note" id="sealNote"></div>
-                    </div>
-                </div>
-            </div>
+<!-- ==================== PAGE 4: lore, threats, people ==================== -->
+<section class="page tool entry-page" id="pg-lore">
+  <div class="cols">
+    <div class="sect" id="tab-lore">
+      <h2>Lore</h2>
+      <table class="ledger">
+        <caption>History</caption>
+        <tbody>
+          <tr><th scope="row">Founding</th><td id="historyEvent">&mdash;</td></tr>
+          <tr><th scope="row">Founded</th><td id="foundedYear">&mdash;</td></tr>
+          <tr><th scope="row">Heraldry</th><td id="heraldry">&mdash;</td></tr>
+        </tbody>
+      </table>
+      <div class="avoid">
+        <h3>Notable Law</h3>
+        <p class="noind" id="notableLaw"></p>
+      </div>
+      <table class="ledger">
+        <caption>Local Color</caption>
+        <tbody>
+          <tr><th scope="row">Atmosphere</th><td id="atmosphereLore">&mdash;</td></tr>
+          <tr><th scope="row">Festival</th><td id="festivalLore">&mdash;</td></tr>
+          <tr><th scope="row">Tradition</th><td id="traditionLore">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-            <div class="grid-2" style="margin-top:0.75rem">
-                <div class="card animate-in" style="animation-delay:0.16s">
-                    <div class="card-title"><span class="material-symbols-outlined">history_edu</span> Blazon</div>
-                    <p class="blazon" id="blazonText"></p>
-                    <div class="divider"><span>&#10087;</span></div>
-                    <div style="text-align:center;margin-bottom:0.6rem">
-                        <div class="motto-line" id="mottoText"></div>
-                        <div class="motto-gloss" id="mottoGloss"></div>
-                    </div>
-                    <div class="stat-row"><span class="stat-label">Shield</span><span class="stat-value" id="armsShapeName">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Crest</span><span class="stat-value" id="armsCrestName">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Supporters</span><span class="stat-value" id="armsSupporters">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Granted</span><span class="stat-value" id="armsGranted">—</span></div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.20s">
-                    <div class="card-title"><span class="material-symbols-outlined">palette</span> Livery &amp; Meaning</div>
-                    <div class="livery-row" id="liveryRow"></div>
-                    <div id="symbolismList"></div>
-                </div>
-            </div>
+    <div class="sect" id="tab-threats">
+      <div class="avoid">
+        <h2>Threats</h2>
+        <h3>Major Threat</h3>
+        <p class="threat" id="majorThreat"></p>
+      </div>
+      <div class="note">
+        <h5>Adventure Hook: Active Quest</h5>
+        <p id="quest"></p>
+      </div>
+      <table class="roll rumor-roll" id="rumorRoll">
+        <caption>Tavern Rumors</caption>
+        <thead><tr><th class="c" id="rumorDie">d4</th><th>Rumor Heard in the Taproom</th></tr></thead>
+        <tbody id="rumorList"></tbody>
+      </table>
+      <!-- the joined rumor line the generator writes; the roll table above is built from it -->
+      <p id="rumors" hidden></p>
+      <div class="avoid">
+        <h3>Political Intrigue</h3>
+        <p class="noind" id="politicalIntrigue"></p>
+      </div>
+    </div>
 
-            <div class="card animate-in" style="animation-delay:0.24s; margin-top:0.75rem">
-                <div class="card-title"><span class="material-symbols-outlined">draw</span> Herald's Workshop</div>
-                <div class="workshop">
-                    <button class="btn btn-dark" id="rerollArmsBtn">
-                        <span class="material-symbols-outlined" style="font-size:0.9rem">autorenew</span> Re-emblazon
-                    </button>
-                    <button class="btn btn-dark" id="downloadArmsBtn">
-                        <span class="material-symbols-outlined" style="font-size:0.9rem">download</span> Arms SVG
-                    </button>
-                    <button class="btn btn-dark" id="downloadBannerBtn">
-                        <span class="material-symbols-outlined" style="font-size:0.9rem">flag</span> Banner SVG
-                    </button>
-                    <button class="btn btn-dark" id="downloadSealBtn">
-                        <span class="material-symbols-outlined" style="font-size:0.9rem">approval</span> Seal SVG
-                    </button>
-                    <button class="btn btn-gold" id="copyBlazonBtn">
-                        <span class="material-symbols-outlined" style="font-size:0.9rem">content_copy</span> Copy Blazon
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="sect avoid" id="tab-people">
+      <h2>People</h2>
+      <table class="roll residents">
+        <caption>Notable Residents</caption>
+        <thead><tr><th class="c" id="npcDie">d6</th><th>Resident</th><th>Race and Manner</th></tr></thead>
+        <tbody id="npcList"></tbody>
+      </table>
+    </div>
+  </div>
 
-        <!-- ═══ LORE TAB ═══ -->
-        <div class="tab-panel" id="tab-lore">
-            <div class="chronicle-block animate-in" style="animation-delay:0.04s; margin-bottom:0.75rem">
-                <p id="cityDescription"></p>
-            </div>
-            <div class="grid-2">
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">history</span> History</div>
-                    <div class="stat-row"><span class="stat-label">Founding</span><span class="stat-value" id="historyEvent">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Founded</span><span class="stat-value" id="foundedYear">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Heraldry</span><span class="stat-value" id="heraldry">—</span></div>
-                    <div class="divider"><span>⚖</span></div>
-                    <div class="law-block">
-                        <div class="law-label">⚖ Notable Law</div>
-                        <div id="notableLaw" style="font-style:italic;font-size:0.85rem;color:var(--ink)"></div>
-                    </div>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.12s">
-                    <div class="card-title"><span class="material-symbols-outlined">auto_stories</span> Local Color</div>
-                    <div class="stat-row"><span class="stat-label">Atmosphere</span><span class="stat-value" id="atmosphereLore">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Festival</span><span class="stat-value" id="festivalLore">—</span></div>
-                    <div class="stat-row"><span class="stat-label">Tradition</span><span class="stat-value" id="traditionLore">—</span></div>
-                </div>
-            </div>
-        </div>
+  <div class="end-cta-wrap">
+    <div class="hr" aria-hidden="true"></div>
+    <div class="phb-toolbar center end-cta">
+      <button class="phb-btn lg" id="endConjure" type="button"><span aria-hidden="true">&#9670;</span> Conjure Another Settlement <span aria-hidden="true">&#9670;</span></button>
+    </div>
+  </div>
+  <p class="credits">Fonts and textures from Homebrewery (naturalcrit, MIT license). Unofficial fan content, not affiliated with or endorsed by Wizards of the Coast.</p>
+  <span class="foot">Faerûn City Generator</span><span class="pnum">4</span>
+</section>
 
-        <!-- ═══ THREATS TAB ═══ -->
-        <div class="tab-panel" id="tab-threats">
-            <div class="grid-2" style="margin-bottom:0.75rem">
-                <div class="threat-block animate-in" style="animation-delay:0.04s">
-                    <div class="law-label" style="color:var(--crimson)">⚠ Major Threat</div>
-                    <p id="majorThreat" style="font-weight:bold;font-size:0.95rem;font-family:'Cinzel',serif;color:var(--ink);margin-top:0.25rem"></p>
-                </div>
-                <div class="card animate-in" style="animation-delay:0.08s">
-                    <div class="card-title"><span class="material-symbols-outlined">adventure_banner</span> Active Quest</div>
-                    <p id="quest" style="font-style:italic;font-size:0.88rem;color:var(--ink);line-height:1.6"></p>
-                </div>
-            </div>
-            <div class="card animate-in" style="animation-delay:0.12s">
-                <div class="card-title"><span class="material-symbols-outlined">record_voice_over</span> Tavern Rumors</div>
-                <div class="rumor-text">"<span id="rumors"></span>"</div>
-            </div>
-            <div class="card animate-in" style="animation-delay:0.16s; margin-top:0.75rem">
-                <div class="card-title"><span class="material-symbols-outlined">policy</span> Political Intrigue</div>
-                <p id="politicalIntrigue" style="font-style:italic;font-size:0.88rem;color:var(--ink);line-height:1.6"></p>
-            </div>
-        </div>
-
-        <!-- ═══ PEOPLE TAB ═══ -->
-        <div class="tab-panel" id="tab-people">
-            <div class="grid-3" id="npcList"></div>
-        </div>
-
-    </div><!-- end main-sheet -->
-</div><!-- end page-wrap -->
+</main>
 
 <!-- Toast notification -->
-<div class="toast" id="toast">✦ Transcribed to scroll!</div>
+<div class="phb-toast" id="toast" role="status" aria-live="polite">&#10022; Transcribed to scroll!</div>
 
 <script src="../assets/heraldry.js"></script>
 <script src="../assets/heraldry-charges.js"></script>
@@ -1518,12 +867,13 @@ function generate(seed){
 // ─── DISPLAY ──────────────────────────────────────────────────────────────────
 function set(id,text){ const el=document.getElementById(id); if(el) el.textContent=text; }
 
+// Fresh ink: the entry's heading, tables and boxes fade in each time a place is conjured.
 function triggerCardAnimations(){
-    document.querySelectorAll('.tab-panel.active .card, .tab-panel.active .chronicle-block, .tab-panel.active .threat-block').forEach((card,i)=>{
-        card.style.animation='none';
+    document.querySelectorAll('#mainSheet .entry-head, .page table, .page .note, .arms-stage .plate').forEach((card,i)=>{
+        card.classList.remove('reveal');
         card.offsetHeight; // reflow
-        card.style.animationDelay=`${0.04+i*0.05}s`;
-        card.style.animation='cardReveal 0.45s cubic-bezier(0.22,1,0.36,1) both';
+        card.style.animationDelay=`${Math.min(i,10)*0.03}s`;
+        card.classList.add('reveal');
     });
 }
 
@@ -1532,8 +882,10 @@ function displayCity(c){
     // Hero
     set('cityName',c.name);
     set('cityTagline',c.tagline);
+    set('entryKicker',c.location);
+    document.title=`${c.name} · Faerûn City Generator`;
     const badges=document.getElementById('heroBadges');
-    badges.innerHTML=`<span class="hero-badge">${c.size}</span><span class="hero-badge">${c.government}</span><span class="hero-badge">${c.terrain}</span><span class="hero-badge">${c.wealth}</span><span class="hero-badge">${c.dominantRace}</span>`;
+    badges.innerHTML=`<li class="hero-badge">${c.size}</li><li class="hero-badge">${c.government}</li><li class="hero-badge">${c.terrain}</li><li class="hero-badge">${c.wealth}</li><li class="hero-badge">${c.dominantRace}</li>`;
     renderArms(c);
     const seedField=document.getElementById('seedInput');
     if(seedField && document.activeElement!==seedField) seedField.value=c.seed;
@@ -1563,9 +915,10 @@ function displayCity(c){
     const rd=document.getElementById('raceDemographics');
     if(rd){
         rd.innerHTML='';
-        c.racePercentages.forEach((p,i)=>{
+        // Census order: the largest people first, as a gazetteer would list them.
+        c.racePercentages.map((p,i)=>[p,i]).sort((a,b)=>b[0]-a[0]).forEach(([p,i])=>{
             if(p===0) return;
-            rd.innerHTML+=`<div class="demo-row"><span class="demo-name">${races[i].name}</span><div class="bar-track" style="flex:1"><div class="bar-fill ${races[i].color.replace('bg-','bar-race-')} h-full" id="race-bar-${i}" style="width:0%;height:100%;transition:width 0.9s cubic-bezier(0.22,1,0.36,1)"></div></div><span class="demo-pct">${p}%</span></div>`;
+            rd.innerHTML+=`<tr class="demo-row"><td class="demo-name">${races[i].name}</td><td class="share"><div class="bar-track"><div class="bar-fill" id="race-bar-${i}" style="width:0%"></div></div></td><td class="demo-pct pct">${p}%</td></tr>`;
         });
         setTimeout(()=>{
             c.racePercentages.forEach((p,i)=>{
@@ -1581,7 +934,8 @@ function displayCity(c){
                 if(b){
                     const cls=races[i].color; // e.g. bg-blue-800
                     // Apply via computed approach: map known colors
-                    const colorMap={'bg-blue-800':'#1e40af','bg-green-800':'#166534','bg-yellow-800':'#854d0e','bg-red-800':'#991b1b','bg-purple-800':'#6b21a8','bg-indigo-800':'#3730a3','bg-orange-800':'#9a3412','bg-pink-800':'#9d174d','bg-teal-800':'#115e59','bg-cyan-800':'#155e75','bg-amber-800':'#92400e','bg-lime-800':'#3f6212','bg-fuchsia-800':'#86198f','bg-rose-800':'#9f1239','bg-gray-600':'#4b5563'};
+                    // Muted manuscript pigments, one per people, so the census reads as ink on parchment.
+                    const colorMap={'bg-blue-800':'#34506f','bg-green-800':'#46613c','bg-yellow-800':'#8a6a24','bg-red-800':'#8a2a1c','bg-purple-800':'#5b3a66','bg-indigo-800':'#3f4270','bg-orange-800':'#9a4f1f','bg-pink-800':'#8a3550','bg-teal-800':'#2f5c58','bg-cyan-800':'#335f72','bg-amber-800':'#946a1e','bg-lime-800':'#5b6a28','bg-fuchsia-800':'#74305f','bg-rose-800':'#8c2f3e','bg-gray-600':'#6b6152'};
                     b.style.background=colorMap[cls]||'#666';
                 }
             });
@@ -1602,7 +956,7 @@ function displayCity(c){
     if(dl){
         dl.innerHTML='';
         c.districts.forEach(d=>{
-            dl.innerHTML+=`<div class="district-item"><div class="district-name" style="color:${d.color}">◆ ${d.name}</div><div class="district-desc">${d.desc}</div></div>`;
+            dl.innerHTML+=`<p class="district-item"><span class="district-name">${d.name}.</span> <span class="district-desc">${d.desc}</span></p>`;
         });
     }
     set('taverns',c.taverns); set('shops',c.shops);
@@ -1618,29 +972,49 @@ function displayCity(c){
     // Threats tab
     set('majorThreat',c.majorThreat); set('quest',c.quest);
     set('rumors',c.rumors); set('politicalIntrigue',c.politicalIntrigue);
+    // The rumors arrive as one joined line; print them as a small roll table,
+    // one quoted rumor per row (no rumor contains a comma of its own).
+    const rl=document.getElementById('rumorList');
+    if(rl){
+        const heard=String(c.rumors||'').split(', ').filter(Boolean);
+        const roll=document.getElementById('rumorRoll');
+        const many=heard.length>1;
+        const rdie=[4,6,8,10,12,20].find(d=>d%heard.length===0) || 20;
+        const rspan=rdie/Math.max(1,heard.length);
+        // A lone rumor needs no die: the table drops its roll column.
+        roll.classList.toggle('no-die',!many);
+        set('rumorDie', many ? `d${rdie}` : '');
+        rl.innerHTML=heard.map((r,i)=>{
+            const lo=i*rspan+1, hi=(i+1)*rspan;
+            const cell=many ? `<td>${rspan===1?lo:`${lo}–${hi}`}</td>` : '';
+            return `<tr>${cell}<td class="rumor-text">${r}</td></tr>`;
+        }).join('');
+    }
 
     // People tab
     const nl=document.getElementById('npcList');
     if(nl){
         nl.innerHTML='';
+        // A roll table, DMG style: the smallest common die the residents divide evenly.
+        const count=c.npcs.length;
+        const die=[4,6,8,10,12,20].find(d=>d%count===0) || 20;
+        const span=die/count;
+        set('npcDie',`d${die}`);
         c.npcs.forEach((n,i)=>{
-            nl.innerHTML+=`
-            <div class="npc-card animate-in" style="animation-delay:${0.04+i*0.07}s">
-                <div class="npc-avatar ${n.color}">${n.initial}</div>
-                <div style="min-width:0">
-                    <div class="npc-name">${n.name}</div>
-                    <div class="npc-role">${n.occupation}</div>
-                    <div class="npc-sub">${n.race} · ${n.personality}</div>
-                </div>
-            </div>`;
+            const lo=i*span+1, hi=(i+1)*span;
+            const roll=span===1 ? `${lo}` : `${lo}–${hi}`;
+            nl.innerHTML+=`<tr class="npc-card"><td>${roll}</td><td class="who"><span class="npc-name">${n.name}</span><span class="npc-role">${n.occupation}</span></td><td class="npc-sub">${n.race} · ${n.personality}</td></tr>`;
         });
     }
 
     // Show sheet
     const sheet=document.getElementById('mainSheet');
     sheet.style.display='block';
-    sheet.classList.add('generating');
-    setTimeout(()=>sheet.classList.remove('generating'),600);
+    document.body.classList.add('ready');
+    document.querySelectorAll('#mainSheet, .entry-page').forEach(pg=>{
+        pg.classList.remove('generating'); pg.offsetHeight; pg.classList.add('generating');
+    });
+    setTimeout(()=>document.querySelectorAll('.generating').forEach(pg=>pg.classList.remove('generating')),600);
     triggerCardAnimations();
 }
 
@@ -1680,7 +1054,7 @@ function renderArms(c){
         if(seenWhy.has(s.why)) return false;
         seenWhy.add(s.why); return true;
     }).map(s=>
-        `<div class="symbol-item"><span class="symbol-what">${s.what}</span><span class="symbol-why">${s.why}</span></div>`
+        `<tr class="symbol-item"><td class="symbol-what">${s.what}</td><td class="symbol-why">${s.why}</td></tr>`
     ).join('');
 
     buildChipRow('shapePicker', Object.keys(H.SHAPES), a.shape, k=>capitalise(H.SHAPES[k].name.replace(/ shield$/,'')), k=>{
@@ -1694,9 +1068,15 @@ function renderArms(c){
 function buildChipRow(id, keys, active, label, onPick){
     const row=document.getElementById(id);
     if(!row) return;
-    row.innerHTML=keys.map(k=>`<button class="chip${k===active?' active':''}" data-key="${k}">${label(k)}</button>`).join('');
+    row.innerHTML=keys.map(k=>`<li><button type="button" class="chip${k===active?' active':''}" aria-pressed="${k===active}" data-key="${k}">${label(k)}</button></li>`).join('');
     row.querySelectorAll('.chip').forEach(btn=>{
-        btn.addEventListener('click',()=>onPick(btn.dataset.key));
+        btn.addEventListener('click',()=>{
+            const key=btn.dataset.key;
+            onPick(key);
+            // The row is redrawn, so hand keyboard focus to the new button for the same choice.
+            const again=document.querySelector(`#${id} .chip[data-key="${key}"]`);
+            if(again) again.focus();
+        });
     });
 }
 
@@ -1719,26 +1099,65 @@ function copyText(t){
     document.body.removeChild(ta);
 }
 
-// ─── TABS ─────────────────────────────────────────────────────────────────────
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-        const tab=btn.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-'+tab).classList.add('active');
-        triggerCardAnimations();
+// ─── SECTIONS ─────────────────────────────────────────────────────────────────
+// The entry reads straight through like a gazetteer; the top bar links to each
+// section and marks the one being read.
+let markedTab='overview';
+function markTab(name){
+    if(name===markedTab) return;
+    markedTab=name;
+    const nav=document.getElementById('tabsBar');
+    nav.querySelectorAll('a[data-tab]').forEach(a=>{
+        const on=a.dataset.tab===name;
+        a.classList.toggle('on',on);
+        if(on){
+            a.setAttribute('aria-current','true');
+            // On phones the link strip scrolls sideways: keep the marked link in view.
+            if(nav.scrollWidth>nav.clientWidth){
+                const left=a.offsetLeft-nav.offsetLeft;
+                if(left<nav.scrollLeft || left+a.offsetWidth>nav.scrollLeft+nav.clientWidth-24)
+                    nav.scrollTo({left:Math.max(0,left-24),behavior:'smooth'});
+            }
+        } else a.removeAttribute('aria-current');
     });
-});
-
+}
+// After a jump (a bar link, the hero arms, a fresh conjuring) the chosen link stays
+// marked until the smooth scroll settles, so the mark never flickers past it.
+let holdUntil=0, holdCap=0;
+function holdMark(){
+    const now=performance.now();
+    holdUntil=now+800; holdCap=now+2500;
+}
 function openTab(name){
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    const btn=document.querySelector(`[data-tab="${name}"]`);
-    const panel=document.getElementById('tab-'+name);
-    if(btn) btn.classList.add('active');
-    if(panel) panel.classList.add('active');
-    triggerCardAnimations();
+    markTab(name);
+    holdMark();
+}
+document.querySelectorAll('#tabsBar a[data-tab]').forEach(a=>{
+    a.addEventListener('click',()=>openTab(a.dataset.tab));
+});
+function syncTabToScroll(){
+    const now=performance.now();
+    if(now<holdUntil){
+        // still gliding: wait for the scroll to rest a moment before reading it again
+        holdUntil=Math.min(holdCap, Math.max(holdUntil, now+160));
+        return;
+    }
+    const line=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h'))||48)+90;
+    // Two-column pages put a later section beside an earlier one, so DOM order is not
+    // reading order: take the section whose top sits lowest while still above the line,
+    // and on a tie (sections side by side) keep the earlier one.
+    let current='overview', best=-Infinity;
+    document.querySelectorAll('#tabsBar a[data-tab]').forEach(a=>{
+        const sec=document.getElementById('tab-'+a.dataset.tab);
+        if(!sec || sec.offsetParent===null) return;
+        const top=sec.getBoundingClientRect().top;
+        if(top<=line && top>best+2){ best=top; current=a.dataset.tab; }
+    });
+    // At the very bottom the last section wins, but only if its heading never reached the line.
+    const s=document.documentElement;
+    const people=document.getElementById('tab-people');
+    if(s.scrollTop>0 && s.scrollTop+s.clientHeight>=s.scrollHeight-4 && people && people.getBoundingClientRect().top>line) current='people';
+    markTab(current);
 }
 
 // ─── GENERATE BUTTON ──────────────────────────────────────────────────────────
@@ -1751,6 +1170,10 @@ function conjure(seed){
 function writeSeedToUrl(seed){
     try{ history.replaceState(null,'',`${location.pathname}?seed=${seed}`); }catch(e){}
 }
+
+// The top bar's Conjure button does the same as the big one, from anywhere in the entry.
+document.getElementById('barConjure').addEventListener('click',()=>document.getElementById('generateBtn').click());
+document.getElementById('endConjure').addEventListener('click',()=>document.getElementById('generateBtn').click());
 
 document.getElementById('generateBtn').addEventListener('click',()=>{
     const btn=document.getElementById('generateBtn');
@@ -1825,13 +1248,13 @@ function showToast(msg){
 }
 
 // ─── STICKY OFFSET ────────────────────────────────────────────────────────────
-// The header wraps on narrow screens, so the tab bar tracks its measured height.
+// Anchored headings clear the sticky top bar by its measured height.
 function syncHeaderHeight(){
-    const h=document.querySelector('.site-header');
+    const h=document.querySelector('.bar');
     if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
 }
 if(window.ResizeObserver){
-    new ResizeObserver(syncHeaderHeight).observe(document.querySelector('.site-header'));
+    new ResizeObserver(syncHeaderHeight).observe(document.querySelector('.bar'));
 }else{
     window.addEventListener('resize',syncHeaderHeight);
 }
@@ -1842,7 +1265,8 @@ window.addEventListener('scroll',()=>{
     const s=document.documentElement;
     const pct=(s.scrollTop/(s.scrollHeight-s.clientHeight))*100;
     document.getElementById('scroll-progress').style.width=pct+'%';
-});
+    syncTabToScroll();
+},{passive:true});
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('load',()=>{

@@ -2,36 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://dnd.isaiart.com/</loc><priority>1.0</priority></url>
 
-  <url><loc>https://dnd.isaiart.com/cs</loc><priority>0.8</priority></url>
-  <url><loc>https://dnd.isaiart.com/npcs</loc><priority>0.8</priority></url>
-  <url><loc>https://dnd.isaiart.com/loom-of-fates</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/cs/</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/loom-of-fates/</loc><priority>0.8</priority></url>
   <url><loc>https://dnd.isaiart.com/dice/</loc><priority>0.7</priority></url>
 
-  <url><loc>https://dnd.isaiart.com/artifacts</loc><priority>0.8</priority></url>
-  <url><loc>https://dnd.isaiart.com/monsters</loc><priority>0.8</priority></url>
-  <url><loc>https://dnd.isaiart.com/cities</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/artifacts/</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/monsters/</loc><priority>0.8</priority></url>
+  <url><loc>https://dnd.isaiart.com/cities/</loc><priority>0.8</priority></url>
   <url><loc>https://dnd.isaiart.com/spelljammer/</loc><priority>0.7</priority></url>
 
-  <url><loc>https://dnd.isaiart.com/humans</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/phb/wizard</loc><priority>0.6</priority></url>
-  <url><loc>https://dnd.isaiart.com/planes</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/humans/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/planes/</loc><priority>0.7</priority></url>
 
   <url><loc>https://dnd.isaiart.com/handbooks/</loc><priority>0.8</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/archmage-handbook</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/grand-theologica</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/arcanum-expanded</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/dnd-5e-megabook</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/wizards</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/sims4</loc><priority>0.7</priority></url>
-  <url><loc>https://dnd.isaiart.com/handbooks/artifacts</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/archmage-handbook/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/grand-theologica/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/arcanum-expanded/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/dnd-5e-megabook/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/sims4/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/handbooks/artifacts/</loc><priority>0.7</priority></url>
 
-  <url><loc>https://dnd.isaiart.com/npcs/ketheric</loc><priority>0.6</priority></url>
-  <url><loc>https://dnd.isaiart.com/npcs/gortash</loc><priority>0.6</priority></url>
-  <url><loc>https://dnd.isaiart.com/npcs/orin</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/ketheric/</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/gortash/</loc><priority>0.6</priority></url>
+  <url><loc>https://dnd.isaiart.com/npcs/orin/</loc><priority>0.6</priority></url>
 
   <url><loc>https://dnd.isaiart.com/fousio/</loc><priority>0.8</priority></url>
   <url><loc>https://dnd.isaiart.com/fousio/staff/</loc><priority>0.7</priority></url>
   <url><loc>https://dnd.isaiart.com/fousio/circlet/</loc><priority>0.7</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/amulet-of-the-infinite-grain/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/arcanum-repeater/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/band-of-arcane-echoes/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/band-of-the-ascendant-spellcaster/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/brocade-booties/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/brocade-ensemble/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/cape-of-the-fluctuating-ward/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/circlet-of-mental-anguish/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/drape-of-the-stone-guardian/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/gloves-of-dexterity/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/gloves-of-the-burning-sky/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/gloves-of-the-cinderbrand/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/hood-of-the-archmage/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/mantle-of-the-spell-current/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/pyroquickness-hat/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/ring-of-forced-movement/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/ritualistic-underwear/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/robe-of-shared-essence/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/robe-of-the-archmagi/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/sevenstride/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/shroud-of-the-shadow-weaver/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/staff-of-arcane-resonance/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/staff-of-the-magi/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/the-spined-whelk/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/tuning-fork-of-the-lucid-mind/</loc><priority>0.5</priority></url>
+  <url><loc>https://dnd.isaiart.com/fousio/items/turtle-shell/</loc><priority>0.5</priority></url>
 
   <url><loc>https://dnd.isaiart.com/vision/</loc><priority>0.8</priority></url>
 </urlset>

@@ -3,207 +3,301 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Everything D&D — 5e Megabook</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=MedievalSharp&display=swap" rel="stylesheet">
+<title>Everything D&amp;D — 5e Megabook</title>
+<meta name="description" content="Everything D&amp;D: a Player's Handbook-style fifth edition reference uniting races, classes, backgrounds, spells, feats, equipment, rules, and conditions from the Player's Handbook, Xanathar's Guide to Everything, and Tasha's Cauldron of Everything.">
+<link rel="stylesheet" href="../../assets/phb/phb.css">
 <style>
-:root{--r:#58180D;--rl:#7B2D26;--g:#C9AD6A;--gl:#E0D5A0;--p:#FDF1DC;--pd:#EDE5C8;--ink:#1A1A1A;--inkl:#3A3A3A;--sw:280px;--hh:56px}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Spectral',Georgia,serif;background:#1a0a05;color:var(--ink);line-height:1.6;overflow-x:hidden}
-::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#1a0805}::-webkit-scrollbar-thumb{background:var(--g);border-radius:4px}
+/* ===== Everything D&D: page-specific additions on top of phb.css ===== */
 
-/* TOP BAR */
-.top-bar{position:fixed;top:0;left:0;right:0;height:var(--hh);background:linear-gradient(180deg,#2a0a05,#1a0a05);border-bottom:2px solid var(--g);z-index:1000;display:flex;align-items:center;padding:0 16px;gap:12px}
-.top-bar .logo{font-family:'Cinzel Decorative',serif;color:var(--g);font-size:1.1rem;font-weight:700;white-space:nowrap;cursor:pointer;text-shadow:0 0 20px rgba(201,173,106,0.3)}
-.top-bar .logo span{color:#fff;font-size:0.65rem;opacity:0.5;margin-left:6px;font-family:'Spectral',serif}
-.search-box{flex:1;max-width:480px;position:relative}
-.search-box input{width:100%;padding:7px 14px 7px 32px;background:rgba(255,255,255,0.08);border:1px solid rgba(201,173,106,0.3);border-radius:5px;color:#ddd;font-family:'Spectral',serif;font-size:0.85rem;outline:none;transition:all 0.3s}
-.search-box input:focus{background:rgba(255,255,255,0.12);border-color:var(--g);box-shadow:0 0 12px rgba(201,173,106,0.15)}
-.search-box .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--g);font-size:0.85rem;opacity:0.6}
-.srd{position:absolute;top:100%;left:0;right:0;margin-top:3px;background:#2a1510;border:1px solid var(--g);border-radius:5px;max-height:380px;overflow-y:auto;display:none;z-index:9999;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+/* ---------- top bar: chapters, search, home ---------- */
+.bar-in{max-width:1320px;gap:14px}
+.bar nav a{font-size:16.5px;padding:6px 8px}
+.bar .bsearch{position:relative;flex:0 1 230px;min-width:150px}
+.bar .bsearch input{display:block;width:100%;height:32px;margin:0;padding:5px 10px 4px 31px;font-family:'ScalySans',sans-serif;font-size:14px;color:#efe6cf;
+  background:rgba(239,230,207,.07) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='6.5' cy='6.5' r='5' fill='none' stroke='%23d9a73a' stroke-width='1.8'/%3E%3Cpath d='M10.3 10.3L15 15' stroke='%23d9a73a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 10px center/13px 13px;
+  border:1px solid rgba(201,173,106,.38);border-radius:3px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s,background-color .15s}
+.bar .bsearch input::placeholder{color:rgba(239,230,207,.5);font-style:italic;opacity:1}
+.bar .bsearch input:focus{border-color:var(--hi);background-color:rgba(239,230,207,.13)}
+.bar .bsearch input::-webkit-search-cancel-button{filter:invert(.8) sepia(1)}
+.bar .srch-btn{display:none}
+.srd{position:absolute;top:calc(100% + 9px);right:0;width:min(440px,calc(100vw - 32px));max-height:min(70vh,470px);overflow-y:auto;display:none;z-index:60;padding:4px 0;
+  background:var(--parch) url(../../assets/phb/tex/parchment.webp) center/cover;border:1px solid var(--head);border-radius:2px;box-shadow:0 16px 44px rgba(0,0,0,.6)}
 .srd.active{display:block}
-.sri{padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(201,173,106,0.1);transition:background 0.2s}
-.sri:hover{background:rgba(201,173,106,0.1)}
-.sri .srt{color:var(--g);font-weight:600;font-size:0.85rem}
-.sri .sty{color:#888;font-size:0.7rem;margin-left:6px}
-.sri .srd2{color:#aaa;font-size:0.78rem;margin-top:1px}
-.mt{display:none;background:none;border:none;color:var(--g);font-size:1.4rem;cursor:pointer;padding:2px 6px}
+.srd .sri{display:block;width:100%;margin:0;padding:8px 14px 7px;text-align:left;font:inherit;color:var(--ink);background:none;border:0;border-bottom:1px solid rgba(88,24,13,.14);cursor:pointer}
+.srd .sri:last-child{border-bottom:0}
+.srd .sri:hover,.srd .sri:focus-visible{background:rgba(88,24,13,.08);outline:none;box-shadow:inset 3px 0 0 var(--head)}
+.srd .srt{font-family:'MrEaves',serif;font-size:18.5px;line-height:1.1;color:var(--head)}
+.srd .sty{margin-left:8px;font-family:'ScalySansCaps',sans-serif;font-size:11.5px;letter-spacing:.06em;color:var(--caption)}
+.srd .srd2{margin-top:2px;font-family:'ScalySans',sans-serif;font-size:12.5px;font-style:italic;line-height:1.25;color:#4b3e2c}
+.srd .none{margin:0;padding:10px 14px;font-family:'ScalySans',sans-serif;font-style:italic;font-size:13px;color:var(--caption)}
 
-/* SIDEBAR */
-.sidebar{position:fixed;top:var(--hh);left:0;width:var(--sw);height:calc(100vh - var(--hh));background:linear-gradient(180deg,#1e0805,#150603);border-right:2px solid rgba(201,173,106,0.3);overflow-y:auto;z-index:900;padding:16px 0;transition:transform 0.3s}
-.so{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:899}
-.nc{padding:0 12px;margin-bottom:2px}
-.nct{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;cursor:pointer;color:var(--g);font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;border-radius:3px;transition:all 0.2s;user-select:none}
-.nct:hover{background:rgba(201,173,106,0.1)}
-.nct .ar{transition:transform 0.3s;font-size:0.6rem}
-.nct.exp .ar{transform:rotate(90deg)}
-.nsi{max-height:0;overflow:hidden;transition:max-height 0.4s ease;padding-left:10px}
-.nsi.exp{max-height:3000px}
-.nsi a{display:block;padding:5px 10px;color:#b8a88a;font-size:0.75rem;text-decoration:none;border-radius:3px;transition:all 0.2s;cursor:pointer}
-.nsi a:hover{color:var(--g);background:rgba(201,173,106,0.08)}
-.nd{height:1px;background:rgba(201,173,106,0.12);margin:10px 16px}
+/* ---------- cover: tooled leather, no painting ---------- */
+.page.cover{height:auto;max-height:none;min-height:min(1139px,calc(100vw * 1.294));background:#2a0e08;color:#f3ead2}
+.cover .leather{position:absolute;inset:0;z-index:0;background-color:#5a1f12;
+  background-image:radial-gradient(ellipse 75% 60% at 50% 46%,rgba(140,52,26,.0) 0%,rgba(40,10,4,.55) 62%,rgba(12,3,1,.92) 100%),url(../../assets/phb/tex/parchment.webp);
+  background-size:100% 100%,cover;background-position:center;background-blend-mode:normal,multiply}
+.cover .tooling{position:absolute;inset:22px;z-index:1;pointer-events:none;border:2px solid rgba(201,173,106,.72);box-shadow:0 0 0 1px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.45)}
+.cover .tooling::before{content:"";position:absolute;inset:7px;border:1px solid rgba(201,173,106,.42)}
+.cover .tooling i{position:absolute;width:16px;height:16px;background:#c9ad6a;transform:rotate(45deg);box-shadow:0 0 0 3px #2a0e08,0 0 0 4px rgba(201,173,106,.6)}
+.cover .tooling i:nth-child(1){top:-9px;left:-9px}.cover .tooling i:nth-child(2){top:-9px;right:-9px}
+.cover .tooling i:nth-child(3){bottom:-9px;left:-9px}.cover .tooling i:nth-child(4){bottom:-9px;right:-9px}
+.cover .cv{position:relative;z-index:2;min-height:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;padding:70px 64px 62px}
+.cover .cv-logo{margin:0;font-family:'Nodesto',serif;font-size:21px;letter-spacing:.3em;text-transform:uppercase;color:#e9dcb8;-webkit-text-stroke:4px #000;paint-order:stroke;text-indent:0}
+.cover .cv h1{position:static;margin:14px 0 0;padding:0;font-family:'Nodesto',serif;font-weight:normal;font-size:clamp(66px,13vw,128px);line-height:.86;letter-spacing:.02em;color:#fff;
+  -webkit-text-stroke:3px #000;paint-order:stroke;text-shadow:0 3px 3px rgba(0,0,0,.85),0 6px 22px rgba(0,0,0,.7);column-span:none}
+.cover .cv-rule{display:flex;align-items:center;gap:12px;width:min(440px,80%);margin:22px auto 0;color:#c9ad6a}
+.cover .cv-rule::before,.cover .cv-rule::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#c9ad6a)}
+.cover .cv-rule::after{background:linear-gradient(90deg,#c9ad6a,transparent)}
+.cover .cv-rule b{width:9px;height:9px;background:#c9ad6a;transform:rotate(45deg)}
+.cover .cv-emblem{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:26px 0}
+.cover .cv-emblem svg{width:min(400px,72%);height:auto;overflow:visible;filter:drop-shadow(0 0 18px rgba(217,167,58,.28)) drop-shadow(0 3px 2px rgba(0,0,0,.8))}
+.cover .cv-banner{position:relative;margin:0 auto;padding:13px 54px 10px;font-family:'Nodesto',serif;font-size:clamp(23px,3.8vw,33px);line-height:1;color:#fff;letter-spacing:.03em;
+  background:linear-gradient(180deg,#7a2716,#58180D 60%,#3e1007);clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%);filter:drop-shadow(0 2px 2px #000)}
+.cover .cv-blurb{max-width:560px;margin:20px auto 0;font-family:'BookInsanity',serif;font-style:italic;font-size:16px;line-height:1.45;color:#eadfc3;text-shadow:0 1px 2px #000;text-indent:0}
+.phb .cover .cv-cta{margin-top:26px;border-color:#c9ad6a;box-shadow:inset 0 1px 0 rgba(255,222,184,.24),inset 0 -2px 0 rgba(0,0,0,.24),0 0 0 3px rgba(201,173,106,.18),0 6px 18px rgba(0,0,0,.6)}
 
-/* MAIN */
-.main{margin-left:var(--sw);margin-top:var(--hh);min-height:calc(100vh - var(--hh))}
+/* ---------- pages built from data ---------- */
+.page.measuring .cols{height:var(--colh,975px);column-fill:auto;overflow:hidden}
+.page .chap-wash{position:absolute;left:5%;right:5%;top:8px;height:250px;z-index:-1;pointer-events:none;background:url(../../assets/phb/tex/stain1.webp) center/100% 100% no-repeat;opacity:.22}
+.page h1 .chnum{font-size:20px}
+.page p.meta{margin:0 0 5px;font-family:'ScalySansCaps',sans-serif;font-size:12.5px;letter-spacing:.06em;color:var(--caption);text-indent:0}
+.page p.meta + p{text-indent:0}
+.page p.ln,.page p.ln + p{text-indent:0}
+.page p:not(.ln):not(.meta) + p.ln{margin-top:5px}
+.page p.dropcap{display:flow-root}
+.page p.lead.wide{max-width:640px;margin:2px 0 8px;font-size:16px;line-height:1.42;font-style:italic;color:#3b2f22}
+.page p.lead.wide::first-line{font-variant:normal}
+.page .tail{column-span:all;display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto 4px;width:62%;break-inside:avoid}
+.page .tail::before,.page .tail::after{content:"";flex:1;height:14px;background:url(../../assets/phb/tex/horizontalRule.svg) center/100% 100% no-repeat}
+.page .tail::after{transform:scaleX(-1)}
+.page .tail b{width:11px;height:11px;flex:none;background:var(--head);transform:rotate(45deg);box-shadow:0 0 0 3px var(--parch),0 0 0 4px var(--gold)}
+.page .cls-over{column-span:all;margin:4px 0 0}
+.page .cls-over td:nth-child(2){font-family:'ScalySans',sans-serif}
+.page .cls-over td:first-child a{color:var(--ink);font-weight:bold;text-decoration:none}
+.page .cls-over td:first-child a:hover{color:var(--head);text-decoration:underline}
+.page p.ln + p.ln{margin-top:1px}
+.page .trait{text-indent:0;margin-top:5px}
+.page .trait + .trait{text-indent:0}
+.page .trait strong,.page p.ln strong{font-style:italic}
+.page h2.entry{margin-top:20px}
+.page h3 + .trait,.page h3 + p{margin-top:0}
+.page h4 + p.meta{margin-top:-1px}
+.page .feat h4,.page .sub h4{margin-top:11px}
+.page .hit{animation:hit 1.8s ease-out}
+@keyframes hit{0%,30%{background:rgba(217,167,58,.38);box-shadow:0 0 0 6px rgba(217,167,58,.38)}100%{background:transparent;box-shadow:0 0 0 6px transparent}}
 
-/* COVER */
-.cover{min-height:calc(100vh - var(--hh));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;position:relative;overflow:hidden;background:#0a0302}
-.cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.35;filter:brightness(0.7) contrast(1.1)}
-.cover::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(88,24,13,0.4) 0%,rgba(10,3,2,0.95) 75%)}
-.cover-orn{width:280px;height:2px;margin:16px auto;background:linear-gradient(90deg,transparent,var(--g),transparent);position:relative;z-index:2}
-.cover-orn::before,.cover-orn::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--g);font-size:10px}
-.cover-orn::before{left:-6px}.cover-orn::after{right:-6px}
-.cover h1{font-family:'Cinzel Decorative',serif;font-size:clamp(2.2rem,5.5vw,4rem);color:var(--g);text-shadow:0 0 60px rgba(201,173,106,0.4),0 2px 4px rgba(0,0,0,0.6);position:relative;z-index:2;letter-spacing:4px;animation:fiu 1s ease-out}
-.cover h2{font-family:'Cinzel',serif;color:#b8a88a;font-size:clamp(0.8rem,1.8vw,1.1rem);font-weight:400;letter-spacing:8px;text-transform:uppercase;position:relative;z-index:2;animation:fiu 1s 0.3s ease-out both}
-.cover .cs{color:#8a7a6a;font-size:0.88rem;max-width:550px;margin-top:16px;position:relative;z-index:2;animation:fiu 1s 0.6s ease-out both}
-.cover .cta{margin-top:32px;padding:12px 36px;background:linear-gradient(135deg,var(--r),var(--rl));color:var(--g);border:1px solid var(--g);font-family:'Cinzel',serif;font-size:0.9rem;cursor:pointer;border-radius:3px;transition:all 0.3s;position:relative;z-index:2;text-decoration:none;display:inline-block;animation:fiu 1s 0.9s ease-out both}
-.cover .cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,173,106,0.2);background:linear-gradient(135deg,var(--rl),#8B3A2A)}
-@keyframes fiu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+/* class openers */
+.page .cls-head{column-span:all;margin:0 0 2px}
+.page .cls-head h2{font-size:46px;line-height:.95;margin:0}
+.page .cls-head .chips{margin:6px 0 0}
+.page .classtable{column-span:all;margin:38px -6px 30px}
+.page .classtable caption{padding:2px 8px 4px;font-size:20px}
+.page .classtable th{font-size:12px;line-height:1.1;padding:3px 4px;vertical-align:bottom}
+.page .classtable td{padding:1px 4px;line-height:1.18}
+.page .classtable td.f{text-align:left;min-width:13em}
+.page .classtable tr.grp th{padding:3px 4px 0;font-weight:bold;font-size:11.5px;letter-spacing:.02em}
+.page .classtable tr.grp th.slots{border-bottom:1px solid rgba(0,0,0,.35)}
+.page ul.feat-list{margin:3px 0 8px}
+.page p.swipe{display:none}
+.page p.swipe + p{text-indent:0}
 
-/* CHAPTER SECTIONS */
-.ch{background:linear-gradient(135deg,var(--p) 0%,#f5e6c8 50%,var(--pd) 100%);padding:44px 50px 56px;min-height:100vh;position:relative;border-bottom:3px solid var(--g)}
-.ch::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--r),var(--g),var(--r))}
-.ch::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0.025;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23000'/%3E%3Crect width='2' height='2' fill='%23111'/%3E%3C/svg%3E")}
-.chh{text-align:center;margin-bottom:36px;position:relative;z-index:1}
-.chn{font-family:'Cinzel',serif;color:var(--r);font-size:0.8rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
-.cht{font-family:'Cinzel Decorative',serif;color:var(--r);font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;margin-bottom:10px}
-.chd{width:180px;height:2px;margin:0 auto 16px;background:linear-gradient(90deg,transparent,var(--r),transparent)}
-.chi{max-width:650px;margin:0 auto;text-align:center;color:var(--inkl);font-style:italic;font-size:0.95rem;line-height:1.7}
+/* race ancestry table, condition tables */
+.page table.anc td:first-child,.page table.anc th:first-child{white-space:nowrap}
 
-/* CONTENT */
-.ca{position:relative;z-index:1;max-width:1100px;margin:0 auto}
-.ca h2{font-family:'Cinzel',serif;color:var(--r);font-size:1.6rem;margin:36px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--g)}
-.ca h3{font-family:'Cinzel',serif;color:var(--rl);font-size:1.15rem;margin:24px 0 8px}
-.ca h4{font-family:'Cinzel',serif;color:var(--ink);font-size:0.95rem;margin:16px 0 6px;font-style:italic}
-.ca p{margin-bottom:10px;color:var(--inkl);font-size:0.93rem;line-height:1.7}
-.dc::first-letter{float:left;font-family:'Cinzel Decorative',serif;font-size:3.2rem;line-height:0.8;padding-right:6px;padding-top:3px;color:var(--r);font-weight:700}
+/* equipment tables: PHB group rows (one tbody per group so stripes restart) */
+.page table.gear tbody tr.grp th{padding:5px 4px 1px;font-weight:bold;font-style:italic;background:none}
+.page table.gear tbody tr:nth-child(odd){background:none}
+.page table.gear tbody tr:nth-child(even){background:var(--accent)}
+.page table.gear td:nth-child(2),.page table.gear td:nth-child(4){white-space:nowrap}
+.page .wide-block{column-span:all}
+.page .wide-block h2{margin-top:6px}
 
-/* CARDS */
-.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin:20px 0}
-.pc{background:linear-gradient(135deg,#fdf8ee,#f5e6c8);border:2px solid var(--g);border-radius:2px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;position:relative}
-.pc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
-.pc .ci{width:100%;height:180px;object-fit:cover;border-bottom:2px solid var(--g);display:block}
-.pc .cip{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-bottom:2px solid var(--g)}
-.pc .cb{padding:14px 18px}
-.pc .ct2{font-family:'Cinzel',serif;color:var(--r);font-size:1.1rem;font-weight:700;margin-bottom:3px}
-.pc .cso{font-size:0.72rem;color:#999;font-style:italic;margin-bottom:6px}
-.pc .cde{font-size:0.85rem;color:var(--inkl);line-height:1.5}
-.pc .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.pc .tag{padding:2px 9px;background:rgba(88,24,13,0.1);color:var(--r);font-size:0.68rem;border-radius:2px;font-family:'Cinzel',serif;letter-spacing:0.4px}
+/* conditions appendix */
+.page h3.cond{border-bottom:0;font-size:22px;margin:13px 0 2px}
+.page h3.cond + ul{margin-top:2px}
+.page p.srcs{font-family:'ScalySans',sans-serif;font-size:12.6px;line-height:1.28;color:#3d3326;text-indent:0;margin:0 0 4px}
+.page p.srcs em{color:var(--head)}
 
-/* DETAIL OVERLAY */
-.dov{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);backdrop-filter:blur(3px);overflow-y:auto;padding:30px 16px}
+/* spell index */
+.page.spells .cols{column-fill:balance}
+.spell-index{margin-top:18px}
+.page.spell-cont .spell-index{margin-top:0}
+.page.spell-cont .tcap{margin-top:0}
+.spell-index .filters{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;align-items:baseline;margin:0 0 12px;padding:10px 0 8px;border-top:1px solid var(--phb-line-soft);border-bottom:1px solid var(--phb-line-soft)}
+.spell-index .flbl{font-family:'MrEaves',serif;font-size:18px;color:var(--head)}
+.phb .spell-index .chips{margin:0}
+.phb .spell-index .chips button{padding:3px 0 2px}
+.spell-index table{margin:4px 0 6px;break-inside:auto}
+/* fixed column widths keep row heights steady when the index is split across pages */
+@media (min-width:761px){.spell-index table{table-layout:fixed}
+  .spell-index th:nth-child(1){width:19%}.spell-index th:nth-child(2){width:5%}.spell-index th:nth-child(3){width:12.5%}
+  .spell-index th:nth-child(4){width:11.5%}.spell-index th:nth-child(5){width:12%}.spell-index th:nth-child(6){width:13%}.spell-index th:nth-child(7){width:27%}}
+.spell-index thead th{position:sticky;top:48px;z-index:1;background:#ece2c6;box-shadow:inset 0 -1px 0 rgba(88,24,13,.35)}
+.spell-index tbody tr:nth-child(odd){background:none}
+.spell-index tbody tr:nth-child(even){background:var(--accent)}
+.spell-index tbody tr.lvl th{padding:9px 4px 2px;font-family:'MrEaves',serif;font-size:18px;font-weight:normal;color:var(--head);background:none}
+.spell-index tbody tr[data-n]{cursor:pointer}
+.spell-index tbody tr[data-n]:hover td{background:rgba(88,24,13,.07)}
+.spell-index .sp-link{margin:0;padding:0;font:inherit;font-weight:bold;color:var(--ink);text-align:left;background:none;border:0;cursor:pointer}
+.spell-index .sp-link:hover{color:var(--head);text-decoration:underline}
+.spell-index td{vertical-align:baseline}
+.spell-index td.cls{font-size:12px;color:#3d3326}
+.spell-index td.c{text-align:center}
+.spell-index tr.none td{padding:16px 6px;text-align:center;font-style:italic;color:var(--caption);background:none}
+.spell-index .count{margin:8px 0 0;font-family:'ScalySans',sans-serif;font-size:12.5px;font-style:italic;color:var(--caption);text-indent:0}
+
+/* toc */
+.toc li.h{margin-top:8px}
+.toc li.h:first-child{margin-top:0}
+.page .toc-note{margin-top:22px}
+
+/* colophon */
+.page .quote.center{text-align:center}
+.page .quote.center .attr{text-align:center}
+.page .credits{margin-top:14px;font-family:'ScalySans',sans-serif;font-size:11.5px;font-style:italic;color:var(--caption);text-align:center;text-indent:0}
+
+/* ---------- spell leaf (detail overlay) ---------- */
+.dov{display:none;position:fixed;inset:0;z-index:300;overflow-y:auto;padding:56px 16px 40px;background:rgba(12,8,5,.74);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .dov.active{display:flex;justify-content:center;align-items:flex-start}
-.dp{background:linear-gradient(135deg,var(--p),#f5e6c8);border:3px solid var(--g);border-radius:3px;max-width:850px;width:100%;padding:36px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.4);animation:pi 0.3s ease-out}
-@keyframes pi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.dp .xb{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--r);font-size:1.4rem;cursor:pointer;font-family:'Cinzel',serif}
-.dp h2{font-family:'Cinzel Decorative',serif;color:var(--r);font-size:1.7rem;margin-bottom:3px;border:none;padding:0}
-.dp .ds{color:#999;font-style:italic;font-size:0.82rem;margin-bottom:14px}
-.dp .sl{display:flex;gap:20px;flex-wrap:wrap;margin:14px 0;padding:10px 14px;background:rgba(88,24,13,0.06);border-left:3px solid var(--r)}
-.dp .si label{font-family:'Cinzel',serif;font-size:0.65rem;color:#999;display:block;text-transform:uppercase;letter-spacing:1px}
-.dp .si span{font-size:0.9rem;color:var(--ink);font-weight:600}
-.dp .dt{margin:14px 0;color:var(--inkl);font-size:0.93rem;line-height:1.7}
-.dp h3{font-family:'Cinzel',serif;color:var(--r);font-size:1.05rem;margin:20px 0 6px}
-.dp ul{padding-left:18px;margin:6px 0 14px}
-.dp li{color:var(--inkl);font-size:0.88rem;margin-bottom:5px;line-height:1.5}
+.dp{position:relative;isolation:isolate;width:100%;max-width:560px;margin:auto 0;padding:38px 42px 70px;font-size:var(--base);line-height:1.3;color:var(--ink);
+  background:var(--parch) url(../../assets/phb/tex/parchment.webp) center/cover;box-shadow:0 0 0 1px rgba(10,7,5,.5),0 0 0 8px rgba(238,229,206,.22),0 30px 80px rgba(0,0,0,.6);animation:leaf .22s ease-out}
+.dp::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;box-shadow:inset 0 0 60px rgba(120,78,30,.28),inset 0 0 0 1px rgba(88,24,13,.3)}
+.dp::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46px;background:url(../../assets/phb/tex/PHB_footerAccent.png) bottom/100% auto no-repeat;pointer-events:none}
+@keyframes leaf{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.phb .dp .xb{position:absolute;top:12px;right:12px}
+.dp h2{margin:0;padding-right:40px;font-family:'MrEaves',serif;font-weight:normal;font-size:34px;line-height:1;color:var(--head)}
+.dp .ds{margin:3px 0 0;font-style:italic}
+.dp .tri{height:6px;margin:10px 0 9px;background:url(../../assets/phb/tex/redTriangle.png) center/100% 100% no-repeat}
+.dp .ln{margin:0 0 1px}
+.dp .ln strong{color:var(--head)}
+.dp .dt{margin:10px 0 0;line-height:1.38}
+.dp h5{margin:16px 0 3px;font-family:'ScalySansCaps',sans-serif;font-weight:normal;font-size:15px;color:var(--ink)}
+.dp .src{margin:12px 0 0;font-family:'ScalySansCaps',sans-serif;font-size:12.5px;letter-spacing:.06em;color:var(--caption)}
 
-/* PROGRESSION TABLE */
-.prog-table{width:100%;border-collapse:collapse;font-size:0.8rem;margin:16px 0}
-.prog-table th{background:var(--r);color:var(--g);font-family:'Cinzel',serif;font-size:0.72rem;padding:7px 10px;text-align:left;letter-spacing:0.5px;position:sticky;top:0}
-.prog-table td{padding:6px 10px;border-bottom:1px solid rgba(201,173,106,0.2);color:var(--inkl);font-size:0.8rem}
-.prog-table tr:nth-child(even){background:rgba(201,173,106,0.04)}
-.prog-table tr:hover{background:rgba(88,24,13,0.04)}
-.prog-wrap{overflow-x:auto;margin:12px 0;max-height:500px;overflow-y:auto;border:1px solid rgba(201,173,106,0.3);border-radius:3px}
+/* ---------- back to top ---------- */
+.totop{position:fixed;right:16px;bottom:16px;z-index:60;width:42px;height:42px;border-radius:50%;border:1px solid #6b5537;background:rgba(15,11,8,.9);color:var(--hi);font-size:18px;line-height:1;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s}
+.totop.vis{opacity:1;pointer-events:auto}
+.totop:hover{background:#3a2c20}
 
-/* SUBCLASS GRID */
-.scg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:14px}
-.sci{padding:10px 14px;background:rgba(253,241,220,0.7);border:1px solid rgba(201,173,106,0.4);border-radius:2px;cursor:pointer;transition:all 0.2s}
-.sci:hover{border-color:var(--r);background:rgba(253,241,220,1)}
-.sci .scn{font-family:'Cinzel',serif;color:var(--r);font-size:0.85rem;font-weight:600}
-.sci .scs{font-size:0.68rem;color:#999;font-style:italic}
-.sci .scd{font-size:0.8rem;color:var(--inkl);margin-top:3px;line-height:1.4}
-
-/* FILTER BAR */
-.fb{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 20px;padding:14px 16px;background:rgba(88,24,13,0.04);border:1px solid rgba(201,173,106,0.3);border-radius:3px}
-.fbtn{padding:5px 14px;background:transparent;border:1px solid var(--g);color:var(--r);font-family:'Cinzel',serif;font-size:0.72rem;cursor:pointer;border-radius:2px;transition:all 0.2s}
-.fbtn:hover,.fbtn.act{background:var(--r);color:#fff;border-color:var(--r)}
-
-/* TABLES */
-.tw{overflow-x:auto;margin:16px 0}
-table.pt{width:100%;border-collapse:collapse;font-size:0.85rem}
-table.pt thead th{background:var(--r);color:var(--g);font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.4px;padding:9px 12px;text-align:left;position:sticky;top:0}
-table.pt tbody td{padding:8px 12px;border-bottom:1px solid rgba(201,173,106,0.2);color:var(--inkl)}
-table.pt tbody tr{transition:background 0.2s;cursor:pointer}
-table.pt tbody tr:hover{background:rgba(88,24,13,0.05)}
-table.pt tbody tr:nth-child(even){background:rgba(201,173,106,0.04)}
-
-/* INFO BOX */
-.ib{background:linear-gradient(135deg,rgba(88,24,13,0.08),rgba(88,24,13,0.03));border:1px solid var(--g);border-left:4px solid var(--r);padding:14px 18px;margin:16px 0;border-radius:0 3px 3px 0}
-.ib .ibt{font-family:'Cinzel',serif;color:var(--r);font-size:0.88rem;margin-bottom:5px;font-weight:700}
-.ib p{font-size:0.85rem;margin-bottom:5px}
-
-/* CONDITION CARD */
-.cc{background:linear-gradient(135deg,#fdf8ee,#f5e6c8);border:2px solid var(--g);padding:18px;border-radius:2px;transition:transform 0.2s}
-.cc:hover{transform:translateY(-2px)}
-.cc .ccn{font-family:'Cinzel',serif;color:var(--r);font-size:1.05rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.cc .cci{font-size:1.4rem}
-.cc .ccd{font-size:0.85rem;color:var(--inkl);line-height:1.6}
-.cc .ccm{margin-top:8px;padding:8px 12px;background:rgba(88,24,13,0.05);border-radius:2px;font-size:0.82rem;color:var(--ink)}
-
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-
-/* RESPONSIVE */
-@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.so.active{display:block}.main{margin-left:0}.mt{display:block}.ch{padding:24px 16px 36px}.two-col{grid-template-columns:1fr}.cg{grid-template-columns:1fr}}
-
-.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--r);color:var(--g);border:2px solid var(--g);border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:all 0.3s;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
-.btt.vis{opacity:1}.btt:hover{transform:translateY(-2px);background:var(--rl)}
-
-/* CLASS IMAGE GRADIENTS */
-.gi-barbarian{background:linear-gradient(135deg,#8B0000 0%,#2d0a0a 100%)}
-.gi-bard{background:linear-gradient(135deg,#6B3FA0 0%,#1a0f2e 100%)}
-.gi-cleric{background:linear-gradient(135deg,#DAA520 0%,#2a1a05 100%)}
-.gi-druid{background:linear-gradient(135deg,#228B22 0%,#0a2a0a 100%)}
-.gi-fighter{background:linear-gradient(135deg,#708090 0%,#1a1a2a 100%)}
-.gi-monk{background:linear-gradient(135deg,#D2691E 0%,#1a0f05 100%)}
-.gi-paladin{background:linear-gradient(135deg,#FFD700 0%,#2a2205 100%)}
-.gi-ranger{background:linear-gradient(135deg,#2E8B57 0%,#0a1a10 100%)}
-.gi-rogue{background:linear-gradient(135deg,#2F4F4F 0%,#0a1515 100%)}
-.gi-sorcerer{background:linear-gradient(135deg,#DC143C 0%,#2a0515 100%)}
-.gi-warlock{background:linear-gradient(135deg,#4B0082 0%,#150020 100%)}
-.gi-wizard{background:linear-gradient(135deg,#1E90FF 0%,#05102a 100%)}
-.gi-artificer{background:linear-gradient(135deg,#B8860B 0%,#1a1505 100%)}
+/* ---------- phones ---------- */
+@media (max-width:760px){
+  .bar-in{gap:8px}
+  .bar .srch-btn{display:inline-flex;flex:none}
+  .bar .bsearch{display:none;position:absolute;left:0;right:0;top:48px;flex:none;min-width:0;padding:10px 16px 12px;background:rgba(15,11,8,.97);border-bottom:1px solid #45362a}
+  .bar.searching .bsearch{display:block}
+  .bar .bsearch input{height:44px;font-size:16px}
+  .srd{position:static;width:100%;max-height:min(62vh,440px);margin-top:8px}
+  .phb.shell main,.phb main{padding-left:16px;padding-right:16px}
+  .page.cover{min-height:calc(100vw * 1.62)}
+  .cover .tooling{inset:12px}
+  .cover .tooling::before{inset:5px}
+  .cover .cv{padding:40px 26px 40px}
+  .cover .cv-logo{font-size:12px;letter-spacing:.24em;-webkit-text-stroke:3px #000}
+  .cover .cv h1{font-size:clamp(50px,16vw,80px);-webkit-text-stroke:2px #000}
+  .cover .cv-banner{font-size:20px;padding:10px 34px 8px}
+  .cover .cv-blurb{font-size:14px}
+  .cover .cv-emblem{padding:18px 0}
+  .page .chap-wash{height:180px}
+  .page .cls-head h2{font-size:38px}
+  .page .classtable{margin:30px -4px 26px}
+  .page .classtable .frame{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .page .classtable table{min-width:560px}
+  .page .classtable.narrow table{min-width:0}
+.page p.swipe{display:block;column-span:all;margin:-12px 2px 14px;font-family:'ScalySans',sans-serif;font-size:12px;font-style:italic;color:var(--caption);text-align:right;text-indent:0}
+  .page .cls-over{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .page .cls-over table{min-width:600px}
+  .page table.gear{font-size:12.4px}
+  .page table.gear td:nth-child(5){min-width:7em}
+  .spell-index .filters{grid-template-columns:minmax(0,1fr);gap:2px}
+  .phb .spell-index .chips button{padding:13px 0 12px} /* 44px tap targets, as the kit sets for phone controls */
+  .spell-index table th:nth-child(4),.spell-index table td:nth-child(4),
+  .spell-index table th:nth-child(6),.spell-index table td:nth-child(6),
+  .spell-index table th:nth-child(7),.spell-index table td:nth-child(7){display:none}
+  .spell-index .sp-link{min-height:32px}
+  .dov{padding:16px 12px 24px}
+  .dp{padding:30px 22px 64px}
+  .totop{right:12px;bottom:12px}
+}
+@media print{.totop,.dov,.chap-wash{display:none!important}}
 </style>
 </head>
-<body>
+<body class="phb">
+<a class="skip" href="#toc">Skip to the contents</a>
 
-<div class="top-bar">
-  <button class="mt" onclick="tSB()">&#9776;</button>
-  <div class="logo" onclick="go('cover')">Everything D&D <span>5e Compendium</span></div>
-  <div class="search-box">
-    <span class="si">&#128269;</span>
-    <input type="text" id="sI" placeholder="Search classes, spells, races, items... ( / )" oninput="doS(this.value)" onfocus="doS(this.value)">
-    <div class="srd" id="sD"></div>
+<header class="bar noprint" id="bar">
+  <div class="bar-in">
+    <a class="mark" href="#cover">Everything <span>D&amp;D</span></a>
+    <nav id="chapNav" aria-label="Chapters">
+      <a href="#toc">Contents</a>
+      <a href="#ch-races" title="Chapter 1: Races of the Realms">Races</a>
+      <a href="#ch-classes" title="Chapter 2: Classes">Classes</a>
+      <a href="#ch-bg" title="Chapter 3: Backgrounds">Backgrounds</a>
+      <a href="#ch-spells" title="Chapter 4: Spells">Spells</a>
+      <a href="#ch-feats" title="Chapter 5: Feats">Feats</a>
+      <a href="#ch-equip" title="Chapter 6: Equipment">Equipment</a>
+      <a href="#ch-rules" title="Chapter 7: Rules of Play">Rules</a>
+      <a href="#appendix-conditions" title="Appendix A: Conditions">Conditions</a>
+    </nav>
+    <div class="bsearch" id="bsearch" role="search">
+      <label class="sr-only" for="sI">Search the tome</label>
+      <input type="search" id="sI" placeholder="Search the tome&hellip; ( / )" autocomplete="off" spellcheck="false" aria-controls="sD">
+      <div class="srd" id="sD" aria-live="polite"></div>
+    </div>
+    <button class="phb-btn ghost icon sm srch-btn" type="button" id="sT" aria-label="Search the tome" aria-expanded="false" aria-controls="bsearch"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.3 10.3L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <a class="home" href="../../">&larr; Home</a>
   </div>
-</div>
+</header>
 
-<div class="so" id="sO" onclick="tSB()"></div>
-<nav class="sidebar" id="sb"></nav>
+<main id="mc">
 
-<div class="main" id="mc">
-  <section class="cover" id="cover">
-    <div class="cover-bg" style="background-image:url('https://preview.redd.it/dungeon-dragon-v0-d5vrjt6vwamg1.png?width=640&crop=smart&auto=webp&s=be6aa4a1597e067de6ac38aa72773503eb89fa62')"></div>
-    <h2>Dungeons &amp; Dragons 5th Edition</h2>
-    <div class="cover-orn"></div>
-    <h1>Everything D&D</h1>
-    <div class="cover-orn"></div>
-    <p class="cs">The complete adventurer's reference. Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything unified in one tome.</p>
-    <a class="cta" onclick="go('ch-races')">Begin Your Journey &#10148;</a>
-  </section>
-  <div id="cc"></div>
-</div>
+<!-- ==================== COVER ==================== -->
+<section class="page cover" id="cover" aria-label="Cover">
+  <span class="leather" aria-hidden="true"></span>
+  <span class="tooling" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  <div class="cv">
+    <p class="cv-logo">Dungeons &amp; Dragons 5th Edition</p>
+    <h1>Everything D&amp;D</h1>
+    <div class="cv-rule" aria-hidden="true"><b></b></div>
+    <div class="cv-emblem" aria-hidden="true">
+      <svg viewBox="-24 -24 248 248" fill="none" stroke="#c9ad6a" stroke-linejoin="round">
+        <circle cx="100" cy="100" r="118" stroke-width="1.6" opacity=".75"/>
+        <circle cx="100" cy="100" r="112" stroke-width=".8" opacity=".5" stroke-dasharray="2 5"/>
+        <g fill="#c9ad6a" stroke="none"><path d="M100-24l6 6-6 6-6-6z"/><path d="M100 212l6 6-6 6-6-6z"/><path d="M-24 100l6-6 6 6-6 6z"/><path d="M212 100l6-6 6 6-6 6z"/></g>
+        <polygon points="100,8 180,54 180,146 100,192 20,146 20,54" stroke-width="3.2"/>
+        <polygon points="100,8 180,54 180,146 100,192 20,146 20,54" stroke-width="1" transform="translate(100 100) scale(.9) translate(-100 -100)" opacity=".45"/>
+        <polygon points="100,52 142,126 58,126" stroke-width="2.6"/>
+        <path d="M100 8 100 52M180 54 100 52M180 54 142 126M180 146 142 126M100 192 142 126M100 192 58 126M20 146 58 126M20 54 58 126M20 54 100 52" stroke-width="2"/>
+        <text x="100" y="111" text-anchor="middle" fill="#e2c97e" stroke="#2a0e08" stroke-width="3" paint-order="stroke" font-family="Nodesto, serif" font-size="34">20</text>
+      </svg>
+    </div>
+    <div class="cv-banner">5e Compendium</div>
+    <p class="cv-blurb">The complete adventurer's reference. Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything unified in one tome.</p>
+    <a class="phb-btn lg cv-cta" href="#ch-races">&#9670; Begin Your Journey &#9670;</a>
+  </div>
+</section>
 
-<div class="dov" id="dO" onclick="if(event.target===this)cD()"><div class="dp" id="dP"></div></div>
-<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+<!-- ==================== CONTENTS ==================== -->
+<section class="page" id="toc">
+  <span class="chap-wash" aria-hidden="true"></span>
+  <div class="cols">
+    <h1>Table of Contents</h1>
+    <div class="toc" id="tocList">
+      <noscript><p>The pages of this tome are scribed by script. Enable JavaScript to read them.</p></noscript>
+    </div>
+    <div class="note toc-note">
+      <h5>On Using This Tome</h5>
+      <p>Seek any race, class, subclass, background, spell, feat, or condition with the search field in the top bar; press <kbd class="phb-kbd">/</kbd> to begin your seeking.</p>
+      <p>In the spell index of chapter 4, choose a class or a spell level to narrow the list, and select any spell to unfold its full description. Press <kbd class="phb-kbd">Esc</kbd> to set it aside.</p>
+    </div>
+  </div>
+  <span class="foot">Everything D&amp;D | Contents</span><span class="pnum">2</span>
+</section>
+
+<div id="cc"></div>
+</main>
+
+<div class="dov" id="dO"><div class="dp" id="dP" role="dialog" aria-modal="true" aria-labelledby="dTitle"></div></div>
+<button class="totop" id="btt" type="button" aria-label="Back to top">&uarr;</button>
 
 <script>
 // ============================================================
@@ -746,125 +840,425 @@ armor:[
 };
 
 // ============================================================
+//  HELPERS
+// ============================================================
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const slug=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function sfx(n){return n===1?'st':n===2?'nd':n===3?'rd':'th'}
+const ord=n=>{const v=+n;if(!v)return n;const t=v%100;return v+((t>=11&&t<=13)?'th':sfx(v%10))};
+const dash=v=>(v===undefined||v==='--'||v==='---')?'&mdash;':esc(v);
+const subId=(c,s)=>'sub-'+c.id+'-'+slug(s.name);
+const isMobile=()=>matchMedia('(max-width:760px)').matches;
+const SUBNAME={barbarian:'Primal Paths',bard:'Bard Colleges',cleric:'Divine Domains',druid:'Druid Circles',fighter:'Martial Archetypes',monk:'Monastic Traditions',paladin:'Sacred Oaths',ranger:'Ranger Archetypes',rogue:'Roguish Archetypes',sorcerer:'Sorcerous Origins',warlock:'Otherworldly Patrons',wizard:'Arcane Traditions',artificer:'Artificer Specialists'};
+const LVLNAME=l=>l===0?'Cantrips (0 Level)':ord(l)+' Level';
+
+// ============================================================
 //  SEARCH INDEX + ENGINE
 // ============================================================
 let si=[];
 function bsi(){
-  D.classes.forEach(c=>{si.push({ty:'Class',nm:c.name,sec:'ch-classes',d:c.desc.slice(0,80)+'...'});c.subs.forEach(s=>si.push({ty:'Subclass',nm:s.name+' ('+c.name+')',sec:'ch-classes',d:s.d.slice(0,80)+'...'}))});
-  D.races.forEach(r=>si.push({ty:'Race',nm:r.name,sec:'ch-races',d:r.desc.slice(0,80)+'...'}));
-  D.bg.forEach(b=>si.push({ty:'Background',nm:b.n,sec:'ch-bg',d:b.d.slice(0,80)+'...'}));
-  D.spells.forEach(s=>si.push({ty:'Spell (Lvl '+s.l+')',nm:s.n,sec:'ch-spells',d:s.sc+' | '+s.cl.join(', ')}));
-  D.feats.forEach(f=>si.push({ty:'Feat',nm:f.n,sec:'ch-feats',d:f.d.slice(0,80)+'...'}));
-  D.conditions.forEach(c=>si.push({ty:'Condition',nm:c.n,sec:'ch-rules',d:c.d.slice(0,80)+'...'}));
+  si=[];
+  D.classes.forEach(c=>{si.push({ty:'Class',nm:c.name,sec:'ch-classes',id:'class-'+c.id,d:c.desc.slice(0,80)+'...'});c.subs.forEach(s=>si.push({ty:'Subclass',nm:s.name+' ('+c.name+')',sec:'ch-classes',id:subId(c,s),d:s.d.slice(0,80)+'...'}))});
+  D.races.forEach(r=>si.push({ty:'Race',nm:r.name,sec:'ch-races',id:'race-'+r.id,d:r.desc.slice(0,80)+'...'}));
+  D.bg.forEach(b=>si.push({ty:'Background',nm:b.n,sec:'ch-bg',id:'bg-'+slug(b.n),d:b.d.slice(0,80)+'...'}));
+  D.spells.forEach(s=>si.push({ty:'Spell (Lvl '+s.l+')',nm:s.n,sec:'ch-spells',sp:s.n,d:s.sc+' | '+s.cl.join(', ')}));
+  D.feats.forEach(f=>si.push({ty:'Feat',nm:f.n,sec:'ch-feats',id:'feat-'+slug(f.n),d:f.d.slice(0,80)+'...'}));
+  D.conditions.forEach(c=>si.push({ty:'Condition',nm:c.n,sec:'appendix-conditions',id:'cond-'+c.n.toLowerCase(),d:c.d.slice(0,80)+'...'}));
 }
-function doS(v){const dd=document.getElementById('sD');if(!v||v.length<2){dd.classList.remove('active');return}const q=v.toLowerCase();const r=si.filter(i=>i.nm.toLowerCase().includes(q)||i.d.toLowerCase().includes(q)).slice(0,12);if(!r.length){dd.classList.remove('active');return}dd.innerHTML=r.map(i=>`<div class="sri" onclick="go('${i.sec}');document.getElementById('sD').classList.remove('active');document.getElementById('sI').value='';"><span class="srt">${i.nm}</span><span class="sty">${i.ty}</span><div class="srd2">${i.d}</div></div>`).join('');dd.classList.add('active')}
-document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))document.getElementById('sD').classList.remove('active')});
+let sr=[];
+function tyLabel(i){if(!i.sp)return i.ty;const s=D.spells.find(x=>x.n===i.sp);return s.l===0?'Cantrip':ord(s.l)+'-level spell'}
+function doS(v){
+  const dd=document.getElementById('sD');
+  if(!v||v.length<2){dd.classList.remove('active');dd.innerHTML='';sr=[];return}
+  const q=v.toLowerCase();
+  // names that begin with the query first, then names that contain it, then descriptions
+  const rank=i=>{const n=i.nm.toLowerCase();return n.startsWith(q)?0:n.includes(q)?1:2};
+  sr=si.filter(i=>i.nm.toLowerCase().includes(q)||i.d.toLowerCase().includes(q)).map((i,k)=>[rank(i),k,i]).sort((x,y)=>x[0]-y[0]||x[1]-y[1]).map(x=>x[2]).slice(0,12);
+  dd.innerHTML=sr.length?sr.map((i,k)=>`<button type="button" class="sri" data-k="${k}"><span class="srt">${esc(i.nm)}</span><span class="sty">${esc(tyLabel(i))}</span><div class="srd2">${esc(i.d)}</div></button>`).join('')
+    :`<p class="none">No entry in this tome answers to &ldquo;${esc(v)}&rdquo;.</p>`;
+  dd.classList.add('active');
+}
+function closeSearch(clear){
+  const dd=document.getElementById('sD');dd.classList.remove('active');
+  if(clear){document.getElementById('sI').value='';dd.innerHTML='';sr=[]}
+  const bar=document.getElementById('bar');
+  if(bar.classList.contains('searching')){bar.classList.remove('searching');document.getElementById('sT').setAttribute('aria-expanded','false')}
+}
+function pick(k){const i=sr[k];if(!i)return;closeSearch(true);if(i.sp)sSD(i.sp);else go(i.id||i.sec)}
+function openSearch(){
+  const bar=document.getElementById('bar');
+  if(isMobile()){bar.classList.add('searching');document.getElementById('sT').setAttribute('aria-expanded','true')}
+  const inp=document.getElementById('sI');inp.focus();inp.select();
+}
 
 // ============================================================
-//  SIDEBAR
+//  NAVIGATION
 // ============================================================
-function bSB(){
-  const ch=[
-    {id:'ch-races',t:'Ch 1: Races',it:D.races.map(r=>r.name)},
-    {id:'ch-classes',t:'Ch 2: Classes',it:D.classes.map(c=>c.name)},
-    {id:'ch-bg',t:'Ch 3: Backgrounds',it:D.bg.slice(0,13).map(b=>b.n)},
-    {id:'ch-spells',t:'Ch 4: Spells',it:['Cantrips','1st Level','2nd Level','3rd-5th Level','6th-9th Level']},
-    {id:'ch-feats',t:'Ch 5: Feats',it:[]},
-    {id:'ch-equip',t:'Ch 6: Equipment',it:['Weapons','Armor']},
-    {id:'ch-rules',t:'Ch 7: Rules & Conditions',it:['Ability Scores','Combat','Conditions']},
+function go(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});
+  try{history.replaceState(null,'','#'+id)}catch(e){}
+  if(el.matches('h2,h3,h4,.cls-head')){el.classList.remove('hit');void el.offsetWidth;el.classList.add('hit')}
+}
+
+// ============================================================
+//  CHAPTER CONTENT (blocks flow into PHB pages)
+// ============================================================
+// a block: {h: html, np: start a new page, foot: running footer from here on, out: place outside the columns}
+const B=(h,o)=>Object.assign({h},o||{});
+const chapHead=(num,title)=>`<h1><span class="chnum">${num}</span>${title}</h1>`;
+
+function trait(t){
+  const i=t.indexOf(': ');
+  if(i>-1)return `<p class="trait"><strong>${esc(t.slice(0,i))}.</strong> ${esc(t.slice(i+2))}</p>`;
+  if(/^\+/.test(t))return `<p class="trait"><strong>Ability Score Increase.</strong> ${esc(t)}</p>`;
+  const m=t.match(/^(Darkvision) (.+)$/);
+  if(m)return `<p class="trait"><strong>${m[1]}.</strong> ${esc(m[2])}</p>`;
+  return `<p class="trait"><strong>${esc(t)}.</strong></p>`;
+}
+
+function raceBlocks(){
+  const b=[B(chapHead('Chapter 1','Races of the Realms')+`<p class="lead dropcap">The worlds of D&amp;D are home to a multitude of peoples. Choose your race, which shapes your fundamental qualities and the foundations upon which you build your hero.</p>`)];
+  D.races.forEach(r=>{
+    b.push(B(`<h2 class="entry" id="race-${r.id}">${esc(r.name)}</h2><p class="meta">Source: ${esc(r.src)}</p><p>${esc(r.desc)}</p>`));
+    b.push(B(`<h3>${esc(r.name)} Traits</h3>${trait(r.traits[0])}`));
+    r.traits.slice(1).forEach(t=>b.push(B(trait(t))));
+    if(!r.subs.length)return;
+    if(r.id==='dragonborn'){
+      b.push(B(`<h3>Draconic Ancestry</h3><table class="anc"><thead><tr><th>Dragon</th><th>Damage Type</th><th>Breath Weapon &amp; Resistance</th></tr></thead><tbody>${r.subs.map(s=>{const m=s.name.match(/^(.*?) \((.*)\)$/)||[0,s.name,''];return `<tr><td>${esc(m[1])}</td><td>${esc(m[2])}</td><td>${esc(s.d)}</td></tr>`}).join('')}</tbody></table>`));
+      return;
+    }
+    b.push(B(`<h3>Subraces</h3><div class="sub"><h4>${esc(r.subs[0].name)}</h4><p>${esc(r.subs[0].d)}</p></div>`));
+    r.subs.slice(1).forEach(s=>b.push(B(`<div class="sub"><h4>${esc(s.name)}</h4><p>${esc(s.d)}</p></div>`)));
+  });
+  return b;
+}
+
+function classTable(c){
+  const cols=c.progCols,n=cols.length,fi=cols.indexOf('Features'),s1=cols.indexOf('1st');
+  const nm=h=>h==='Lvl'?'Level':(h==='Prof'||h==='Prof.')?'Prof. Bonus':h==='Unarmored Mvmt'?'Unarmored Movement':h;
+  let head='';
+  if(s1>-1)head=`<tr class="grp"><th colspan="${s1}"></th><th colspan="${n-s1}" class="c slots">&mdash;Spell Slots per Spell Level&mdash;</th></tr>`;
+  head+=`<tr>${cols.map((h,i)=>`<th${i===fi?'':' class="c"'}>${esc(nm(h))}</th>`).join('')}</tr>`;
+  const body=c.progression.map(row=>{const r=Array.isArray(row)?row:[row];let t='';for(let i=0;i<n;i++){const v=r[i];t+=i===0?`<td class="c">${ord(v)}</td>`:i===fi?`<td class="f">${dash(v)}</td>`:`<td class="c">${dash(v)}</td>`}return `<tr>${t}</tr>`}).join('');
+  return `<div class="classtable${n<=5?' narrow':''}"><div class="frame"><table><caption>The ${esc(c.name)}</caption><thead>${head}</thead><tbody>${body}</tbody></table></div></div>${n>5?'<p class="swipe" aria-hidden="true">Swipe the table sideways for every column &rarr;</p>':''}`;
+}
+
+function classBlocks(){
+  const b=[B(chapHead('Chapter 2','Classes')+`<p class="lead wide">Your class is the primary definition of what your character can do. It shapes how you think about the world and interact with it.</p>`
+    +`<div class="cls-over"><h5 class="tcap">Classes</h5><table><thead><tr><th>Class</th><th>Description</th><th class="c">Hit Die</th><th>Primary Ability</th><th>Saving Throw Proficiencies</th><th>Armor and Weapon Proficiencies</th></tr></thead><tbody>${D.classes.map(c=>`<tr><td><a href="#class-${c.id}">${esc(c.name)}</a></td><td>${esc((c.desc.match(/^[^.]*\./)||[c.desc])[0])}</td><td class="c">${esc(c.hd)}</td><td>${esc(c.pa)}</td><td>${esc(c.sv)}</td><td>${esc(c.arm==='None'?c.wpn:c.arm+'; '+c.wpn)}</td></tr>`).join('')}</tbody></table></div>`)];
+  D.classes.forEach(c=>{
+    const lc=c.name.toLowerCase();
+    b.push(B(`<header class="cls-head" id="class-${c.id}"><h2>${esc(c.name)}</h2><ul class="chips"><li>Hit Die ${esc(c.hd)}</li><li>${esc(c.pa)}</li><li>Saves ${esc(c.sv)}</li><li>${c.subs.length} Subclasses</li><li>${esc(c.src)}</li></ul></header>`+classTable(c),{npm:c!==D.classes[0],foot:'Chapter 2 | '+c.name}));
+    b.push(B(`<p class="lead">${esc(c.desc)}</p>`));
+    b.push(B(`<h3>Class Features</h3><h4>Hit Points</h4><p class="ln"><strong>Hit Dice:</strong> 1${esc(c.hd)} per ${esc(lc)} level</p><p class="ln"><strong>Primary Ability:</strong> ${esc(c.pa)}</p>`));
+    b.push(B(`<h4>Proficiencies</h4><p class="ln"><strong>Armor:</strong> ${esc(c.arm)}</p><p class="ln"><strong>Weapons:</strong> ${esc(c.wpn)}</p><p class="ln"><strong>Tools:</strong> ${esc(c.tools)}</p><p class="ln"><strong>Saving Throws:</strong> ${esc(c.sv)}</p>`));
+    b.push(B(`<h4>Key Features</h4><ul class="feat-list">${c.features.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`));
+    c.subs.forEach((s,k)=>b.push(B((k===0?`<h3>${SUBNAME[c.id]||'Subclasses'}</h3>`:'')+`<div class="sub"><h4 id="${subId(c,s)}">${esc(s.name)}</h4><p class="meta">Source: ${esc(s.src)}</p><p>${esc(s.d)}</p></div>`)));
+  });
+  return b;
+}
+
+function bgBlocks(){
+  const b=[B(chapHead('Chapter 3','Backgrounds')+`<p class="lead dropcap">Every story has a beginning. Your background reveals where you came from, how you became an adventurer, and your place in the world.</p>`)];
+  D.bg.forEach(g=>b.push(B(`<h3 id="bg-${slug(g.n)}">${esc(g.n)}</h3><p class="meta">Source: ${esc(g.s)}</p><p>${esc(g.d)}</p><p class="ln"><strong>Skill Proficiencies:</strong> ${esc(g.sk)}</p><p class="ln"><strong>Languages:</strong> ${esc(g.lg)}</p><p class="ln"><strong>Equipment:</strong> ${esc(g.eq)}</p><p class="ln"><strong>Feature:</strong> ${esc(g.ft)}</p>`)));
+  return b;
+}
+
+let cSC='all',cSL='all';
+function spellBlocks(){
+  const scl=[...new Set(D.spells.flatMap(s=>s.cl))].sort();
+  const cbtn=(v,l)=>`<li><button type="button" class="fbtn" data-v="${esc(v)}" aria-pressed="${cSC===v}">${esc(l)}</button></li>`;
+  const lbtn=(v,l)=>`<li><button type="button" class="fbtn" data-v="${v}" aria-pressed="${cSL===v}">${l}</button></li>`;
+  return [
+    B(chapHead('Chapter 4','Spells')+`<p class="lead dropcap">Magic permeates the worlds of D&amp;D. This chapter provides the comprehensive spell compendium available to spellcasters across all mainline sourcebooks.</p>`
+      +`<div class="note colbreak"><h5>Reading the Spell Index</h5><p>Choose a class to see only the spells on its list, or a level to see only spells of that level. Click any spell row for full details. ${D.spells.length} spells indexed.</p></div>`),
+    B(`<div class="spell-index wide-block">
+      <div class="filters">
+        <span class="flbl" id="sf1l">Class</span><ul class="chips" id="sf1" aria-labelledby="sf1l">${cbtn('all','All Classes')}${scl.map(c=>cbtn(c,c)).join('')}</ul>
+        <span class="flbl" id="sf2l">Level</span><ul class="chips" id="sf2" aria-labelledby="sf2l">${lbtn('all','All Levels')}${[0,1,2,3,4,5,6,7,8,9].map(l=>lbtn(l,l===0?'Cantrips':l+sfx(l))).join('')}</ul>
+      </div>
+      <h5 class="tcap">The Spell Index</h5>
+      <table class="pt" id="st"><thead><tr><th>Name</th><th class="c">Lvl</th><th>School</th><th>Time</th><th>Range</th><th>Duration</th><th>Classes</th></tr></thead><tbody id="stb"></tbody></table>
+      <p class="count" id="scount" aria-live="polite"></p>
+    </div>`,{out:true})
   ];
-  document.getElementById('sb').innerHTML=ch.map(c=>`<div class="nc"><div class="nct" onclick="this.classList.toggle('exp');this.nextElementSibling.classList.toggle('exp');go('${c.id}')">${c.t} <span class="ar">&#9654;</span></div><div class="nsi">${c.it.map(i=>`<a onclick="go('${c.id}')">${i}</a>`).join('')}</div></div><div class="nd"></div>`).join('');
 }
-function tSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('sO').classList.toggle('active')}
-function go(id){const el=document.getElementById(id);if(el){const o=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hh'))||56;window.scrollTo({top:el.offsetTop-o,behavior:'smooth'})}if(innerWidth<=900){document.getElementById('sb').classList.remove('open');document.getElementById('sO').classList.remove('active')}}
+
+function featBlocks(){
+  const b=[B(chapHead('Chapter 5','Feats')+`<p class="lead dropcap">A feat represents a talent or expertise that gives a character special capabilities beyond what a class provides.</p>`)];
+  D.feats.forEach(f=>b.push(B(`<div class="feat"><h4 id="feat-${slug(f.n)}">${esc(f.n)}</h4><p class="meta">Source: ${esc(f.s)}</p><p>${esc(f.d)}</p></div>`)));
+  return b;
+}
+
+function equipBlocks(){
+  const wg=[['Simple Melee','Simple Melee Weapons'],['Simple Ranged','Simple Ranged Weapons'],['Martial Melee','Martial Melee Weapons'],['Martial Ranged','Martial Ranged Weapons']];
+  const ag=[['Light','Light Armor'],['Medium','Medium Armor'],['Heavy','Heavy Armor'],['Shield','Shield']];
+  const wt=`<table class="gear"><thead><tr><th>Name</th><th>Cost</th><th>Damage</th><th>Weight</th><th>Properties</th></tr></thead>${wg.map(([t,l])=>`<tbody><tr class="grp"><th colspan="5">${l}</th></tr>${D.weapons.filter(w=>w.t===t).map(w=>`<tr><td>${esc(w.n)}</td><td>${esc(w.co)}</td><td>${esc(w.dm)}</td><td>${esc(w.w)}</td><td>${dash(w.p)}</td></tr>`).join('')}</tbody>`).join('')}</table>`;
+  const at=`<table class="gear"><thead><tr><th>Armor</th><th>Cost</th><th>Armor Class (AC)</th><th>Stealth</th><th>Weight</th></tr></thead>${ag.map(([t,l])=>`<tbody><tr class="grp"><th colspan="5">${l}</th></tr>${D.armor.filter(a=>a.t===t).map(a=>`<tr><td>${esc(a.n)}</td><td>${esc(a.co)}</td><td>${esc(a.ac)}</td><td>${dash(a.st)}</td><td>${esc(a.w)}</td></tr>`).join('')}</tbody>`).join('')}</table>`;
+  return [
+    B(chapHead('Chapter 6','Equipment')+`<p class="lead wide">The marketplace of a large city teems with buyers and sellers. Here you'll find the tools of the adventuring trade.</p>`),
+    B(`<div class="wide-block"><h2 id="eq-weapons">Weapons</h2>${wt}</div>`),
+    B(`<div class="wide-block"><h2 id="eq-armor">Armor</h2>${at}</div>`)
+  ];
+}
+
+function rulesBlocks(){
+  return [
+    B(chapHead('Chapter 7','Rules of Play')+`<p class="lead dropcap">A quick reference for the core rules of play, ability scores, combat, and the conditions that can affect creatures during the game.</p>`),
+    B(`<h2 id="rules-abilities">Ability Scores</h2><h5 class="tcap">The Six Abilities</h5><table><thead><tr><th>Ability</th><th>Measures</th></tr></thead><tbody>
+<tr><td><strong>Strength</strong></td><td>Physical power, athletics, melee attacks.</td></tr>
+<tr><td><strong>Dexterity</strong></td><td>Agility, reflexes, AC, ranged attacks.</td></tr>
+<tr><td><strong>Constitution</strong></td><td>Endurance, stamina, hit points.</td></tr>
+<tr><td><strong>Intelligence</strong></td><td>Reasoning, memory, arcane magic.</td></tr>
+<tr><td><strong>Wisdom</strong></td><td>Perception, intuition, divine magic.</td></tr>
+<tr><td><strong>Charisma</strong></td><td>Force of personality, leadership, social influence.</td></tr></tbody></table>`),
+    B(`<h5 class="tcap">Ability Scores and Modifiers</h5><table><thead><tr><th class="c">Score</th><th class="c">Modifier</th></tr></thead><tbody>
+<tr><td class="c">1</td><td class="c">&minus;5</td></tr><tr><td class="c">2&ndash;3</td><td class="c">&minus;4</td></tr><tr><td class="c">4&ndash;5</td><td class="c">&minus;3</td></tr>
+<tr><td class="c">6&ndash;7</td><td class="c">&minus;2</td></tr><tr><td class="c">8&ndash;9</td><td class="c">&minus;1</td></tr><tr><td class="c">10&ndash;11</td><td class="c">+0</td></tr>
+<tr><td class="c">12&ndash;13</td><td class="c">+1</td></tr><tr><td class="c">14&ndash;15</td><td class="c">+2</td></tr><tr><td class="c">16&ndash;17</td><td class="c">+3</td></tr>
+<tr><td class="c">18&ndash;19</td><td class="c">+4</td></tr><tr><td class="c">20</td><td class="c">+5</td></tr></tbody></table>`),
+    B(`<h5 class="tcap">Proficiency Bonus by Level</h5><table><thead><tr><th>Levels</th><th class="c">Proficiency Bonus</th></tr></thead><tbody>
+<tr><td>Levels 1&ndash;4</td><td class="c">+2</td></tr><tr><td>Levels 5&ndash;8</td><td class="c">+3</td></tr><tr><td>Levels 9&ndash;12</td><td class="c">+4</td></tr>
+<tr><td>Levels 13&ndash;16</td><td class="c">+5</td></tr><tr><td>Levels 17&ndash;20</td><td class="c">+6</td></tr></tbody></table>`),
+    B(`<h2 id="rules-combat">Combat</h2><h3>Turn Structure</h3><p class="ln"><strong>Movement:</strong> Up to your speed (can split).</p><p class="ln"><strong>Action:</strong> Attack, Cast, Dash, Disengage, Dodge, Help, Hide, Ready, Search, Use Object.</p><p class="ln"><strong>Bonus Action:</strong> Only if granted.</p><p class="ln"><strong>Reaction:</strong> One per round.</p><p class="ln"><strong>Free Interaction:</strong> One object or feature.</p>`),
+    B(`<h3>Attack Rolls</h3><p class="ln"><strong>Melee:</strong> d20 + Str + prof.</p><p class="ln"><strong>Ranged:</strong> d20 + Dex + prof.</p><p class="ln"><strong>Spell:</strong> d20 + casting mod + prof.</p><p class="ln"><strong>Crit:</strong> Natural 20 doubles dice.</p><p class="ln"><strong>Miss:</strong> Natural 1 always misses.</p>`),
+    B(`<div class="note"><h5>Death Saving Throws</h5><p>At 0 HP, d20 at start of each turn. 10+ = success, 9- = failure. Three successes: stabilize. Three failures: death. Natural 20: regain 1 HP and conscious. Natural 1: two failures. Damage at 0 HP = 1 failure (crit = 2). Massive damage (remaining damage &gt;= max HP) = instant death.</p></div>`),
+    B(`<h3>Resting</h3><p class="ln"><strong>Short Rest:</strong> 1+ hours. Spend Hit Dice to heal. Some features recharge.</p><p class="ln"><strong>Long Rest:</strong> 8+ hours (6 sleep, 2 light). Regain all HP and half total Hit Dice. Most features recharge. One per 24 hours.</p>`),
+    B(`<h3>Cover &amp; Visibility</h3><p class="ln"><strong>Half Cover:</strong> +2 AC/Dex saves.</p><p class="ln"><strong>Three-Quarters:</strong> +5.</p><p class="ln"><strong>Total:</strong> Can't be targeted.</p><p class="ln"><strong>Lightly Obscured:</strong> Disadvantage on Perception.</p><p class="ln"><strong>Heavily Obscured:</strong> Effectively blinded.</p>`),
+    B(`<h3>Advantage &amp; Disadvantage</h3><p>Roll 2d20 and take the higher (advantage) or lower (disadvantage). Multiple sources don't stack. If you have both simultaneously, they cancel out and you roll normally.</p>`)
+  ];
+}
+
+function condBlocks(){
+  const b=[B(chapHead('Appendix A','Conditions')+`<p class="lead dropcap">Conditions alter a creature's capabilities in a variety of ways and arise from spells, class features, monster attacks, and other effects. Most conditions are impairments, but invisibility can be beneficial.</p>`)];
+  D.conditions.forEach(c=>{
+    const src=c.note.startsWith('Common sources: ')?`<p class="srcs"><em>Common Sources:</em> ${esc(c.note.replace('Common sources: ',''))}</p>`:`<p class="srcs">${esc(c.note)}</p>`;
+    let body;
+    if(c.n==='Exhaustion'){
+      body=`<p class="noind">${esc(c.d)}</p><table><thead><tr><th class="c">Level</th><th>Effect</th></tr></thead><tbody>${c.fx.map(f=>{const m=f.match(/^Level (\d+): (.*)$/);return m?`<tr><td class="c">${m[1]}</td><td>${esc(m[2])}</td></tr>`:`<tr><td></td><td>${esc(f)}</td></tr>`}).join('')}</tbody></table>`;
+    }else{
+      body=`<ul><li>${esc(c.d)}</li>${c.fx.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`;
+    }
+    b.push(B(`<h3 class="cond" id="cond-${c.n.toLowerCase()}">${esc(c.n)}</h3>${body}${src}`));
+  });
+  b.push(B(`<div class="hr"></div><div class="quote center"><p>Compiled from the Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything.</p><span class="attr">Everything D&amp;D</span></div><div class="hr"></div><p class="credits">All game content is property of Wizards of the Coast. This is a personal reference tool. Fonts and textures from Homebrewery (naturalcrit, MIT license). Unofficial fan content, not affiliated with or endorsed by Wizards of the Coast.</p>`));
+  return b;
+}
+
+function chapters(){
+  return [
+    {id:'ch-races',tail:true,toc:'Chapter 1: Races of the Realms',foot:'Chapter 1 | Races of the Realms',blocks:raceBlocks(),subs:D.races.map(r=>['race-'+r.id,r.name])},
+    {id:'ch-classes',tail:true,toc:'Chapter 2: Classes',foot:'Chapter 2 | Classes',blocks:classBlocks(),subs:D.classes.map(c=>['class-'+c.id,c.name])},
+    {id:'ch-bg',tail:true,toc:'Chapter 3: Backgrounds',foot:'Chapter 3 | Backgrounds',blocks:bgBlocks(),subs:D.bg.map(g=>['bg-'+slug(g.n),g.n])},
+    {id:'ch-spells',toc:'Chapter 4: Spells',foot:'Chapter 4 | Spells',blocks:spellBlocks(),flow:true,cls:'spells',subs:[]},
+    {id:'ch-feats',tail:true,toc:'Chapter 5: Feats',foot:'Chapter 5 | Feats',blocks:featBlocks(),subs:[]},
+    {id:'ch-equip',tail:true,toc:'Chapter 6: Equipment',foot:'Chapter 6 | Equipment',blocks:equipBlocks(),subs:[['eq-weapons','Weapons'],['eq-armor','Armor']]},
+    {id:'ch-rules',tail:true,toc:'Chapter 7: Rules of Play',foot:'Chapter 7 | Rules of Play',blocks:rulesBlocks(),subs:[['rules-abilities','Ability Scores'],['rules-combat','Combat']]},
+    {id:'appendix-conditions',toc:'Appendix A: Conditions',foot:'Appendix A | Conditions',blocks:condBlocks(),subs:[]},
+  ];
+}
 
 // ============================================================
-//  RENDER ALL CHAPTERS
+//  RENDER: flow the blocks into PHB pages. On desktop each page is
+//  measured with fixed-height columns and a block that overflows
+//  moves to the next page; on phones each chapter (and each class)
+//  is one long single-column page.
 // ============================================================
-function sfx(n){return n===1?'st':n===2?'nd':n===3?'rd':'th'}
-
+let CH=[],renderedMobile=null;
+// a third column (about 390px) appears to the right when a page overflows; ignore small bleeds such as the class-table frame
+function overflows(c){return c.scrollHeight>c.clientHeight+2||c.scrollWidth>c.clientWidth+40}
 function render(){
-const c=document.getElementById('cc');let h='';
+  const host=document.getElementById('cc');host.innerHTML='';
+  const mob=isMobile();renderedMobile=mob;
+  CH=chapters();
+  let pn=2;
+  CH.forEach(ch=>{
+    let page=null,cols=null,count=0,foot=ch.foot,first=true;
+    const measure=!mob&&!ch.flow;
+    if(ch.tail)ch.blocks=ch.blocks.concat([B('<div class="tail" aria-hidden="true"><b></b></div>',{opt:true})]);
+    const newPage=()=>{
+      pn++;
+      page=document.createElement('section');
+      page.className='page'+(ch.cls?' '+ch.cls:'')+(measure?' measuring':'');
+      if(first){page.id=ch.id;first=false}
+      page.dataset.ch=ch.id;page.dataset.pn=pn;
+      page.innerHTML=(page.id?'<span class="chap-wash" aria-hidden="true"></span>':'')+`<div class="cols"></div><span class="foot"></span><span class="pnum">${pn}</span>`;
+      page.querySelector('.foot').textContent=foot;
+      host.appendChild(page);cols=page.querySelector('.cols');count=0;
+    };
+    newPage();
+    ch.blocks.forEach(b=>{
+      if(b.foot)foot=b.foot;
+      if((b.np||(mob&&b.npm))&&count>0)newPage();
+      if(b.foot&&count===0)page.querySelector('.foot').textContent=foot;
+      const t=document.createElement('template');t.innerHTML=b.h;
+      const nodes=[...t.content.childNodes];
+      (b.out?page:cols).insertBefore(t.content,b.out?page.querySelector('.foot'):null);
+      count++;
+      if(measure&&count>1&&overflows(cols)){
+        nodes.forEach(n=>n.remove());
+        if(b.opt)return;
+        newPage();
+        nodes.forEach(n=>cols.appendChild(n));count=1;
+      }
+    });
+  });
+  host.querySelectorAll('.measuring').forEach(p=>p.classList.remove('measuring'));
+  wireSpells();rST();buildTOC();
+}
 
-// CH1: RACES
-h+=`<section class="ch" id="ch-races"><div class="chh"><div class="chn">Chapter One</div><h1 class="cht">Races of the Realms</h1><div class="chd"></div><p class="chi">The worlds of D&D are home to a multitude of peoples. Choose your race, which shapes your fundamental qualities and the foundations upon which you build your hero.</p></div><div class="ca"><div class="cg">${D.races.map(r=>`<div class="pc" onclick="sRD('${r.id}')"><div class="cip gi-fighter">${r.icon}</div><div class="cb"><div class="ct2">${r.name}</div><div class="cso">${r.src}</div><div class="cde">${r.desc.slice(0,110)}...</div><div class="tags">${r.subs.length?r.subs.slice(0,3).map(s=>`<span class="tag">${s.name}</span>`).join(''):'<span class="tag">No subraces</span>'}</div></div></div>`).join('')}</div></div></section>`;
-
-// CH2: CLASSES
-h+=`<section class="ch" id="ch-classes"><div class="chh"><div class="chn">Chapter Two</div><h1 class="cht">Classes</h1><div class="chd"></div><p class="chi">Your class is the primary definition of what your character can do. It shapes how you think about the world and interact with it.</p></div><div class="ca"><div class="cg">${D.classes.map(c=>`<div class="pc" onclick="sCD('${c.id}')"><div class="cip gi-${c.id}">${c.icon}</div><div class="cb"><div class="ct2">${c.name}</div><div class="cso">${c.src} | Hit Die: ${c.hd}</div><div class="cde">${c.desc.slice(0,110)}...</div><div class="tags"><span class="tag">${c.pa}</span><span class="tag">${c.subs.length} Subclasses</span></div></div></div>`).join('')}</div></div></section>`;
-
-// CH3: BACKGROUNDS
-h+=`<section class="ch" id="ch-bg"><div class="chh"><div class="chn">Chapter Three</div><h1 class="cht">Backgrounds</h1><div class="chd"></div><p class="chi">Every story has a beginning. Your background reveals where you came from, how you became an adventurer, and your place in the world.</p></div><div class="ca"><div class="cg">${D.bg.map(b=>`<div class="pc" onclick="sBD('${b.n}')"><div class="cb"><div class="ct2">${b.n}</div><div class="cso">${b.s} | Feature: ${b.ft}</div><div class="cde">${b.d.slice(0,90)}...</div><div class="tags"><span class="tag">${b.sk}</span></div></div></div>`).join('')}</div></div></section>`;
-
-// CH4: SPELLS
-let scl=[...new Set(D.spells.flatMap(s=>s.cl))].sort();
-h+=`<section class="ch" id="ch-spells"><div class="chh"><div class="chn">Chapter Four</div><h1 class="cht">Spells</h1><div class="chd"></div><p class="chi">Magic permeates the worlds of D&D. This chapter provides the comprehensive spell compendium available to spellcasters across all mainline sourcebooks.</p></div><div class="ca"><div class="fb" id="sf1"><button class="fbtn act" onclick="fSC('all',this)">All Classes</button>${scl.map(c=>`<button class="fbtn" onclick="fSC('${c}',this)">${c}</button>`).join('')}</div><div class="fb" id="sf2"><button class="fbtn act" onclick="fSL('all',this)">All Levels</button>${[0,1,2,3,4,5,6,7,8,9].map(l=>`<button class="fbtn" onclick="fSL(${l},this)">${l===0?'Cantrips':l+sfx(l)}</button>`).join('')}</div><div class="tw"><table class="pt" id="st"><thead><tr><th>Name</th><th>Lvl</th><th>School</th><th>Time</th><th>Range</th><th>Duration</th><th>Classes</th></tr></thead><tbody id="stb"></tbody></table></div><p style="font-size:0.8rem;color:#999;margin-top:8px;"><em>Click any spell row for full details. ${D.spells.length} spells indexed.</em></p></div></section>`;
-
-// CH5: FEATS
-h+=`<section class="ch" id="ch-feats"><div class="chh"><div class="chn">Chapter Five</div><h1 class="cht">Feats</h1><div class="chd"></div><p class="chi">A feat represents a talent or expertise that gives a character special capabilities beyond what a class provides.</p></div><div class="ca"><div class="cg">${D.feats.map(f=>`<div class="pc"><div class="cb"><div class="ct2">${f.n}</div><div class="cso">${f.s}</div><div class="cde">${f.d}</div></div></div>`).join('')}</div></div></section>`;
-
-// CH6: EQUIPMENT
-h+=`<section class="ch" id="ch-equip"><div class="chh"><div class="chn">Chapter Six</div><h1 class="cht">Equipment</h1><div class="chd"></div><p class="chi">The marketplace of a large city teems with buyers and sellers. Here you'll find the tools of the adventuring trade.</p></div><div class="ca"><h2>Weapons</h2><div class="tw"><table class="pt"><thead><tr><th>Name</th><th>Type</th><th>Cost</th><th>Damage</th><th>Weight</th><th>Properties</th></tr></thead><tbody>${D.weapons.map(w=>`<tr><td><strong>${w.n}</strong></td><td>${w.t}</td><td>${w.co}</td><td>${w.dm}</td><td>${w.w}</td><td>${w.p}</td></tr>`).join('')}</tbody></table></div><h2>Armor</h2><div class="tw"><table class="pt"><thead><tr><th>Name</th><th>Type</th><th>Cost</th><th>AC</th><th>Stealth</th><th>Weight</th></tr></thead><tbody>${D.armor.map(a=>`<tr><td><strong>${a.n}</strong></td><td>${a.t}</td><td>${a.co}</td><td>${a.ac}</td><td>${a.st}</td><td>${a.w}</td></tr>`).join('')}</tbody></table></div></div></section>`;
-
-// CH7: RULES & CONDITIONS
-h+=`<section class="ch" id="ch-rules"><div class="chh"><div class="chn">Chapter Seven</div><h1 class="cht">Rules & Conditions</h1><div class="chd"></div><p class="chi">A quick reference for the core rules of play, ability scores, combat, and the conditions that can affect creatures during the game.</p></div><div class="ca">
-<h2>Ability Scores</h2>
-<div class="ib"><div class="ibt">The Six Abilities</div><p><strong>Strength:</strong> Physical power, athletics, melee attacks. <strong>Dexterity:</strong> Agility, reflexes, AC, ranged attacks. <strong>Constitution:</strong> Endurance, stamina, hit points.</p><p><strong>Intelligence:</strong> Reasoning, memory, arcane magic. <strong>Wisdom:</strong> Perception, intuition, divine magic. <strong>Charisma:</strong> Force of personality, leadership, social influence.</p></div>
-<div class="ib"><div class="ibt">Modifier Table</div><p>1: -5 | 2-3: -4 | 4-5: -3 | 6-7: -2 | 8-9: -1 | 10-11: +0 | 12-13: +1 | 14-15: +2 | 16-17: +3 | 18-19: +4 | 20: +5</p></div>
-<div class="ib"><div class="ibt">Proficiency Bonus by Level</div><p>Levels 1-4: +2 | Levels 5-8: +3 | Levels 9-12: +4 | Levels 13-16: +5 | Levels 17-20: +6</p></div>
-<h2>Combat</h2>
-<div class="two-col"><div class="ib"><div class="ibt">Turn Structure</div><p><strong>Movement:</strong> Up to your speed (can split). <strong>Action:</strong> Attack, Cast, Dash, Disengage, Dodge, Help, Hide, Ready, Search, Use Object. <strong>Bonus Action:</strong> Only if granted. <strong>Reaction:</strong> One per round. <strong>Free Interaction:</strong> One object or feature.</p></div><div class="ib"><div class="ibt">Attack Rolls</div><p><strong>Melee:</strong> d20 + Str + prof. <strong>Ranged:</strong> d20 + Dex + prof. <strong>Spell:</strong> d20 + casting mod + prof. <strong>Crit:</strong> Natural 20 doubles dice. <strong>Miss:</strong> Natural 1 always misses.</p></div></div>
-<div class="ib"><div class="ibt">Death Saving Throws</div><p>At 0 HP, d20 at start of each turn. 10+ = success, 9- = failure. Three successes: stabilize. Three failures: death. Natural 20: regain 1 HP and conscious. Natural 1: two failures. Damage at 0 HP = 1 failure (crit = 2). Massive damage (remaining damage >= max HP) = instant death.</p></div>
-<div class="two-col"><div class="ib"><div class="ibt">Resting</div><p><strong>Short Rest:</strong> 1+ hours. Spend Hit Dice to heal. Some features recharge. <strong>Long Rest:</strong> 8+ hours (6 sleep, 2 light). Regain all HP and half total Hit Dice. Most features recharge. One per 24 hours.</p></div><div class="ib"><div class="ibt">Cover &amp; Visibility</div><p><strong>Half Cover:</strong> +2 AC/Dex saves. <strong>Three-Quarters:</strong> +5. <strong>Total:</strong> Can't be targeted. <strong>Lightly Obscured:</strong> Disadvantage on Perception. <strong>Heavily Obscured:</strong> Effectively blinded.</p></div></div>
-<div class="ib"><div class="ibt">Advantage &amp; Disadvantage</div><p>Roll 2d20 and take the higher (advantage) or lower (disadvantage). Multiple sources don't stack. If you have both simultaneously, they cancel out and you roll normally.</p></div>
-
-<h2>Conditions</h2>
-<p style="margin-bottom:16px;">Conditions alter a creature's capabilities in a variety of ways and arise from spells, class features, monster attacks, and other effects. Most conditions are impairments, but invisibility can be beneficial.</p>
-<div class="cg">${D.conditions.map(c=>`<div class="cc" id="cond-${c.n.toLowerCase()}"><div class="ccn"><span class="cci">${c.icon}</span> ${c.n}</div><div class="ccd">${c.d}</div><ul style="margin:8px 0 6px;padding-left:18px">${c.fx.map(f=>`<li style="font-size:0.83rem;color:var(--inkl);margin-bottom:3px">${f}</li>`).join('')}</ul><div class="ccm"><strong>Common Sources:</strong> ${c.note.replace('Common sources: ','')}</div></div>`).join('')}</div>
-</div></section>`;
-
-// FOOTER
-h+=`<footer style="background:#0a0302;padding:36px;text-align:center;color:#555;font-size:0.78rem;border-top:2px solid rgba(201,173,106,0.2)"><div style="font-family:'Cinzel Decorative',serif;color:var(--g);font-size:1.1rem;margin-bottom:6px">Everything D&D</div><p>Compiled from the Player's Handbook, Tasha's Cauldron of Everything, and Xanathar's Guide to Everything.</p><p style="margin-top:6px">All game content is property of Wizards of the Coast. This is a personal reference tool.</p></footer>`;
-c.innerHTML=h;rST();
+function buildTOC(){
+  const pnOf=id=>{const el=document.getElementById(id);const p=el&&el.closest('.page');return p?p.dataset.pn:''};
+  const li=(cls,id,label)=>`<li class="${cls}"><a href="#${id}">${esc(label)}</a><span class="dots"></span><span>${pnOf(id)}</span></li>`;
+  document.getElementById('tocList').innerHTML='<ul>'+CH.map(ch=>li('h',ch.id,ch.toc)+ch.subs.map(([id,l])=>li('s',id,l)).join('')).join('')+'</ul>';
 }
 
 // ============================================================
 //  SPELL FILTERING
 // ============================================================
-let cSC='all',cSL='all';
-function fSC(v,b){cSC=v;document.querySelectorAll('#sf1 .fbtn').forEach(x=>x.classList.remove('act'));b.classList.add('act');rST()}
-function fSL(v,b){cSL=v;document.querySelectorAll('#sf2 .fbtn').forEach(x=>x.classList.remove('act'));b.classList.add('act');rST()}
-function rST(){let sp=D.spells;if(cSC!=='all')sp=sp.filter(s=>s.cl.includes(cSC));if(cSL!=='all')sp=sp.filter(s=>s.l===cSL);const tb=document.getElementById('stb');if(!tb)return;tb.innerHTML=sp.map(s=>`<tr onclick="sSD('${s.n.replace(/'/g,"\\'")}')"><td><strong>${s.n}</strong></td><td>${s.l===0?'C':s.l}</td><td>${s.sc}</td><td>${s.t}</td><td>${s.r}</td><td>${s.du}</td><td style="font-size:0.75rem">${s.cl.join(', ')}</td></tr>`).join('')}
+function setPressed(list,b){list.querySelectorAll('.fbtn').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))}
+function fSC(v,b){cSC=v;setPressed(document.getElementById('sf1'),b);rST()}
+function fSL(v,b){cSL=v;setPressed(document.getElementById('sf2'),b);rST()}
+function wireSpells(){
+  const f1=document.getElementById('sf1'),f2=document.getElementById('sf2');
+  if(!f1)return;
+  f1.addEventListener('click',e=>{const b=e.target.closest('.fbtn');if(b)fSC(b.dataset.v,b)});
+  f2.addEventListener('click',e=>{const b=e.target.closest('.fbtn');if(b)fSL(b.dataset.v==='all'?'all':+b.dataset.v,b)});
+
+}
+function rST(){
+  let sp=D.spells;if(cSC!=='all')sp=sp.filter(s=>s.cl.includes(cSC));if(cSL!=='all')sp=sp.filter(s=>s.l===cSL);
+  const tb=document.getElementById('stb');if(!tb)return;
+  const table=tb.closest('table'),cnt=document.getElementById('scount');
+  // gather the index back onto its first page before laying it out again
+  document.querySelectorAll('#cc .spell-cont').forEach(p=>p.remove());
+  table.querySelectorAll('tbody:not(#stb)').forEach(x=>x.remove());
+  table.closest('.spell-index').appendChild(cnt);
+  cnt.textContent=sp.length===D.spells.length?`Click any spell row for full details. ${D.spells.length} spells indexed.`:`Showing ${sp.length} of ${D.spells.length} spells. Click any spell row for full details.`;
+  if(!sp.length){tb.innerHTML='<tr class="none"><td colspan="7">No spell in this tome answers to that seeking. Choose another class or level.</td></tr>';renumber();return}
+  const levels=[...new Set(sp.map(s=>s.l))];
+  levels.forEach((l,k)=>{
+    const body=k===0?tb:document.createElement('tbody');body.dataset.l=l;
+    body.innerHTML=`<tr class="lvl"><th colspan="7" scope="rowgroup">${LVLNAME(l)}</th></tr>`+sp.filter(s=>s.l===l).map(s=>`<tr data-n="${esc(s.n)}"><td><button type="button" class="sp-link">${esc(s.n)}</button></td><td class="c">${s.l===0?'C':s.l}</td><td>${esc(s.sc)}</td><td>${esc(s.t)}</td><td>${esc(s.r)}</td><td>${esc(s.du)}</td><td class="cls">${esc(s.cl.join(', '))}</td></tr>`).join('');
+    if(k>0)table.appendChild(body);
+  });
+  if(!isMobile())splitSpellPages();
+  renumber();
+}
+// on desktop the index runs onto as many book pages as the current filter needs
+function splitSpellPages(){
+  const LIM=1139,PADB=104;
+  let page=document.getElementById('ch-spells'),table=document.getElementById('st'),guard=0;
+  while(page.getBoundingClientRect().height>LIM+1&&guard++<40){
+    const limitY=page.getBoundingClientRect().top+LIM-PADB;
+    const rows=[...table.querySelectorAll('tbody tr')];
+    let k=rows.findIndex(r=>r.getBoundingClientRect().bottom>limitY);
+    if(k>0&&rows[k-1].classList.contains('lvl'))k--;
+    if(k<=0)break;
+    const np=document.createElement('section');np.className='page spells spell-cont';np.dataset.ch='ch-spells';
+    np.innerHTML=`<div class="spell-index wide-block"><h5 class="tcap">The Spell Index (continued)</h5><table class="pt"><thead>${table.tHead.innerHTML}</thead></table></div><span class="foot">Chapter 4 | Spells</span><span class="pnum"></span>`;
+    page.after(np);
+    const nt=np.querySelector('table');let from=null,body=null;
+    rows.slice(k).forEach(r=>{
+      if(r.parentNode!==from){from=r.parentNode;body=document.createElement('tbody');body.dataset.l=from.dataset.l;nt.appendChild(body);
+        if(!r.classList.contains('lvl'))body.innerHTML=`<tr class="lvl"><th colspan="7" scope="rowgroup">${LVLNAME(+from.dataset.l)} (continued)</th></tr>`}
+      body.appendChild(r);
+    });
+    table.querySelectorAll('tbody').forEach(t=>{if(!t.rows.length&&t.id!=='stb')t.remove()});
+    page=np;table=nt;
+  }
+  page.querySelector('.spell-index').appendChild(document.getElementById('scount'));
+}
+function renumber(){
+  let pn=2;
+  document.querySelectorAll('#cc .page').forEach(p=>{pn++;p.dataset.pn=pn;const e=p.querySelector('.pnum');if(e)e.textContent=pn});
+  buildTOC();
+}
 
 // ============================================================
 //  DETAIL VIEWS
 // ============================================================
-function sD2(h){document.getElementById('dP').innerHTML='<button class="xb" onclick="cD()">&times;</button>'+h;document.getElementById('dO').classList.add('active');document.body.style.overflow='hidden'}
-function cD(){document.getElementById('dO').classList.remove('active');document.body.style.overflow=''}
-
-function sRD(id){const r=D.races.find(x=>x.id===id);if(!r)return;sD2(`<div style="font-size:3.5rem;text-align:center;margin-bottom:12px">${r.icon}</div><h2>${r.name}</h2><div class="ds">${r.src}</div><div class="dt dc">${r.desc}</div><h3>Racial Traits</h3><ul>${r.traits.map(t=>`<li>${t}</li>`).join('')}</ul>${r.subs.length?`<h3>Subraces</h3><div class="scg">${r.subs.map(s=>`<div class="sci"><div class="scn">${s.name}</div><div class="scd">${s.d}</div></div>`).join('')}</div>`:''}`)}
-
-function sCD(id){const c=D.classes.find(x=>x.id===id);if(!c)return;
-  let progHTML='';
-  if(c.progression&&c.progression.length){
-    progHTML=`<h3>Class Progression</h3><div class="prog-wrap"><table class="prog-table"><thead><tr>${c.progCols.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${c.progression.map(row=>`<tr>${(Array.isArray(row)?row:[row]).map(cell=>`<td>${cell!==undefined?cell:'--'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-  }
-  sD2(`<div style="font-size:3.5rem;text-align:center;margin-bottom:12px">${c.icon}</div><h2>${c.name}</h2><div class="ds">${c.src}</div><div class="sl"><div class="si"><label>Hit Die</label><span>${c.hd}</span></div><div class="si"><label>Primary</label><span>${c.pa}</span></div><div class="si"><label>Saves</label><span>${c.sv}</span></div></div><div class="sl"><div class="si"><label>Armor</label><span>${c.arm}</span></div><div class="si"><label>Weapons</label><span>${c.wpn}</span></div></div><div class="dt dc">${c.desc}</div><h3>Key Features</h3><ul>${c.features.map(f=>`<li>${f}</li>`).join('')}</ul>${progHTML}<h3>Subclasses (${c.subs.length})</h3><div class="scg">${c.subs.map(sc=>`<div class="sci"><div class="scn">${sc.name}</div><div class="scs">${sc.src}</div><div class="scd">${sc.d}</div></div>`).join('')}</div>`)
+let lastFocus=null;
+function sD2(h){
+  lastFocus=document.activeElement;
+  document.getElementById('dP').innerHTML='<button class="phb-btn ghost icon sm xb" type="button" aria-label="Close" onclick="cD()">&times;</button>'+h;
+  document.getElementById('dO').classList.add('active');document.body.style.overflow='hidden';
+  document.querySelector('#dP .xb').focus();
 }
-
-function sBD(name){const b=D.bg.find(x=>x.n===name);if(!b)return;sD2(`<h2>${b.n}</h2><div class="ds">${b.s}</div><div class="sl"><div class="si"><label>Skills</label><span>${b.sk}</span></div><div class="si"><label>Languages</label><span>${b.lg}</span></div><div class="si"><label>Feature</label><span>${b.ft}</span></div></div><div class="dt dc">${b.d}</div><h3>Equipment</h3><p>${b.eq}</p>`)}
-
-function sSD(name){const s=D.spells.find(x=>x.n===name);if(!s)return;sD2(`<h2>${s.n}</h2><div class="ds">${s.s} | ${s.l===0?'Cantrip':s.l+sfx(s.l)+'-level'} ${s.sc}</div><div class="sl"><div class="si"><label>Casting Time</label><span>${s.t}</span></div><div class="si"><label>Range</label><span>${s.r}</span></div><div class="si"><label>Components</label><span>${s.c}</span></div><div class="si"><label>Duration</label><span>${s.du}</span></div></div><div class="dt">${s.d}</div><h3>Available To</h3><div style="display:flex;flex-wrap:wrap;gap:6px">${s.cl.map(c=>`<span class="tag">${c}</span>`).join('')}</div>`)}
+function cD(){
+  const o=document.getElementById('dO');if(!o.classList.contains('active'))return;
+  o.classList.remove('active');document.body.style.overflow='';
+  if(lastFocus&&lastFocus.focus)try{lastFocus.focus({preventScroll:true})}catch(e){}
+}
+// races, classes and backgrounds now stand in the book itself: these turn to their entries
+function sRD(id){go('race-'+id)}
+function sCD(id){go('class-'+id)}
+function sBD(name){go('bg-'+slug(name))}
+function sSD(name){const s=D.spells.find(x=>x.n===name);if(!s)return;
+  const kind=s.l===0?s.sc+' cantrip':ord(s.l)+'-level '+s.sc.toLowerCase();
+  sD2(`<h2 id="dTitle">${esc(s.n)}</h2><p class="ds">${esc(kind)}</p><div class="tri"></div>`
+   +`<p class="ln"><strong>Casting Time:</strong> ${esc(s.t)}</p><p class="ln"><strong>Range:</strong> ${esc(s.r)}</p><p class="ln"><strong>Components:</strong> ${esc(s.c)}</p><p class="ln"><strong>Duration:</strong> ${esc(s.du)}</p>`
+   +`<p class="dt">${esc(s.d)}</p><h5>Available To</h5><ul class="chips">${s.cl.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><p class="src">Source: ${esc(s.s)}</p>`)}
 
 // ============================================================
-//  SCROLL + KEYBOARD
+//  SCROLL + KEYBOARD + WIRING
 // ============================================================
-addEventListener('scroll',()=>{document.getElementById('btt').classList.toggle('vis',scrollY>400)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')cD();if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('sI').focus()}});
+function navSpy(){
+  const links=[...document.querySelectorAll('#chapNav a')];
+  const y=innerHeight*0.3;let cur=null;
+  document.querySelectorAll('#toc,#cc .page').forEach(p=>{if(p.getBoundingClientRect().top<=y)cur=p.dataset.ch||p.id});
+  links.forEach(a=>{const on=a.getAttribute('href')==='#'+cur;if(on!==a.classList.contains('on')){a.classList.toggle('on',on);if(on&&a.parentNode.scrollWidth>a.parentNode.clientWidth)a.parentNode.scrollLeft=a.offsetLeft-40}});
+}
+function wire(){
+  const inp=document.getElementById('sI'),dd=document.getElementById('sD');
+  inp.addEventListener('input',()=>doS(inp.value));
+  inp.addEventListener('focus',()=>doS(inp.value));
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&sr.length){e.preventDefault();pick(0)}
+    else if(e.key==='ArrowDown'){const f=dd.querySelector('.sri');if(f){e.preventDefault();f.focus()}}
+  });
+  dd.addEventListener('click',e=>{const b=e.target.closest('.sri');if(b)pick(+b.dataset.k)});
+  document.getElementById('cc').addEventListener('click',e=>{const tr=e.target.closest('.spell-index tr[data-n]');if(tr)sSD(tr.dataset.n)});
+  dd.addEventListener('keydown',e=>{
+    const b=e.target.closest('.sri');if(!b)return;
+    if(e.key==='ArrowDown'){e.preventDefault();(b.nextElementSibling||b).focus()}
+    if(e.key==='ArrowUp'){e.preventDefault();(b.previousElementSibling||inp).focus()}
+  });
+  document.getElementById('sT').addEventListener('click',()=>{const bar=document.getElementById('bar');if(bar.classList.contains('searching'))closeSearch(false);else openSearch()});
+  document.addEventListener('click',e=>{if(!e.target.closest('.bsearch')&&!e.target.closest('#sT'))document.getElementById('sD').classList.remove('active')});
+  document.getElementById('dO').addEventListener('click',e=>{if(e.target.id==='dO')cD()});
+  document.getElementById('btt').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  addEventListener('scroll',()=>{document.getElementById('btt').classList.toggle('vis',scrollY>400);navSpy()},{passive:true});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      if(document.getElementById('dO').classList.contains('active')){cD();return}
+      if(document.activeElement&&document.activeElement.closest('.bsearch')){closeSearch(false);inp.blur()}
+      return;
+    }
+    if(e.key==='Tab'&&document.getElementById('dO').classList.contains('active')){
+      const f=[...document.querySelectorAll('#dP button,#dP a')];if(f.length===1){e.preventDefault();f[0].focus()}
+    }
+    const tag=document.activeElement&&document.activeElement.tagName;
+    if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!/^(INPUT|TEXTAREA|SELECT)$/.test(tag)){e.preventDefault();openSearch()}
+  });
+  let lastW=innerWidth,rt=0;
+  addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(Math.abs(innerWidth-lastW)<40&&isMobile()===renderedMobile)return;lastW=innerWidth;const a=anchorNow();render();if(a)restore(a)},250)});
+}
+// keep the reader's place when the pages are re-flowed
+function anchorNow(){const els=[...document.querySelectorAll('#cc [id]')];for(const el of els){const r=el.getBoundingClientRect();if(r.top>=0)return {id:el.id,top:r.top}}return null}
+function restore(a){const el=document.getElementById(a.id);if(el)window.scrollTo(0,scrollY+el.getBoundingClientRect().top-a.top)}
 
 // ============================================================
-//  INIT
+//  INIT: wait for the book faces so pages are measured true
 // ============================================================
-bsi();bSB();render();
+(async function init(){
+  bsi();wire();
+  const faces=['14px BookInsanity','bold 14px BookInsanity','italic 14px BookInsanity','bold italic 14px BookInsanity','14px ScalySans','bold 14px ScalySans','italic 14px ScalySans','14px ScalySansCaps','14px MrEaves','14px Solbera','14px Nodesto'];
+  try{await Promise.race([Promise.all(faces.map(f=>document.fonts.load(f))),new Promise(r=>setTimeout(r,3000))])}catch(e){}
+  render();navSpy();
+  if(location.hash.length>1){const id=decodeURIComponent(location.hash.slice(1));const el=document.getElementById(id);if(el)requestAnimationFrame(()=>el.scrollIntoView({block:'start'}))}
+})();
 </script>
 </body>
 </html>

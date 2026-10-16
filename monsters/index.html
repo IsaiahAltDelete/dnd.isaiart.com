@@ -1,518 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>D&D Monster Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;700;900&family=Spectral:ital,wght@0,400;0,600;0,700;1,400;1,600&family=MedievalSharp&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-  
-  <style>
-    :root {
-      --dnd-red: #58180D;
-      --dnd-red-light: #7A200D;
-      --parchment: #EFE5D0;
-      --parchment-dark: #E0D5C0;
-      --parchment-deep: #D4C4A8;
-      --ink: #1A1A1A;
-      --ink-light: #333;
-      --gold: #C9AD6A;
-      --gold-bright: #E8D5A3;
-      --gold-dim: #A08940;
-      --rule-color: #9C2B1B;
-      --wood-dark: #2A1A0A;
-      --wood-mid: #3E2415;
-      --wood-light: #5D3A1A;
-      --sidebar-w: 280px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monster Maker</title>
+<meta name="description" content="Monster Maker: an arcane bestiary and field guide that writes itself. Roll CR-balanced 5e monsters as Monster Manual stat blocks, with lore, physiology, a saved bestiary and AI image prompts.">
+<link rel="stylesheet" href="../assets/phb/phb.css">
+<style>
+/* ===== Monster Maker: page-specific styling on top of phb.css ===== */
+html{scroll-padding-top:60px}
+.phb main{padding-top:30px}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; }
+/* title block */
+#maker .tool-head h1 .chnum{font-size:17px;letter-spacing:.16em;margin-bottom:4px}
+#maker .tool-head .actions .phb-btn.saved{color:var(--phb-btn-ink);background:var(--head);border-color:var(--head);box-shadow:inset 0 2px 4px rgba(0,0,0,.35)}
 
-    body {
-      background-image: url('https://i.imgur.com/B1kEKpW.png');
-      background-repeat: repeat;
-      background-size: 400px;
-      font-family: 'Spectral', serif;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: scrollBackground 60s linear infinite;
-      padding: 12px;
-    }
+/* controls */
+.mm-controls{margin:4px 0 6px}
+.mm-controls .phb-field{flex:1 1 150px}
+.mm-controls #generateBtn{min-width:190px}
+.mm-prefix{margin:0 0 18px}
+.mm-prefix .phb-field{flex:1 1 100%}
 
-    @keyframes scrollBackground {
-      from { background-position: 0 0; }
-      to { background-position: 400px 0; }
-    }
+/* the page-turning strip above an entry */
+.mm-strip{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:0 0 14px;padding:0 0 8px;border-bottom:1px solid var(--phb-line-soft)}
+.mm-strip .k{font-family:'ScalySansCaps',sans-serif;font-size:13.5px;letter-spacing:.05em;color:var(--head)}
+.mm-strip .k em{font-family:'BookInsanity',serif;font-size:13px;letter-spacing:0;color:var(--caption);text-transform:none}
 
-    .layout {
-      display: flex;
-      height: calc(100vh - 24px);
-      max-width: 1080px;
-      width: 100%;
-      position: relative;
-    }
+/* output + bestiary index */
+.mm-split{display:grid;grid-template-columns:minmax(0,1fr) 258px;gap:30px;align-items:start}
+.mm-split.no-aside{grid-template-columns:minmax(0,1fr)}
+#statScroll{min-width:0;scroll-margin-top:64px}
+#monsterDisplay{min-width:0}
 
-    /* SIDEBAR */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      height: 100%;
-      background: var(--wood-dark);
-      border-radius: 3px 0 0 3px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: inset -8px 0 20px rgba(0,0,0,0.3), -2px 0 10px rgba(0,0,0,0.3);
-      transition: margin-left 0.3s ease, opacity 0.3s ease;
-      background-image:
-        radial-gradient(ellipse at 30% 20%, rgba(80,50,20,0.3) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 80%, rgba(60,35,10,0.2) 0%, transparent 50%);
-      background-color: var(--wood-dark);
-    }
+/* ---- a bestiary entry ---- */
+.mm-entry{position:relative;isolation:isolate;animation:mmIn .28s ease both}
+/* a faint watercolor wash behind the entry title, as on a Monster Manual page */
+.mm-entry::before{content:"";position:absolute;z-index:-1;top:-26px;right:-18px;width:min(520px,70%);height:150px;background:url(../assets/phb/tex/stain8.webp) center/100% 100% no-repeat;opacity:.32;pointer-events:none}
+@keyframes mmIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.page .mm-entry h2.mm-title{font-size:40px;line-height:.95;margin:0}
+.mm-entry .chips{margin:6px 0 12px}
+.mm-spread{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:30px;align-items:start}
 
-    .sidebar.collapsed {
-      margin-left: calc(var(--sidebar-w) * -1);
-      opacity: 0;
-      pointer-events: none;
-    }
+/* stat block (Monster Manual format) */
+.page .mm-block{margin:6px 0 16px}
+.page .mm-block h4{font-size:29px;letter-spacing:.01em}
+.page .mm-block .type{margin:2px 0 0;font-size:13.4px}
+.page .mm-block .red p{margin:2px 0}
+.page .mm-block .red p>strong:first-child{font-style:normal}
+.page .mm-block .crline{display:flex;flex-wrap:wrap;justify-content:space-between;column-gap:14px}
+.page .mm-block table.abil-t{width:100%;table-layout:fixed;margin:2px 0;font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.25;color:var(--head);break-inside:avoid}
+.page .mm-block table.abil-t tr{background:none}
+.page .mm-block table.abil-t th,.page .mm-block table.abil-t td{padding:0 1px;text-align:center;vertical-align:top;white-space:nowrap}
+.page .mm-block table.abil-t th{font-weight:bold;letter-spacing:.02em}
+.page .mm-block p.leg>strong:first-child{font-style:normal}
+.page .mm-block h3{margin:12px 0 5px;padding-bottom:1px;font-weight:normal;letter-spacing:.02em}
+.page .mm-block .spell-list{font-style:italic}
 
-    .sidebar-header {
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid rgba(201,173,106,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
+/* lore beside the block */
+.mm-lore{min-width:0}
+.page .mm-lore p{text-indent:0}
+.page .mm-lore .dropcap::first-letter{font-size:80px;margin-right:3px}
+.page .mm-lore p.mm-lead{margin:2px 0 10px;line-height:1.36}
+.page .mm-lore p.runin{margin:5px 0 0;clear:left}
+.page .mm-lore p.runin>strong:first-child{font-style:italic}
+.page .mm-lore h5.tcap{margin:16px 0 0}
+.page .mm-lore table.mm-phys{margin:4px 0 6px}
+.page .mm-lore table.mm-phys th{width:40%;vertical-align:top;font-weight:bold}
+.page .mm-lore .note{margin:22px 0 4px}
+.page .mm-lore .note p+p{margin-top:4px}
+.page .mm-lore .note .quirk{font-style:italic}
+.page .mm-lore .note .quirk>strong:first-child{font-style:normal}
+.color-swatch{display:inline-block;width:11px;height:11px;margin:0 4px 0 1px;vertical-align:-1px;border:1px solid rgba(40,20,10,.45);border-radius:1px;box-shadow:0 1px 1px rgba(0,0,0,.15)}
 
-    .sidebar-header h2 {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 0.75rem;
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+/* bestiary index (roster) */
+.phb #sidebar{--roster-h:300px;margin-top:10px}
+.phb #sidebar .mm-aside-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px;padding:0 0 4px;border-bottom:2px solid var(--gold)}
+.phb #sidebar .mm-aside-h h2{margin:0;font-family:'MrEaves',serif;font-size:23px;line-height:1;color:var(--head);border:0}
+.phb #sidebar .mm-aside-h .del{width:30px;height:30px;font-size:20px}
+.phb #sidebar > h5{margin-top:10px}
+.phb #sidebar li .pick{display:flex;flex-direction:column;justify-content:center}
+.phb #sidebar .nm{display:block;font-family:'MrEaves',serif;font-size:16.5px;line-height:1.05;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phb #sidebar .pick small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phb #sidebar .cr{flex:none;align-self:center;padding:0 3px 0 4px;font-family:'ScalySansCaps',sans-serif;font-size:12px;letter-spacing:.03em;color:var(--head);white-space:nowrap}
+.phb #sidebar li.empty{display:block;border:0;padding:5px 4px 6px}
+.phb #sidebar .mm-aside-foot{margin:8px 0 0;padding-top:6px;border-top:1px solid rgba(88,24,13,.18);font-family:'ScalySansCaps',sans-serif;font-size:12px;letter-spacing:.06em;color:var(--caption);text-align:center}
+.sidebar-overlay{display:none}
 
-    .sidebar-close {
-      background: none; border: none; color: var(--gold-dim);
-      cursor: pointer; font-size: 0.8rem; padding: 4px; transition: color 0.2s;
-    }
-    .sidebar-close:hover { color: var(--gold-bright); }
+/* toasts (the page script adds .show / removes it) */
+.phb .phb-toasts > .toast{animation:none;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease;white-space:nowrap}
+.phb .phb-toasts > .toast.show{opacity:1;transform:none}
 
-    .sidebar-sections {
-      flex: 1; overflow-y: auto; padding: 8px 0;
-      scrollbar-width: thin; scrollbar-color: var(--wood-light) transparent;
-    }
-    .sidebar-sections::-webkit-scrollbar { width: 4px; }
-    .sidebar-sections::-webkit-scrollbar-track { background: transparent; }
-    .sidebar-sections::-webkit-scrollbar-thumb { background: var(--wood-light); border-radius: 2px; }
+#imagePromptStorage{display:none}
+.mm-keys{margin:26px 0 0;padding-top:10px;border-top:1px solid var(--phb-line-soft)}
+#maker:has(.tool-empty) .mm-keys{display:none}
+.phb-keys .grp{white-space:nowrap}
 
-    .sb-section-label {
-      font-family: 'Cinzel', serif; font-size: 0.55rem;
-      text-transform: uppercase; letter-spacing: 2px; color: var(--gold-dim);
-      padding: 10px 16px 4px; display: flex; align-items: center; gap: 6px;
-    }
-    .sb-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(201,173,106,0.15); }
-
-    .sb-empty { padding: 8px 16px; font-size: 0.7rem; color: rgba(201,173,106,0.3); font-style: italic; }
-
-    .sb-entry {
-      display: flex; align-items: center; gap: 10px;
-      padding: 7px 16px; cursor: pointer; transition: background 0.15s;
-      border-left: 3px solid transparent; position: relative;
-    }
-    .sb-entry:hover { background: rgba(255,255,255,0.04); border-left-color: var(--gold-dim); }
-    .sb-entry.active { background: rgba(201,173,106,0.08); border-left-color: var(--gold); }
-
-    .sb-entry-icon { font-size: 0.65rem; color: var(--gold-dim); width: 14px; text-align: center; flex-shrink: 0; }
-    .sb-entry-info { flex: 1; min-width: 0; }
-    .sb-entry-name {
-      font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
-      color: var(--gold-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
-    }
-    .sb-entry-meta {
-      font-size: 0.6rem; color: var(--gold-dim); font-style: italic;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .sb-entry-cr {
-      font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700;
-      color: var(--dnd-red-light); background: rgba(201,173,106,0.15);
-      padding: 1px 5px; border-radius: 2px; flex-shrink: 0; min-width: 20px; text-align: center;
-    }
-    .sb-entry-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
-    .sb-entry:hover .sb-entry-actions { opacity: 1; }
-
-    .sb-action-btn {
-      background: none; border: none; color: var(--gold-dim); cursor: pointer;
-      font-size: 0.6rem; padding: 2px 4px; border-radius: 2px; transition: all 0.15s;
-    }
-    .sb-action-btn:hover { color: var(--gold-bright); background: rgba(255,255,255,0.06); }
-    .sb-action-btn.delete:hover { color: #e74c3c; }
-
-    .sidebar-footer {
-      padding: 10px 16px; border-top: 1px solid rgba(201,173,106,0.15);
-      font-family: 'Cinzel', serif; font-size: 0.55rem; color: var(--gold-dim);
-      text-align: center; letter-spacing: 1px; flex-shrink: 0;
-    }
-
-    /* BOOK PAGE */
-    .book-page {
-      flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column;
-      background: var(--parchment); border-radius: 0 3px 3px 0; position: relative;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(0,0,0,0.06);
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,108,74,0.04) 28px, rgba(139,108,74,0.04) 29px),
-        radial-gradient(ellipse at 20% 50%, rgba(139,108,74,0.06) 0%, transparent 70%),
-        radial-gradient(ellipse at 80% 50%, rgba(139,108,74,0.04) 0%, transparent 70%);
-      background-color: var(--parchment);
-      transition: border-radius 0.3s ease;
-    }
-    .sidebar.collapsed + .book-page { border-radius: 3px; }
-
-    .book-page::before {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      pointer-events: none; z-index: 1;
-      background:
-        linear-gradient(to right, rgba(120,80,40,0.12) 0%, transparent 3%),
-        linear-gradient(to left, rgba(120,80,40,0.08) 0%, transparent 2%),
-        linear-gradient(to bottom, rgba(120,80,40,0.08) 0%, transparent 2%),
-        linear-gradient(to top, rgba(120,80,40,0.1) 0%, transparent 3%);
-    }
-
-    /* HEADER */
-    .page-header {
-      flex-shrink: 0; padding: 12px 20px 9px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 3px solid var(--dnd-red); position: relative; z-index: 2;
-    }
-    .page-header::after {
-      content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
-      height: 1px; background: var(--dnd-red); opacity: 0.4;
-    }
-
-    .header-left { display: flex; align-items: center; gap: 12px; }
-
-    .sidebar-toggle {
-      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
-      color: var(--dnd-red); width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; padding: 0;
-    }
-    .sidebar-toggle:hover { background: var(--dnd-red); color: var(--parchment); }
-
-    .header-title {
-      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.25rem;
-      color: var(--dnd-red); letter-spacing: 2px; text-transform: uppercase; line-height: 1;
-    }
-    .header-subtitle {
-      font-family: 'Spectral', serif; font-style: italic; font-size: 0.65rem;
-      color: var(--dnd-red-light); letter-spacing: 1px; margin-top: 1px;
-    }
-
-    .header-tools { display: flex; gap: 5px; }
-
-    .tool-btn {
-      background: none; border: 1.5px solid var(--dnd-red); border-radius: 3px;
-      color: var(--dnd-red); width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
-      font-family: inherit; padding: 0; position: relative;
-    }
-    .tool-btn:hover { background: var(--dnd-red); color: var(--parchment); transform: none; box-shadow: none; filter: none; }
-    .tool-btn.saved { background: var(--dnd-red); color: var(--gold-bright); border-color: var(--dnd-red); }
-    .tool-btn[disabled] { opacity: 0.3; pointer-events: none; }
-
-    /* CONTROLS */
-    .controls-bar {
-      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
-      padding: 8px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
-      background: rgba(0,0,0,0.02); position: relative; z-index: 2; flex-wrap: wrap;
-    }
-    .control-group { display: flex; align-items: center; gap: 4px; }
-    .control-group label {
-      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
-      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
-    }
-    .control-group select {
-      padding: 3px 20px 3px 7px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
-      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
-      cursor: pointer; appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2358180D'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 5px center; min-width: 82px;
-    }
-    .control-group select:focus { outline: none; border-color: var(--dnd-red); }
-
-    .conjure-btn {
-      margin-left: auto; background: var(--dnd-red); color: var(--gold-bright);
-      border: none; border-radius: 2px; padding: 6px 16px;
-      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.7rem;
-      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
-      transition: all 0.15s; display: flex; align-items: center; gap: 7px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2); white-space: nowrap;
-    }
-    .conjure-btn:hover { background: var(--dnd-red-light); box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
-    .conjure-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-    .conjure-btn .fa-dice-d20 { font-size: 0.85rem; }
-
-    .prefix-bar {
-      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
-      padding: 6px 20px; border-bottom: 1px solid rgba(88,24,13,0.15);
-      background: rgba(0,0,0,0.02); position: relative; z-index: 2;
-    }
-    .prefix-bar label {
-      font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.55rem;
-      text-transform: uppercase; letter-spacing: 1.5px; color: var(--dnd-red); white-space: nowrap;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .prefix-bar label .fa-paintbrush { font-size: 0.6rem; }
-    .prefix-bar input {
-      flex: 1; padding: 5px 10px; border: 1.5px solid rgba(88,24,13,0.3); border-radius: 2px;
-      font-family: 'Spectral', serif; font-size: 0.78rem; background: var(--parchment); color: var(--ink);
-      min-width: 0;
-    }
-    .prefix-bar input::placeholder { color: rgba(88,24,13,0.3); font-style: italic; font-size: 0.72rem; }
-    .prefix-bar input:focus { outline: none; border-color: var(--dnd-red); background: #FFF9F0; }
-
-    /* STAT SCROLL */
-    .stat-scroll {
-      flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: 18px 26px 26px; position: relative; z-index: 2;
-      scrollbar-width: thin; scrollbar-color: var(--dnd-red) transparent;
-    }
-    .stat-scroll::-webkit-scrollbar { width: 6px; }
-    .stat-scroll::-webkit-scrollbar-track { background: transparent; }
-    .stat-scroll::-webkit-scrollbar-thumb { background: var(--dnd-red); border-radius: 3px; }
-
-    /* FOOTER */
-    .page-footer {
-      flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 20px; border-top: 1px solid rgba(88,24,13,0.15);
-      position: relative; z-index: 2;
-    }
-    .footer-nav { display: flex; align-items: center; gap: 4px; }
-    .nav-btn {
-      background: none; border: 1px solid rgba(88,24,13,0.25); border-radius: 2px;
-      color: var(--dnd-red); width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.65rem; transition: all 0.15s; padding: 0;
-    }
-    .nav-btn:hover:not([disabled]) { background: var(--dnd-red); color: var(--parchment); }
-    .nav-btn[disabled] { opacity: 0.2; pointer-events: none; }
-
-    .page-indicator {
-      font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700;
-      color: var(--dnd-red); padding: 0 6px; min-width: 50px; text-align: center;
-    }
-    .footer-flavor, .footer-chapter {
-      font-family: 'Spectral', serif; font-style: italic; font-size: 0.6rem;
-      color: rgba(88,24,13,0.35); letter-spacing: 0.5px;
-    }
-
-    /* EMPTY STATE */
-    .empty-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100%; text-align: center; opacity: 0.6;
-    }
-    .empty-state .pentagram { font-size: 3rem; color: var(--dnd-red); margin-bottom: 16px; opacity: 0.4; }
-    .empty-state h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--dnd-red); margin-bottom: 6px; }
-    .empty-state p { font-style: italic; font-size: 0.8rem; color: var(--ink-light); }
-    .empty-state .shortcuts {
-      margin-top: 20px; font-size: 0.7rem; color: rgba(88,24,13,0.4);
-      display: flex; flex-direction: column; gap: 3px;
-    }
-    .empty-state .shortcuts kbd {
-      display: inline-block; background: rgba(88,24,13,0.08); border: 1px solid rgba(88,24,13,0.15);
-      border-radius: 3px; padding: 1px 6px; font-family: 'Cinzel', serif; font-size: 0.6rem;
-      color: var(--dnd-red); margin: 0 2px;
-    }
-
-    /* STAT BLOCK */
-    .stat-block { max-width: 100%; animation: fadeIn 0.25s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
-    .gradient-bar { height: 5px; background: linear-gradient(to right, var(--dnd-red), var(--gold), var(--dnd-red)); margin: 0 0 12px; }
-    .gradient-bar.bottom { margin: 16px 0 0; }
-
-    .monster-name {
-      font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.9rem;
-      color: var(--dnd-red); line-height: 1.05; letter-spacing: 1px;
-    }
-    .monster-meta { font-family: 'Spectral', serif; font-style: italic; font-size: 0.82rem; color: var(--ink-light); margin-bottom: 8px; }
-
-    .tapered-rule { height: 2px; border: none; background: linear-gradient(to right, transparent, var(--rule-color), transparent); margin: 8px 0; }
-
-    .prop-line { font-size: 0.85rem; line-height: 1.5; margin: 2px 0; }
-    .prop-label { font-weight: 700; color: var(--dnd-red); }
-    .prop-value { color: var(--ink); }
-
-    .ability-scores { display: flex; justify-content: space-between; margin: 8px 0; padding: 6px 0; text-align: center; }
-    .ability-score { flex: 1; }
-    .ability-score .label { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.65rem; color: var(--dnd-red); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 1px; }
-    .ability-score .value { font-family: 'Spectral', serif; font-size: 0.85rem; color: var(--ink); }
-
-    .section-header {
-      font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.05rem;
-      color: var(--dnd-red); border-bottom: 2px solid var(--dnd-red);
-      padding-bottom: 2px; margin: 14px 0 6px; letter-spacing: 0.5px;
-    }
-
-    .action-entry { margin-bottom: 6px; font-size: 0.85rem; line-height: 1.45; }
-    .action-name { font-weight: 700; font-style: italic; }
-
-    .physiology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; margin-top: 4px; }
-    .phys-item { font-size: 0.8rem; line-height: 1.45; padding: 1px 0; border-bottom: 1px dotted rgba(88,24,13,0.15); }
-    .phys-item .phys-label { font-weight: 700; color: var(--dnd-red); }
-
-    .color-swatch {
-      display: inline-block; width: 10px; height: 10px; border: 1px solid rgba(0,0,0,0.3);
-      border-radius: 1px; margin: 0 3px; vertical-align: middle; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    }
-
-    .flavor-line { font-size: 0.82rem; line-height: 1.45; margin-top: 3px; }
-    .flavor-line .fl-label { font-weight: 700; color: var(--dnd-red); }
-
-    /* TOAST */
-    #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
-    .toast {
-      background: var(--wood-dark); color: var(--gold-bright);
-      padding: 10px 20px; border-radius: 3px; border: 1px solid var(--gold);
-      font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 1px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(8px); white-space: nowrap;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-
-    #imagePromptStorage { display: none; }
-
-    /* RESPONSIVE */
-    @media (max-width: 800px) {
-      .sidebar { position: fixed; left: 0; top: 0; height: 100vh; z-index: 100; border-radius: 0; }
-      .sidebar.collapsed { margin-left: 0; transform: translateX(-100%); }
-      .sidebar:not(.collapsed) { transform: translateX(0); }
-      .book-page { border-radius: 3px !important; }
-      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
-      .sidebar-overlay.active { display: block; }
-    }
-
-    @media (max-width: 600px) {
-      body { padding: 6px; }
-      .layout { height: calc(100vh - 12px); }
-      .page-header { padding: 8px 14px 7px; }
-      .header-title { font-size: 1rem; letter-spacing: 1px; }
-      .header-subtitle { display: none; }
-      .controls-bar { padding: 6px 14px; gap: 5px; }
-      .prefix-bar { padding: 5px 14px; gap: 5px; }
-      .prefix-bar label { font-size: 0.5rem; }
-      .prefix-bar input { font-size: 0.72rem; padding: 4px 8px; }
-      .control-group select { min-width: 65px; font-size: 0.72rem; padding: 2px 16px 2px 5px; }
-      .control-group label { font-size: 0.5rem; }
-      .stat-scroll { padding: 12px 14px 18px; }
-      .monster-name { font-size: 1.3rem; }
-      .conjure-btn { padding: 5px 10px; font-size: 0.6rem; }
-      .conjure-btn span { display: none; }
-      .physiology-grid { grid-template-columns: 1fr; }
-      .footer-flavor { display: none; }
-      .footer-chapter { display: none; }
-    }
-  </style>
+@media (min-width:761px){
+  .phb #sidebar.collapsed{display:none}
+}
+/* the bestiary index sits beside the entry while it fits, then above the two-up spread gives way */
+@media (max-width:1199px) and (min-width:761px){
+  .mm-split:not(.no-aside) .mm-spread{grid-template-columns:minmax(0,1fr)}
+  .mm-split:not(.no-aside) .mm-block{max-width:520px}
+}
+/* the title block stacks its buttons beneath the rule before they crowd the title */
+@media (max-width:1100px){
+  .phb #maker .tool-head{grid-template-columns:minmax(0,1fr)}
+  .phb #maker .tool-head > .actions{grid-column:1;grid-row:auto;order:2;justify-content:flex-start;margin-top:12px}
+  .phb #maker .tool-head::after{order:1}
+}
+@media (max-width:760px){
+  .phb main{padding-left:16px;padding-right:16px}
+  /* let the drawer rise above the top bar and its shade (the page would otherwise trap it) */
+  .phb #maker{isolation:auto}
+  #maker .tool-head h1 .chnum{font-size:14.5px;letter-spacing:.12em}
+  .phb #maker .tool-head > .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .phb #maker .tool-head > .actions .phb-btn{width:100%;padding-left:8px;padding-right:8px}
+  .mm-split,.mm-split.no-aside{grid-template-columns:minmax(0,1fr)}
+  .mm-spread{grid-template-columns:minmax(0,1fr);gap:4px}
+  .page .mm-entry h2.mm-title{font-size:34px}
+  .mm-controls #generateBtn{flex:1 1 100%}
+  .mm-strip{justify-content:center}
+  .mm-strip .k{display:none}
+  .page .mm-block{margin-left:0;margin-right:0}
+  .page .mm-block table.abil-t{font-size:12.6px}
+  /* the index becomes a drawer, as in the original */
+  .phb #sidebar{position:fixed;top:0;right:0;bottom:0;z-index:130;width:min(330px,88vw);margin:0;padding:16px 16px 20px;overflow-y:auto;
+    background:var(--parch) url(../assets/phb/tex/parchment.webp) center/cover;border:0;border-image:none;border-left:3px solid var(--head);
+    box-shadow:-10px 0 40px rgba(0,0,0,.55);transform:translateX(0);transition:transform .25s ease,visibility .25s}
+  .phb #sidebar.collapsed{transform:translateX(105%);visibility:hidden}
+  .phb #sidebar .mm-aside-h .del{width:44px;height:44px}
+  .sidebar-overlay{position:fixed;inset:0;z-index:120;background:rgba(8,5,3,.5)}
+  .sidebar-overlay.active{display:block}
+}
+@media print{
+  .mm-controls,.mm-prefix,.mm-strip,#sidebar,.tool-head .actions,.mm-keys,.sidebar-overlay{display:none!important}
+  .mm-split{display:block}
+}
+/* credit line, set as in the handbooks */
+.page .credits{font-family:'ScalySans',sans-serif;font-size:11.5px;line-height:1.35;color:var(--caption);text-align:center;margin-top:18px;font-style:italic;text-indent:0}
+</style>
 </head>
-<body>
+<body class="phb">
+<a class="skip" href="#maker">Skip to the Monster Maker</a>
 
-<div class="layout">
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<header class="bar noprint">
+  <div class="bar-in">
+    <a class="mark" href="#maker">Monster <span>Maker</span></a>
+    <nav aria-label="Sections">
+      <a href="#maker">Conjure</a>
+      <a href="#statScroll">Entry</a>
+      <a href="#sidebar" id="indexLink">Bestiary Index</a>
+    </nav>
+    <a class="home" href="../">&larr; Home</a>
+  </div>
+</header>
 
-  <aside class="sidebar collapsed" id="sidebar">
-    <div class="sidebar-header">
-      <h2><i class="fas fa-book-open" style="margin-right:6px;font-size:0.65rem"></i> Bestiary Index</h2>
-      <button class="sidebar-close" id="sidebarCloseBtn" title="Close index"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="sidebar-sections" id="sidebarSections">
-      <div class="sb-section-label"><i class="fas fa-bookmark" style="font-size:0.5rem"></i> Saved</div>
-      <div id="savedList"><div class="sb-empty">No saved entries yet</div></div>
-      <div class="sb-section-label"><i class="fas fa-clock-rotate-left" style="font-size:0.5rem"></i> History</div>
-      <div id="historyList"><div class="sb-empty">No history yet</div></div>
-    </div>
-    <div class="sidebar-footer" id="sidebarFooter">0 saved &middot; 0 conjured</div>
-  </aside>
+<main>
+<section class="page tool broad" id="maker" aria-labelledby="mmTitle">
 
-  <main class="book-page">
-    <div class="page-header">
-      <div class="header-left">
-        <button class="sidebar-toggle" id="sidebarToggle" title="Open Bestiary Index"><i class="fas fa-book-open"></i></button>
-        <div>
-          <div class="header-title">Monster Manual</div>
-          <div class="header-subtitle">Arcane Bestiary &amp; Field Guide</div>
-        </div>
-      </div>
-      <div class="header-tools">
-        <button class="tool-btn" id="saveBtn" title="Save to Bestiary" disabled><i class="fas fa-bookmark"></i></button>
-        <button class="tool-btn" id="copyBtn" title="Copy Stat Block" disabled><i class="fas fa-scroll"></i></button>
-        <button class="tool-btn" id="copyPromptBtn" title="Copy Image Prompt" disabled><i class="fas fa-paint-brush"></i></button>
-      </div>
+  <header class="tool-head">
+    <h1 id="mmTitle"><span class="chnum">Chapter IX: Creatures of the Realms</span>Monster Maker</h1>
+    <p class="sub">Arcane Bestiary &amp; Field Guide, a bestiary that writes itself</p>
+    <div class="actions">
+      <button class="phb-btn ghost sm" type="button" id="sidebarToggle" title="Open Bestiary Index" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 2.6c2.2-.9 4.6-.7 6.5.8v10.2c-1.9-1.4-4.3-1.6-6.5-.8zM15 2.6c-2.2-.9-4.6-.7-6.5.8v10.2c1.9-1.4 4.3-1.6 6.5-.8z"/></svg><span>Bestiary</span></button>
+      <button class="phb-btn ghost sm" type="button" id="saveBtn" title="Save to Bestiary" aria-pressed="false" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1h8a1 1 0 0 1 1 1v13l-5-3.3L3 15V2a1 1 0 0 1 1-1z"/></svg><span class="lbl">Save</span></button>
+      <button class="phb-btn ghost sm" type="button" id="copyBtn" title="Copy Stat Block" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M5 1h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1V3H4V2a1 1 0 0 1 1-1zM2 4h8a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v7h6V6z"/></svg><span><span class="hide-mobile">Copy </span>Stat Block</span></button>
+      <button class="phb-btn ghost sm" type="button" id="copyPromptBtn" title="Copy Image Prompt" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M14.6 1.4c-.6-.6-1.6-.6-2.2.1L6.5 8l1.5 1.5 6.5-5.9c.7-.6.7-1.6.1-2.2zM5.5 9c-1.6 0-2.7 1.1-2.8 2.7-.1 1.1-.6 1.9-1.7 2.2 1 .9 2.4 1.3 3.8 1 1.8-.4 3-1.8 2.8-3.5z"/></svg><span><span class="hide-mobile">Copy </span>Image Prompt</span></button>
     </div>
+  </header>
 
-    <div class="controls-bar">
-      <div class="control-group">
-        <label for="monsterTypeSelect">Type</label>
-        <select id="monsterTypeSelect"><option value="Any">Any</option></select>
-      </div>
-      <div class="control-group">
-        <label for="styleSelect">Style</label>
-        <select id="styleSelect"><option value="Any">Any</option></select>
-      </div>
-      <div class="control-group">
-        <label for="crSelect">CR</label>
-        <select id="crSelect"></select>
-      </div>
-      <div class="control-group">
-        <label for="habitatSelect">Habitat</label>
-        <select id="habitatSelect"><option value="Any">Any</option></select>
-      </div>
-      <button class="conjure-btn" id="generateBtn">
-        <i class="fas fa-dice-d20"></i><span>Conjure</span>
-      </button>
+  <div class="phb-toolbar mm-controls" role="group" aria-label="Conjuring parameters">
+    <div class="phb-field">
+      <label for="monsterTypeSelect">Type</label>
+      <select id="monsterTypeSelect"><option value="Any">Any</option></select>
     </div>
-    <div class="prefix-bar">
-      <label for="prefixInput"><i class="fas fa-paintbrush"></i> Prompt Prefix</label>
+    <div class="phb-field">
+      <label for="styleSelect">Style</label>
+      <select id="styleSelect"><option value="Any">Any</option></select>
+    </div>
+    <div class="phb-field">
+      <label for="crSelect">Challenge (CR)</label>
+      <select id="crSelect"></select>
+    </div>
+    <div class="phb-field">
+      <label for="habitatSelect">Habitat</label>
+      <select id="habitatSelect"><option value="Any">Any</option></select>
+    </div>
+    <button class="phb-btn lg" type="button" id="generateBtn" title="Conjure a monster (Space)">&#9670; Conjure &#9670;</button>
+  </div>
+  <div class="phb-toolbar mm-prefix">
+    <div class="phb-field grow">
+      <label for="prefixInput">Prompt Prefix</label>
       <input type="text" id="prefixInput" placeholder='e.g. "digital painterly art style, sweeping brush strokes"' spellcheck="false">
+      <span class="hint">Set before every image prompt this page copies for you.</span>
     </div>
+  </div>
 
-    <div class="stat-scroll" id="statScroll">
-      <div id="monsterDisplay">
-        <div class="empty-state">
-          <div class="pentagram"><i class="fas fa-hat-wizard"></i></div>
+  <div class="mm-strip">
+    <span class="k">Bestiary Pages <em>&middot; Compendium Monstrum</em></span>
+    <div class="phb-pager" role="group" aria-label="Turn the pages">
+      <button class="phb-btn ghost sm icon" type="button" id="navFirst" title="First page" aria-label="First page" disabled>&laquo;</button>
+      <button class="phb-btn ghost sm icon" type="button" id="navPrev" title="Previous page" aria-label="Previous page" disabled>&lsaquo;</button>
+      <span class="ind" id="pageIndicator" aria-live="polite">--</span>
+      <button class="phb-btn ghost sm icon" type="button" id="navNext" title="Next page" aria-label="Next page" disabled>&rsaquo;</button>
+      <button class="phb-btn ghost sm icon" type="button" id="navLast" title="Last page" aria-label="Last page" disabled>&raquo;</button>
+    </div>
+  </div>
+
+  <div class="mm-split" id="mmSplit">
+    <div id="statScroll">
+      <div id="monsterDisplay" aria-live="polite">
+        <div class="tool-empty">
+          <span class="sigil" aria-hidden="true">M</span>
           <h3>Awaiting Conjuration</h3>
           <p>Select your parameters and roll the dice.</p>
-          <div class="shortcuts">
-            <div><kbd>Space</kbd> Conjure</div>
-            <div><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate</div>
-            <div><kbd>S</kbd> Save &nbsp; <kbd>B</kbd> Bestiary</div>
-          </div>
+          <p class="phb-keys"><span class="grp"><kbd>Space</kbd> Conjure</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>S</kbd> Save</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>B</kbd> Bestiary</span></p>
         </div>
       </div>
     </div>
 
-    <div class="page-footer">
-      <span class="footer-flavor">Chapter IX: Creatures of the Realms</span>
-      <div class="footer-nav">
-        <button class="nav-btn" id="navFirst" title="First page" disabled><i class="fas fa-angles-left"></i></button>
-        <button class="nav-btn" id="navPrev" title="Previous page" disabled><i class="fas fa-chevron-left"></i></button>
-        <span class="page-indicator" id="pageIndicator">--</span>
-        <button class="nav-btn" id="navNext" title="Next page" disabled><i class="fas fa-chevron-right"></i></button>
-        <button class="nav-btn" id="navLast" title="Last page" disabled><i class="fas fa-angles-right"></i></button>
+    <aside class="roster sticky collapsed" id="sidebar" aria-label="Bestiary Index">
+      <div class="mm-aside-h">
+        <h2>Bestiary Index</h2>
+        <button class="del" type="button" id="sidebarCloseBtn" title="Close index" aria-label="Close the bestiary index">&times;</button>
       </div>
-      <span class="footer-chapter">Compendium Monstrum</span>
-    </div>
-  </main>
-</div>
+      <h5>Saved</h5>
+      <ul id="savedList"><li class="empty">No saved entries yet</li></ul>
+      <h5>History</h5>
+      <ul id="historyList"><li class="empty">No history yet</li></ul>
+      <p class="mm-aside-foot" id="sidebarFooter">0 saved &middot; 0 conjured</p>
+    </aside>
+  </div>
 
+  <p class="phb-keys center mm-keys"><span class="grp"><kbd>Space</kbd> Conjure</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> Navigate</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>S</kbd> Save</span> &nbsp;&middot;&nbsp; <span class="grp"><kbd>B</kbd> Bestiary</span></p>
+
+  <p class="credits">Fonts and textures from Homebrewery (naturalcrit, MIT license). Unofficial fan content, not affiliated with or endorsed by Wizards of the Coast.</p>
+
+  <span class="foot">Monster Maker &middot; Compendium Monstrum</span>
+  <span class="pnum" id="pnum">1</span>
+</section>
+</main>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <input type="hidden" id="imagePromptStorage" value="">
-<div id="toast-container"></div>
+<div id="toast-container" class="phb-toasts" role="status" aria-live="polite"></div>
 
 <script>
 
@@ -1437,14 +1170,204 @@ function buildMonsterData(){
   return{name,meta:`${size} ${family.type}`,cr,html,prompt,alignment,rarity:rarity.name};
 }
 
+
+/* BOOK PAGE RENDERING
+   Every entry (new or saved in an older session) is stored exactly as before:
+   {name, meta, cr, html, prompt, alignment, rarity}, with html in the original
+   generator markup. That markup is read back here and laid out as a Monster
+   Manual page: a stat block, with the creature's lore beside it. */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const anA=w=>/^[aeiou]/i.test(w||'')?'an':'a';
+const HABITAT_PHRASE={
+  "Forest":"of the deep forests","Desert":"of the open desert","Cave":"of caves and dark hollows","Swamp":"of the fetid swamps",
+  "Urban Ruins":"of ruined and forsaken cities","Mountains":"of the high mountains","Underwater":"of the lightless deeps beneath the waves",
+  "Volcano":"of the smoking volcanic peaks","Grassland":"of the windswept grasslands","Tundra":"of the frozen tundra","Ruins":"of crumbling ruins",
+  "Jungle":"of the steaming jungles","Arctic":"of the arctic wastes","Underdark":"of the Underdark","Coast":"of the storm-lashed coasts",
+  "Sky":"of the open sky","Astral":"of the Astral Sea","Far Realm":"of the Far Realm","Feywild":"of the Feywild","Shadowfell":"of the Shadowfell",
+  "Badlands":"of the scoured badlands"
+};
+/* names for options the generator words generically, as a Monster Manual would print them */
+const BONUS_NAMES=[["teleports up to 20 feet","Blink"],["moves up to half its speed without provoking","Nimble Escape"],["One creature frightened by","Torment"],
+  ["sheds soothing light","Soothing Light"],["beats its wings","Wing Buffet"],["steels itself","Steel Itself"]];
+const REACTION_NAMES=[["makes one Tail Lash attack","Tail Riposte"],["gains +3 AC against that attack","Deflect"],["teleports up to 15 feet","Slip Away"],
+  ["the spell fizzles","Unravel Spell"],["enters the monster's reach","Opportunist"]];
+const LEGENDARY_OPTIONS=[
+  ["The monster makes one attack.","Attack"],
+  ["The monster moves up to half its speed.","Move"],
+  ["The monster magically teleports up to 30 feet.","Teleport"],
+  ["The monster forces one creature it can see within 30 feet to make a saving throw against one of its effects.","Compel"],
+  ["The monster casts a cantrip or uses a minor magical effect.","Cantrip"],
+  ["The monster makes a skillful feint, imposing disadvantage on the next attack against it before the start of its next turn.","Feint"]
+];
+const nameFor=(table,text,fallback)=>{const hit=table.find(([k])=>text.includes(k));return hit?hit[1]:fallback;};
+
+/* "Hit: 1d8 + 3" -> "Hit: 7 (1d8 + 3)", as printed in the Monster Manual */
+function withAverages(html){
+  return html.replace(/(\(?)\b(\d+)d(\d+)(?:\s*([+\-−])\s*(\d+))?/g,(m,open,n,d,sign,k)=>{
+    if(open) return m;
+    const bonus=sign?(sign==='+'?1:-1)*parseInt(k,10):0;
+    const avg=Math.max(1,Math.floor(parseInt(n,10)*(parseInt(d,10)+1)/2)+bonus);
+    return `${avg} (${m.trim()})`;
+  });
+}
+function tidyAction(html){
+  let h=html.trim();
+  h=h.replace(/<em>((?:Melee|Ranged) Weapon Attack:)\s*([^<]*?)<\/em>/,'<em>$1</em> $2');
+  h=h.replace(/(spell save DC (?:of )?\d+: )([^<.]+)\./,'$1<span class="spell-list">$2</span>.');
+  return withAverages(h);
+}
+
+function parseStored(html){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  const root=doc.querySelector('.stat-block');
+  if(!root) return null;
+  const txt=el=>el?el.textContent.replace(/\s+/g,' ').trim():'';
+  const v={props:{},abil:[],sections:{},phys:[],flavor:{}};
+  v.name=txt(root.querySelector('.monster-name'));
+  v.typeLine=txt(root.querySelector('.monster-meta'));
+  root.querySelectorAll('.prop-line').forEach(p=>{v.props[txt(p.querySelector('.prop-label'))]=txt(p.querySelector('.prop-value'));});
+  root.querySelectorAll('.ability-score').forEach(a=>v.abil.push([txt(a.querySelector('.label')),txt(a.querySelector('.value'))]));
+  let section=null;
+  [...root.children].forEach(el=>{
+    if(el.classList.contains('section-header')){section=txt(el);return;}
+    if(el.classList.contains('action-entry')&&section){
+      const nm=el.querySelector('.action-name');
+      const name=txt(nm).replace(/\.$/,'');
+      if(nm) nm.remove();
+      (v.sections[section]=v.sections[section]||[]).push({name,body:el.innerHTML.trim()});
+    }
+  });
+  root.querySelectorAll('.phys-item').forEach(p=>{
+    const lab=p.querySelector('.phys-label');
+    const label=txt(lab).replace(/:$/,'');
+    if(lab) lab.remove();
+    v.phys.push({label,html:p.innerHTML.trim(),text:txt(p)});
+  });
+  root.querySelectorAll('.flavor-line').forEach(f=>{
+    const lab=f.querySelector('.fl-label');
+    const label=txt(lab).replace(/:$/,'');
+    if(lab) lab.remove();
+    v.flavor[label]=txt(f);
+  });
+  return v;
+}
+
+function renderEntry(v){
+  const P=v.props, physMap={};
+  v.phys.forEach(p=>{physMap[p.label]=p;});
+  const prop=(label)=>P[label]!==undefined?`<p><strong>${esc(label)}</strong> ${esc(P[label])}</p>`:'';
+  const typeLine=v.typeLine||'';
+  const head=typeLine.split(',')[0].trim().split(/\s+/);
+  const size=head[0]||'', type=head.slice(1).join(' ');
+
+  /* traits, actions and the rest */
+  const acts=(v.sections['Actions']||[]).map(a=>({name:a.name,body:tidyAction(a.body)}));
+  const traits=acts.filter(a=>a.name==='Regeneration');
+  const actions=acts.filter(a=>a.name!=='Regeneration');
+  const entryP=a=>`<p><strong>${esc(a.name)}.</strong> ${a.body}</p>`;
+  const bonus=(v.sections['Bonus Actions']||[]).map(a=>{const t=tidyAction(a.body);return {name:a.name==='Bonus Action'?nameFor(BONUS_NAMES,t,a.name):a.name,body:t};});
+  const reacts=(v.sections['Reactions']||[]).map(a=>{const t=tidyAction(a.body);return {name:a.name==='Reaction'?nameFor(REACTION_NAMES,t,a.name):a.name,body:t};});
+  let legendaryHTML='';
+  (v.sections['Legendary']||v.sections['Legendary Actions']||[]).forEach(a=>{
+    const body=a.body.replace(/\s+/g,' ');
+    const cut=body.indexOf('turn: ');
+    if(cut<0){legendaryHTML+=`<p>${tidyAction(body)}</p>`;return;}
+    legendaryHTML+=`<p>${body.slice(0,cut)}turn.</p>`;
+    let rest=body.slice(cut+6);
+    LEGENDARY_OPTIONS.map(([t,n])=>({t,n,i:rest.indexOf(t)})).filter(o=>o.i>=0).sort((a,b)=>a.i-b.i).forEach(o=>{
+      legendaryHTML+=`<p class="leg"><strong>${o.n}.</strong> ${o.t}</p>`;
+      rest=rest.replace(o.t,'');
+    });
+    if(rest.trim()) legendaryHTML+=`<p>${tidyAction(rest.trim())}</p>`;
+  });
+
+  const abilHead=v.abil.map(a=>`<th scope="col">${esc(a[0])}</th>`).join('');
+  const abilVals=v.abil.map(a=>`<td>${esc(a[1])}</td>`).join('');
+  const knownTop=['Armor Class','Hit Points','Speed'];
+  const knownMid=['Damage Vulnerabilities','Damage Resistances','Condition Immunities','Senses','Languages'];
+  const placed=new Set([...knownTop,...knownMid,'Challenge','Proficiency Bonus','Rarity']);
+  const otherProps=Object.keys(P).filter(k=>!placed.has(k)).map(prop).join('');
+  const crLine=(P['Challenge']!==undefined||P['Proficiency Bonus']!==undefined)
+    ?`<p class="crline">${P['Challenge']!==undefined?`<span><strong>Challenge</strong> ${esc(P['Challenge'])}</span>`:''}${P['Proficiency Bonus']!==undefined?`<span><strong>Proficiency Bonus</strong> ${esc(P['Proficiency Bonus'])}</span>`:''}</p>`:'';
+
+  const block=`<div class="monster frame mm-block" data-copy>
+    <h4>${esc(v.name)}</h4>
+    <p class="type">${esc(typeLine)}</p>
+    <div class="tri"></div>
+    <div class="red">${knownTop.map(prop).join('')}</div>
+    <div class="tri"></div>
+    <table class="abil-t"><thead><tr>${abilHead}</tr></thead><tbody><tr>${abilVals}</tr></tbody></table>
+    <div class="tri"></div>
+    <div class="red">${knownMid.map(prop).join('')}${otherProps}${crLine}</div>
+    <div class="tri"></div>
+    ${traits.map(entryP).join('')}
+    ${actions.length?`<h3>Actions</h3>${actions.map(entryP).join('')}`:''}
+    ${bonus.length?`<h3>Bonus Actions</h3>${bonus.map(entryP).join('')}`:''}
+    ${reacts.length?`<h3>Reactions</h3>${reacts.map(entryP).join('')}`:''}
+    ${legendaryHTML?`<h3>Legendary Actions</h3>${legendaryHTML}`:''}
+  </div>`;
+
+  /* lore: a lead paragraph, run-in ecology notes, the physiology table and a table-side note */
+  const colorText=physMap['Color']?physMap['Color'].text:'';
+  const [mainCol,accentCol]=colorText.split(',').map(s=>s.trim()).filter(Boolean);
+  const form=physMap['Form']?physMap['Form'].text.toLowerCase():'';
+  const pattern=physMap['Pattern / Skin']?physMap['Pattern / Skin'].text.toLowerCase():'';
+  const habitat=physMap['Habitat']?physMap['Habitat'].text:'';
+  const habPhrase=HABITAT_PHRASE[habitat]||(habitat?`of the ${habitat.toLowerCase()}`:'');
+  const lead=`The ${esc(v.name)} is ${anA(size)} ${esc(size.toLowerCase())} ${esc(type)}${habPhrase?' '+esc(habPhrase):''}`
+    +(form?`: ${anA(form)} ${esc(form)} creature`:'')
+    +(mainCol?` of ${esc(mainCol.toLowerCase())} hue`:'')
+    +(accentCol?` touched with ${esc(accentCol.toLowerCase())}`:'')
+    +(pattern?`, its body marked by ${esc(pattern)}`:'')+'.';
+  const runin=(label,val)=>val?`<p class="runin"><strong>${esc(label)}.</strong> ${esc(val)}${/[.!?]$/.test(val)?'':'.'}</p>`:'';
+  const F=v.flavor;
+  const rarity=P['Rarity'];
+  const tableRows=v.phys.filter(p=>!['Habitat','Role'].includes(p.label))
+    .map(p=>`<tr><th scope="row">${esc(p.label)}</th><td>${p.html}</td></tr>`).join('');
+  const role=physMap['Role']?physMap['Role'].text:'';
+  const noteBits=[
+    role?`<p><strong>Role.</strong> ${esc(role)}.</p>`:'',
+    F['Save DC Baseline']?`<p><strong>Save DC Baseline.</strong> ${esc(F['Save DC Baseline'])}.</p>`:'',
+    F['Quirk']?`<p class="quirk"><strong>Quirk.</strong> ${esc(F['Quirk'])}.</p>`:''
+  ].join('');
+  const knownFlavor=new Set(['Origin','Behavior','Treasure','Save DC Baseline','Quirk']);
+  const otherFlavor=Object.keys(F).filter(k=>!knownFlavor.has(k)).map(k=>runin(k,F[k])).join('');
+  const lore=`<div class="mm-lore" data-copy>
+    <p class="mm-lead dropcap">${lead}</p>
+    ${runin('Habitat',habitat)}${runin('Origin',F['Origin'])}${runin('Behavior',F['Behavior'])}${runin('Rarity',rarity)}${runin('Treasure',F['Treasure'])}${otherFlavor}
+    ${tableRows?`<h5 class="tcap">Physiology</h5><table class="mm-phys"><tbody>${tableRows}</tbody></table>`:''}
+    ${noteBits?`<div class="note"><h5>At the Table</h5>${noteBits}</div>`:''}
+  </div>`;
+
+  const crShort=(P['Challenge']||'').split(' ')[0];
+  const chips=[crShort?`CR ${crShort}`:'',type,(rarity||'').split(' (')[0],habitat].filter(Boolean).map(c=>`<li>${esc(c)}</li>`).join('');
+  return `<article class="mm-entry">
+    <h2 class="mm-title">${esc(v.name)}</h2>
+    ${chips?`<ul class="chips" aria-label="At a glance">${chips}</ul>`:''}
+    <div class="mm-spread">${block}${lore}</div>
+  </article>`;
+}
+
+const pageCache=new WeakMap();
+function entryPageHTML(entry){
+  if(pageCache.has(entry)) return pageCache.get(entry);
+  let out=entry.html;
+  try{ const v=parseStored(entry.html); if(v) out=renderEntry(v); }
+  catch(e){ console.warn('Could not lay out entry:', e); }
+  pageCache.set(entry,out);
+  return out;
+}
+
 /* NAVIGATION */
 function showPage(index){
   if(index<0||index>=history.length)return;
   currentIndex=index;
   const entry=history[index];
-  document.getElementById('monsterDisplay').innerHTML=entry.html;
+  document.getElementById('monsterDisplay').innerHTML=entryPageHTML(entry);
   document.getElementById('imagePromptStorage').value=entry.prompt;
-  document.getElementById('statScroll').scrollTop=0;
+  const scroller=document.getElementById('statScroll');
+  scroller.scrollTop=0;
+  if(scroller.getBoundingClientRect().top<0) scroller.scrollIntoView({block:'start'});
   updateUI();
 }
 
@@ -1459,50 +1382,66 @@ function updateUI(){
   document.getElementById('saveBtn').disabled=!has;
   document.getElementById('copyBtn').disabled=!has;
   document.getElementById('copyPromptBtn').disabled=!has;
-  if(has&&savedSet.has(currentIndex)){document.getElementById('saveBtn').classList.add('saved');}
-  else{document.getElementById('saveBtn').classList.remove('saved');}
+  const saveBtn=document.getElementById('saveBtn');
+  const isSaved=has&&savedSet.has(currentIndex);
+  saveBtn.classList.toggle('saved',isSaved);
+  saveBtn.setAttribute('aria-pressed',isSaved?'true':'false');
+  saveBtn.querySelector('.lbl').textContent=isSaved?'Saved':'Save';
+  saveBtn.title=isSaved?'Remove from Bestiary':'Save to Bestiary';
+  document.getElementById('pnum').textContent=has?String(currentIndex+1):'1';
   renderSidebar();
 }
 
-/* SIDEBAR */
+/* SIDEBAR (Bestiary Index) */
 function renderSidebar(){
+  const row=(idx,saved)=>{const e=history[idx];if(!e)return '';
+    const meta=saved?`${e.meta}, ${e.alignment}${e.rarity?` · ${e.rarity}`:""}`:`${e.meta}${e.rarity?` · ${e.rarity}`:""}`;
+    return `<li class="${idx===currentIndex?'on':''}" data-index="${idx}"${idx===currentIndex?' aria-current="true"':''}>
+    <button class="pick" type="button"><span class="nm">${esc(e.name)}</span><small>${esc(meta)}</small></button>
+    <span class="cr" title="Challenge ${esc(e.cr)}">CR ${esc(e.cr)}</span>
+    ${saved?`<button class="del" type="button" data-remove="${idx}" title="Remove" aria-label="Remove ${esc(e.name)} from the bestiary">&times;</button>`:''}
+  </li>`;};
   const savedList=document.getElementById('savedList');
   const savedEntries=[...savedSet].sort((a,b)=>b-a);
-  if(!savedEntries.length){savedList.innerHTML='<div class="sb-empty">No saved entries yet</div>';}
-  else{savedList.innerHTML=savedEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
-    <div class="sb-entry-icon"><i class="fas fa-bookmark"></i></div>
-    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.meta}, ${e.alignment}${e.rarity?` · ${e.rarity}`:""}</div></div>
-    <div class="sb-entry-cr">${e.cr}</div>
-    <div class="sb-entry-actions"><button class="sb-action-btn delete" data-remove="${idx}" title="Remove"><i class="fas fa-times"></i></button></div>
-  </div>`;}).join('');}
+  savedList.innerHTML=savedEntries.length?savedEntries.map(idx=>row(idx,true)).join(''):'<li class="empty">No saved entries yet</li>';
 
   const historyList=document.getElementById('historyList');
   const historyEntries=history.map((_,i)=>i).filter(i=>!savedSet.has(i)).reverse();
-  if(!historyEntries.length){historyList.innerHTML=history.length?'<div class="sb-empty">All entries are saved</div>':'<div class="sb-empty">No history yet</div>';}
-  else{historyList.innerHTML=historyEntries.map(idx=>{const e=history[idx];return`<div class="sb-entry ${idx===currentIndex?'active':''}" data-index="${idx}">
-    <div class="sb-entry-icon"><i class="fas fa-scroll" style="opacity:0.5"></i></div>
-    <div class="sb-entry-info"><div class="sb-entry-name">${e.name}</div><div class="sb-entry-meta">${e.meta}${e.rarity?` · ${e.rarity}`:""}</div></div>
-    <div class="sb-entry-cr">${e.cr}</div>
-  </div>`;}).join('');}
+  historyList.innerHTML=historyEntries.length?historyEntries.map(idx=>row(idx,false)).join('')
+    :(history.length?'<li class="empty">All entries are saved</li>':'<li class="empty">No history yet</li>');
 
-  document.getElementById('sidebarFooter').textContent=`${savedSet.size} saved \u00B7 ${history.length} conjured`;
+  document.getElementById('sidebarFooter').textContent=`${savedSet.size} saved · ${history.length} conjured`;
 
-  document.querySelectorAll('.sb-entry[data-index]').forEach(el=>{
-    el.addEventListener('click',e=>{if(e.target.closest('.sb-action-btn'))return;showPage(parseInt(el.dataset.index));});
+  document.querySelectorAll('#sidebar li[data-index]').forEach(el=>{
+    el.addEventListener('click',e=>{if(e.target.closest('.del'))return;showPage(parseInt(el.dataset.index));});
   });
-  document.querySelectorAll('.sb-action-btn[data-remove]').forEach(el=>{
+  document.querySelectorAll('#sidebar .del[data-remove]').forEach(el=>{
     el.addEventListener('click',e=>{e.stopPropagation();savedSet.delete(parseInt(el.dataset.remove));updateUI();persistSaved();showToast('Removed from bestiary');});
   });
 }
 
 function generateMonster(){const data=buildMonsterData();history.push(data);showPage(history.length-1);}
 function toggleSave(){if(currentIndex<0)return;if(savedSet.has(currentIndex)){savedSet.delete(currentIndex);showToast('Removed from bestiary');}else{savedSet.add(currentIndex);showToast('Saved to bestiary!');}updateUI();persistSaved();}
-function toggleSidebar(){const sb=document.getElementById('sidebar');const ov=document.getElementById('sidebarOverlay');sb.classList.toggle('collapsed');ov.classList.toggle('active',!sb.classList.contains('collapsed'));}
+function setSidebar(open){
+  const sb=document.getElementById('sidebar');const ov=document.getElementById('sidebarOverlay');
+  sb.classList.toggle('collapsed',!open);
+  ov.classList.toggle('active',open);
+  document.getElementById('mmSplit').classList.toggle('no-aside',!open);
+  const t=document.getElementById('sidebarToggle');
+  t.setAttribute('aria-expanded',open?'true':'false');
+  t.title=open?'Close Bestiary Index':'Open Bestiary Index';
+}
+function toggleSidebar(){setSidebar(document.getElementById('sidebar').classList.contains('collapsed'));}
 
 /* TOAST & COPY */
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.classList.add('toast');t.textContent=msg;c.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{if(t.parentNode)c.removeChild(t);},300);},2500);}
 function copyText(text,msg){if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast(msg)).catch(()=>fbCopy(text,msg));}else{fbCopy(text,msg);}}
 function fbCopy(text,msg){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast(msg);}
+function statBlockText(){
+  const d=document.getElementById('monsterDisplay');
+  const parts=[...d.querySelectorAll('[data-copy]')].map(el=>el.innerText.trim()).filter(Boolean);
+  return parts.length?parts.join('\n\n'):d.innerText;
+}
 
 /* EVENTS */
 document.getElementById('generateBtn').addEventListener('click',generateMonster);
@@ -1510,11 +1449,16 @@ document.getElementById('saveBtn').addEventListener('click',toggleSave);
 document.getElementById('sidebarToggle').addEventListener('click',toggleSidebar);
 document.getElementById('sidebarCloseBtn').addEventListener('click',toggleSidebar);
 document.getElementById('sidebarOverlay').addEventListener('click',toggleSidebar);
+document.getElementById('indexLink').addEventListener('click',e=>{
+  const sb=document.getElementById('sidebar');
+  if(sb.classList.contains('collapsed')) setSidebar(true);
+  if(window.matchMedia('(max-width:760px)').matches) e.preventDefault();
+});
 document.getElementById('navFirst').addEventListener('click',()=>showPage(0));
 document.getElementById('navPrev').addEventListener('click',()=>showPage(currentIndex-1));
 document.getElementById('navNext').addEventListener('click',()=>showPage(currentIndex+1));
 document.getElementById('navLast').addEventListener('click',()=>showPage(history.length-1));
-document.getElementById('copyBtn').addEventListener('click',()=>{const t=document.getElementById('monsterDisplay').innerText;if(!t||currentIndex<0)return showToast('Conjure a monster first!');copyText(t,'Stat block copied!');});
+document.getElementById('copyBtn').addEventListener('click',()=>{const t=statBlockText();if(!t||currentIndex<0)return showToast('Conjure a monster first!');copyText(t,'Stat block copied!');});
 document.getElementById('copyPromptBtn').addEventListener('click',()=>{const p=document.getElementById('imagePromptStorage').value;if(!p)return showToast('Conjure a monster first!');copyText(p,'Image prompt copied!');});
 
 document.addEventListener('keydown',e=>{
@@ -1524,9 +1468,15 @@ document.addEventListener('keydown',e=>{
   if(e.code==='ArrowRight'){e.preventDefault();if(currentIndex<history.length-1)showPage(currentIndex+1);}
   if(e.code==='KeyS'&&!e.ctrlKey&&!e.metaKey){toggleSave();}
   if(e.code==='KeyB'){toggleSidebar();}
+  if(e.code==='Escape'&&window.matchMedia('(max-width:760px)').matches&&!document.getElementById('sidebar').classList.contains('collapsed')){setSidebar(false);}
 });
 
 /* INIT */
+/* the index stands open beside the page on wide screens; narrower, it waits closed (on phones, as a drawer) until called for */
+const roomyMQ=window.matchMedia('(min-width:1200px)'), phoneMQ=window.matchMedia('(max-width:760px)');
+setSidebar(roomyMQ.matches);
+phoneMQ.addEventListener('change',e=>{ if(e.matches) setSidebar(false); });
+roomyMQ.addEventListener('change',e=>{ if(e.matches) setSidebar(true); });
 loadSaved();
 
 </script>
