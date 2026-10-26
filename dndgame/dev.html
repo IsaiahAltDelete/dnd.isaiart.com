@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sword Coast — Module Diagnostics</title>
+<style>
+  body { background:#0d0b10; color:#cbb894; font:12px/1.6 ui-monospace,Consolas,monospace; margin:0; padding:20px 26px; }
+  h1 { color:#e3b34a; font-size:15px; letter-spacing:3px; text-transform:uppercase; margin:0 0 4px; }
+  .sub { color:#5c4e36; margin-bottom:16px; }
+  table { border-collapse:collapse; width:100%; max-width:1100px; }
+  td { padding:2px 10px 2px 0; vertical-align:top; border-bottom:1px solid #1d1820; }
+  td.mod { color:#9c8b6c; width:280px; white-space:nowrap; }
+  td.st { width:70px; font-weight:bold; }
+  .ok { color:#5fd07a; } .bad { color:#e2564a; } .warn { color:#e3b34a; } .pend { color:#4a4050; }
+  td.msg { color:#8a7a5c; font-size:11px; white-space:pre-wrap; word-break:break-word; }
+  #sum { margin:14px 0 18px; padding:10px 14px; border:1px solid #3a2c18; background:#141019; max-width:1100px; }
+  #sum b { color:#e3b34a; }
+  h2 { color:#8a7a5c; font-size:12px; letter-spacing:2px; margin:22px 0 6px; text-transform:uppercase; }
+  code { color:#7fa8d0; }
+</style>
+</head>
+<body>
+<h1>Module Diagnostics</h1>
+<div class="sub">Every module imported in isolation, then the exports the spec requires are checked.</div>
+<div id="sum">running&hellip;</div>
+<h2>Modules</h2>
+<table id="tbl"></table>
+<h2>Content counts</h2>
+<table id="counts"></table>
+
+<script type="module">
+// Each entry: [path, [required export names]]
+const MODULES = [
+  ['./src/constants.js', ['TILE','VIEW_W','VIEW_H','DIRS','SIZES','clamp']],
+  ['./src/core/rng.js', ['makeRNG','rng','reseed','hashStr']],
+  ['./src/core/dice.js', ['roll','rollExpr','d20','avgExpr','parseDice','rollDamage']],
+  ['./src/core/events.js', ['bus','EV']],
+  ['./src/core/input.js', ['Input']],
+  ['./src/core/audio.js', ['Audio']],
+  ['./src/core/save.js', ['Save']],
+  ['./src/engine.js', ['Game']],
+  ['./src/state.js', ['newGameState','saveState','loadState']],
+
+  ['./src/render/sprites.js', ['defineSprite','getSprite','drawSprite','composeSprite','makeColorway','hasSprite']],
+  ['./src/render/fx.js', ['FX']],
+  ['./src/render/actor.js', ['drawActor','colorwayOf','randomAppearance','APPEARANCE_OPTIONS']],
+  ['./src/render/tiles.js', ['T','TILES','drawTile','registerTiles','tileFlags']],
+  ['./src/render/spritedata_chars.js', ['registerCharacterSprites','HAIR_STYLES']],
+  ['./src/render/spritedata_monsters.js', ['registerMonsterSprites','spriteForMonster']],
+
+  ['./src/data/species.js', ['SPECIES']],
+  ['./src/data/classes.js', ['CLASSES']],
+  ['./src/data/subclasses.js', ['SUBCLASSES','MANEUVERS','INVOCATIONS','METAMAGIC']],
+  ['./src/data/spells_low.js', ['SPELLS_LOW']],
+  ['./src/data/spells_high.js', ['SPELLS_HIGH']],
+  ['./src/data/spells.js', ['SPELLS','spellsForList','getSpell']],
+  ['./src/data/items_gear.js', ['GEAR','WEAPON_MASTERY','SHOP_TABLES']],
+  ['./src/data/items_magic.js', ['MAGIC_ITEMS','LOOT_TABLES','MAGIC_TIERS']],
+  ['./src/data/items.js', ['ITEMS','getItem','resolveItem']],
+  ['./src/data/monsters_low.js', ['MONSTERS_LOW','MONSTER_GROUPS_LOW']],
+  ['./src/data/monsters_high.js', ['MONSTERS_HIGH','BOSSES','MONSTER_GROUPS_HIGH']],
+  ['./src/data/monsters.js', ['MONSTERS','monstersByBiome','xpForCR']],
+  ['./src/data/backgrounds.js', ['BACKGROUNDS','FEATS','FIGHTING_STYLES','EPIC_BOONS']],
+  ['./src/data/npcs.js', ['NPCS','RECRUITS']],
+  ['./src/data/quests.js', ['QUESTS','generateQuest']],
+  ['./src/data/dialogue.js', ['DIALOGUE']],
+  ['./src/data/tables.js', ['NAME_TABLES','DEITIES','FACTIONS','generateName']],
+
+  ['./src/rules/abilities.js', ['ABILITIES','SKILLS','mod','STANDARD_ARRAY']],
+  ['./src/rules/character.js', ['createCharacter','recalc','acOf','damage','heal','restLong','serializeChar','deserializeChar','weaponsOf']],
+  ['./src/rules/progression.js', ['XP_TABLE','xpForLevel','grantXp','pendingChoicesFor','applyLevel']],
+  ['./src/rules/spellcasting.js', ['recomputeSpells','spellDC','spendSlot','isConcentrating']],
+  ['./src/rules/conditions.js', ['CONDITIONS','addCondition','tickConditions','conditionMech']],
+  ['./src/rules/actions.js', ['resolveAttack','resolveSave','distanceFt','areaTiles','computeAdvantage']],
+  ['./src/rules/combat.js', ['Encounter','buildEncounter']],
+  ['./src/rules/ai.js', ['takeTurn']],
+  ['./src/rules/scaling.js', ['makeMonster','rollEncounter','scaleMonster','lootFor','partyLevel']],
+
+  ['./src/world/tilemap.js', ['TileMap','TF']],
+  ['./src/world/entity.js', ['Entity','NPCEntity','MonsterEntity','ChestEntity']],
+  ['./src/world/mapgen.js', ['generateWorld','generateDungeon','generateCave']],
+  ['./src/world/maps.js', ['MAP_DEFS','loadMap','WORLD_NODES']],
+  ['./src/world/party.js', ['Party']],
+  ['./src/world/battlemap.js', ['buildBattleMap']],
+  ['./src/world/overworld.js', ['OverworldScene','travelTo']],
+
+  ['./src/ui/kit.js', ['UI','FONT','drawGlyphs']],
+  ['./src/ui/title.js', ['TitleScene','GameOverScene']],
+  ['./src/ui/hud.js', ['HUD']],
+  ['./src/ui/charcreate.js', ['CharCreateScene']],
+  ['./src/ui/dialogue.js', ['DialogueScene']],
+  ['./src/ui/shop.js', ['ShopScene']],
+  ['./src/ui/menus.js', ['PauseMenuScene','PartyScene','InventoryScene','SpellbookScene','JournalScene','MapScene','OptionsScene']],
+  ['./src/ui/combatui.js', ['BattleScene']],
+  ['./src/ui/levelup.js', ['LevelUpScene']],
+  ['./src/ui/restui.js', ['RestScene']],
+  ['./src/main.js', ['boot']],
+];
+
+const tbl = document.getElementById('tbl');
+const rows = {};
+for (const [path] of MODULES) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="mod">${path.replace('./src/','')}</td><td class="st pend">…</td><td class="msg"></td>`;
+  tbl.appendChild(tr);
+  rows[path] = tr;
+}
+
+let ok = 0, missing = 0, broken = 0, partial = 0;
+const loaded = {};
+
+/** Does the file actually exist on the server? Distinguishes "not written yet"
+ *  from "written but its import chain blew up". */
+async function exists(path) {
+  try { const r = await fetch(path, { method: 'GET', cache: 'no-store' }); return r.ok; }
+  catch { return false; }
+}
+
+/** Scan a module's source for the relative imports it depends on. */
+async function depsOf(path) {
+  try {
+    const src = await (await fetch(path, { cache: 'no-store' })).text();
+    const out = [];
+    const re = /from\s+['"](\.[^'"]+)['"]/g;
+    let m;
+    while ((m = re.exec(src))) out.push(new URL(m[1], new URL(path, location.href)).pathname);
+    return [...new Set(out)];
+  } catch { return []; }
+}
+
+for (const [path, required] of MODULES) {
+  const tr = rows[path];
+  const st = tr.children[1], msg = tr.children[2];
+  const here = await exists(path);
+  if (!here) {
+    st.className = 'st pend'; st.textContent = 'TODO';
+    msg.textContent = 'not written yet';
+    missing++;
+    continue;
+  }
+  try {
+    const m = await import(path + '?v=' + Date.now());
+    loaded[path] = m;
+    const absent = (required || []).filter((k) => !(k in m));
+    if (absent.length) {
+      st.className = 'st warn'; st.textContent = 'PARTIAL';
+      msg.textContent = 'missing exports: ' + absent.join(', ');
+      partial++;
+    } else {
+      st.className = 'st ok'; st.textContent = 'OK';
+      msg.textContent = Object.keys(m).length + ' exports';
+      ok++;
+    }
+  } catch (e) {
+    const s = String(e && (e.message || e));
+    // A file that exists but fails to import is either broken itself or waiting
+    // on a dependency. Name the missing dependency so the fix is obvious.
+    const deps = await depsOf(path);
+    const absentDeps = [];
+    for (const d of deps) if (!(await exists(d))) absentDeps.push(d.replace('/src/', ''));
+    if (absentDeps.length) {
+      st.className = 'st pend'; st.textContent = 'BLOCKED';
+      msg.textContent = 'waiting on: ' + absentDeps.join(', ');
+      missing++;
+    } else {
+      st.className = 'st bad'; st.textContent = 'ERROR';
+      msg.textContent = s + (e && e.stack ? '\n' + e.stack.split('\n').slice(1, 4).join('\n') : '');
+      broken++;
+    }
+  }
+}
+
+document.getElementById('sum').innerHTML =
+  `<b>${ok}</b> ok &nbsp;·&nbsp; <span class="warn"><b>${partial}</b> partial</span> &nbsp;·&nbsp; ` +
+  `<span class="bad"><b>${broken}</b> error</span> &nbsp;·&nbsp; <span class="pend"><b>${missing}</b> pending/blocked</span> ` +
+  `&nbsp; of ${MODULES.length}`;
+
+// Content census — how much game actually exists.
+const counts = document.getElementById('counts');
+function row(label, value, want) {
+  const tr = document.createElement('tr');
+  const good = want == null || (typeof value === 'number' && value >= want);
+  tr.innerHTML = `<td class="mod">${label}</td><td class="st ${good?'ok':'warn'}">${value}</td>` +
+                 `<td class="msg">${want != null ? 'target ' + want : ''}</td>`;
+  counts.appendChild(tr);
+}
+const g = (p, k) => { try { return Object.keys(loaded[p][k]).length; } catch { return '—'; } };
+row('species', g('./src/data/species.js','SPECIES'), 13);
+row('classes', g('./src/data/classes.js','CLASSES'), 12);
+row('subclasses', g('./src/data/subclasses.js','SUBCLASSES'), 48);
+row('spells', g('./src/data/spells.js','SPELLS'), 190);
+row('items', g('./src/data/items.js','ITEMS'), 250);
+row('monsters', g('./src/data/monsters.js','MONSTERS'), 120);
+row('bosses', g('./src/data/monsters_high.js','BOSSES'), 15);
+row('backgrounds', g('./src/data/backgrounds.js','BACKGROUNDS'), 16);
+row('feats', g('./src/data/backgrounds.js','FEATS'), 45);
+row('npcs', g('./src/data/npcs.js','NPCS'), 20);
+row('quests', g('./src/data/quests.js','QUESTS'), 40);
+row('tiles', g('./src/render/tiles.js','TILES'), 90);
+try { row('sprites defined', (() => {
+  const s = loaded['./src/render/spritedata_chars.js'];
+  const mo = loaded['./src/render/spritedata_monsters.js'];
+  const sp = loaded['./src/render/sprites.js'];
+  if (s) s.registerCharacterSprites(); if (mo) mo.registerMonsterSprites();
+  return sp ? sp.allSpriteNames().length : '—';
+})(), 120); } catch (e) { row('sprites defined', 'ERROR: ' + e.message); }
+
+console.log('diagnostics complete');
+</script>
+</body>
+</html>

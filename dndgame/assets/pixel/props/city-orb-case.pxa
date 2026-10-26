@@ -1,0 +1,60 @@
+@name city-orb-case
+@size 48x32
+@anchor 24,32
+@lint skip=doubles
+# Cabinet joints, heraldic cloth and bottle necks deliberately have square corners.
+
+@palette
+K #24202d
+w #634b37
+W #9a7550
+v #b99a69
+b #332e3b
+B #4b4354
+g #344f61
+G #598299
+c #8fbdc6
+C #d0e6d7
+p #a6a7d3
+P #6f719d
+r #703d48
+R #9e5558
+t #b59459
+T #dbc288
+e #334b42
+E #6a9873
+f #a69762
+
+@frame idle
+................................................
+.KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.
+.KwvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvwK.
+.KwWbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbbbbbbbbbgbbbbbbbbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbbbbbgggggggggbbbbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbbbgCCCCCPPPPPggbbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbbggGGGGcppPPPPggbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbgCCGGcccppppPPPggbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbgCCcccccppppppPPgbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbgGCCcccCCCCCpppPPPgbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbgGCCccCCCCCCCpppPPgbbbbbbbbbbWwK.
+.KwWbbbTTTbbbbbgGCCcCCCCCCCCCppPPgbbbbTTTbbbWwK.
+.KwWbbbKKKbbbbggGGccCCCCCCCCCppPPgbbbbKKKbbbWwK.
+.KwWbbbKtKbbbbbgGGccCCCCCCCCCBBPPgbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbgGGcccCCCCCCCpBBPPgbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbgGGGcccCCCCCppBBPPgbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbbgGGcccccpppppBBPgbbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbbggGGGcccppppPPPggbbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbbbggGGGGcppPPPPggbbbbbbKtKbbbWwK.
+.KwWbbbKtKbbbbbbbbggGGGGPPPPPggbbbbbbbKtKbbbWwK.
+.KwWbbbKKKbbbbbbbbbbgggggggggbbbbbbbbbKKKbbbWwK.
+.KwWbbWWWWWbbbbbbbbbbbttttbbbbbbbbbbbWWWWWbbWwK.
+.KwWbbbbbbbbbbbbbbbbTTTTTTTTbbbbbbbbbbbbbbbbWwK.
+.KwWbbbbbbbbbbbbbbbbTTTTTTTTbbbbbbbbbbbbbbbbWwK.
+.KwWWWWWWWWWWWWWWWWKKKKKKKKKKWWWWWWWWWWWWWWWWwK.
+.KwWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWwK.
+.KwwwwwwwKwwwwwwwwKwwwwwwwwwwKwwwwwwwwKwwwwwwwK.
+.KwwwwwwwKwwwwwwwwKwwwwwwwwwwKwwwwwwwwKwwwwwwwK.
+.KwwwwwwwKwwwwwwwwKwwwwwwwwwwKwwwwwwwwKwwwwwwwK.
+.KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.
+................................................

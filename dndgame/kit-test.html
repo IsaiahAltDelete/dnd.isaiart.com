@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sword Coast Chronicles — Interface Kit</title>
+<!-- kit-test.html — the living style guide for ui/kit.js: every face, surface, theme, widget and icon at 2x. -->
+<style>
+  body { background:#0a0810; margin:0; padding:16px 20px; font:12px ui-monospace,Consolas,monospace; color:#8a7a5c; }
+  canvas { image-rendering:pixelated; display:block; border:1px solid #3a2c18; background:#0d0b10; margin:0 0 6px; }
+  #err { color:#e2564a; white-space:pre-wrap; }
+  h1 { color:#e3b34a; font-size:14px; letter-spacing:3px; margin:4px 0 10px; }
+  h2 { color:#c9a058; font-size:12px; letter-spacing:2px; margin:16px 0 6px; }
+  p { margin:2px 0 8px; max-width:800px; }
+  .row { display:flex; gap:10px; align-items:flex-start; }
+</style>
+</head>
+<body>
+<h1>INTERFACE KIT — 400x240 logical, drawn on the 800x480 fine grid</h1>
+<p>Each canvas is an 800x480 backing store drawn through a 2x base transform, exactly like a Stage UI layer.
+Add <b>?zoom=2</b> to inspect at 2 screen px per device px, <b>?theme=iron</b> to draw everything in one theme.</p>
+<div id="err"></div>
+<h2>1 · TYPEFACES</h2><canvas id="type"></canvas>
+<h2>2 · SURFACES × THEMES</h2><canvas id="panels"></canvas>
+<h2>3 · WIDGETS &amp; STATES</h2><canvas id="widgets"></canvas>
+<h2>4 · ICONS — fine grid (left) and 1x (right)</h2><div class="row"><canvas id="icons"></canvas></div>
+<h2>5 · SPECIMEN PAGES — one per theme</h2><canvas id="spec"></canvas>
+<h2>6 · THE SAME CALLS ON A 1x CONTEXT (fine sizes fall back to sm)</h2><canvas id="onex"></canvas>
+<script type="module">
+const err = document.getElementById('err');
+const Q = new URLSearchParams(location.search);
+const ZOOM = Number(Q.get('zoom') || 1);
+function stage(id, res = 2, w = 400, h = 240) {
+  const c = document.getElementById(id);
+  c.width = w * res; c.height = h * res;
+  c.style.width = `${w * res * ZOOM}px`; c.style.height = `${h * res * ZOOM}px`;
+  const ctx = c.getContext('2d');
+  ctx.setTransform(res, 0, 0, res, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  return ctx;
+}
+try {
+  const { UI, FONT } = await import('./src/ui/kit.js');
+  const orn = await import('./src/ui/ornament.js');
+  const C = UI.COLORS;
+  const T = 1.1;          // a frozen animation time, so screenshots are stable
+  const only = Q.get('theme');
+  const themes = only ? [only] : UI.THEMES;
+  const startTheme = UI.theme;
+  const bg = (ctx, w = 400, h = 240, col = '#0d0b10') => { ctx.fillStyle = col; ctx.fillRect(0, 0, w, h); };
+  const label = (ctx, x, y, s, col = '#6a6258') => UI.text(ctx, x, y, s, { size: 'xs', color: col, shadow: false });
+
+  // ------------------------------------------------------------ 1. type
+  {
+    const ctx = stage('type', 2, 400, 300);
+    bg(ctx, 400, 300);
+    UI.setTheme(only || 'folio', false);
+    UI.panel(ctx, 4, 4, 392, 292, { style: 'window' });
+    let y = 10;
+    UI.initial(ctx, 10, y, 'S', { ground: 'lapis' });
+    UI.text(ctx, 38, y + 1, 'Sword Coast Chronicles', { size: 'titleLg', gilt: true, shadow: 'rgba(0,0,0,0.85)' });
+    y += 26;
+    UI.text(ctx, 38, y - 5, 'An illuminated manuscript you can walk around in.', { size: 'fine', color: C.inkDim });
+    y += 4;
+    UI.divider(ctx, 10, y, 380, { ornament: true });
+    y += 5;
+    const sizes = [
+      ['title', 'Lombardic caps & textura — The Yawning Portal, Waterdeep'],
+      ['md', 'md  The quick brown fox jumps over the lazy dog. 0123456789'],
+      ['sm', 'sm  The quick brown fox jumps over the lazy dog. 0123456789'],
+      ['fineb', 'fineb  Lathander and Tymora smile on the bold; Bane on no one.'],
+      ['fine', 'fine  In the Year of Three Ships Sailing, the road north of Daggerford was quiet. 0123456789'],
+      ['xs', 'xs  HP 26/36 · 12 gp 5 sp · 1d8+3 · AC 15 · DC 13 · 30 ft · lvl 4 · 0123456789'],
+    ];
+    for (const [s, str] of sizes) {
+      label(ctx, 10, y + 1, s.padEnd(6));
+      const r = UI.text(ctx, 34, y, str, { size: s, color: s === 'title' ? C.goldBright : C.ink, maxWidth: 356 });
+      y += Math.max(UI.lineHeight(s), 6) + 2;
+    }
+    UI.divider(ctx, 10, y, 380);
+    y += 4;
+    // full character sets
+    const printable = Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)).join('');
+    const accents = 'àáâäãå èéêë ìíîï òóôöõ ùúûü ñ ç ý ÀÁÂÄ ÉÈÊË ÍÎ ÓÔÖ ÚÛÜ Ñ — Faerûn, Tethyr, Mulhorand';
+    const symbols = '° × – — − ‘ ’ “ ” … · § ♥ ♦ ✦ ★ ✓ ✗ ● ○ ↑ ↓ ← → ↕ ↩ ⚔ ⛨ ☲ ☠ ▲ ▼ ◀ ▶ ◄ ► ⚖ ✡';
+    for (const s of ['fine', 'xs']) {
+      label(ctx, 10, y + 1, s);
+      UI.textWrapped(ctx, 34, y, 356, printable, { size: s, color: C.ink });
+      y += UI.lineHeight(s) * 2 + 1;
+      UI.text(ctx, 34, y, accents, { size: s, color: C.ink, maxWidth: 356 });
+      y += UI.lineHeight(s);
+      UI.text(ctx, 34, y, symbols, { size: s, color: C.gold, maxWidth: 356 });
+      y += UI.lineHeight(s) + 3;
+    }
+    label(ctx, 10, y + 2, 'title');
+    UI.text(ctx, 34, y, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', { size: 'title', color: C.goldBright });
+    y += 13;
+    UI.text(ctx, 34, y, 'abcdefghijklmnopqrstuvwxyz 0123456789 .,:;!?&', { size: 'title', color: C.ink });
+    y += 14;
+    // rubric and gilt
+    UI.text(ctx, 34, y, 'Gilt', { size: 'titleLg', gilt: true });
+    UI.text(ctx, 88, y, 'Rubric', { size: 'titleLg', gilt: true, color: '#c0392e' });
+    UI.text(ctx, 170, y, 'Lapis', { size: 'titleLg', gilt: true, color: '#3a5ab0' });
+    UI.heading(ctx, 240, y + 2, 'Journal of Deeds', { size: 'title' });
+    UI.heading(ctx, 240, y + 14, 'The Company Pack', { size: 'title', color: C.ink, capColor: '#c0392e' });
+    y += 28;
+    // drop caps
+    let x = 34;
+    for (const [L, g] of [['A', 'lapis'], ['W', 'rubric'], ['M', 'verdigris'], ['Q', null], ['T', null]]) {
+      const b = UI.initial(ctx, x, y, L, { ground: g || undefined });
+      x += b.w + 16;
+    }
+    const d = UI.initial(ctx, x, y, 'T', { size: 'sm' });
+    UI.textWrapped(ctx, d.x + d.w + 3, y, 150, 'he innkeep wipes a tankard and looks you over. "Adventurers. Wonderful. Mind the stairs."', { size: 'fine', color: C.ink });
+  }
+
+  // ------------------------------------------------------------ 2. panels
+  {
+    const ctx = stage('panels', 2, 400, 280);
+    bg(ctx, 400, 280, '#241c16');
+    // a checker "world" behind, so frames are judged against something busy
+    for (let yy = 0; yy < 280; yy += 8) for (let xx = 0; xx < 400; xx += 8) {
+      if ((xx + yy) / 8 & 1) { ctx.fillStyle = '#2c2419'; ctx.fillRect(xx, yy, 8, 8); }
+    }
+    const base = ['window', 'dark', 'plain', 'inset', 'gold'];
+    let y = 4;
+    for (const th of themes) {
+      UI.setTheme(th, false);
+      label(ctx, 4, y + 1, UI.themeName(th).toUpperCase(), C.gold);
+      base.forEach((s, i) => {
+        const x = 40 + i * 72;
+        const p = UI.panel(ctx, x, y, 68, 40, { style: s });
+        UI.text(ctx, p.ix + 3, p.iy + 3, s, { size: 'md', color: UI.inkFor(s, 'title') });
+        UI.text(ctx, p.ix + 3, p.iy + 13, 'Phandalin', { size: 'sm', color: UI.inkFor(s, 'body') });
+        UI.text(ctx, p.ix + 3, p.iy + 22, 'fine ink, 30 ft', { size: 'fine', color: UI.inkFor(s, 'dim') });
+      });
+      y += 46;
+    }
+    UI.setTheme(only || 'folio', false);
+    const extras = ['parchment', 'iron', 'timber', 'leather', 'danger', 'magic', 'banner', 'seal'];
+    extras.forEach((s, i) => {
+      const x = 4 + (i % 8) * 49;
+      const p = UI.panel(ctx, x, y + 4, 46, s === 'seal' ? 16 : 44, { style: s });
+      UI.text(ctx, p.ix + 2, p.iy + 2, s, { size: 'fine', color: UI.inkFor(s, 'title') });
+    });
+  }
+
+  // ------------------------------------------------------------ 3. widgets
+  {
+    const ctx = stage('widgets', 2, 400, 240);
+    bg(ctx);
+    UI.setTheme(only || 'folio', false);
+    UI.panel(ctx, 4, 4, 392, 232, { style: 'window' });
+    // buttons
+    label(ctx, 10, 10, 'BUTTONS: normal / hover / pressed / selected / disabled / seal');
+    const bstates = [{}, { hover: true }, { pressed: true }, { selected: true, t: T }, { disabled: true }, { style: 'seal' }];
+    const names = ['Attack', 'Cast', 'Dodge', 'Travel', 'Flee', 'Swear'];
+    bstates.forEach((o, i) => UI.button(ctx, 10 + i * 63, 16, 58, 14, names[i], o));
+    UI.button(ctx, 10, 34, 120, 16, 'Inventory', { icon: 'bag', hint: 'I' });
+    UI.button(ctx, 136, 34, 120, 16, 'Spellbook', { icon: 'book', hint: 'K', hover: true });
+    // keycaps
+    let kx = 262;
+    for (const [k, l] of [['Z', 'Use'], ['X', 'Back'], ['Q/R', 'Tab']]) kx += UI.keyHint(ctx, kx, 36, k, l) + 6;
+    // bars
+    label(ctx, 10, 56, 'METERS: HP with damage ghost, MP, XP, segmented slots, pips, gauge');
+    UI.bar(ctx, 10, 62, 110, 8, 0.46, { color: C.hp, ghost: 0.78, label: 'HP 17/36', size: 'xs' });
+    UI.bar(ctx, 10, 73, 110, 6, 0.8, { color: C.mp });
+    UI.bar(ctx, 10, 82, 110, 4, 0.35, { color: C.xp, glow: true });
+    UI.bar(ctx, 10, 89, 110, 5, 0.6, { color: C.good, segments: 5 });
+    UI.bar(ctx, 126, 62, 60, 3, 0.25, { color: C.hp, ghost: 0.5 });
+    UI.pips(ctx, 127, 70, 5, 3, { color: C.gold });
+    UI.pips(ctx, 127, 79, 3, 1, { color: C.bad, size: 4 });
+    UI.gauge(ctx, 205, 78, 9, 0.66, { color: C.purple, label: '2' });
+    UI.seal(ctx, 235, 78, { r: 9, letter: 'H' });
+    UI.cursor(ctx, 258, 66, T);
+    UI.frameSel(ctx, 268, 62, 30, 30, T);
+    UI.portrait(ctx, null, 304, 62, 30, {});
+    UI.portrait(ctx, null, 340, 62, 30, { style: 'danger' });
+    // tabs + list
+    label(ctx, 10, 100, 'TABS, LIST ROWS, SCROLLBAR');
+    const tb = UI.tabs(ctx, 10, 106, 180, ['All', 'Arms', { label: 'Magic', badge: true }, 'Quest'], 1);
+    const items = ['Longsword', { label: 'Potion of Healing', icon: 'potion', hint: 'x3' }, 'Rope, hempen (50 ft)',
+      { label: 'Scroll of Shield', icon: 'scroll' }, { label: 'Crowbar', disabled: true, hint: 'too heavy' }, 'Torch', 'Rations', 'Bedroll'];
+    UI.panel(ctx, 10, tb + 1, 180, 76, { style: 'dark' });
+    UI.list(ctx, 14, tb + 5, 172, items, 1, { rows: 5, rowH: 13, t: T });
+    // tooltip + chips
+    label(ctx, 200, 100, 'TOOLTIP, CHIPS, DIVIDERS, RIBBON');
+    UI.tooltip(ctx, 200, 108, 'A short, thick quarrel with a squared iron head, sold in a case of twenty.', { title: 'Crossbow Bolt', icon: 'spear', footer: '0.075 lb · 1 cp', w: 140 });
+    let cx = 200;
+    for (const [l, c] of [['fire', C.DAMAGE_COLORS.fire], ['cold', C.DAMAGE_COLORS.cold], ['poison', C.DAMAGE_COLORS.poison], ['radiant', C.DAMAGE_COLORS.radiant]]) {
+      cx += UI.chip(ctx, cx, 168, l, { color: c }) + 3;
+    }
+    UI.chip(ctx, cx, 168, 'resist', { color: C.gold, icon: 'shield' });
+    UI.divider(ctx, 200, 184, 186);
+    UI.divider(ctx, 200, 194, 186, { label: 'Experience' });
+    UI.divider(ctx, 200, 204, 186, { ornament: true });
+    UI.ribbon(ctx, 293, 214, 'Chapter the First');
+    UI.window(ctx, 10, 200, 180, 30, 'Journal');
+  }
+
+  // ------------------------------------------------------------ 4. icons
+  {
+    const W = 400, H = 150;
+    const ctx = stage('icons', 2, W, H);
+    bg(ctx, W, H);
+    UI.setTheme(only || 'folio', false);
+    UI.panel(ctx, 2, 2, W - 4, H - 4, { style: 'dark' });
+    const names = UI.iconNames;
+    names.forEach((n, i) => {
+      const col = i % 16, row = (i / 16) | 0;
+      const x = 8 + col * 24, y = 8 + row * 28;
+      UI.icon(ctx, n, x, y, 8);
+      UI.icon(ctx, n, x + 10, y, 12);
+      label(ctx, x, y + 14, n.slice(0, 6));
+    });
+  }
+
+  // ------------------------------------------------------------ 5. specimen pages
+  {
+    const ctx = stage('spec', 2, 400, 240);
+    bg(ctx);
+    const pages = themes.slice(0, 4);
+    const pw = pages.length > 1 ? 196 : 392, ph = pages.length > 2 ? 116 : 232;
+    pages.forEach((th, i) => {
+      UI.setTheme(th, false);
+      const x = 4 + (i % 2) * 200, y = 4 + ((i / 2) | 0) * 120;
+      const p = UI.panel(ctx, x, y, pw, ph, { style: 'window' });
+      UI.heading(ctx, p.ix + 4, p.iy + 4, UI.themeName(th), { size: 'title' });
+      UI.text(ctx, p.ix + pw - 12, p.iy + 5, '12 gp', { size: 'xs', color: C.gold, align: 'right' });
+      UI.divider(ctx, p.ix + 2, p.iy + 16, pw - 12, { ornament: true });
+      const dc = UI.initial(ctx, p.ix + 4, p.iy + 21, 'B', { size: 'sm' });
+      UI.textWrapped(ctx, dc.x + dc.w + 3, p.iy + 21, pw - dc.w - 20, 'arthen\'s Provisions keeps rope, rations and lamp oil for the road to Neverwinter. Elmar watches the door.', { size: 'fine', color: C.ink });
+      UI.bar(ctx, p.ix + 4, p.iy + 44, 70, 6, 0.6, { color: C.hp, ghost: 0.8 });
+      UI.text(ctx, p.ix + 78, p.iy + 44, '22/36', { size: 'xs', color: C.ink });
+      UI.button(ctx, p.ix + 4, p.iy + 54, 56, 13, 'Buy', { selected: true, t: T });
+      UI.button(ctx, p.ix + 64, p.iy + 54, 56, 13, 'Haggle', {});
+      UI.panel(ctx, p.ix + 124, p.iy + 22, pw - 136, 44, { style: 'inset' });
+      UI.icon(ctx, 'potion', p.ix + 128, p.iy + 26, 10);
+      UI.icon(ctx, 'sword', p.ix + 142, p.iy + 26, 10);
+      UI.text(ctx, p.ix + 128, p.iy + 40, 'Potion x3', { size: 'fine', color: C.ink });
+      UI.keyHint(ctx, p.ix + 4, p.iy + ph - 18, 'Z', 'Buy');
+      UI.keyHint(ctx, p.ix + 50, p.iy + ph - 18, 'X', 'Leave');
+    });
+  }
+
+  // ------------------------------------------------------------ 6. 1x fallback
+  {
+    const ctx = stage('onex', 1, 400, 120);
+    bg(ctx, 400, 120);
+    UI.setTheme(only || 'folio', false);
+    const p = UI.panel(ctx, 4, 4, 250, 110, { style: 'window' });
+    let y = p.iy + 4;
+    for (const s of ['title', 'md', 'sm', 'fine', 'xs']) {
+      UI.text(ctx, p.ix + 4, y, `${s}: Faerûn, 1d8+3`, { size: s, color: s === 'title' ? C.goldBright : C.ink });
+      y += UI.lineHeight(s) + 2;
+    }
+    UI.bar(ctx, p.ix + 4, y, 90, 6, 0.5, { color: C.hp, ghost: 0.7 });
+    UI.button(ctx, p.ix + 100, y - 2, 60, 13, 'Button', { selected: true, t: T });
+    UI.icon(ctx, 'potion', p.ix + 170, y - 2, 10);
+    UI.initial(ctx, 262, 8, 'R', {});
+    UI.panel(ctx, 262, 40, 130, 60, { style: 'iron' });
+  }
+
+  UI.setTheme(startTheme, false);
+  const glyphs = Object.keys(FONT || {}).length;
+  err.style.color = '#5fd07a';
+  err.textContent = `OK — ${glyphs} body glyphs, sizes ${UI.SIZES.join(' ')}, themes ${UI.THEMES.join(' ')}, ${UI.iconNames.length} icons.`;
+} catch (e) {
+  err.textContent = (e && (e.stack || e.message)) || String(e);
+}
+</script>
+</body>
+</html>

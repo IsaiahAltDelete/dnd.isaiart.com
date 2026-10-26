@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Realms of the Sword Coast — a Faerûn life simulator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="map"></canvas>
+
+  <div id="loading">
+    <div class="loading-inner">
+      <h1>Realms of the Sword Coast</h1>
+      <p>Raising mountains, carving rivers, seeding the wild places…</p>
+    </div>
+  </div>
+
+  <div id="topbar" class="panel">
+    <div class="brand">
+      <span class="title">Realms of the Sword Coast</span>
+      <span id="seed-display" class="dim"></span>
+    </div>
+    <div class="status">
+      <span id="date-display">1 Hammer, 1200 DR</span>
+      <span id="pop-display" class="dim"></span>
+    </div>
+    <div class="controls">
+      <div class="btn-group">
+        <button data-speed="0" title="Pause (Space)">⏸</button>
+        <button data-speed="1" class="active" title="Normal speed (1)">▶</button>
+        <button data-speed="2" title="Fast (2)">▶▶</button>
+        <button data-speed="3" title="Blazing (3)">▶▶▶</button>
+      </div>
+      <div class="btn-group">
+        <button data-overlay="political" class="active" title="Realm borders">Realms</button>
+        <button data-overlay="faith" title="Spheres of worship">Faith</button>
+        <button data-overlay="none" title="Terrain only">Terrain</button>
+      </div>
+      <div class="btn-group">
+        <button id="toggle-trade" class="active" title="Show trade routes">Trade</button>
+        <button id="toggle-labels" class="active" title="Show names">Names</button>
+        <button id="btn-legend" title="Pantheon &amp; legend">Legend</button>
+      </div>
+      <div class="btn-group">
+        <input id="seed-input" type="text" placeholder="seed (optional)">
+        <button id="btn-newworld" title="Generate a new world">New World</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sidebar" class="panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="chronicle">Chronicle</button>
+      <button class="tab-btn" data-tab="realms">Realms</button>
+    </div>
+    <div id="tab-chronicle">
+      <div class="filters">
+        <button data-filter="all" class="active">All</button>
+        <button data-filter="war">⚔️</button>
+        <button data-filter="nation">👑</button>
+        <button data-filter="monster">🐉</button>
+        <button data-filter="religion">🕯️</button>
+        <button data-filter="magic">✨</button>
+        <button data-filter="settlement">🏘️</button>
+      </div>
+      <div id="event-log"></div>
+    </div>
+    <div id="tab-realms" class="hidden">
+      <div id="realms-list"></div>
+    </div>
+  </div>
+
+  <div id="inspector" class="panel hidden">
+    <div class="insp-header">
+      <span id="inspector-title">—</span>
+      <button id="inspector-close">✕</button>
+    </div>
+    <div id="inspector-content"></div>
+  </div>
+
+  <canvas id="minimap" width="240" height="164"></canvas>
+
+  <div id="godbar" class="panel"></div>
+
+  <div id="crier">
+    <span id="crier-badge">🗞️ The Town Crier</span>
+    <div id="crier-window"><div id="crier-text"></div></div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+
+  <div id="tooltip" class="hidden"></div>
+
+  <div id="legend-modal" class="hidden">
+    <div class="legend-panel panel">
+      <div class="insp-header">
+        <span>Legend &amp; Lore</span>
+        <button id="legend-close">✕</button>
+      </div>
+      <div id="legend-body"></div>
+    </div>
+  </div>
+
+  <script src="js/rng.js"></script>
+  <script src="js/names.js"></script>
+  <script src="js/worldgen.js"></script>
+  <script src="js/industry.js"></script>
+  <script src="js/path.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="data:,">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Sword Coast Chronicles</title>
+<meta name="description" content="A top-down Forgotten Realms RPG running a full D&amp;D 5.5e rules engine." />
+
+  <!-- Module URLs are pinned to their content hash so a deploy can never serve a
+       half-old graph. Regenerate with: node dndgame/tools/stamp.mjs -->
+  <!-- importmap:start -->
+  <script type="importmap">
+    {
+      "imports": {
+        "./src/constants.js": "./src/constants.js?v=78995ef1",
+        "./src/core/audio.js": "./src/core/audio.js?v=033300a9",
+        "./src/core/cheatflags.js": "./src/core/cheatflags.js?v=fabbcb69",
+        "./src/core/cheats.js": "./src/core/cheats.js?v=35179f63",
+        "./src/core/dice.js": "./src/core/dice.js?v=46c46d0f",
+        "./src/core/events.js": "./src/core/events.js?v=4649e277",
+        "./src/core/input.js": "./src/core/input.js?v=720b24bb",
+        "./src/core/music.js": "./src/core/music.js?v=535c40af",
+        "./src/core/music_catalogue.js": "./src/core/music_catalogue.js?v=ba2f57e1",
+        "./src/core/music_loudness.js": "./src/core/music_loudness.js?v=f91ddc1a",
+        "./src/core/music_sacred.js": "./src/core/music_sacred.js?v=93596a94",
+        "./src/core/music_secular.js": "./src/core/music_secular.js?v=2ec8b35c",
+        "./src/core/rng.js": "./src/core/rng.js?v=bb29dfa4",
+        "./src/core/save.js": "./src/core/save.js?v=de62b700",
+        "./src/core/synth.js": "./src/core/synth.js?v=5db7c25e",
+        "./src/data/academy.js": "./src/data/academy.js?v=09164586",
+        "./src/data/backgrounds.js": "./src/data/backgrounds.js?v=1bbc2283",
+        "./src/data/blackstaff.js": "./src/data/blackstaff.js?v=67ae4d15",
+        "./src/data/classes.js": "./src/data/classes.js?v=7dca65d8",
+        "./src/data/companion-moments.js": "./src/data/companion-moments.js?v=a5fc1d85",
+        "./src/data/dialogue.js": "./src/data/dialogue.js?v=03eea330",
+        "./src/data/dialogue_south.js": "./src/data/dialogue_south.js?v=4d5fcb78",
+        "./src/data/encounters.js": "./src/data/encounters.js?v=14bd7970",
+        "./src/data/items.js": "./src/data/items.js?v=0fb72977",
+        "./src/data/items_armory.js": "./src/data/items_armory.js?v=86302673",
+        "./src/data/items_director.js": "./src/data/items_director.js?v=9820d7c2",
+        "./src/data/items_gear.js": "./src/data/items_gear.js?v=66d73bf5",
+        "./src/data/items_magic.js": "./src/data/items_magic.js?v=06def10d",
+        "./src/data/legends.js": "./src/data/legends.js?v=2a84ae19",
+        "./src/data/monsters.js": "./src/data/monsters.js?v=9617b218",
+        "./src/data/monsters_high.js": "./src/data/monsters_high.js?v=e09fb229",
+        "./src/data/monsters_low.js": "./src/data/monsters_low.js?v=3bfa695f",
+        "./src/data/npcs.js": "./src/data/npcs.js?v=ea2ebf57",
+        "./src/data/npcs_extra.js": "./src/data/npcs_extra.js?v=8e588dca",
+        "./src/data/npcs_south.js": "./src/data/npcs_south.js?v=3fa4bcc7",
+        "./src/data/place-life.js": "./src/data/place-life.js?v=f3e156db",
+        "./src/data/quests.js": "./src/data/quests.js?v=d23e356e",
+        "./src/data/rumors.js": "./src/data/rumors.js?v=893ea822",
+        "./src/data/species.js": "./src/data/species.js?v=8f2d09c2",
+        "./src/data/spells.js": "./src/data/spells.js?v=43f0b84f",
+        "./src/data/spells_high.js": "./src/data/spells_high.js?v=a7242e00",
+        "./src/data/spells_low.js": "./src/data/spells_low.js?v=a720f1a2",
+        "./src/data/street-voices.js": "./src/data/street-voices.js?v=e7496a2c",
+        "./src/data/subclasses.js": "./src/data/subclasses.js?v=32cd49b4",
+        "./src/data/tables.js": "./src/data/tables.js?v=fc73617f",
+        "./src/data/worldevents.js": "./src/data/worldevents.js?v=144a3960",
+        "./src/engine.js": "./src/engine.js?v=21023e50",
+        "./src/main.js": "./src/main.js?v=55122dba",
+        "./src/render/actor.js": "./src/render/actor.js?v=1ce46b44",
+        "./src/render/art/armory.js": "./src/render/art/armory.js?v=60dea8f1",
+        "./src/render/art/city-arcana.js": "./src/render/art/city-arcana.js?v=cc93e331",
+        "./src/render/art/city-civic-banner.js": "./src/render/art/city-civic-banner.js?v=49b7ec5f",
+        "./src/render/art/city-document.js": "./src/render/art/city-document.js?v=7036d87c",
+        "./src/render/art/city-meal.js": "./src/render/art/city-meal.js?v=a11733fd",
+        "./src/render/art/city-orb-case.js": "./src/render/art/city-orb-case.js?v=e5147e96",
+        "./src/render/art/city-papers.js": "./src/render/art/city-papers.js?v=cac3fe77",
+        "./src/render/art/city-place.js": "./src/render/art/city-place.js?v=2a4b13da",
+        "./src/render/art/city-potion-case.js": "./src/render/art/city-potion-case.js?v=22744959",
+        "./src/render/art/city-press.js": "./src/render/art/city-press.js?v=eb006847",
+        "./src/render/art/coiffure-afro.js": "./src/render/art/coiffure-afro.js?v=ad7dae19",
+        "./src/render/art/coiffure-locs.js": "./src/render/art/coiffure-locs.js?v=91129d28",
+        "./src/render/art/coiffure-lowbun.js": "./src/render/art/coiffure-lowbun.js?v=9e759fb3",
+        "./src/render/art/coiffure-sidepart.js": "./src/render/art/coiffure-sidepart.js?v=02ec4012",
+        "./src/render/art/coiffure-twinbraids.js": "./src/render/art/coiffure-twinbraids.js?v=f9822ed5",
+        "./src/render/art/coiffure-undercut.js": "./src/render/art/coiffure-undercut.js?v=9138142a",
+        "./src/render/art/counter-goods.js": "./src/render/art/counter-goods.js?v=27788052",
+        "./src/render/art/dungeon-life.js": "./src/render/art/dungeon-life.js?v=7a2da48c",
+        "./src/render/art/floor-waystone.js": "./src/render/art/floor-waystone.js?v=f7db3df0",
+        "./src/render/art/fx-impact-burst.js": "./src/render/art/fx-impact-burst.js?v=25d4ed1e",
+        "./src/render/art/fx-torch-flame.js": "./src/render/art/fx-torch-flame.js?v=6247a802",
+        "./src/render/art/goblin-sculpt.js": "./src/render/art/goblin-sculpt.js?v=706f7c2d",
+        "./src/render/art/ogre-sculpt.js": "./src/render/art/ogre-sculpt.js?v=6e531531",
+        "./src/render/art/orc-sculpt.js": "./src/render/art/orc-sculpt.js?v=2540e703",
+        "./src/render/art/portal-shaft.js": "./src/render/art/portal-shaft.js?v=a1bc7a66",
+        "./src/render/art/prop-brazier.js": "./src/render/art/prop-brazier.js?v=0b29e16c",
+        "./src/render/art/scenery-props.js": "./src/render/art/scenery-props.js?v=894eed01",
+        "./src/render/art/skeleton-sculpt.js": "./src/render/art/skeleton-sculpt.js?v=5978ce40",
+        "./src/render/art/street-exchange.js": "./src/render/art/street-exchange.js?v=84f75898",
+        "./src/render/art/street-gesture.js": "./src/render/art/street-gesture.js?v=8df36f8c",
+        "./src/render/art/tailored-coat.js": "./src/render/art/tailored-coat.js?v=34e4bfb3",
+        "./src/render/art/tailored-doublet.js": "./src/render/art/tailored-doublet.js?v=db771e35",
+        "./src/render/art/tailored-jerkin.js": "./src/render/art/tailored-jerkin.js?v=e1a8ccf6",
+        "./src/render/art/tailored-noble.js": "./src/render/art/tailored-noble.js?v=ae866772",
+        "./src/render/art/tailored-plate.js": "./src/render/art/tailored-plate.js?v=b342eade",
+        "./src/render/art/tailored-robe.js": "./src/render/art/tailored-robe.js?v=a1f5b8f7",
+        "./src/render/art/vfx-fireball.js": "./src/render/art/vfx-fireball.js?v=4c2826cd",
+        "./src/render/art/vfx-lightning.js": "./src/render/art/vfx-lightning.js?v=76d8c475",
+        "./src/render/art/vfx-sigil.js": "./src/render/art/vfx-sigil.js?v=bcd386b4",
+        "./src/render/art/vfx-smite.js": "./src/render/art/vfx-smite.js?v=73f045aa",
+        "./src/render/art/wolf-sculpt.js": "./src/render/art/wolf-sculpt.js?v=f0d5ee86",
+        "./src/render/art/wyrm-sculpt.js": "./src/render/art/wyrm-sculpt.js?v=a368c239",
+        "./src/render/atmosphere.js": "./src/render/atmosphere.js?v=80276993",
+        "./src/render/dungeon-scenery.js": "./src/render/dungeon-scenery.js?v=16f6a5a7",
+        "./src/render/fx.js": "./src/render/fx.js?v=f743b090",
+        "./src/render/ground-design.js": "./src/render/ground-design.js?v=a5ec537e",
+        "./src/render/interior-life.js": "./src/render/interior-life.js?v=7900e65d",
+        "./src/render/journey.js": "./src/render/journey.js?v=fc9a11c8",
+        "./src/render/lighting.js": "./src/render/lighting.js?v=fc009570",
+        "./src/render/palette.js": "./src/render/palette.js?v=6d646578",
+        "./src/render/pixelfilter.js": "./src/render/pixelfilter.js?v=e4f8b8cc",
+        "./src/render/place-life.js": "./src/render/place-life.js?v=dcb12933",
+        "./src/render/portrait.js": "./src/render/portrait.js?v=80a819b3",
+        "./src/render/prop-art.js": "./src/render/prop-art.js?v=d81dffab",
+        "./src/render/satchel-art.js": "./src/render/satchel-art.js?v=68be0846",
+        "./src/render/spritedata_chars.js": "./src/render/spritedata_chars.js?v=bf028dd1",
+        "./src/render/spritedata_monsters.js": "./src/render/spritedata_monsters.js?v=7b0e838f",
+        "./src/render/sprites.js": "./src/render/sprites.js?v=ef42d717",
+        "./src/render/stage.js": "./src/render/stage.js?v=5234e06c",
+        "./src/render/tiles.js": "./src/render/tiles.js?v=af2334fc",
+        "./src/render/tiles_arch.js": "./src/render/tiles_arch.js?v=be2e07c6",
+        "./src/render/tiles_terrain.js": "./src/render/tiles_terrain.js?v=1695f8af",
+        "./src/render/trees.js": "./src/render/trees.js?v=62d0655b",
+        "./src/render/vfx-art.js": "./src/render/vfx-art.js?v=1718b9fa",
+        "./src/render/vfx.js": "./src/render/vfx.js?v=d9184cee",
+        "./src/render/weapon-art.js": "./src/render/weapon-art.js?v=36b12cc4",
+        "./src/rules/abilities.js": "./src/rules/abilities.js?v=6b5a7219",
+        "./src/rules/academy.js": "./src/rules/academy.js?v=af9dcdc5",
+        "./src/rules/actions.js": "./src/rules/actions.js?v=49414441",
+        "./src/rules/ai.js": "./src/rules/ai.js?v=9d853c1b",
+        "./src/rules/character.js": "./src/rules/character.js?v=96a2fff5",
+        "./src/rules/combat.js": "./src/rules/combat.js?v=aaaf1c5e",
+        "./src/rules/conditions.js": "./src/rules/conditions.js?v=9f10f474",
+        "./src/rules/crime.js": "./src/rules/crime.js?v=241327a3",
+        "./src/rules/deeds.js": "./src/rules/deeds.js?v=2c812c34",
+        "./src/rules/encounters.js": "./src/rules/encounters.js?v=931ad3a6",
+        "./src/rules/fieldcast.js": "./src/rules/fieldcast.js?v=7dddb4e0",
+        "./src/rules/fieldworld.js": "./src/rules/fieldworld.js?v=6088f8da",
+        "./src/rules/progression.js": "./src/rules/progression.js?v=e7f55d66",
+        "./src/rules/reputation.js": "./src/rules/reputation.js?v=6f754526",
+        "./src/rules/scaling.js": "./src/rules/scaling.js?v=78db0461",
+        "./src/rules/spellcasting.js": "./src/rules/spellcasting.js?v=63bf0b03",
+        "./src/rules/worlddirector.js": "./src/rules/worlddirector.js?v=6feadc4e",
+        "./src/state.js": "./src/state.js?v=4cc0ec7f",
+        "./src/ui/academy.js": "./src/ui/academy.js?v=a2fa007a",
+        "./src/ui/barks.js": "./src/ui/barks.js?v=43cc9958",
+        "./src/ui/charcreate.js": "./src/ui/charcreate.js?v=3b1416d6",
+        "./src/ui/cheatmenu.js": "./src/ui/cheatmenu.js?v=4bd527f8",
+        "./src/ui/combatui.js": "./src/ui/combatui.js?v=59ed4251",
+        "./src/ui/dialogue.js": "./src/ui/dialogue.js?v=b0c55e18",
+        "./src/ui/glyphs.js": "./src/ui/glyphs.js?v=a9584fb7",
+        "./src/ui/hotbar.js": "./src/ui/hotbar.js?v=653948df",
+        "./src/ui/hud.js": "./src/ui/hud.js?v=88d5213f",
+        "./src/ui/hudmap.js": "./src/ui/hudmap.js?v=d7d1ff2e",
+        "./src/ui/hudparts.js": "./src/ui/hudparts.js?v=f5a822f2",
+        "./src/ui/inspector.js": "./src/ui/inspector.js?v=71149c77",
+        "./src/ui/kit.js": "./src/ui/kit.js?v=b87501fe",
+        "./src/ui/layout.js": "./src/ui/layout.js?v=19ba6cdc",
+        "./src/ui/levelup.js": "./src/ui/levelup.js?v=695b2a10",
+        "./src/ui/menukit.js": "./src/ui/menukit.js?v=e1d03e72",
+        "./src/ui/menus.js": "./src/ui/menus.js?v=a958ae8c",
+        "./src/ui/noticeboard.js": "./src/ui/noticeboard.js?v=73e783dc",
+        "./src/ui/ornament.js": "./src/ui/ornament.js?v=7ade4ca9",
+        "./src/ui/restui.js": "./src/ui/restui.js?v=2fda46b2",
+        "./src/ui/roadnotice.js": "./src/ui/roadnotice.js?v=7123a961",
+        "./src/ui/shop.js": "./src/ui/shop.js?v=baabd34a",
+        "./src/ui/standoff.js": "./src/ui/standoff.js?v=ba5dc40e",
+        "./src/ui/title.js": "./src/ui/title.js?v=9282f425",
+        "./src/ui/title_logo.js": "./src/ui/title_logo.js?v=a4003891",
+        "./src/ui/title_vista.js": "./src/ui/title_vista.js?v=e1b45c60",
+        "./src/ui/topics.js": "./src/ui/topics.js?v=15148e10",
+        "./src/ui/worldtalk.js": "./src/ui/worldtalk.js?v=861590ba",
+        "./src/world/battlemap.js": "./src/world/battlemap.js?v=e7cfe1fc",
+        "./src/world/city-life.js": "./src/world/city-life.js?v=c861c80b",
+        "./src/world/entity.js": "./src/world/entity.js?v=e9f8d006",
+        "./src/world/mapgen.js": "./src/world/mapgen.js?v=66ac3762",
+        "./src/world/mapkit.js": "./src/world/mapkit.js?v=a46e173b",
+        "./src/world/maps.js": "./src/world/maps.js?v=c37d49ea",
+        "./src/world/maps_baldursgate.js": "./src/world/maps_baldursgate.js?v=306db2fe",
+        "./src/world/maps_blackstaff.js": "./src/world/maps_blackstaff.js?v=d7db4753",
+        "./src/world/maps_south.js": "./src/world/maps_south.js?v=68e49829",
+        "./src/world/overworld.js": "./src/world/overworld.js?v=4c769423",
+        "./src/world/party.js": "./src/world/party.js?v=d93d75a5",
+        "./src/world/sites.js": "./src/world/sites.js?v=07898290",
+        "./src/world/tilemap.js": "./src/world/tilemap.js?v=f7861a2c",
+        "./src/world/wayfarers.js": "./src/world/wayfarers.js?v=48285aa0"
+      }
+    }
+  </script>
+  <!-- importmap:end -->
+<style>
+  :root {
+    --bg-deep: #07060a;
+    --bg: #0d0b10;
+    --glow: #2a1c10;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: var(--bg-deep);
+    overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    color: #cbb894;
+  }
+  #shell {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse at 50% 42%, #17121a 0%, #0a080c 55%, #050407 100%);
+  }
+  /* Faint parchment vignette behind the frame */
+  #shell::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%, rgba(227,179,74,0.05), transparent 62%);
+  }
+  canvas#game {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #000;
+    box-shadow:
+      0 0 0 2px #3a2c18,
+      0 0 0 4px #16110c,
+      0 0 34px 6px rgba(0,0,0,0.85),
+      0 0 90px 18px rgba(227,179,74,0.06);
+    position: relative;
+    z-index: 2;
+  }
+  /* Boot / loading screen */
+  #boot {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 18px;
+    background: #07060a;
+    transition: opacity .5s ease;
+  }
+  #boot.hide { opacity: 0; pointer-events: none; }
+  #boot h1 {
+    margin: 0; font-size: 26px; letter-spacing: 6px; font-weight: 400;
+    color: #e3b34a; text-shadow: 0 0 18px rgba(227,179,74,.35);
+    text-transform: uppercase;
+  }
+  #boot .sub { font-size: 11px; letter-spacing: 3px; color: #6d5c40; }
+  #boot .bar { width: 260px; height: 6px; background: #191219; border: 1px solid #3a2c18; }
+  #boot .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg,#8a6a2a,#e3b34a); transition: width .25s ease; }
+  #boot .msg { font-size: 10px; color: #55482f; height: 12px; letter-spacing: 1px; }
+  #boot .err { color: #d4574a; font-size: 11px; max-width: 70ch; white-space: pre-wrap; text-align: left; line-height: 1.5; }
+  /* Click-to-start overlay (browsers need a gesture before audio) */
+  #gate {
+    position: fixed; inset: 0; z-index: 40;
+    display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+    background: rgba(5,4,7,.86); cursor: pointer;
+  }
+  #gate.show { display: flex; }
+  #gate .t { color: #e3b34a; letter-spacing: 4px; font-size: 15px; text-transform: uppercase; }
+  #gate .s { color: #6d5c40; font-size: 11px; letter-spacing: 2px; }
+  #gate .pulse { animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:.45 } 50% { opacity:1 } }
+</style>
+</head>
+<body>
+  <div id="shell">
+    <canvas id="game" width="800" height="480"></canvas>
+  </div>
+
+  <div id="gate">
+    <div class="t">Sword Coast Chronicles</div>
+    <div class="s pulse">Click or press any key to begin</div>
+  </div>
+
+  <div id="boot">
+    <h1>Sword Coast</h1>
+    <div class="sub">CHRONICLES</div>
+    <div class="bar"><i id="bootbar"></i></div>
+    <div class="msg" id="bootmsg">gathering the party&hellip;</div>
+    <div class="err" id="booterr"></div>
+  </div>
+
+<script type="module">
+  // Surface module errors on the boot screen instead of a silent black canvas.
+  const errEl = document.getElementById('booterr');
+  const msgEl = document.getElementById('bootmsg');
+  function fail(what, e) {
+    const boot = document.getElementById('boot');
+    boot.classList.remove('hide');
+    boot.style.opacity = '1';
+    boot.style.pointerEvents = 'auto';
+    msgEl.textContent = what;
+    errEl.textContent = (e && (e.stack || e.message)) || String(e);
+    console.error(what, e);
+  }
+  window.addEventListener('error', (ev) => fail('a spell fizzled', ev.error || ev.message));
+  window.addEventListener('unhandledrejection', (ev) => fail('a spell fizzled', ev.reason));
+
+  try {
+    const { boot } = await import('./src/main.js');
+    await boot({
+      progress(pct, message) {
+        document.getElementById('bootbar').style.width = Math.round(pct * 100) + '%';
+        if (message) msgEl.textContent = message;
+      },
+      done() {
+        const b = document.getElementById('boot');
+        b.classList.add('hide');
+        setTimeout(() => { b.style.display = 'none'; }, 550);
+      },
+      gate: document.getElementById('gate'),
+    });
+  } catch (e) {
+    fail('the party never gathered', e);
+  }
+</script>
+</body>
+</html>

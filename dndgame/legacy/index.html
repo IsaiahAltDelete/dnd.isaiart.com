@@ -1,0 +1,2878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sword Coast Chronicles</title>
+<style>
+  :root {
+    --bg: #0b0a08;
+    --bg2: #1a1612;
+    --panel: #221c15;
+    --panel2: #2e261c;
+    --ink: #e9d9b1;
+    --ink-dim: #a8967a;
+    --gold: #e3b34a;
+    --red: #c0392b;
+    --green: #27ae60;
+    --blue: #3a7bd5;
+    --purple: #8e44ad;
+    --border: #5a4a30;
+    --border-bright: #8a6a3a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Cinzel", "Georgia", "Times New Roman", serif;
+    overflow: hidden;
+    height: 100%;
+    user-select: none;
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+  }
+  header {
+    background: linear-gradient(to bottom, #2a1f10, #14100a);
+    border-bottom: 2px solid var(--border-bright);
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 14px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(227,179,74,0.4);
+  }
+  header .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  header .stat .label { color: var(--ink-dim); }
+  header .stat .val { color: var(--ink); font-weight: bold; }
+  header .stat.gold .val { color: var(--gold); }
+  header .stat.hp .val { color: #ff8a7a; }
+  header .stat.mp .val { color: #7ab6ff; }
+  header .grow { flex: 1; }
+  header button {
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    border-radius: 3px;
+  }
+  header button:hover { background: var(--panel2); border-color: var(--border-bright); }
+
+  #main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  #stage {
+    flex: 1;
+    position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  canvas {
+    background: #050403;
+    image-rendering: pixelated;
+    cursor: pointer;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    border: 1px solid var(--border);
+  }
+  #side {
+    width: 320px;
+    background: var(--bg2);
+    border-left: 2px solid var(--border-bright);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #side .pane {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
+  }
+  #side h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+  }
+  #log .entry { padding: 2px 0; }
+  #log .entry.combat { color: #ff9b80; }
+  #log .entry.heal { color: #80e0a0; }
+  #log .entry.gold { color: var(--gold); }
+  #log .entry.system { color: #80b8ff; }
+  #log .entry.story { color: #d4b78a; font-style: italic; }
+  #log .entry.crit { color: #ff5a3a; font-weight: bold; }
+
+  #actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  #actions button, .btn {
+    background: linear-gradient(to bottom, #3a2e1c, #2a2014);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    border-radius: 3px;
+    text-align: left;
+  }
+  #actions button:hover, .btn:hover {
+    background: linear-gradient(to bottom, #4a3a24, #3a2e1c);
+    border-color: var(--border-bright);
+  }
+  #actions button:disabled, .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  #actions button.primary {
+    background: linear-gradient(to bottom, #8a3a20, #5a2410);
+    border-color: #c0593a;
+  }
+  #actions button.heal {
+    background: linear-gradient(to bottom, #2a6a3a, #14401e);
+    border-color: #4aaa6a;
+  }
+  #actions button.spell {
+    background: linear-gradient(to bottom, #3a3a8a, #1e1e5a);
+    border-color: #6a6acc;
+  }
+  .key {
+    display: inline-block;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0 4px;
+    font-size: 10px;
+    color: var(--ink-dim);
+    margin-left: 4px;
+    font-family: monospace;
+  }
+
+  /* Modal overlay */
+  .modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: fadeIn 0.18s ease-out;
+  }
+  .modal.closing { animation: fadeOut 0.18s ease-out forwards; }
+  .modal .box {
+    background:
+      radial-gradient(ellipse at top, rgba(227,179,74,0.06), transparent 60%),
+      linear-gradient(to bottom, #2a2014, #14100a);
+    border: 2px solid var(--border-bright);
+    border-radius: 6px;
+    padding: 22px 26px;
+    min-width: 520px;
+    max-width: 760px;
+    max-height: 84vh;
+    overflow-y: auto;
+    box-shadow:
+      0 0 40px rgba(227,179,74,0.2),
+      0 8px 32px rgba(0,0,0,0.8),
+      inset 0 0 0 1px rgba(227,179,74,0.08);
+    animation: modalPop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .modal .box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    border-radius: 6px 6px 0 0;
+  }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes fadeOut { to { opacity: 0 } }
+  @keyframes modalPop {
+    0% { transform: scale(0.92) translateY(8px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 rgba(227,179,74,0); }
+    50% { box-shadow: 0 0 16px rgba(227,179,74,0.5); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0,0); }
+    20% { transform: translate(-3px, 1px); }
+    40% { transform: translate(3px, -1px); }
+    60% { transform: translate(-2px, -1px); }
+    80% { transform: translate(2px, 1px); }
+  }
+  #stage.shaking canvas { animation: shake 0.25s; }
+  .modal h2 {
+    margin: 0 0 12px 0;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-align: center;
+    font-size: 22px;
+  }
+  .modal .close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--ink-dim);
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .modal .close:hover { color: var(--ink); }
+
+  .class-grid, .item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .class-card, .item-card {
+    background: linear-gradient(135deg, var(--panel), var(--panel2));
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  .class-card::before {
+    content: "";
+    position: absolute;
+    top: -50%; right: -30%;
+    width: 120px; height: 200%;
+    background: radial-gradient(ellipse, rgba(227,179,74,0.08), transparent 70%);
+    transition: transform 0.4s;
+    transform: scale(0);
+  }
+  .class-card:hover::before { transform: scale(1); }
+  .class-card:hover, .item-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(227,179,74,0.25);
+  }
+  .class-card.selected {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #3a2e1c, var(--panel2));
+    animation: pulse-glow 2s infinite;
+  }
+  .class-card .name {
+    color: var(--gold);
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .class-card .name img { width: 28px; height: 28px; filter: drop-shadow(0 0 4px currentColor); }
+  .class-card .desc {
+    font-size: 11px;
+    color: var(--ink-dim);
+    line-height: 1.4;
+    position: relative;
+  }
+  .icon-img {
+    width: 22px; height: 22px;
+    vertical-align: middle;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  .item-card .icon-img {
+    width: 32px; height: 32px;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .item-card .info { display: flex; align-items: center; flex: 1; }
+  .item-card .info .text { flex: 1; }
+  .class-card .stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--ink);
+  }
+  .item-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-card .info { flex: 1; }
+  .item-card .name { color: var(--ink); font-weight: bold; font-size: 13px; }
+  .item-card .desc { color: var(--ink-dim); font-size: 11px; margin-top: 2px; }
+  .item-card .price { color: var(--gold); font-weight: bold; }
+
+  .row { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+  .row.center { justify-content: center; }
+  .row.between { justify-content: space-between; }
+  .grow { flex: 1; }
+
+  input[type=text] {
+    background: #100c08;
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 6px 10px;
+    font-family: inherit;
+    border-radius: 3px;
+    width: 100%;
+  }
+
+  /* World map locations */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .options-grid label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-dim);
+  }
+  .options-grid input[type=range] { width: 100%; }
+  .options-grid input[type=checkbox] { accent-color: var(--gold); }
+  .hbar {
+    height: 8px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .hbar > div {
+    height: 100%;
+    transition: width 0.2s;
+  }
+  .hbar.hp > div { background: linear-gradient(to right, #c0392b, #ff5a3a); }
+  .hbar.mp > div { background: linear-gradient(to right, #2a4a8a, #5a8aff); }
+  .hbar.xp > div { background: linear-gradient(to right, #4a8a2a, #aaff5a); }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 6px;
+    align-items: center;
+    margin: 4px 0;
+    font-size: 12px;
+  }
+  .stat-row .lbl { color: var(--ink-dim); }
+  .stat-row .v { color: var(--ink); font-weight: bold; }
+
+  .shop-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin: 8px 0;
+  }
+  .shop-tabs button {
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--ink-dim);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .shop-tabs button.active {
+    color: var(--gold);
+    border-color: var(--border);
+    background: var(--panel);
+  }
+
+  /* tooltip */
+  .tip {
+    position: absolute;
+    background: var(--panel);
+    border: 1px solid var(--border-bright);
+    padding: 6px 10px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 200;
+    max-width: 240px;
+    line-height: 1.4;
+    border-radius: 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  }
+  .tip .tname { color: var(--gold); font-weight: bold; }
+
+  /* Floating damage text */
+  .floater {
+    position: absolute;
+    font-weight: bold;
+    font-size: 18px;
+    pointer-events: none;
+    text-shadow: 0 0 4px black, 0 0 4px black;
+    animation: float-up 1s ease-out forwards;
+    z-index: 50;
+  }
+  @keyframes float-up {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+  .hint {
+    color: var(--ink-dim);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .deathfade {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle, transparent, rgba(80,0,0,0.9));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 60;
+  }
+  .deathfade.on { opacity: 1; }
+
+  .quest {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 8px 10px;
+    margin: 6px 0;
+    font-size: 12px;
+  }
+  .quest .qt { color: var(--gold); font-weight: bold; margin-bottom: 3px; }
+  .quest .qd { color: var(--ink-dim); }
+  .quest .qr { color: #80e0a0; margin-top: 4px; font-size: 11px; }
+  .quest.done { opacity: 0.6; border-left-color: var(--green); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>⚔ Sword Coast Chronicles</h1>
+    <div class="stat hp" id="hpStat" title="Hit Points"><span class="label">HP</span> <span class="val" id="hpv">—</span></div>
+    <div class="stat mp" id="mpStat" title="Spell/Resource Points"><span class="label" id="mplabel">MP</span> <span class="val" id="mpv">—</span></div>
+    <div class="stat" id="lvlStat"><span class="label">LV</span> <span class="val" id="lvlv">1</span> <span class="label" style="margin-left:6px">XP</span> <span class="val" id="xpv">0</span></div>
+    <div class="stat gold"><img src="icons/gold.svg" style="width:14px;height:14px;filter:invert(78%) sepia(45%) saturate(720%) hue-rotate(360deg) brightness(95%);"/> <span class="val" id="goldv">0</span></div>
+    <div class="stat" id="locStat"><span class="label">📍</span> <span class="val" id="locv">—</span></div>
+    <div class="grow"></div>
+    <button id="btnInv">Inventory <span class="key">I</span></button>
+    <button id="btnChar">Character <span class="key">C</span></button>
+    <button id="btnQuests">Quests <span class="key">Q</span></button>
+    <button id="btnMap">World Map <span class="key">M</span></button>
+    <button id="btnOptions">⚙</button>
+  </header>
+  <div id="main">
+    <div id="stage">
+      <canvas id="canvas" width="768" height="576"></canvas>
+      <div class="deathfade" id="deathfade"></div>
+    </div>
+    <div id="side">
+      <div class="pane">
+        <h3 id="contextTitle">Adventure</h3>
+        <div id="contextDesc" style="font-size:12px;color:var(--ink-dim);line-height:1.5"></div>
+      </div>
+      <div class="pane">
+        <h3>Actions</h3>
+        <div id="actions"></div>
+      </div>
+      <div class="pane" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+        <h3>Adventure Log</h3>
+        <div id="log"></div>
+      </div>
+      <div style="padding:6px 10px;font-size:10px;color:var(--ink-dim);text-align:center;border-top:1px solid var(--border)">
+        Icons: <a href="https://game-icons.net/" target="_blank" style="color:var(--ink-dim)">game-icons.net</a> by Lorc — CC BY 3.0
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================
+   SWORD COAST CHRONICLES
+   A self-contained D&D-flavored tactics game
+   ===================================================== */
+
+// ---------- DATA ----------
+const CLASSES = {
+  Fighter: {
+    desc: "A martial veteran. High HP, heavy armor, devastating sword strikes.",
+    hp: 32, mp: 0, mpName: "Stamina", mpStart: 4,
+    str: 16, dex: 12, con: 15, int: 8, wis: 10, cha: 10,
+    weapon: "Longsword", armor: "Chain Mail",
+    color: "#c0a060",
+    abilities: ["Power Attack", "Second Wind", "Cleave"],
+    startGold: 60,
+  },
+  Wizard: {
+    desc: "A scholar of the Weave. Fragile, but commands fire and force from afar.",
+    hp: 18, mp: 12, mpName: "Spell Slots", mpStart: 12,
+    str: 8, dex: 12, con: 10, int: 17, wis: 13, cha: 11,
+    weapon: "Quarterstaff", armor: "Robes",
+    color: "#7a6acc",
+    abilities: ["Fire Bolt", "Magic Missile", "Fireball"],
+    startGold: 80,
+  },
+  Rogue: {
+    desc: "A shadow with a dagger. Sneak attacks, evasion, lethal precision.",
+    hp: 22, mp: 0, mpName: "Focus", mpStart: 5,
+    str: 10, dex: 17, con: 12, int: 13, wis: 12, cha: 14,
+    weapon: "Twin Daggers", armor: "Leather",
+    color: "#5a8a5a",
+    abilities: ["Sneak Attack", "Cunning Action", "Backstab"],
+    startGold: 100,
+  },
+  Cleric: {
+    desc: "A servant of the Morninglord. Heals allies, smites the wicked.",
+    hp: 26, mp: 10, mpName: "Divine Power", mpStart: 10,
+    str: 13, dex: 10, con: 14, int: 10, wis: 16, cha: 13,
+    weapon: "Mace", armor: "Scale Mail",
+    color: "#dca0c0",
+    abilities: ["Sacred Flame", "Cure Wounds", "Spirit Guardians"],
+    startGold: 70,
+  },
+  Ranger: {
+    desc: "A wilderness scout. Longbow at range, twin blades up close.",
+    hp: 24, mp: 6, mpName: "Mark", mpStart: 6,
+    str: 12, dex: 16, con: 13, int: 11, wis: 14, cha: 10,
+    weapon: "Longbow", armor: "Studded Leather",
+    color: "#80a060",
+    abilities: ["Hunter's Mark", "Volley", "Quick Shot"],
+    startGold: 75,
+  },
+  Paladin: {
+    desc: "A holy oath given form. Tanky, righteous, smites with thunder.",
+    hp: 30, mp: 8, mpName: "Smite Slots", mpStart: 8,
+    str: 16, dex: 10, con: 14, int: 9, wis: 11, cha: 15,
+    weapon: "Warhammer", armor: "Plate",
+    color: "#dccc70",
+    abilities: ["Divine Smite", "Lay on Hands", "Shield of Faith"],
+    startGold: 65,
+  },
+  Barbarian: {
+    desc: "A primal warrior. Rage gives you damage and resistance — but no spells.",
+    hp: 36, mp: 4, mpName: "Rage", mpStart: 4,
+    str: 17, dex: 13, con: 16, int: 8, wis: 10, cha: 9,
+    weapon: "Greataxe", armor: "Hide Armor",
+    color: "#c06060",
+    abilities: ["Rage", "Reckless Attack", "Frenzy"],
+    startGold: 50,
+  },
+  Warlock: {
+    desc: "A pact with an Otherworldly Patron. Eldritch blasts and dark gifts.",
+    hp: 22, mp: 8, mpName: "Pact Power", mpStart: 8,
+    str: 9, dex: 13, con: 13, int: 12, wis: 11, cha: 16,
+    weapon: "Pact Blade", armor: "Dark Robes",
+    color: "#a060c0",
+    abilities: ["Eldritch Blast", "Hex", "Hunger of Hadar"],
+    startGold: 85,
+  },
+};
+
+const MONSTERS = {
+  goblin:    { name: "Goblin",            hp: 7,   atk: 4,  def: 2, xp: 12,  gold: [2,8],   color:"#7aaa4a", glyph:"g", lvl:1, ranged:false },
+  kobold:    { name: "Kobold",            hp: 5,   atk: 3,  def: 1, xp: 8,   gold: [1,5],   color:"#c08040", glyph:"k", lvl:1, ranged:true  },
+  wolf:      { name: "Dire Wolf",         hp: 11,  atk: 5,  def: 2, xp: 15,  gold: [0,3],   color:"#888888", glyph:"w", lvl:1, ranged:false, fast:true },
+  bandit:    { name: "Bandit",            hp: 12,  atk: 5,  def: 3, xp: 18,  gold: [5,15],  color:"#9a6a3a", glyph:"b", lvl:2, ranged:false },
+  orc:       { name: "Orc Marauder",      hp: 18,  atk: 7,  def: 3, xp: 25,  gold: [8,20],  color:"#5a8a4a", glyph:"O", lvl:2, ranged:false },
+  bugbear:   { name: "Bugbear",           hp: 24,  atk: 9,  def: 4, xp: 35,  gold: [10,25], color:"#7a4a2a", glyph:"B", lvl:3, ranged:false },
+  gnoll:     { name: "Gnoll",             hp: 20,  atk: 8,  def: 3, xp: 32,  gold: [10,22], color:"#cca060", glyph:"G", lvl:3, ranged:false, fast:true },
+  ogre:      { name: "Ogre",              hp: 38,  atk: 12, def: 4, xp: 60,  gold: [25,50], color:"#8a8a5a", glyph:"o", lvl:4, ranged:false },
+  troll:     { name: "Troll",             hp: 50,  atk: 13, def: 5, xp: 90,  gold: [40,70], color:"#5a8a5a", glyph:"T", lvl:5, ranged:false, regen:3 },
+  owlbear:   { name: "Owlbear",           hp: 45,  atk: 14, def: 5, xp: 85,  gold: [20,40], color:"#c0a070", glyph:"Ω", lvl:5, ranged:false },
+  drider:    { name: "Drider",            hp: 40,  atk: 12, def: 6, xp: 100, gold: [50,90], color:"#604080", glyph:"D", lvl:6, ranged:true  },
+  beholder:  { name: "Lesser Beholder",   hp: 70,  atk: 16, def: 7, xp: 200, gold: [100,200], color:"#c060a0", glyph:"E", lvl:7, ranged:true },
+  mindflayer:{ name: "Mind Flayer",       hp: 65,  atk: 17, def: 6, xp: 220, gold: [120,220], color:"#a040a0", glyph:"M", lvl:8, ranged:true },
+  dragon:    { name: "Young Red Dragon",  hp: 130, atk: 22, def: 9, xp: 600, gold: [400,800], color:"#c03030", glyph:"R", lvl:10, ranged:true, boss:true },
+  lich:      { name: "Lich",              hp: 110, atk: 20, def: 8, xp: 500, gold: [300,600], color:"#80c0c0", glyph:"L", lvl:9, ranged:true, boss:true },
+};
+
+const ITEMS = {
+  // Consumables
+  potion_minor: { name: "Minor Healing Potion", type:"potion", desc:"Restore 12 HP.", price: 25, effect:{heal:12} },
+  potion:       { name: "Healing Potion",       type:"potion", desc:"Restore 25 HP.", price: 50, effect:{heal:25} },
+  potion_greater:{name: "Greater Healing Potion",type:"potion", desc:"Restore 50 HP.", price: 120, effect:{heal:50} },
+  potion_mp:    { name: "Elixir of the Weave",  type:"potion", desc:"Restore 8 resource pts.", price: 80, effect:{mp:8} },
+  oil_smite:    { name: "Oil of Smiting",       type:"potion", desc:"+5 dmg next attack.", price: 60, effect:{buffDmg:5,buffTurns:3} },
+  oil_iron:     { name: "Oil of Iron Skin",     type:"potion", desc:"+3 def for 3 turns.", price: 50, effect:{buffDef:3,buffTurns:3} },
+  scroll_fire:  { name: "Scroll of Fireball",   type:"scroll", desc:"AoE 18 fire dmg.", price: 200, effect:{aoe:18,element:"fire"} },
+  scroll_heal:  { name: "Scroll of Mass Cure",  type:"scroll", desc:"Restore 40 HP.", price: 180, effect:{heal:40} },
+  // Weapons
+  sword_short:   { name: "Shortsword",       type:"weapon", desc:"+2 ATK", price: 80,   slot:"weapon", atk:2 },
+  sword_long:    { name: "Longsword",        type:"weapon", desc:"+4 ATK", price: 220,  slot:"weapon", atk:4 },
+  sword_great:   { name: "Greatsword",       type:"weapon", desc:"+6 ATK", price: 500,  slot:"weapon", atk:6 },
+  sword_flame:   { name: "Flame Tongue",     type:"weapon", desc:"+8 ATK, fire dmg", price: 1500, slot:"weapon", atk:8, element:"fire" },
+  bow_short:     { name: "Shortbow",         type:"weapon", desc:"+2 ATK ranged", price: 90, slot:"weapon", atk:2, ranged:true },
+  bow_long:      { name: "Longbow",          type:"weapon", desc:"+5 ATK ranged", price: 300, slot:"weapon", atk:5, ranged:true },
+  bow_oathbow:   { name: "Oathbow",          type:"weapon", desc:"+7 ATK, +crit", price: 1200, slot:"weapon", atk:7, ranged:true, crit:true },
+  staff_apprent: { name: "Apprentice Staff", type:"weapon", desc:"+2 ATK, +1 MP", price: 150, slot:"weapon", atk:2, mpBonus:1 },
+  staff_arcane:  { name: "Arcane Staff",     type:"weapon", desc:"+4 ATK, +3 MP", price: 600, slot:"weapon", atk:4, mpBonus:3 },
+  // Armor
+  armor_leather: { name: "Leather Armor",    type:"armor", desc:"+2 DEF", price: 80, slot:"armor", def:2 },
+  armor_chain:   { name: "Chain Mail",       type:"armor", desc:"+4 DEF", price: 260, slot:"armor", def:4 },
+  armor_plate:   { name: "Plate Armor",      type:"armor", desc:"+6 DEF", price: 600, slot:"armor", def:6 },
+  armor_dragon:  { name: "Dragonscale",      type:"armor", desc:"+9 DEF, fire res", price: 1800, slot:"armor", def:9, fireRes:true },
+  // Trinkets
+  ring_health:   { name: "Ring of Vigor",    type:"trinket", desc:"+10 max HP", price: 250, slot:"trinket", maxHp:10 },
+  ring_power:    { name: "Ring of Power",    type:"trinket", desc:"+2 ATK, +2 DEF", price: 600, slot:"trinket", atk:2, def:2 },
+  amulet_weave:  { name: "Amulet of the Weave",type:"trinket", desc:"+3 max MP", price: 400, slot:"trinket", maxMp:3 },
+  cloak_shadow:  { name: "Cloak of Shadows", type:"trinket", desc:"+3 DEX bonus", price: 500, slot:"trinket", dex:3 },
+};
+
+const LOCATIONS = {
+  phandalin: {
+    name: "Phandalin", type: "town", x: 360, y: 320, danger: 1,
+    desc: "A frontier mining town, recently rebuilt after the Black Spider's defeat.",
+    shops: ["general","inn","quests"],
+    encounters: [],
+  },
+  neverwinter: {
+    name: "Neverwinter", type: "town", x: 320, y: 180, danger: 2,
+    desc: "The Jewel of the North, ruled by Lord Dagult Neverember.",
+    shops: ["general","inn","quests","weapons","armor","arcana"],
+    encounters: [],
+  },
+  waterdeep: {
+    name: "Waterdeep", type: "town", x: 380, y: 460, danger: 3,
+    desc: "City of Splendors. The greatest metropolis on the Sword Coast.",
+    shops: ["general","inn","quests","weapons","armor","arcana","trinkets"],
+    encounters: [],
+  },
+  baldursgate: {
+    name: "Baldur's Gate", type: "town", x: 320, y: 540, danger: 3,
+    desc: "A bustling port city of merchants, mercenaries, and intrigue.",
+    shops: ["general","inn","quests","weapons","armor","arcana","trinkets"],
+    encounters: [],
+  },
+  luskan: {
+    name: "Luskan", type: "town", x: 280, y: 90, danger: 3,
+    desc: "The City of Sails. Pirates and the Hosttower of the Arcane.",
+    shops: ["general","inn","quests","weapons","arcana"],
+    encounters: [],
+  },
+  daggerford: {
+    name: "Daggerford", type: "town", x: 360, y: 400, danger: 1,
+    desc: "A small walled town between Waterdeep and Baldur's Gate.",
+    shops: ["general","inn","quests"],
+    encounters: [],
+  },
+  triboar: {
+    name: "Triboar", type: "town", x: 470, y: 280, danger: 2,
+    desc: "A trading crossroads east of Neverwinter Wood.",
+    shops: ["general","inn","quests","weapons"],
+    encounters: [],
+  },
+  // Wilderness encounter zones
+  triboar_trail:   { name:"Triboar Trail",     type:"wild", x:430, y:300, danger:1, desc:"A road plagued by goblin raiders.", encounters:["goblin","wolf","kobold"] },
+  cragmaw_cave:    { name:"Cragmaw Cave",      type:"dungeon", x:400, y:240, danger:2, desc:"A cave system held by goblinoids.", encounters:["goblin","bugbear","wolf"], boss:"bugbear" },
+  high_forest:     { name:"High Forest",       type:"wild", x:540, y:340, danger:3, desc:"Ancient elven woods. Owlbears prowl here.", encounters:["wolf","gnoll","owlbear"] },
+  mere_dead_men:   { name:"Mere of Dead Men",  type:"wild", x:340, y:430, danger:3, desc:"A reeking swamp of lizardfolk and worse.", encounters:["bandit","gnoll","troll"] },
+  evermoors:       { name:"Evermoors",         type:"wild", x:480, y:200, danger:4, desc:"Rolling moors stalked by trolls.", encounters:["troll","ogre","gnoll"] },
+  underdark_entry: { name:"Underdark Entry",   type:"dungeon", x:280, y:400, danger:5, desc:"A dark stair into the depths.", encounters:["drider","mindflayer","beholder"], boss:"mindflayer" },
+  icespire:        { name:"Icespire Peak",     type:"dungeon", x:430, y:130, danger:6, desc:"A frozen mountain. A dragon nests here.", encounters:["orc","ogre","dragon"], boss:"dragon" },
+  thay_outpost:    { name:"Thayan Outpost",    type:"dungeon", x:560, y:500, danger:6, desc:"Necromancer-haunted ruin.", encounters:["bandit","drider","lich"], boss:"lich" },
+};
+
+const QUESTS_DEFS = [
+  { id:"goblin_menace", giver:"phandalin", title:"The Goblin Menace", desc:"Slay 5 goblins on the Triboar Trail.", target:{kill:"goblin", count:5}, reward:{gold:60,xp:50}, minLevel:1 },
+  { id:"wolf_hunt",     giver:"phandalin", title:"Wolf Hunt", desc:"The miners are losing livestock. Cull 3 dire wolves.", target:{kill:"wolf", count:3}, reward:{gold:75,xp:60}, minLevel:1 },
+  { id:"cragmaw",       giver:"phandalin", title:"Clear Cragmaw Cave", desc:"Defeat the bugbear chieftain holed up in the cave.", target:{boss:"bugbear"}, reward:{gold:200,xp:150,item:"sword_long"}, minLevel:2 },
+  { id:"bandit_purge",  giver:"daggerford", title:"Bandits on the High Road", desc:"Slay 6 bandits along the road.", target:{kill:"bandit", count:6}, reward:{gold:120,xp:100}, minLevel:2 },
+  { id:"orc_warband",   giver:"triboar", title:"Orc Warband", desc:"Cut down 5 orc marauders.", target:{kill:"orc", count:5}, reward:{gold:180,xp:140}, minLevel:3 },
+  { id:"trollbane",     giver:"neverwinter", title:"Trollbane", desc:"Slay 3 trolls in the Evermoors.", target:{kill:"troll", count:3}, reward:{gold:300,xp:240, item:"oil_smite"}, minLevel:4 },
+  { id:"owlbear",       giver:"waterdeep", title:"The Owlbear of High Forest", desc:"Slay an owlbear menacing trade routes.", target:{kill:"owlbear", count:1}, reward:{gold:250,xp:200}, minLevel:4 },
+  { id:"underdark",     giver:"waterdeep", title:"Aberrations Below", desc:"Slay the mind flayer at the Underdark entry.", target:{boss:"mindflayer"}, reward:{gold:600,xp:500,item:"amulet_weave"}, minLevel:6 },
+  { id:"dragonslayer",  giver:"neverwinter", title:"The Dragon of Icespire", desc:"Slay the young red dragon.", target:{boss:"dragon"}, reward:{gold:1500,xp:1200,item:"armor_dragon"}, minLevel:8 },
+  { id:"lichbane",      giver:"baldursgate", title:"Burn the Thayan Outpost", desc:"Destroy the lich at the outpost.", target:{boss:"lich"}, reward:{gold:1200,xp:1000,item:"sword_flame"}, minLevel:8 },
+  { id:"luskan_pirates",giver:"luskan", title:"Pirate Trouble", desc:"Slay 8 bandits in or around Luskan.", target:{kill:"bandit", count:8}, reward:{gold:200,xp:160}, minLevel:3 },
+];
+
+const SHOP_INVENTORY = {
+  general: ["potion_minor","potion","oil_smite","oil_iron","scroll_heal"],
+  weapons: ["sword_short","sword_long","sword_great","bow_short","bow_long","staff_apprent","staff_arcane"],
+  armor: ["armor_leather","armor_chain","armor_plate"],
+  arcana: ["scroll_fire","scroll_heal","potion_mp","staff_arcane"],
+  trinkets: ["ring_health","ring_power","amulet_weave","cloak_shadow"],
+};
+
+// ---------- STATE ----------
+const state = {
+  scene: "title",  // title | world | town | combat | gameover
+  player: null,
+  options: {
+    sound: true,
+    autoEndTurn: false,
+    fastAnims: false,
+    grid: true,
+    difficulty: 1.0,
+  },
+  worldEvent: null,  // current location key when in town/combat
+  combat: null,
+  log: [],
+  questsActive: [],
+  questsDone: [],
+  killCounts: {},
+  bossesSlain: {},
+  saveSlot: "scc_save_v1",
+};
+
+// ---------- ICON LOADER ----------
+const ICONS = {};
+const ICON_NAMES = [
+  "fighter","wizard","rogue","cleric","ranger","paladin","barbarian","warlock",
+  "goblin","kobold","wolf","bandit","orc","bugbear","gnoll","ogre","troll","owlbear",
+  "drider","beholder","mindflayer","dragon","lich",
+  "town","mountain","forest","dungeon","boss","gold","potion","scroll","armor",
+  "sword","bow","axe","shield","quest","weapons","arcana","trinket","inn"
+];
+function loadIcons() {
+  for (const n of ICON_NAMES) {
+    const img = new Image();
+    img.src = `icons/${n}.svg`;
+    ICONS[n] = img;
+  }
+}
+loadIcons();
+
+// Tinted icon cache: takes a white-on-transparent SVG and recolors it
+const TINT_CACHE = {};
+function getTintedIcon(name, color, size) {
+  const key = `${name}|${color}|${size}`;
+  if (TINT_CACHE[key]) return TINT_CACHE[key];
+  const img = ICONS[name];
+  if (!img || !img.complete || img.naturalWidth === 0) return null;
+  const off = document.createElement("canvas");
+  off.width = size; off.height = size;
+  const octx = off.getContext("2d");
+  octx.drawImage(img, 0, 0, size, size);
+  octx.globalCompositeOperation = "source-in";
+  octx.fillStyle = color;
+  octx.fillRect(0,0,size,size);
+  TINT_CACHE[key] = off;
+  return off;
+}
+function drawIcon(name, x, y, size, color="#e9d9b1", opts={}) {
+  const img = ICONS[name];
+  if (!img || !img.complete || img.naturalWidth === 0) return false;
+  ctx.save();
+  if (opts.shadow) {
+    ctx.shadowColor = opts.shadow;
+    ctx.shadowBlur = opts.shadowBlur || 8;
+  }
+  if (opts.rotate) {
+    ctx.translate(x, y);
+    ctx.rotate(opts.rotate);
+    ctx.translate(-x, -y);
+  }
+  if (opts.alpha != null) ctx.globalAlpha = opts.alpha;
+  const tinted = getTintedIcon(name, color, size);
+  if (tinted) {
+    ctx.drawImage(tinted, x - size/2, y - size/2);
+  } else {
+    ctx.drawImage(img, x - size/2, y - size/2, size, size);
+  }
+  ctx.restore();
+  return true;
+}
+
+// ---------- CANVAS / RENDER ----------
+const cnv = document.getElementById("canvas");
+const ctx = cnv.getContext("2d");
+const TILE = 48;     // tile size in combat
+const GRID_W = 16;
+const GRID_H = 12;
+
+// ---------- ANIMATION FRAMEWORK ----------
+const tweens = [];
+function tween(target, props, duration, opts={}) {
+  const start = {};
+  for (const k in props) start[k] = target[k];
+  const t = { target, start, end: props, duration, t: 0, ease: opts.ease || "outQuad", onDone: opts.onDone };
+  tweens.push(t);
+  return t;
+}
+const EASE = {
+  linear: x => x,
+  outQuad: x => 1 - (1-x)*(1-x),
+  inQuad: x => x*x,
+  outBack: x => { const c=1.70158; return 1 + (c+1)*Math.pow(x-1,3) + c*Math.pow(x-1,2); },
+  outElastic: x => { if (x===0||x===1) return x; const p=0.3; return Math.pow(2,-10*x)*Math.sin((x-p/4)*(2*Math.PI)/p)+1; }
+};
+function updateTweens(dt) {
+  for (let i = tweens.length-1; i>=0; i--) {
+    const w = tweens[i];
+    w.t += dt;
+    let p = Math.min(1, w.t / w.duration);
+    const e = EASE[w.ease](p);
+    for (const k in w.end) {
+      w.target[k] = w.start[k] + (w.end[k] - w.start[k]) * e;
+    }
+    if (p >= 1) {
+      tweens.splice(i,1);
+      if (w.onDone) w.onDone();
+    }
+  }
+}
+
+// Screen shake
+let shakeAmt = 0;
+let shakeT = 0;
+function shake(amt=6, dur=0.25) {
+  shakeAmt = Math.max(shakeAmt, amt);
+  shakeT = Math.max(shakeT, dur);
+  const stage = document.getElementById("stage");
+  stage.classList.remove("shaking");
+  void stage.offsetWidth;
+  stage.classList.add("shaking");
+}
+
+// Hit flash on units
+const hitFlashes = new Map();
+function flashUnit(unit, color="#ff5050", dur=0.25) {
+  hitFlashes.set(unit, { color, t: 0, dur });
+}
+function getFlash(unit) {
+  const f = hitFlashes.get(unit);
+  if (!f) return null;
+  return f;
+}
+function updateFlashes(dt) {
+  for (const [k, f] of hitFlashes.entries()) {
+    f.t += dt;
+    if (f.t >= f.dur) hitFlashes.delete(k);
+  }
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace("#","");
+  if (hex.length === 3) hex = hex.split("").map(c=>c+c).join("");
+  const n = parseInt(hex,16);
+  return [(n>>16)&255,(n>>8)&255,n&255];
+}
+function blendColors(a, b, t) {
+  // a, b are #rrggbb or rgba; if a is rgba just return a
+  if (a.startsWith("rgba") || b.startsWith("rgba")) return a;
+  const A = hexToRgb(a), B = hexToRgb(b);
+  const r = Math.round(A[0]*(1-t) + B[0]*t);
+  const g = Math.round(A[1]*(1-t) + B[1]*t);
+  const bl = Math.round(A[2]*(1-t) + B[2]*t);
+  return `rgb(${r},${g},${bl})`;
+}
+
+function drawText(x, y, text, color="#e9d9b1", size=14, align="left") {
+  ctx.fillStyle = color;
+  ctx.font = `${size}px Georgia, serif`;
+  ctx.textAlign = align;
+  ctx.textBaseline = "top";
+  ctx.fillText(text, x, y);
+}
+
+function drawTextC(x, y, text, color, size, align) {
+  ctx.textBaseline = "middle";
+  drawText(x, y, text, color, size, align);
+  ctx.textBaseline = "top";
+}
+
+// floating damage
+const floaters = [];
+function spawnFloater(x, y, text, color="#fff") {
+  floaters.push({ x, y, text, color, t: 0, life: state.options.fastAnims ? 0.6 : 1.0 });
+}
+
+// projectiles
+const projectiles = [];
+function spawnProjectile(x1, y1, x2, y2, color, onHit) {
+  const dur = state.options.fastAnims ? 0.18 : 0.32;
+  projectiles.push({ x: x1, y: y1, sx: x1, sy: y1, ex: x2, ey: y2, t: 0, dur, color, onHit, fired: false });
+}
+
+// particles
+const particles = [];
+function spawnBurst(x, y, color, count=10) {
+  for (let i=0; i<count; i++) {
+    const a = Math.random()*Math.PI*2;
+    const s = 60 + Math.random()*80;
+    particles.push({ x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s, color, life: 0.5, t: 0 });
+  }
+}
+
+let lastTime = 0;
+function loop(t) {
+  const dt = Math.min(0.05, (t - lastTime) / 1000 || 0);
+  lastTime = t;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+function update(dt) {
+  for (let i = floaters.length-1; i>=0; i--) {
+    floaters[i].t += dt;
+    if (floaters[i].t >= floaters[i].life) floaters.splice(i,1);
+  }
+  for (let i = particles.length-1; i>=0; i--) {
+    const p = particles[i];
+    p.t += dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 200 * dt;
+    if (p.t >= p.life) particles.splice(i,1);
+  }
+  updateTweens(dt);
+  updateFlashes(dt);
+  for (let i = projectiles.length-1; i>=0; i--) {
+    const pr = projectiles[i];
+    pr.t += dt;
+    const p = Math.min(1, pr.t / pr.dur);
+    pr.x = pr.sx + (pr.ex - pr.sx) * p;
+    pr.y = pr.sy + (pr.ey - pr.sy) * p;
+    if (p >= 1) {
+      if (pr.onHit && !pr.fired) { pr.fired = true; pr.onHit(); }
+      projectiles.splice(i, 1);
+    }
+  }
+  if (shakeT > 0) {
+    shakeT -= dt;
+    if (shakeT <= 0) shakeAmt = 0;
+  }
+  // ember effect on title
+  if (state.scene === "title" && Math.random() < 0.3) {
+    embers.push({ x: Math.random()*cnv.width, y: cnv.height + 4, vy: -20-Math.random()*30, vx: (Math.random()-0.5)*10, life: 2+Math.random()*2, t: 0, size: 1+Math.random()*2 });
+  }
+  for (let i = embers.length-1; i>=0; i--) {
+    const e = embers[i]; e.t += dt; e.x += e.vx*dt; e.y += e.vy*dt; e.vx += Math.sin(e.t*3)*4*dt;
+    if (e.t >= e.life || e.y < -10) embers.splice(i,1);
+  }
+}
+const embers = [];
+
+function render() {
+  ctx.fillStyle = "#050403";
+  ctx.fillRect(0,0,cnv.width,cnv.height);
+  if (state.scene === "title") renderTitle();
+  else if (state.scene === "world") renderWorld();
+  else if (state.scene === "town") renderTown();
+  else if (state.scene === "combat") renderCombat();
+  else if (state.scene === "gameover") renderGameOver();
+
+  // Projectiles
+  for (const pr of projectiles) {
+    const angle = Math.atan2(pr.ey - pr.sy, pr.ex - pr.sx);
+    ctx.save();
+    ctx.translate(pr.x, pr.y);
+    ctx.rotate(angle);
+    // trail
+    ctx.strokeStyle = pr.color;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(0, 0); ctx.stroke();
+    ctx.globalAlpha = 1;
+    // arrow head
+    ctx.fillStyle = pr.color;
+    ctx.beginPath();
+    ctx.moveTo(4, 0); ctx.lineTo(-4, -3); ctx.lineTo(-4, 3); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // Floaters & particles
+  for (const f of floaters) {
+    const a = 1 - (f.t / f.life);
+    ctx.globalAlpha = a;
+    ctx.fillStyle = f.color;
+    ctx.font = "bold 20px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const yo = -40 * (f.t / f.life);
+    ctx.shadowColor = "#000";
+    ctx.shadowBlur = 4;
+    ctx.fillText(f.text, f.x, f.y + yo);
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  }
+  for (const p of particles) {
+    const a = 1 - (p.t / p.life);
+    ctx.globalAlpha = a;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x-2, p.y-2, 4, 4);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- TITLE ----------
+function renderTitle() {
+  const cx = cnv.width/2;
+  // background
+  const grd = ctx.createLinearGradient(0,0,0,cnv.height);
+  grd.addColorStop(0,"#0a0608"); grd.addColorStop(0.5,"#1a1008"); grd.addColorStop(1,"#3a1808");
+  ctx.fillStyle = grd; ctx.fillRect(0,0,cnv.width,cnv.height);
+
+  // stars
+  for (let i=0; i<80; i++) {
+    const x = (i*97)%cnv.width;
+    const y = (i*47)%280;
+    const tw = 0.3 + 0.7*Math.abs(Math.sin(performance.now()*0.001 + i));
+    ctx.fillStyle = `rgba(255,240,200,${tw*0.6})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  // distant mountains silhouette
+  ctx.fillStyle = "#08080e";
+  ctx.beginPath();
+  ctx.moveTo(0, 380);
+  for (let x=0; x<=cnv.width; x+=40) {
+    const h = 80 + Math.sin(x*0.013)*40 + Math.cos(x*0.027)*30;
+    ctx.lineTo(x, 380 - h);
+  }
+  ctx.lineTo(cnv.width, cnv.height); ctx.lineTo(0, cnv.height); ctx.closePath(); ctx.fill();
+
+  // closer mountains
+  ctx.fillStyle = "#1a0e08";
+  ctx.beginPath();
+  ctx.moveTo(0, 460);
+  for (let x=0; x<=cnv.width; x+=30) {
+    const h = 60 + Math.sin(x*0.022)*30 + Math.cos(x*0.04)*20;
+    ctx.lineTo(x, 460 - h);
+  }
+  ctx.lineTo(cnv.width, cnv.height); ctx.lineTo(0, cnv.height); ctx.closePath(); ctx.fill();
+
+  // moon
+  ctx.fillStyle = "#fff5d0";
+  ctx.beginPath(); ctx.arc(cx+220, 110, 36, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 0.25;
+  ctx.beginPath(); ctx.arc(cx+220, 110, 60, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 0.12;
+  ctx.beginPath(); ctx.arc(cx+220, 110, 90, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  // moon craters
+  ctx.fillStyle = "rgba(180,160,120,0.3)";
+  ctx.beginPath(); ctx.arc(cx+212, 105, 5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx+228, 118, 3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx+216, 122, 2, 0, Math.PI*2); ctx.fill();
+
+  // dragon silhouette flying past
+  const dt = performance.now()*0.0005;
+  drawIcon("dragon", 120 + Math.sin(dt)*20, 80 + Math.cos(dt*1.3)*8, 64, "rgba(60,30,20,0.7)");
+
+  // crossed swords behind title (decorative)
+  ctx.save();
+  ctx.translate(cx, 165);
+  ctx.globalAlpha = 0.18;
+  drawIcon("sword", -110, 0, 100, "#e3b34a", { rotate: -0.4 });
+  drawIcon("sword", 110, 0, 100, "#e3b34a", { rotate: 0.4 });
+  ctx.restore();
+
+  // title with glow
+  ctx.shadowColor="#e3b34a"; ctx.shadowBlur=24;
+  drawText(cx, 130, "SWORD COAST", "#e3b34a", 56, "center");
+  ctx.shadowBlur=12;
+  drawText(cx, 195, "C H R O N I C L E S", "#c89540", 28, "center");
+  ctx.shadowBlur=0;
+
+  // ornament
+  ctx.strokeStyle = "#c89540";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx-180, 230); ctx.lineTo(cx-20, 230);
+  ctx.moveTo(cx+20, 230); ctx.lineTo(cx+180, 230);
+  ctx.stroke();
+  drawText(cx, 226, "✦", "#c89540", 14, "center");
+  drawText(cx, 250, "A tale of the Forgotten Realms", "#a8967a", 16, "center");
+
+  // pulsing prompt
+  const pulse = 0.7 + 0.3*Math.sin(performance.now()*0.003);
+  ctx.globalAlpha = pulse;
+  drawText(cx, 470, "Click to begin your adventure", "#e9d9b1", 18, "center");
+  ctx.globalAlpha = 1;
+  drawText(cx, 500, "WASD/Arrows: move • Click: act • I C Q M: menus", "#a8967a", 12, "center");
+  drawText(cx, 540, "Icons by Lorc — game-icons.net (CC BY 3.0)", "rgba(168,150,122,0.5)", 10, "center");
+
+  // embers overlay
+  for (const e of embers) {
+    const a = 1 - (e.t / e.life);
+    ctx.globalAlpha = a*0.8;
+    const hue = 30 - e.t*5;
+    ctx.fillStyle = `hsl(${hue},100%,60%)`;
+    ctx.fillRect(e.x, e.y, e.size, e.size);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- WORLD MAP ----------
+function renderWorld() {
+  // sea
+  const grd = ctx.createLinearGradient(0,0,0,cnv.height);
+  grd.addColorStop(0,"#0a1a3a"); grd.addColorStop(1,"#040814");
+  ctx.fillStyle = grd; ctx.fillRect(0,0,cnv.width,cnv.height);
+
+  // wave noise
+  ctx.fillStyle = "rgba(80,140,220,0.05)";
+  for (let i=0; i<200; i++) {
+    const x = (i*73 + (performance.now()*0.02)) % cnv.width;
+    const y = (i*131) % cnv.height;
+    ctx.fillRect(x, y, 2, 1);
+  }
+
+  // landmass: Sword Coast
+  ctx.fillStyle = "#3a3020";
+  drawCoastline();
+  // forest / mountain texture
+  drawTerrainFeatures();
+
+  // location markers
+  for (const key in LOCATIONS) {
+    const L = LOCATIONS[key];
+    drawLocationMarker(L, key);
+  }
+
+  // legend
+  drawText(14, 14, "The Sword Coast", "#e3b34a", 22);
+  drawText(14, 42, "Click a location to travel there", "#a8967a", 12);
+  drawText(14, cnv.height-26, "Towns: rest, shop, accept quests   •   Wilds/Dungeons: combat", "#a8967a", 11);
+}
+
+function drawCoastline() {
+  // approximate Sword Coast — sea on west, land on east
+  ctx.beginPath();
+  ctx.moveTo(0,0); ctx.lineTo(cnv.width,0);
+  ctx.lineTo(cnv.width, cnv.height); ctx.lineTo(0, cnv.height); ctx.lineTo(0,0); ctx.closePath();
+  // fill water-only later; we'll just paint land:
+  ctx.fillStyle = "#3a3020";
+  // a wavy coastline running roughly down-center
+  ctx.beginPath();
+  const points = [
+    [200, 0],[230,60],[200,120],[240,180],[260,250],[230,300],
+    [250,360],[270,420],[230,480],[260,540],[280,576]
+  ];
+  ctx.moveTo(cnv.width, 0);
+  ctx.lineTo(points[0][0], points[0][1]);
+  for (let i=1;i<points.length;i++) ctx.lineTo(points[i][0], points[i][1]);
+  ctx.lineTo(cnv.width, cnv.height);
+  ctx.closePath();
+  ctx.fill();
+  // beach edge
+  ctx.strokeStyle = "#5a4a30";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (let i=1;i<points.length;i++) ctx.lineTo(points[i][0], points[i][1]);
+  ctx.stroke();
+}
+
+function drawTerrainFeatures() {
+  // forests (green dots)
+  ctx.fillStyle = "#2a4a20";
+  const forests = [[420,200],[460,220],[500,200],[520,330],[540,360],[580,340],[440,440],[480,470]];
+  for (const [x,y] of forests) {
+    for (let i=0; i<6; i++) {
+      const ox = (i*17)%30 - 15;
+      const oy = (i*23)%24 - 12;
+      ctx.beginPath();
+      ctx.arc(x+ox, y+oy, 5, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+  // mountains (gray triangles)
+  ctx.fillStyle = "#5a5a5a";
+  const mts = [[400,140],[420,160],[440,140],[600,260],[620,280],[600,510]];
+  for (const [x,y] of mts) {
+    ctx.beginPath();
+    ctx.moveTo(x-12, y+8); ctx.lineTo(x, y-14); ctx.lineTo(x+12, y+8); ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#888"; ctx.beginPath();
+    ctx.moveTo(x-4, y-4); ctx.lineTo(x, y-14); ctx.lineTo(x+4, y-4); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#5a5a5a";
+  }
+}
+
+function drawLocationMarker(L, key) {
+  ctx.save();
+  const hovered = state._hoverLoc === key;
+  // pulsing ring on hover
+  if (hovered) {
+    const t = performance.now()*0.003;
+    const r = 22 + Math.sin(t)*3;
+    ctx.beginPath();
+    ctx.arc(L.x, L.y, r, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(227,179,74,0.20)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(227,179,74,0.6)";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(L.x, L.y, r+4, 0, Math.PI*2); ctx.stroke();
+  }
+  let iconName, color;
+  if (L.type === "town") { iconName = "town"; color = hovered ? "#ffd470" : "#e3b34a"; }
+  else if (L.type === "wild") { iconName = "forest"; color = hovered ? "#a0d060" : "#80a040"; }
+  else if (L.type === "dungeon") {
+    iconName = L.boss ? "boss" : "dungeon";
+    color = hovered ? "#ff6060" : (L.boss ? "#c0392b" : "#888");
+  }
+  drawIcon(iconName, L.x, L.y-4, hovered ? 28 : 24, color, { shadow: hovered ? color : "rgba(0,0,0,0.8)", shadowBlur: hovered ? 10 : 4 });
+
+  // label background pill
+  ctx.fillStyle = "rgba(0,0,0,0.6)";
+  const lblWidth = ctx.measureText(L.name).width + 18;
+  ctx.fillRect(L.x - lblWidth/2, L.y+12, lblWidth, 14);
+  drawText(L.x, L.y+15, L.name, hovered?"#ffd470":"#e9d9b1", 11, "center");
+  // danger stars
+  let stars = "";
+  for (let i=0;i<L.danger;i++) stars += "★";
+  drawText(L.x, L.y+30, stars, L.danger >= 5 ? "#ff5050" : (L.danger >= 3 ? "#ffaa50" : "#80c050"), 10, "center");
+  ctx.restore();
+}
+
+// ---------- TOWN ----------
+function renderTown() {
+  // Drawn as a stylized bird's-eye view
+  ctx.fillStyle = "#2a2418";
+  ctx.fillRect(0,0,cnv.width,cnv.height);
+
+  // ground texture
+  for (let y=0; y<cnv.height; y+=8) {
+    for (let x=0; x<cnv.width; x+=8) {
+      const v = (Math.sin(x*0.02 + y*0.03) + 1) * 0.5;
+      ctx.fillStyle = `rgba(${50 + v*30},${40 + v*20},${24 + v*16},0.4)`;
+      ctx.fillRect(x,y,8,8);
+    }
+  }
+
+  // roads
+  ctx.fillStyle = "#5a4830";
+  ctx.fillRect(0, cnv.height/2-20, cnv.width, 40);
+  ctx.fillRect(cnv.width/2-20, 0, 40, cnv.height);
+
+  const L = LOCATIONS[state.worldEvent];
+  drawText(cnv.width/2, 30, L.name, "#e3b34a", 28, "center");
+  drawText(cnv.width/2, 65, L.desc, "#a8967a", 13, "center");
+
+  // shop buildings around the cross
+  const positions = {
+    general: { x: 170, y: 200, name:"General Store", color:"#8a6a40", icon:"potion" },
+    weapons: { x: 600, y: 200, name:"Weaponsmith", color:"#7a3a3a", icon:"weapons" },
+    armor: { x: 170, y: 410, name:"Armorer", color:"#5a5a7a", icon:"armor" },
+    arcana: { x: 600, y: 410, name:"Arcane Emporium", color:"#6a3a8a", icon:"arcana" },
+    trinkets: { x: 385, y: 130, name:"Curios & Trinkets", color:"#8a5a8a", icon:"trinket" },
+    inn: { x: 385, y: 470, name:"The Inn (Rest)", color:"#8a5a20", icon:"inn" },
+    quests: { x: 100, y: 305, name:"Quest Board", color:"#5a4a20", icon:"quest" },
+  };
+  state._townShops = [];
+  for (const sh of L.shops) {
+    if (!positions[sh]) continue;
+    const p = positions[sh];
+    const hovered = state._hoverShop === sh;
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.beginPath(); ctx.ellipse(p.x, p.y+38, 56, 8, 0, 0, Math.PI*2); ctx.fill();
+    // building base with hover lift
+    const lift = hovered ? 4 : 0;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x-50, p.y-40 - lift, 100, 70);
+    // wood beams
+    ctx.strokeStyle = "rgba(0,0,0,0.3)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(p.x-50, p.y-40 - lift, 100, 70);
+    ctx.beginPath();
+    ctx.moveTo(p.x-50, p.y-40 - lift); ctx.lineTo(p.x+50, p.y+30 - lift);
+    ctx.moveTo(p.x+50, p.y-40 - lift); ctx.lineTo(p.x-50, p.y+30 - lift);
+    ctx.stroke();
+    // roof
+    ctx.fillStyle = "#3a2a14";
+    ctx.beginPath();
+    ctx.moveTo(p.x-58, p.y-40 - lift); ctx.lineTo(p.x, p.y-62 - lift); ctx.lineTo(p.x+58, p.y-40 - lift);
+    ctx.closePath(); ctx.fill();
+    // roof shading
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y-62 - lift); ctx.lineTo(p.x+58, p.y-40 - lift); ctx.lineTo(p.x+30, p.y-40 - lift);
+    ctx.closePath(); ctx.fill();
+    // sign with icon (large emblem above the door)
+    drawIcon(p.icon, p.x, p.y-15 - lift, 36, hovered ? "#fff5d0" : "#ffe5b0", { shadow: hovered?"#e3b34a":"rgba(0,0,0,0.6)", shadowBlur: hovered?12:4 });
+    // door
+    ctx.fillStyle = "#100806";
+    ctx.fillRect(p.x-8, p.y+5 - lift, 16, 25);
+    ctx.fillStyle = "#dca050";
+    ctx.fillRect(p.x+5, p.y+15 - lift, 2, 2);
+    // glow window
+    ctx.fillStyle = hovered ? "#ffd470" : "#dca050";
+    ctx.shadowColor = "#dca050"; ctx.shadowBlur = hovered?8:4;
+    ctx.fillRect(p.x-32, p.y-20 - lift, 8, 8);
+    ctx.fillRect(p.x+24, p.y-20 - lift, 8, 8);
+    ctx.shadowBlur = 0;
+    if (hovered) {
+      ctx.strokeStyle = "#e3b34a";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(p.x-52, p.y-64 - lift, 104, 100);
+    }
+    drawText(p.x, p.y+40, p.name, hovered ? "#ffd470" : "#e9d9b1", 12, "center");
+    state._townShops.push({ id: sh, x: p.x, y: p.y, w: 100, h: 100 });
+  }
+
+  // Player avatar in middle
+  const px = cnv.width/2, py = cnv.height/2;
+  drawCharacter(px, py, state.player.cls, state.player.color);
+
+  // Footer
+  ctx.fillStyle = "rgba(0,0,0,0.4)";
+  ctx.fillRect(0, cnv.height-36, cnv.width, 36);
+  drawText(cnv.width/2, cnv.height-26, "Click a shop to enter • [M] World Map  •  [I] Inventory  •  [C] Character", "#a8967a", 12, "center");
+}
+
+function drawCharacter(x, y, cls, color, size=44) {
+  // shadow
+  ctx.fillStyle = "rgba(0,0,0,0.55)";
+  ctx.beginPath(); ctx.ellipse(x, y+size*0.42, size*0.35, size*0.12, 0, 0, Math.PI*2); ctx.fill();
+  // disc beneath
+  const r = size*0.42;
+  const grd = ctx.createRadialGradient(x, y, 4, x, y, r);
+  grd.addColorStop(0, color);
+  grd.addColorStop(0.7, color);
+  grd.addColorStop(1, "rgba(0,0,0,0.5)");
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,0.6)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.stroke();
+  // class icon
+  const iconKey = cls.toLowerCase();
+  drawIcon(iconKey, x, y-1, size*0.7, "#fff5d0", { shadow: "rgba(0,0,0,0.7)", shadowBlur: 4 });
+}
+
+// ---------- COMBAT ----------
+function startCombat(locKey, ambush=false) {
+  const L = LOCATIONS[locKey];
+  const isBossFight = state._forceBoss === true;
+  state._forceBoss = false;
+  // Pick monsters
+  const pool = L.encounters && L.encounters.length ? L.encounters : ["goblin"];
+  let enemies = [];
+  if (isBossFight && L.boss) {
+    enemies.push(spawnEnemy(L.boss, 12, 5));
+    // some minions too
+    const minionCount = 1 + Math.floor(Math.random()*2);
+    for (let i=0; i<minionCount; i++) {
+      const m = pool[Math.floor(Math.random()*pool.length)];
+      if (m !== L.boss) enemies.push(spawnEnemy(m, 10 + i*2, 3 + (i%3)));
+    }
+  } else {
+    const count = 1 + Math.floor(Math.random()*3) + Math.min(2, Math.floor(L.danger/2));
+    for (let i=0; i<count; i++) {
+      const m = pool[Math.floor(Math.random()*pool.length)];
+      enemies.push(spawnEnemy(m, 10 + i, 2 + (i%5)*2));
+    }
+  }
+  // Position player
+  state.player.gx = 2;
+  state.player.gy = Math.floor(GRID_H/2);
+  state.player.drawX = state.player.gx*TILE + TILE/2;
+  state.player.drawY = state.player.gy*TILE + TILE/2;
+  for (const e of enemies) {
+    e.drawX = e.gx*TILE + TILE/2;
+    e.drawY = e.gy*TILE + TILE/2;
+  }
+
+  state.combat = {
+    enemies,
+    turn: "player",
+    ap: 2,           // 2 actions per turn
+    move: 4,         // movement squares per turn
+    moveLeft: 4,
+    selectedAbility: null,
+    targets: [],
+    log: [],
+    locKey,
+    isBoss: isBossFight,
+    anim: null,
+    buffs: { dmg: 0, def: 0, turns: 0 },
+  };
+  state.scene = "combat";
+  log(`Combat begins! ${enemies.map(e=>e.name).join(", ")} appear.`, "combat");
+  if (ambush) {
+    log("You were ambushed! Enemies act first.", "system");
+    state.combat.turn = "enemy";
+    setTimeout(enemyTurn, 600);
+  }
+  refreshUI();
+}
+
+function spawnEnemy(key, gx, gy) {
+  const m = MONSTERS[key];
+  const diff = state.options.difficulty;
+  const lvlScale = 1 + Math.max(0, state.player.level - m.lvl) * 0.05;
+  return {
+    key,
+    name: m.name,
+    hp: Math.round(m.hp * diff * lvlScale),
+    maxHp: Math.round(m.hp * diff * lvlScale),
+    atk: Math.round(m.atk * diff),
+    def: m.def,
+    color: m.color,
+    glyph: m.glyph,
+    xp: m.xp,
+    goldRoll: m.gold,
+    gx, gy,
+    ranged: m.ranged,
+    fast: m.fast,
+    regen: m.regen,
+    boss: m.boss,
+    moveLeft: m.fast ? 4 : 3,
+    alive: true,
+  };
+}
+
+function renderCombat() {
+  const c = state.combat;
+  // ground tiles
+  for (let y=0; y<GRID_H; y++) {
+    for (let x=0; x<GRID_W; x++) {
+      const xx = x*TILE, yy = y*TILE;
+      const dark = (x+y)%2===0;
+      ctx.fillStyle = dark ? "#1a1410" : "#221a14";
+      ctx.fillRect(xx, yy, TILE, TILE);
+      if (state.options.grid) {
+        ctx.strokeStyle = "rgba(120,90,50,0.15)";
+        ctx.strokeRect(xx, yy, TILE, TILE);
+      }
+    }
+  }
+  // movement / attack overlays
+  if (c.turn === "player" && !c.anim) {
+    if (c.selectedAbility) {
+      const a = c.selectedAbility;
+      const range = a.range || 1;
+      for (let y=0; y<GRID_H; y++) {
+        for (let x=0; x<GRID_W; x++) {
+          const d = Math.abs(x - state.player.gx) + Math.abs(y - state.player.gy);
+          if (d > 0 && d <= range) {
+            ctx.fillStyle = "rgba(200,80,80,0.15)";
+            ctx.fillRect(x*TILE, y*TILE, TILE, TILE);
+          }
+        }
+      }
+    } else if (c.moveLeft > 0) {
+      for (let y=0; y<GRID_H; y++) {
+        for (let x=0; x<GRID_W; x++) {
+          const d = Math.abs(x - state.player.gx) + Math.abs(y - state.player.gy);
+          if (d > 0 && d <= c.moveLeft && !enemyAt(x,y)) {
+            ctx.fillStyle = "rgba(80,160,200,0.10)";
+            ctx.fillRect(x*TILE, y*TILE, TILE, TILE);
+          }
+        }
+      }
+    }
+  }
+  // hover tile
+  if (state._hoverTile && c.turn === "player") {
+    const [hx, hy] = state._hoverTile;
+    ctx.strokeStyle = "rgba(227,179,74,0.7)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(hx*TILE, hy*TILE, TILE, TILE);
+    ctx.lineWidth = 1;
+  }
+
+  // enemies
+  for (const e of c.enemies) {
+    if (!e.alive) continue;
+    // animated position offsets (drawX/drawY for tweens, fallback to grid)
+    if (e.drawX == null) { e.drawX = e.gx*TILE + TILE/2; e.drawY = e.gy*TILE + TILE/2; }
+    const cx = e.drawX;
+    const cy = e.drawY;
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.beginPath(); ctx.ellipse(cx, cy+TILE/2-6, e.boss ? 18 : 14, e.boss ? 6 : 5, 0, 0, Math.PI*2); ctx.fill();
+    // disc backdrop
+    const r = e.boss ? 24 : 17;
+    const flash = getFlash(e);
+    const baseColor = flash ? blendColors(e.color, flash.color, 1 - flash.t/flash.dur) : e.color;
+    const grd = ctx.createRadialGradient(cx, cy, 2, cx, cy, r);
+    grd.addColorStop(0, baseColor);
+    grd.addColorStop(0.7, baseColor);
+    grd.addColorStop(1, "rgba(0,0,0,0.6)");
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    if (e.boss) {
+      // boss aura
+      ctx.strokeStyle = "rgba(255,80,80,0.4)";
+      ctx.lineWidth = 2;
+      const t = performance.now()*0.005;
+      ctx.beginPath(); ctx.arc(cx, cy, r + 3 + Math.sin(t)*2, 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(0,0,0,0.7)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+    // monster icon
+    const tintColor = flash ? "#ffffff" : "#fff5d0";
+    drawIcon(e.key, cx, cy-1, r*1.5, tintColor, { shadow: "rgba(0,0,0,0.8)", shadowBlur: 3 });
+    // hp bar
+    const hpw = e.boss ? 44 : 30;
+    const ratio = Math.max(0, e.hp / e.maxHp);
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillRect(cx - hpw/2 - 1, cy - r - 8, hpw+2, 5);
+    const hpcolor = ratio > 0.5 ? "#27ae60" : ratio > 0.25 ? "#f39c12" : "#c0392b";
+    ctx.fillStyle = hpcolor;
+    ctx.fillRect(cx - hpw/2, cy - r - 7, hpw*ratio, 3);
+    if (e.boss) {
+      drawText(cx, cy - r - 22, e.name, "#ff8080", 11, "center");
+    }
+  }
+
+  // player
+  const p = state.player;
+  if (p.drawX == null) { p.drawX = p.gx*TILE + TILE/2; p.drawY = p.gy*TILE + TILE/2; }
+  const px = p.drawX;
+  const py = p.drawY;
+  // shadow
+  ctx.fillStyle = "rgba(0,0,0,0.55)";
+  ctx.beginPath(); ctx.ellipse(px, py+TILE/2-6, 14, 5, 0, 0, Math.PI*2); ctx.fill();
+  // disc
+  const flashP = getFlash(p);
+  const pc = flashP ? blendColors(p.color, flashP.color, 1 - flashP.t/flashP.dur) : p.color;
+  const pgrd = ctx.createRadialGradient(px, py, 2, px, py, 18);
+  pgrd.addColorStop(0, pc);
+  pgrd.addColorStop(0.7, pc);
+  pgrd.addColorStop(1, "rgba(0,0,0,0.6)");
+  ctx.fillStyle = pgrd;
+  ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI*2); ctx.fill();
+  // turn outline
+  if (c.turn === "player" && !c.anim) {
+    const t = performance.now()*0.004;
+    ctx.strokeStyle = `rgba(227,179,74,${0.6 + 0.4*Math.sin(t)})`;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(px, py, 20, 0, Math.PI*2); ctx.stroke();
+  } else {
+    ctx.strokeStyle = "rgba(0,0,0,0.7)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI*2); ctx.stroke();
+  }
+  // class icon
+  drawIcon(p.cls.toLowerCase(), px, py-1, 26, flashP ? "#ffffff" : "#fff5d0", { shadow: "rgba(0,0,0,0.8)", shadowBlur: 3 });
+
+  // hp bar
+  const hpw = 36;
+  const ratio = Math.max(0, p.hp / p.maxHp);
+  ctx.fillStyle = "rgba(0,0,0,0.8)";
+  ctx.fillRect(px - hpw/2 - 1, py - 28, hpw+2, 5);
+  ctx.fillStyle = ratio > 0.5 ? "#27ae60" : ratio > 0.25 ? "#f39c12" : "#c0392b";
+  ctx.fillRect(px - hpw/2, py - 27, hpw*ratio, 3);
+
+  // status overlay
+  ctx.fillStyle = "rgba(0,0,0,0.55)";
+  ctx.fillRect(0, 0, cnv.width, 30);
+  drawText(10, 8, `Turn: ${c.turn === "player" ? "YOUR TURN" : "ENEMY"}`, c.turn==="player"?"#e3b34a":"#c0392b", 14);
+  drawText(200, 8, `Actions: ${c.ap}   Move: ${c.moveLeft}`, "#e9d9b1", 13);
+  if (c.buffs.turns > 0) {
+    drawText(420, 8, `Buff: +${c.buffs.dmg}dmg, +${c.buffs.def}def (${c.buffs.turns})`, "#80e0a0", 12);
+  }
+  drawText(cnv.width-10, 8, `${LOCATIONS[c.locKey].name}`, "#a8967a", 12, "right");
+}
+
+function enemyAt(x, y) {
+  if (!state.combat) return null;
+  return state.combat.enemies.find(e => e.alive && e.gx === x && e.gy === y);
+}
+
+// ---------- COMBAT ACTIONS ----------
+function combatTileClick(gx, gy) {
+  const c = state.combat;
+  if (c.turn !== "player" || c.anim) return;
+  const enemy = enemyAt(gx, gy);
+  // Selected ability targeting?
+  if (c.selectedAbility) {
+    const a = c.selectedAbility;
+    const dist = Math.abs(gx - state.player.gx) + Math.abs(gy - state.player.gy);
+    if (dist > (a.range||1) || dist === 0) {
+      log(`Out of range.`, "system");
+      return;
+    }
+    if (a.targetType === "enemy" && !enemy) {
+      log(`No target there.`, "system");
+      return;
+    }
+    if (a.targetType === "tile" || a.targetType === "enemy") {
+      executeAbility(a, gx, gy);
+      c.selectedAbility = null;
+      refreshUI();
+    }
+    return;
+  }
+  // Attack adjacent enemy
+  if (enemy) {
+    const dist = Math.abs(gx - state.player.gx) + Math.abs(gy - state.player.gy);
+    const ranged = state.player.weapon && ITEMS[state.player.weapon] && ITEMS[state.player.weapon].ranged;
+    const wpnRange = ranged ? 8 : 1;
+    if (dist <= wpnRange) {
+      doBasicAttack(enemy);
+    } else {
+      log("Too far for a basic attack.", "system");
+    }
+    return;
+  }
+  // Move
+  const d = Math.abs(gx - state.player.gx) + Math.abs(gy - state.player.gy);
+  if (d > 0 && d <= c.moveLeft) {
+    if (!enemyAt(gx,gy)) {
+      c.moveLeft -= d;
+      refreshUI();
+      animateMove(state.player, gx, gy, () => {
+        refreshUI();
+      });
+    }
+  }
+}
+
+function animateMove(unit, gx, gy, cb) {
+  const toX = gx*TILE + TILE/2;
+  const toY = gy*TILE + TILE/2;
+  unit.gx = gx; unit.gy = gy;
+  if (unit.drawX == null) unit.drawX = toX;
+  if (unit.drawY == null) unit.drawY = toY;
+  const dur = state.options.fastAnims ? 0.12 : 0.22;
+  tween(unit, { drawX: toX, drawY: toY }, dur, { ease: "outQuad", onDone: cb });
+}
+
+function animateLunge(unit, targetX, targetY, cb) {
+  // unit lunges 60% of the way to target then snaps back
+  const fromX = unit.drawX;
+  const fromY = unit.drawY;
+  const lx = fromX + (targetX - fromX)*0.55;
+  const ly = fromY + (targetY - fromY)*0.55;
+  const dur = state.options.fastAnims ? 0.08 : 0.14;
+  tween(unit, { drawX: lx, drawY: ly }, dur, { ease: "outQuad", onDone: () => {
+    if (cb) cb();
+    tween(unit, { drawX: fromX, drawY: fromY }, dur, { ease: "outBack" });
+  }});
+}
+
+function doBasicAttack(enemy) {
+  const c = state.combat;
+  if (c.ap <= 0) { log("No actions left.", "system"); return; }
+  c.ap--;
+  const p = state.player;
+  const wpn = p.weapon ? ITEMS[p.weapon] : null;
+  const baseAtk = Math.floor((p.str-10)/2) + p.level + (wpn?wpn.atk:0) + (p.trinket && ITEMS[p.trinket].atk ? ITEMS[p.trinket].atk : 0);
+  let dmg = baseAtk + Math.floor(Math.random()*6) + 1 + c.buffs.dmg;
+  const critChance = 0.05 + (p.cls === "Rogue" ? 0.1 : 0) + (wpn && wpn.crit ? 0.1 : 0);
+  let crit = Math.random() < critChance;
+  if (crit) dmg = Math.floor(dmg * 2);
+  if (p.cls === "Rogue") dmg += Math.floor(p.level/2) + 2;
+  const final = Math.max(1, dmg - enemy.def);
+  const ex = enemy.gx*TILE + TILE/2;
+  const ey = enemy.gy*TILE + TILE/2;
+  const ranged = wpn && wpn.ranged;
+  if (ranged) {
+    // arrow / bolt
+    spawnProjectile(p.drawX, p.drawY, ex, ey, "#e9d9b1", () => applyHit());
+  } else {
+    animateLunge(p, ex, ey, () => applyHit());
+  }
+  function applyHit() {
+    enemy.hp -= final;
+    flashUnit(enemy, crit ? "#ff3030" : "#ffffff", 0.25);
+    shake(crit ? 8 : 4, 0.18);
+    spawnFloater(ex, ey - 14, `-${final}${crit?"!":""}`, crit ? "#ff5a3a" : "#ffaa66");
+    spawnBurst(ex, ey, "#aa5040", crit ? 16 : 8);
+    log(`You strike ${enemy.name} for ${final} damage${crit?" (CRIT)":""}.`, crit ? "crit" : "combat");
+    if (enemy.hp <= 0) killEnemy(enemy);
+    refreshUI();
+    checkTurnEnd();
+  }
+}
+
+function executeAbility(a, gx, gy) {
+  const c = state.combat;
+  const p = state.player;
+  if (a.cost > p.mp) { log("Not enough resource.", "system"); return; }
+  if (c.ap <= 0) { log("No actions left.", "system"); return; }
+  p.mp -= a.cost;
+  c.ap--;
+
+  if (a.name === "Cure Wounds" || a.name === "Lay on Hands" || a.name === "Second Wind") {
+    const heal = a.heal + Math.floor(p.level*1.5);
+    p.hp = Math.min(p.maxHp, p.hp + heal);
+    spawnFloater(p.gx*TILE+TILE/2, p.gy*TILE+TILE/2-14, `+${heal}`, "#80e0a0");
+    spawnBurst(p.gx*TILE+TILE/2, p.gy*TILE+TILE/2, "#80e0a0", 12);
+    log(`${a.name}: heal ${heal} HP.`, "heal");
+  } else if (a.name === "Fireball") {
+    // AoE at target tile, 1 radius — fire a projectile then erupt
+    const tx = gx*TILE+TILE/2, ty = gy*TILE+TILE/2;
+    spawnProjectile(p.drawX, p.drawY, tx, ty, "#ff5030", () => {
+      // big burst
+      spawnBurst(tx, ty, "#ff5030", 30);
+      spawnBurst(tx, ty, "#ffe070", 18);
+      shake(10, 0.35);
+      let total = 0;
+      for (const e of c.enemies) {
+        if (!e.alive) continue;
+        const d = Math.abs(e.gx - gx) + Math.abs(e.gy - gy);
+        if (d <= 1) {
+          const dmg = a.dmg + Math.floor((p.int-10)/2) + p.level + Math.floor(Math.random()*8);
+          const final = Math.max(1, dmg - Math.floor(e.def/2));
+          e.hp -= final; total += final;
+          flashUnit(e, "#ff5030", 0.3);
+          spawnFloater(e.gx*TILE+TILE/2, e.gy*TILE+TILE/2-14, `-${final}🔥`, "#ff7030");
+          spawnBurst(e.gx*TILE+TILE/2, e.gy*TILE+TILE/2, "#ff7030", 16);
+          if (e.hp <= 0) killEnemy(e);
+        }
+      }
+      log(`Fireball erupts! ${total} total damage.`, "combat");
+    });
+  } else if (a.name === "Volley") {
+    // hit up to 3 random enemies
+    const targets = c.enemies.filter(e => e.alive).slice(0,3);
+    for (const e of targets) {
+      const dmg = a.dmg + Math.floor((p.dex-10)/2) + p.level + Math.floor(Math.random()*5);
+      const final = Math.max(1, dmg - e.def);
+      e.hp -= final;
+      spawnFloater(e.gx*TILE+TILE/2, e.gy*TILE+TILE/2-14, `-${final}`, "#ffaa66");
+      log(`Volley hits ${e.name} for ${final}.`, "combat");
+      if (e.hp <= 0) killEnemy(e);
+    }
+  } else if (a.name === "Spirit Guardians") {
+    // damage all adjacent
+    let hits = 0;
+    for (const e of c.enemies) {
+      if (!e.alive) continue;
+      const d = Math.abs(e.gx - p.gx) + Math.abs(e.gy - p.gy);
+      if (d <= 2) {
+        const dmg = a.dmg + Math.floor((p.wis-10)/2) + p.level + Math.floor(Math.random()*4);
+        const final = Math.max(1, dmg - Math.floor(e.def/2));
+        e.hp -= final; hits++;
+        spawnFloater(e.gx*TILE+TILE/2, e.gy*TILE+TILE/2-14, `-${final}✨`, "#ffeebb");
+        if (e.hp <= 0) killEnemy(e);
+      }
+    }
+    log(`Spirit Guardians strike ${hits} foes.`, "combat");
+  } else if (a.name === "Rage") {
+    c.buffs.dmg = Math.max(c.buffs.dmg, 4);
+    c.buffs.def = Math.max(c.buffs.def, 2);
+    c.buffs.turns = 4;
+    log("You enter a rage! +4 dmg, +2 def for 4 turns.", "combat");
+  } else if (a.name === "Shield of Faith" || a.name === "Hunter's Mark") {
+    c.buffs.dmg = Math.max(c.buffs.dmg, 3);
+    c.buffs.def = Math.max(c.buffs.def, 2);
+    c.buffs.turns = 3;
+    log(`${a.name} active: +3 dmg, +2 def.`, "combat");
+  } else if (a.name === "Cunning Action") {
+    c.moveLeft += 4;
+    c.ap++;  // refunds the action
+    log("Cunning Action: gained extra movement.", "combat");
+  } else if (a.targetType === "enemy") {
+    const e = enemyAt(gx, gy);
+    if (!e) return;
+    let stat = "str";
+    if (["Fire Bolt","Magic Missile","Eldritch Blast"].includes(a.name)) stat = "int";
+    if (["Sacred Flame"].includes(a.name)) stat = "wis";
+    if (["Sneak Attack","Backstab","Quick Shot"].includes(a.name)) stat = "dex";
+    if (["Eldritch Blast","Hex","Hunger of Hadar"].includes(a.name)) stat = "cha";
+    let dmg = a.dmg + Math.floor((p[stat]-10)/2) + p.level + Math.floor(Math.random()*6) + c.buffs.dmg;
+    if (a.crit && Math.random() < 0.3) dmg = Math.floor(dmg*2);
+    const final = Math.max(1, dmg - Math.floor(e.def * (a.armorPen || 1)));
+    const ex = e.gx*TILE+TILE/2, ey = e.gy*TILE+TILE/2;
+    const projColor = a.color || "#ffaa66";
+    const isMelee = (a.range || 1) <= 1;
+    const apply = () => {
+      e.hp -= final;
+      flashUnit(e, "#ffffff", 0.25);
+      shake(4, 0.18);
+      spawnFloater(ex, ey-14, `-${final}`, projColor);
+      spawnBurst(ex, ey, projColor, 16);
+      if (a.name === "Fireball" || a.name === "Hunger of Hadar") spawnBurst(ex, ey, "#ffe070", 12);
+      log(`${a.name} hits ${e.name} for ${final} damage.`, "combat");
+      if (e.hp <= 0) killEnemy(e);
+    };
+    if (isMelee) {
+      animateLunge(p, ex, ey, apply);
+    } else {
+      spawnProjectile(p.drawX || p.gx*TILE+TILE/2, p.drawY || p.gy*TILE+TILE/2, ex, ey, projColor, apply);
+    }
+  }
+  refreshUI();
+  checkTurnEnd();
+}
+
+function killEnemy(e) {
+  e.alive = false;
+  e.hp = 0;
+  log(`${e.name} is slain!`, "combat");
+  spawnBurst(e.drawX || e.gx*TILE+TILE/2, e.drawY || e.gy*TILE+TILE/2, "#aa5040", 30);
+  spawnBurst(e.drawX || e.gx*TILE+TILE/2, e.drawY || e.gy*TILE+TILE/2, "#ff8050", 20);
+  shake(e.boss ? 12 : 6, 0.3);
+  // XP and gold
+  const xp = e.xp;
+  const goldRoll = e.goldRoll;
+  const gold = Math.floor(goldRoll[0] + Math.random()*(goldRoll[1]-goldRoll[0]));
+  state.player.xp += xp;
+  state.player.gold += gold;
+  log(`+${xp} XP, +${gold} gp`, "gold");
+  state.killCounts[e.key] = (state.killCounts[e.key]||0) + 1;
+  if (e.boss) state.bossesSlain[e.key] = true;
+  // quest progress
+  for (const q of state.questsActive) {
+    const def = QUESTS_DEFS.find(x=>x.id===q.id);
+    if (!def) continue;
+    if (def.target.kill === e.key) q.progress = (q.progress||0) + 1;
+    if (def.target.boss === e.key) q.progress = 1;
+  }
+  checkLevelUp();
+}
+
+function checkTurnEnd() {
+  const c = state.combat;
+  if (!c.enemies.some(e=>e.alive)) {
+    endCombat(true);
+    return;
+  }
+  if (c.ap <= 0 && (c.moveLeft <= 0 || state.options.autoEndTurn)) {
+    endPlayerTurn();
+  }
+}
+
+function endPlayerTurn() {
+  const c = state.combat;
+  c.turn = "enemy";
+  if (c.buffs.turns > 0) {
+    c.buffs.turns--;
+    if (c.buffs.turns === 0) { c.buffs.dmg = 0; c.buffs.def = 0; log("Buffs fade.", "system"); }
+  }
+  refreshUI();
+  setTimeout(enemyTurn, state.options.fastAnims ? 250 : 600);
+}
+
+function enemyTurn() {
+  const c = state.combat;
+  if (!c) return;
+  if (state.player.hp <= 0) return;
+  const enemies = c.enemies.filter(e=>e.alive);
+  if (enemies.length === 0) { endCombat(true); return; }
+
+  let i = 0;
+  function next() {
+    if (i >= enemies.length) {
+      // start player turn
+      c.turn = "player";
+      c.ap = 2;
+      c.moveLeft = 4;
+      // regen for trolls
+      for (const e of c.enemies) if (e.alive && e.regen) e.hp = Math.min(e.maxHp, e.hp + e.regen);
+      log("Your turn.", "system");
+      refreshUI();
+      return;
+    }
+    const e = enemies[i++];
+    if (!e.alive) { next(); return; }
+    enemyAct(e, () => setTimeout(next, state.options.fastAnims ? 150 : 350));
+  }
+  next();
+}
+
+function enemyAct(e, done) {
+  const p = state.player;
+  const d = Math.abs(e.gx - p.gx) + Math.abs(e.gy - p.gy);
+  if (e.ranged && d <= 6) {
+    enemyAttack(e, done); return;
+  }
+  if (d === 1) { enemyAttack(e, done); return; }
+  // pathfind: greedy steps, plot path then animate
+  const moveBudget = e.fast ? 4 : 3;
+  const path = [];
+  let cx = e.gx, cy = e.gy;
+  for (let step=0; step<moveBudget; step++) {
+    let dx = Math.sign(p.gx - cx);
+    let dy = Math.sign(p.gy - cy);
+    let moved = false;
+    if (dx !== 0) {
+      const nx = cx + dx;
+      if (nx >= 0 && nx < GRID_W && !enemyAt(nx, cy) && !(nx === p.gx && cy === p.gy)) {
+        cx = nx; moved = true; path.push([cx, cy]);
+      }
+    }
+    if (!moved && dy !== 0) {
+      const ny = cy + dy;
+      if (ny >= 0 && ny < GRID_H && !enemyAt(cx, ny) && !(cx === p.gx && ny === p.gy)) {
+        cy = ny; moved = true; path.push([cx, ny]);
+      }
+    }
+    if (!moved) break;
+    if (Math.abs(cx - p.gx) + Math.abs(cy - p.gy) === 1) break;
+  }
+  e.gx = cx; e.gy = cy;
+  if (path.length === 0) {
+    if (Math.abs(e.gx - p.gx) + Math.abs(e.gy - p.gy) === 1) enemyAttack(e, done);
+    else done();
+    return;
+  }
+  // animate along path
+  let i = 0;
+  const stepNext = () => {
+    if (i >= path.length) {
+      const d2 = Math.abs(e.gx - p.gx) + Math.abs(e.gy - p.gy);
+      if (d2 === 1 || (e.ranged && d2 <= 6)) enemyAttack(e, done);
+      else done();
+      return;
+    }
+    const [tx, ty] = path[i++];
+    if (e.drawX == null) e.drawX = e.gx*TILE+TILE/2;
+    if (e.drawY == null) e.drawY = e.gy*TILE+TILE/2;
+    const dur = state.options.fastAnims ? 0.08 : 0.16;
+    tween(e, { drawX: tx*TILE+TILE/2, drawY: ty*TILE+TILE/2 }, dur, { ease: "outQuad", onDone: stepNext });
+  };
+  stepNext();
+}
+
+function enemyAttack(e, done) {
+  const p = state.player;
+  const arm = p.armor ? ITEMS[p.armor] : null;
+  const trink = p.trinket ? ITEMS[p.trinket] : null;
+  const def = Math.floor((p.dex-10)/2) + p.level + (arm?arm.def:0) + (trink && trink.def?trink.def:0) + (state.combat.buffs.def||0);
+  let dmg = e.atk + Math.floor(Math.random()*4) + 1;
+  const dodge = 0.05 + (p.cls === "Rogue" ? 0.1 : 0);
+  const px = p.gx*TILE+TILE/2;
+  const py = p.gy*TILE+TILE/2;
+  const isMiss = Math.random() < dodge;
+
+  const applyHit = () => {
+    if (isMiss) {
+      spawnFloater(px, py-14, "MISS", "#80b8ff");
+      log(`${e.name} attacks but misses!`, "combat");
+      if (done) done();
+      return;
+    }
+    const final = Math.max(1, dmg - def);
+    p.hp -= final;
+    flashUnit(p, "#ff3030", 0.25);
+    shake(5, 0.2);
+    spawnFloater(px, py-14, `-${final}`, "#ff7050");
+    spawnBurst(px, py, "#aa5040", 8);
+    log(`${e.name} hits you for ${final} damage.`, "combat");
+    if (p.hp <= 0) {
+      p.hp = 0;
+      refreshUI();
+      setTimeout(()=>endCombat(false), 800);
+    } else {
+      refreshUI();
+    }
+    if (done) done();
+  };
+
+  if (e.ranged && Math.abs(e.gx - p.gx) + Math.abs(e.gy - p.gy) > 1) {
+    spawnProjectile(e.drawX || e.gx*TILE+TILE/2, e.drawY || e.gy*TILE+TILE/2, px, py, e.color, applyHit);
+  } else {
+    animateLunge(e, px, py, applyHit);
+  }
+}
+
+function endCombat(victory) {
+  if (victory) {
+    log("Victory! Returning to the world map.", "system");
+    state.scene = "world";
+    state.combat = null;
+    save();
+  } else {
+    log("You have fallen...", "system");
+    document.getElementById("deathfade").classList.add("on");
+    state.scene = "gameover";
+    setTimeout(()=>{
+      document.getElementById("deathfade").classList.remove("on");
+    }, 2400);
+  }
+  refreshUI();
+}
+
+function renderGameOver() {
+  ctx.fillStyle = "#0a0408";
+  ctx.fillRect(0,0,cnv.width,cnv.height);
+  drawText(cnv.width/2, 200, "You Have Fallen", "#c0392b", 44, "center");
+  drawText(cnv.width/2, 260, "The Sword Coast remembers brave fools.", "#a8967a", 14, "center");
+  drawText(cnv.width/2, 340, "Click to respawn at the last town", "#e9d9b1", 16, "center");
+}
+
+// ---------- LEVEL UP ----------
+function xpToNext(lvl) {
+  return 50 * lvl * lvl + 50;
+}
+function checkLevelUp() {
+  const p = state.player;
+  while (p.xp >= xpToNext(p.level)) {
+    p.xp -= xpToNext(p.level);
+    p.level++;
+    const cls = CLASSES[p.cls];
+    const hpGain = Math.floor(cls.hp / 4) + 4;
+    const mpGain = cls.mp > 0 ? Math.floor(cls.mp/4) + 1 : (p.cls === "Fighter" || p.cls === "Rogue" || p.cls === "Barbarian" ? 1 : 0);
+    p.maxHp += hpGain;
+    p.hp = p.maxHp;
+    p.maxMp += mpGain;
+    p.mp = p.maxMp;
+    log(`★ LEVEL UP! Now level ${p.level}. +${hpGain} HP, +${mpGain} ${cls.mpName}.`, "system");
+    spawnBurst(cnv.width/2, cnv.height/2, "#e3b34a", 30);
+  }
+}
+
+// ---------- LOG ----------
+function log(text, kind="") {
+  state.log.push({ text, kind });
+  if (state.log.length > 200) state.log.shift();
+  renderLog();
+}
+function renderLog() {
+  const el = document.getElementById("log");
+  el.innerHTML = state.log.slice(-100).map(e => `<div class="entry ${e.kind}">${e.text}</div>`).join("");
+  el.scrollTop = el.scrollHeight;
+}
+
+// ---------- UI ----------
+function refreshUI() {
+  const p = state.player;
+  if (!p) return;
+  document.getElementById("hpv").textContent = `${p.hp}/${p.maxHp}`;
+  document.getElementById("mpv").textContent = `${p.mp}/${p.maxMp}`;
+  document.getElementById("mplabel").textContent = (CLASSES[p.cls].mpName||"MP").substring(0,3).toUpperCase();
+  document.getElementById("lvlv").textContent = p.level;
+  document.getElementById("xpv").textContent = `${p.xp}/${xpToNext(p.level)}`;
+  document.getElementById("goldv").textContent = p.gold;
+  document.getElementById("locv").textContent = state.worldEvent ? LOCATIONS[state.worldEvent].name : "—";
+  // Context pane
+  const cti = document.getElementById("contextTitle");
+  const ctd = document.getElementById("contextDesc");
+  if (state.scene === "title") {
+    cti.textContent = "Begin"; ctd.textContent = "Choose a class to begin your adventure on the Sword Coast.";
+  } else if (state.scene === "world") {
+    cti.textContent = "World Map";
+    ctd.textContent = "Hover towns and wilds. Towns offer shops, rest, and quests. Wilds and dungeons mean combat. ★ shows danger.";
+  } else if (state.scene === "town") {
+    cti.textContent = LOCATIONS[state.worldEvent].name;
+    ctd.textContent = LOCATIONS[state.worldEvent].desc;
+  } else if (state.scene === "combat" && state.combat) {
+    cti.textContent = "Combat";
+    const c = state.combat;
+    ctd.innerHTML = `Click empty tile to <b>move</b> (${c.moveLeft} left), enemy to <b>attack</b>. <b>${c.ap}</b> action(s) remain.`;
+  }
+  // Action buttons
+  buildActions();
+}
+
+function buildActions() {
+  const el = document.getElementById("actions");
+  el.innerHTML = "";
+  if (state.scene === "title") {
+    const b = button("Choose Class", () => openClassSelect());
+    b.classList.add("primary");
+    el.appendChild(b);
+    if (localStorage.getItem(state.saveSlot)) {
+      el.appendChild(button("Continue Save", () => load()));
+    }
+    return;
+  }
+  if (state.scene === "world") {
+    if (state.worldEvent) el.appendChild(button(`Go to ${LOCATIONS[state.worldEvent].name}`, () => enterLocation(state.worldEvent)));
+    el.appendChild(button("Random Encounter", () => randomEncounter()));
+    el.appendChild(button("Save Game", () => save(true)));
+    el.appendChild(button("Load Game", () => load()));
+    return;
+  }
+  if (state.scene === "town") {
+    el.appendChild(button("World Map [M]", () => state.scene = "world"));
+    el.appendChild(button("Rest at Inn", () => restAtInn()));
+    el.appendChild(button("Open Quests [Q]", openQuests));
+    el.appendChild(button("Inventory [I]", openInventory));
+    return;
+  }
+  if (state.scene === "combat") {
+    const c = state.combat;
+    if (c.turn !== "player") {
+      el.appendChild(button("Enemy turn...", () => {})).disabled = true;
+      return;
+    }
+    // Basic
+    const wpn = state.player.weapon ? ITEMS[state.player.weapon] : null;
+    const wpnName = wpn ? wpn.name : "Fists";
+    const b1 = button(`Attack (${wpnName})`, () => {
+      // toggle ability "basic"; user clicks tile
+      log("Click an enemy tile to attack.", "system");
+      c.selectedAbility = null;
+    });
+    b1.classList.add("primary");
+    el.appendChild(b1);
+    // Abilities
+    const abilities = getAbilities(state.player);
+    for (const a of abilities) {
+      const usable = a.cost <= state.player.mp && c.ap > 0;
+      const btn = button(`${a.name} (${a.cost})`, () => {
+        c.selectedAbility = a;
+        if (a.targetType === "self") {
+          executeAbility(a, state.player.gx, state.player.gy);
+          c.selectedAbility = null;
+        } else {
+          log(`Select target for ${a.name}.`, "system");
+          refreshUI();
+        }
+      });
+      if (a.heal) btn.classList.add("heal");
+      else if (a.cost > 0) btn.classList.add("spell");
+      if (!usable) btn.disabled = true;
+      btn.title = a.desc;
+      el.appendChild(btn);
+    }
+    // Items
+    el.appendChild(button("Use Potion", () => quickPotion()));
+    el.appendChild(button("Inventory [I]", openInventory));
+    el.appendChild(button("End Turn [Space]", endPlayerTurn));
+    el.appendChild(button("Flee", () => attemptFlee()));
+    return;
+  }
+  if (state.scene === "gameover") {
+    el.appendChild(button("Respawn at last town", respawn));
+    el.appendChild(button("Load Save", load));
+    return;
+  }
+}
+
+function button(label, fn) {
+  const b = document.createElement("button");
+  b.innerHTML = label;
+  b.onclick = fn;
+  return b;
+}
+
+// ---------- ABILITIES ----------
+function getAbilities(p) {
+  const list = [];
+  switch (p.cls) {
+    case "Fighter":
+      list.push({ name:"Power Attack", cost: 1, dmg: 8, range:1, targetType:"enemy", desc:"Heavy strike. +8 base dmg." });
+      if (p.level >= 2) list.push({ name:"Cleave", cost: 2, dmg: 5, range:1, targetType:"enemy", desc:"Hits target and adjacent foes for 5 dmg." });
+      list.push({ name:"Second Wind", cost: 2, heal: 12, targetType:"self", desc:"Heal HP." });
+      break;
+    case "Wizard":
+      list.push({ name:"Fire Bolt", cost: 0, dmg: 6, range:6, targetType:"enemy", color:"#ff7030", desc:"A bolt of fire. Free." });
+      list.push({ name:"Magic Missile", cost: 2, dmg: 9, range:8, targetType:"enemy", color:"#aa80ff", desc:"Auto-hit force damage." });
+      if (p.level >= 3) list.push({ name:"Fireball", cost: 5, dmg: 18, range:7, targetType:"tile", color:"#ff5030", desc:"AoE fire. Hits target and adjacent." });
+      break;
+    case "Rogue":
+      list.push({ name:"Sneak Attack", cost: 1, dmg: 7, range:1, targetType:"enemy", crit:true, desc:"Sharp strike. High crit." });
+      list.push({ name:"Cunning Action", cost: 1, targetType:"self", desc:"+4 movement & gain back 1 action." });
+      if (p.level >= 3) list.push({ name:"Backstab", cost: 2, dmg: 12, range:1, targetType:"enemy", armorPen:0.5, crit:true, desc:"Ignores half armor." });
+      break;
+    case "Cleric":
+      list.push({ name:"Sacred Flame", cost: 1, dmg: 6, range:5, targetType:"enemy", color:"#ffe070", desc:"Radiant damage." });
+      list.push({ name:"Cure Wounds", cost: 2, heal: 14, targetType:"self", desc:"Heal yourself." });
+      if (p.level >= 3) list.push({ name:"Spirit Guardians", cost: 4, dmg: 8, targetType:"self", desc:"AoE radiant 2 tiles around you." });
+      break;
+    case "Ranger":
+      list.push({ name:"Quick Shot", cost: 1, dmg: 6, range:8, targetType:"enemy", desc:"Quick precise shot." });
+      list.push({ name:"Hunter's Mark", cost: 1, targetType:"self", desc:"Buff: +3 dmg, +2 def for 3 turns." });
+      if (p.level >= 3) list.push({ name:"Volley", cost: 3, dmg: 6, targetType:"self", desc:"Hits up to 3 enemies." });
+      break;
+    case "Paladin":
+      list.push({ name:"Divine Smite", cost: 2, dmg: 10, range:1, targetType:"enemy", color:"#ffe070", desc:"Smite a foe with radiant power." });
+      list.push({ name:"Lay on Hands", cost: 2, heal: 15, targetType:"self", desc:"Heal yourself." });
+      if (p.level >= 3) list.push({ name:"Shield of Faith", cost: 1, targetType:"self", desc:"Buff: +3 dmg, +2 def for 3 turns." });
+      break;
+    case "Barbarian":
+      list.push({ name:"Reckless Attack", cost: 1, dmg: 9, range:1, targetType:"enemy", desc:"Wild strike. +9 dmg." });
+      list.push({ name:"Rage", cost: 1, targetType:"self", desc:"Buff: +4 dmg, +2 def for 4 turns." });
+      if (p.level >= 3) list.push({ name:"Frenzy", cost: 2, dmg: 6, range:1, targetType:"enemy", desc:"Frenzied attack." });
+      break;
+    case "Warlock":
+      list.push({ name:"Eldritch Blast", cost: 0, dmg: 7, range:6, targetType:"enemy", color:"#a060c0", desc:"Free dark blast. Scales hard." });
+      list.push({ name:"Hex", cost: 1, dmg: 6, range:5, targetType:"enemy", color:"#8050a0", desc:"Hex damage." });
+      if (p.level >= 3) list.push({ name:"Hunger of Hadar", cost: 4, dmg: 12, range:5, targetType:"enemy", color:"#400080", desc:"Crushing void damage." });
+      break;
+  }
+  return list;
+}
+
+function quickPotion() {
+  const p = state.player;
+  const heals = ["potion_greater","potion","potion_minor"];
+  for (const k of heals) {
+    if (p.inv[k] && p.inv[k] > 0) {
+      p.inv[k]--;
+      const it = ITEMS[k];
+      p.hp = Math.min(p.maxHp, p.hp + it.effect.heal);
+      spawnFloater(p.gx*TILE+TILE/2, p.gy*TILE+TILE/2-14, `+${it.effect.heal}`, "#80e0a0");
+      log(`Drink ${it.name}: +${it.effect.heal} HP.`, "heal");
+      // potions don't cost an action
+      refreshUI();
+      return;
+    }
+  }
+  log("No healing potions.", "system");
+}
+
+function attemptFlee() {
+  if (state.combat.isBoss) {
+    log("You cannot flee from a boss!", "combat");
+    return;
+  }
+  if (Math.random() < 0.6) {
+    log("You escape successfully.", "system");
+    state.scene = "world";
+    state.combat = null;
+    refreshUI();
+  } else {
+    log("Flee fails! Enemies attack.", "combat");
+    state.combat.ap = 0; state.combat.moveLeft = 0;
+    endPlayerTurn();
+  }
+}
+
+// ---------- LOCATION TRANSITIONS ----------
+function enterLocation(key) {
+  const L = LOCATIONS[key];
+  state.worldEvent = key;
+  if (L.type === "town") {
+    state.scene = "town";
+    log(`You arrive at ${L.name}.`, "story");
+  } else {
+    // chance for boss
+    if (L.boss && Math.random() < 0.25) state._forceBoss = true;
+    log(`You venture into ${L.name}...`, "story");
+    startCombat(key, Math.random() < 0.15);
+  }
+  refreshUI();
+}
+
+function randomEncounter() {
+  const wilds = Object.keys(LOCATIONS).filter(k => LOCATIONS[k].type !== "town" && LOCATIONS[k].danger <= state.player.level + 2);
+  const k = wilds[Math.floor(Math.random()*wilds.length)] || "triboar_trail";
+  state.worldEvent = k;
+  log(`A random encounter at ${LOCATIONS[k].name}!`, "story");
+  startCombat(k);
+}
+
+function restAtInn() {
+  const cost = 10 + state.player.level * 5;
+  if (state.player.gold < cost) {
+    log(`You need ${cost} gp to rest.`, "system");
+    return;
+  }
+  state.player.gold -= cost;
+  state.player.hp = state.player.maxHp;
+  state.player.mp = state.player.maxMp;
+  log(`You rest at the inn (-${cost} gp). HP/MP fully restored.`, "heal");
+  save();
+  refreshUI();
+}
+
+function respawn() {
+  document.getElementById("deathfade").classList.remove("on");
+  state.player.hp = Math.floor(state.player.maxHp * 0.5);
+  state.player.mp = Math.floor(state.player.maxMp * 0.5);
+  state.player.gold = Math.max(0, Math.floor(state.player.gold * 0.7));
+  // last town: phandalin
+  state.worldEvent = "phandalin";
+  state.scene = "town";
+  log("You awaken at the temple in Phandalin. Some of your gold is gone.", "story");
+  refreshUI();
+}
+
+// ---------- MODALS ----------
+function openModal(html, onClose) {
+  closeModal();
+  const m = document.createElement("div");
+  m.className = "modal";
+  m.id = "currentModal";
+  m.innerHTML = `<div class="box">${html}</div>`;
+  document.body.appendChild(m);
+  m.addEventListener("click", e => {
+    if (e.target === m) closeModal();
+  });
+  state._modalClose = onClose;
+}
+function closeModal() {
+  const m = document.getElementById("currentModal");
+  if (m) {
+    m.classList.add("closing");
+    m.id = "";
+    setTimeout(() => m.remove(), 180);
+  }
+  if (state._modalClose) { state._modalClose(); state._modalClose = null; }
+}
+
+function openClassSelect() {
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>Choose Your Class</h2>`;
+  html += `<div style="text-align:center;margin-bottom:12px"><input type="text" id="charName" placeholder="Character name" style="max-width:280px" value="Adventurer"/></div>`;
+  html += `<div class="class-grid">`;
+  for (const k in CLASSES) {
+    const c = CLASSES[k];
+    html += `<div class="class-card" data-cls="${k}">
+      <div class="name" style="color:${c.color}"><img src="icons/${k.toLowerCase()}.svg" style="width:28px;height:28px;filter:drop-shadow(0 0 6px ${c.color}) brightness(1.2);"/> ${k}</div>
+      <div class="desc">${c.desc}</div>
+      <div class="stats">HP ${c.hp} • ${c.mpName} ${c.mpStart} • STR ${c.str} DEX ${c.dex} CON ${c.con} INT ${c.int} WIS ${c.wis} CHA ${c.cha}</div>
+      <div class="stats" style="color:#a8967a">Starts with ${c.weapon}, ${c.armor}, ${c.startGold}gp</div>
+    </div>`;
+  }
+  html += `</div>`;
+  html += `<div class="row center"><button class="btn" id="confirmClass" disabled>Begin Adventure</button></div>`;
+  openModal(html);
+  let chosen = null;
+  document.querySelectorAll(".class-card").forEach(card => {
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".class-card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      chosen = card.dataset.cls;
+      document.getElementById("confirmClass").disabled = false;
+    });
+  });
+  document.getElementById("confirmClass").addEventListener("click", () => {
+    if (!chosen) return;
+    const name = document.getElementById("charName").value || "Adventurer";
+    createPlayer(name, chosen);
+    closeModal();
+    state.scene = "world";
+    state.worldEvent = "phandalin";
+    enterLocation("phandalin");
+  });
+}
+
+function createPlayer(name, cls) {
+  const c = CLASSES[cls];
+  const startWeaponMap = {
+    Fighter:"sword_long", Wizard:"staff_apprent", Rogue:"sword_short",
+    Cleric:"sword_short", Ranger:"bow_short", Paladin:"sword_long",
+    Barbarian:"sword_great", Warlock:"staff_apprent",
+  };
+  const startArmorMap = {
+    Fighter:"armor_chain", Wizard:null, Rogue:"armor_leather",
+    Cleric:"armor_chain", Ranger:"armor_leather", Paladin:"armor_plate",
+    Barbarian:"armor_leather", Warlock:null,
+  };
+  state.player = {
+    name, cls, color: c.color,
+    level: 1, xp: 0,
+    maxHp: c.hp, hp: c.hp,
+    maxMp: c.mpStart, mp: c.mpStart,
+    str: c.str, dex: c.dex, con: c.con, int: c.int, wis: c.wis, cha: c.cha,
+    gold: c.startGold,
+    weapon: startWeaponMap[cls],
+    armor: startArmorMap[cls],
+    trinket: null,
+    inv: { potion_minor: 2, potion: 1 },
+    gx: 8, gy: 6,
+  };
+  log(`${name} the ${cls} sets out from Phandalin.`, "story");
+  refreshUI();
+  save();
+}
+
+function itemIcon(itemKey) {
+  const it = ITEMS[itemKey];
+  if (!it) return "potion";
+  if (it.type === "potion") return "potion";
+  if (it.type === "scroll") return "scroll";
+  if (it.slot === "armor") return "armor";
+  if (it.slot === "trinket") return "trinket";
+  if (it.slot === "weapon") {
+    if (itemKey.startsWith("bow_")) return "bow";
+    if (itemKey.startsWith("staff_")) return "wizard";
+    return "sword";
+  }
+  return "potion";
+}
+
+function openInventory() {
+  const p = state.player;
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>Inventory & Equipment</h2>`;
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">`;
+  html += `<div><h3 style="color:var(--gold)">Equipped</h3>`;
+  const slots = [["weapon","Weapon","sword"],["armor","Armor","armor"],["trinket","Trinket","trinket"]];
+  for (const [slot, label, defIcon] of slots) {
+    const it = p[slot] ? ITEMS[p[slot]] : null;
+    const icon = p[slot] ? itemIcon(p[slot]) : defIcon;
+    html += `<div class="item-card"><div class="info"><img class="icon-img" src="icons/${icon}.svg" style="opacity:${p[slot]?1:0.3}"/><div class="text"><div class="name">${label}</div><div class="desc">${it?it.name + " — " + it.desc:"<i>none equipped</i>"}</div></div></div></div>`;
+  }
+  html += `</div><div><h3 style="color:var(--gold)">Carried</h3>`;
+  const items = Object.entries(p.inv).filter(([k,v])=>v>0);
+  if (items.length === 0) html += `<div style="color:var(--ink-dim);font-size:12px;padding:8px">Nothing in your pack.</div>`;
+  for (const [k,v] of items) {
+    const it = ITEMS[k];
+    html += `<div class="item-card"><div class="info"><img class="icon-img" src="icons/${itemIcon(k)}.svg"/><div class="text"><div class="name">${it.name} ×${v}</div><div class="desc">${it.desc}</div></div></div>`;
+    if (it.type === "potion" || it.type === "scroll") {
+      html += `<button class="btn" data-use="${k}">Use</button>`;
+    } else if (it.slot) {
+      html += `<button class="btn" data-equip="${k}">Equip</button>`;
+    }
+    html += `</div>`;
+  }
+  html += `</div></div>`;
+  // recompute stats line
+  html += `<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--ink-dim)">
+    Total ATK bonus: <b style="color:var(--ink)">+${getEquipBonus("atk")}</b> &nbsp;
+    Total DEF bonus: <b style="color:var(--ink)">+${getEquipBonus("def")}</b> &nbsp;
+    Max HP bonus: <b style="color:var(--ink)">+${getEquipBonus("maxHp")}</b>
+  </div>`;
+  openModal(html);
+  document.querySelectorAll("[data-use]").forEach(b=>{
+    b.onclick = () => useItem(b.dataset.use);
+  });
+  document.querySelectorAll("[data-equip]").forEach(b=>{
+    b.onclick = () => equipItem(b.dataset.equip);
+  });
+}
+
+function getEquipBonus(stat) {
+  const p = state.player;
+  let v = 0;
+  for (const slot of ["weapon","armor","trinket"]) {
+    if (p[slot] && ITEMS[p[slot]] && ITEMS[p[slot]][stat]) v += ITEMS[p[slot]][stat];
+  }
+  return v;
+}
+
+function useItem(k) {
+  const p = state.player;
+  if (!p.inv[k] || p.inv[k] <= 0) return;
+  const it = ITEMS[k];
+  if (it.effect.heal) {
+    p.hp = Math.min(p.maxHp, p.hp + it.effect.heal);
+    log(`Used ${it.name}: +${it.effect.heal} HP.`, "heal");
+  }
+  if (it.effect.mp) {
+    p.mp = Math.min(p.maxMp, p.mp + it.effect.mp);
+    log(`Used ${it.name}: +${it.effect.mp} resource.`, "heal");
+  }
+  if (it.effect.aoe && state.scene === "combat") {
+    for (const e of state.combat.enemies) {
+      if (!e.alive) continue;
+      const dmg = it.effect.aoe + Math.floor(Math.random()*5);
+      e.hp -= dmg;
+      spawnFloater(e.gx*TILE+TILE/2, e.gy*TILE+TILE/2-14, `-${dmg}🔥`, "#ff7030");
+      log(`Scroll hits ${e.name} for ${dmg}.`, "combat");
+      if (e.hp <= 0) killEnemy(e);
+    }
+  }
+  if (it.effect.buffDmg && state.scene === "combat") {
+    state.combat.buffs.dmg = Math.max(state.combat.buffs.dmg, it.effect.buffDmg);
+    state.combat.buffs.turns = Math.max(state.combat.buffs.turns, it.effect.buffTurns);
+    log(`${it.name}: +${it.effect.buffDmg} dmg for ${it.effect.buffTurns} turns.`, "combat");
+  }
+  if (it.effect.buffDef && state.scene === "combat") {
+    state.combat.buffs.def = Math.max(state.combat.buffs.def, it.effect.buffDef);
+    state.combat.buffs.turns = Math.max(state.combat.buffs.turns, it.effect.buffTurns);
+    log(`${it.name}: +${it.effect.buffDef} def for ${it.effect.buffTurns} turns.`, "combat");
+  }
+  p.inv[k]--;
+  closeModal();
+  refreshUI();
+}
+
+function equipItem(k) {
+  const p = state.player;
+  const it = ITEMS[k];
+  const slot = it.slot;
+  // swap
+  const old = p[slot];
+  p[slot] = k;
+  if (p.inv[k]) p.inv[k]--;
+  if (old) {
+    p.inv[old] = (p.inv[old]||0) + 1;
+  }
+  // adjust max HP if maxHp bonus
+  if (it.maxHp) p.maxHp += it.maxHp;
+  if (it.maxMp) p.maxMp += it.maxMp;
+  if (old && ITEMS[old].maxHp) p.maxHp -= ITEMS[old].maxHp;
+  if (old && ITEMS[old].maxMp) p.maxMp -= ITEMS[old].maxMp;
+  log(`Equipped ${it.name}.`, "system");
+  closeModal();
+  openInventory();
+  refreshUI();
+}
+
+function openCharacter() {
+  const p = state.player;
+  const cls = CLASSES[p.cls];
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>${p.name} the ${p.cls}</h2>`;
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">`;
+  html += `<div><h3 style="color:var(--gold)">Vital Stats</h3>`;
+  html += `<div class="stat-row"><span class="lbl">Level</span><span class="v">${p.level}</span></div>`;
+  html += `<div class="stat-row"><span class="lbl">XP</span><span class="v">${p.xp} / ${xpToNext(p.level)}</span></div>`;
+  html += `<div style="margin:6px 0"><div style="font-size:11px;color:var(--ink-dim)">XP</div><div class="hbar xp"><div style="width:${(p.xp/xpToNext(p.level)*100).toFixed(1)}%"></div></div></div>`;
+  html += `<div class="stat-row"><span class="lbl">HP</span><span class="v">${p.hp}/${p.maxHp}</span></div>`;
+  html += `<div style="margin:6px 0"><div class="hbar hp"><div style="width:${(p.hp/p.maxHp*100).toFixed(1)}%"></div></div></div>`;
+  html += `<div class="stat-row"><span class="lbl">${cls.mpName}</span><span class="v">${p.mp}/${p.maxMp}</span></div>`;
+  html += `<div style="margin:6px 0"><div class="hbar mp"><div style="width:${(p.mp/Math.max(1,p.maxMp)*100).toFixed(1)}%"></div></div></div>`;
+  html += `<div class="stat-row"><span class="lbl">Gold</span><span class="v">${p.gold} gp</span></div>`;
+  html += `</div><div><h3 style="color:var(--gold)">Ability Scores</h3>`;
+  for (const s of ["str","dex","con","int","wis","cha"]) {
+    const v = p[s];
+    const mod = Math.floor((v-10)/2);
+    html += `<div class="stat-row"><span class="lbl">${s.toUpperCase()}</span><span class="v">${v} <span style="color:var(--ink-dim)">(${mod>=0?"+"+mod:mod})</span></span></div>`;
+  }
+  html += `</div></div>`;
+  html += `<h3 style="color:var(--gold);margin-top:14px">Combat Tally</h3>`;
+  const kills = Object.entries(state.killCounts).map(([k,v])=>`${MONSTERS[k]?MONSTERS[k].name:k}: ${v}`).join(" • ") || "None yet.";
+  html += `<div style="font-size:12px;color:var(--ink-dim)">${kills}</div>`;
+  openModal(html);
+}
+
+function openQuests() {
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>Quests</h2>`;
+  // Available at current town
+  if (state.scene === "town") {
+    const giverKey = state.worldEvent;
+    const avail = QUESTS_DEFS.filter(q => q.giver === giverKey
+      && !state.questsActive.find(a=>a.id===q.id)
+      && !state.questsDone.includes(q.id)
+      && state.player.level >= q.minLevel);
+    html += `<h3 style="color:var(--gold)">Posted at ${LOCATIONS[giverKey].name}</h3>`;
+    if (avail.length === 0) html += `<div style="color:var(--ink-dim);font-size:12px">No new postings here right now.</div>`;
+    for (const q of avail) {
+      html += `<div class="quest"><div class="qt">${q.title}</div><div class="qd">${q.desc}</div>
+        <div class="qr">Reward: ${q.reward.gold}gp, ${q.reward.xp}xp${q.reward.item?", "+ITEMS[q.reward.item].name:""}</div>
+        <div style="margin-top:6px"><button class="btn" data-accept="${q.id}">Accept</button></div></div>`;
+    }
+  }
+  // Active
+  html += `<h3 style="color:var(--gold);margin-top:14px">Active</h3>`;
+  if (state.questsActive.length === 0) html += `<div style="color:var(--ink-dim);font-size:12px">None active.</div>`;
+  for (const q of state.questsActive) {
+    const def = QUESTS_DEFS.find(x=>x.id===q.id);
+    if (!def) continue;
+    let prog = "";
+    if (def.target.kill) prog = `${q.progress||0} / ${def.target.count}`;
+    if (def.target.boss) prog = state.bossesSlain[def.target.boss] ? "Slain ✓" : "Not slain";
+    const complete = isQuestComplete(q);
+    html += `<div class="quest ${complete?"done":""}"><div class="qt">${def.title}</div><div class="qd">${def.desc}</div>
+      <div class="qr">Progress: ${prog}</div>
+      <div style="margin-top:6px">${complete?`<button class="btn" data-turnin="${q.id}">Turn In</button>`:`<button class="btn" data-abandon="${q.id}">Abandon</button>`}</div></div>`;
+  }
+  // Completed
+  html += `<h3 style="color:var(--gold);margin-top:14px">Completed</h3>`;
+  if (state.questsDone.length === 0) html += `<div style="color:var(--ink-dim);font-size:12px">None yet.</div>`;
+  for (const id of state.questsDone) {
+    const def = QUESTS_DEFS.find(x=>x.id===id); if (!def) continue;
+    html += `<div class="quest done"><div class="qt">${def.title}</div><div class="qd">${def.desc}</div></div>`;
+  }
+  openModal(html);
+  document.querySelectorAll("[data-accept]").forEach(b=>b.onclick = () => acceptQuest(b.dataset.accept));
+  document.querySelectorAll("[data-turnin]").forEach(b=>b.onclick = () => turnInQuest(b.dataset.turnin));
+  document.querySelectorAll("[data-abandon]").forEach(b=>b.onclick = () => { state.questsActive = state.questsActive.filter(q=>q.id!==b.dataset.abandon); closeModal(); openQuests(); });
+}
+
+function isQuestComplete(q) {
+  const def = QUESTS_DEFS.find(x=>x.id===q.id); if (!def) return false;
+  if (def.target.kill) return (q.progress||0) >= def.target.count;
+  if (def.target.boss) return !!state.bossesSlain[def.target.boss];
+  return false;
+}
+
+function acceptQuest(id) {
+  state.questsActive.push({ id, progress: 0 });
+  log(`Quest accepted: ${QUESTS_DEFS.find(x=>x.id===id).title}`, "system");
+  closeModal();
+  openQuests();
+}
+
+function turnInQuest(id) {
+  const def = QUESTS_DEFS.find(x=>x.id===id);
+  if (!def) return;
+  state.questsActive = state.questsActive.filter(q=>q.id!==id);
+  state.questsDone.push(id);
+  state.player.gold += def.reward.gold;
+  state.player.xp += def.reward.xp;
+  if (def.reward.item) {
+    state.player.inv[def.reward.item] = (state.player.inv[def.reward.item]||0) + 1;
+    log(`Received: ${ITEMS[def.reward.item].name}.`, "gold");
+  }
+  log(`Quest complete: ${def.title}. +${def.reward.gold}gp, +${def.reward.xp}xp.`, "gold");
+  checkLevelUp();
+  closeModal();
+  openQuests();
+  refreshUI();
+  save();
+}
+
+function openShop(shopKey) {
+  const items = SHOP_INVENTORY[shopKey];
+  if (!items) return;
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>${({general:"General Store",weapons:"Weaponsmith",armor:"Armorer",arcana:"Arcane Emporium",trinkets:"Curios & Trinkets"})[shopKey]}</h2>`;
+  html += `<div style="text-align:center;color:var(--ink-dim);font-size:12px">Your gold: <span style="color:var(--gold);font-weight:bold">${state.player.gold} gp</span></div>`;
+  html += `<div class="shop-tabs"><button class="active" data-tab="buy">Buy</button><button data-tab="sell">Sell</button></div>`;
+  html += `<div id="shopBody"></div>`;
+  openModal(html);
+  function renderTab(tab) {
+    const body = document.getElementById("shopBody");
+    let h = `<div class="item-grid">`;
+    if (tab === "buy") {
+      for (const k of items) {
+        const it = ITEMS[k];
+        const can = state.player.gold >= it.price;
+        h += `<div class="item-card">
+          <div class="info"><img class="icon-img" src="icons/${itemIcon(k)}.svg"/><div class="text"><div class="name">${it.name}</div><div class="desc">${it.desc}</div></div></div>
+          <div style="text-align:right"><div class="price">${it.price} gp</div>
+          <button class="btn" data-buy="${k}" ${can?"":"disabled"} style="margin-top:4px">Buy</button></div></div>`;
+      }
+    } else {
+      const inv = Object.entries(state.player.inv).filter(([k,v])=>v>0);
+      if (inv.length === 0) h += `<div style="color:var(--ink-dim);font-size:12px">Nothing to sell.</div>`;
+      for (const [k,v] of inv) {
+        const it = ITEMS[k];
+        const sellPrice = Math.floor(it.price * 0.4);
+        h += `<div class="item-card">
+          <div class="info"><img class="icon-img" src="icons/${itemIcon(k)}.svg"/><div class="text"><div class="name">${it.name} ×${v}</div><div class="desc">${it.desc}</div></div></div>
+          <div style="text-align:right"><div class="price">${sellPrice} gp</div>
+          <button class="btn" data-sell="${k}" style="margin-top:4px">Sell 1</button></div></div>`;
+      }
+    }
+    h += `</div>`;
+    body.innerHTML = h;
+    body.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>{
+      const k = b.dataset.buy;
+      const it = ITEMS[k];
+      if (state.player.gold < it.price) return;
+      state.player.gold -= it.price;
+      state.player.inv[k] = (state.player.inv[k]||0) + 1;
+      log(`Bought ${it.name} for ${it.price}gp.`, "gold");
+      refreshUI(); renderTab("buy");
+    });
+    body.querySelectorAll("[data-sell]").forEach(b=>b.onclick=()=>{
+      const k = b.dataset.sell;
+      const it = ITEMS[k];
+      if (!state.player.inv[k]) return;
+      const sellPrice = Math.floor(it.price * 0.4);
+      state.player.inv[k]--;
+      state.player.gold += sellPrice;
+      log(`Sold ${it.name} for ${sellPrice}gp.`, "gold");
+      refreshUI(); renderTab("sell");
+    });
+  }
+  renderTab("buy");
+  document.querySelectorAll(".shop-tabs button").forEach(b=>{
+    b.onclick = () => {
+      document.querySelectorAll(".shop-tabs button").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      renderTab(b.dataset.tab);
+    };
+  });
+}
+
+function openOptions() {
+  const o = state.options;
+  let html = `<button class="close" onclick="closeModal()">×</button><h2>Options</h2>`;
+  html += `<div class="options-grid">
+    <label><input type="checkbox" id="optGrid" ${o.grid?"checked":""}> Show combat grid</label>
+    <label><input type="checkbox" id="optAuto" ${o.autoEndTurn?"checked":""}> Auto end turn when out of actions</label>
+    <label><input type="checkbox" id="optFast" ${o.fastAnims?"checked":""}> Fast animations</label>
+    <label><input type="checkbox" id="optSound" ${o.sound?"checked":""}> Sound (placeholder)</label>
+    <label>Difficulty: <input type="range" id="optDiff" min="0.6" max="1.6" step="0.1" value="${o.difficulty}"></label>
+    <label>(<span id="optDiffLbl">${o.difficulty.toFixed(1)}×</span> enemy stats)</label>
+  </div>`;
+  html += `<div class="row center" style="margin-top:14px">
+    <button class="btn" onclick="save(true);log('Saved.','system');closeModal()">Save Game</button>
+    <button class="btn" onclick="if(confirm('Load save? Current progress lost.'))load()">Load Game</button>
+    <button class="btn" onclick="if(confirm('Wipe save?'))localStorage.removeItem(state.saveSlot)">Wipe Save</button>
+  </div>`;
+  html += `<div class="hint">Saves are kept in browser storage on this machine.</div>`;
+  openModal(html);
+  document.getElementById("optGrid").onchange = e => o.grid = e.target.checked;
+  document.getElementById("optAuto").onchange = e => o.autoEndTurn = e.target.checked;
+  document.getElementById("optFast").onchange = e => o.fastAnims = e.target.checked;
+  document.getElementById("optSound").onchange = e => o.sound = e.target.checked;
+  document.getElementById("optDiff").oninput = e => {
+    o.difficulty = parseFloat(e.target.value);
+    document.getElementById("optDiffLbl").textContent = o.difficulty.toFixed(1)+"×";
+  };
+}
+
+function openWorldMap() {
+  state.scene = "world";
+  refreshUI();
+}
+
+// ---------- SAVE/LOAD ----------
+function save(showLog) {
+  try {
+    const data = {
+      player: state.player,
+      questsActive: state.questsActive,
+      questsDone: state.questsDone,
+      killCounts: state.killCounts,
+      bossesSlain: state.bossesSlain,
+      options: state.options,
+      worldEvent: state.worldEvent,
+      scene: state.scene === "combat" || state.scene === "gameover" ? "world" : state.scene,
+    };
+    localStorage.setItem(state.saveSlot, JSON.stringify(data));
+    if (showLog) log("Game saved.", "system");
+  } catch(e) {
+    log("Save failed: " + e.message, "system");
+  }
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(state.saveSlot);
+    if (!raw) { log("No save found.", "system"); return; }
+    const data = JSON.parse(raw);
+    state.player = data.player;
+    state.questsActive = data.questsActive || [];
+    state.questsDone = data.questsDone || [];
+    state.killCounts = data.killCounts || {};
+    state.bossesSlain = data.bossesSlain || {};
+    state.options = Object.assign(state.options, data.options || {});
+    state.worldEvent = data.worldEvent || "phandalin";
+    state.scene = data.scene || "world";
+    closeModal();
+    log("Game loaded.", "system");
+    refreshUI();
+  } catch(e) {
+    log("Load failed: " + e.message, "system");
+  }
+}
+
+// ---------- INPUT ----------
+cnv.addEventListener("click", e => {
+  const r = cnv.getBoundingClientRect();
+  const x = (e.clientX - r.left) * (cnv.width / r.width);
+  const y = (e.clientY - r.top) * (cnv.height / r.height);
+  if (state.scene === "title") {
+    openClassSelect();
+    return;
+  }
+  if (state.scene === "world") {
+    // check location markers
+    for (const k in LOCATIONS) {
+      const L = LOCATIONS[k];
+      if (Math.hypot(x - L.x, y - L.y) < 20) {
+        enterLocation(k);
+        return;
+      }
+    }
+  }
+  if (state.scene === "town") {
+    if (state._townShops) {
+      for (const s of state._townShops) {
+        if (x >= s.x - s.w/2 && x <= s.x + s.w/2 && y >= s.y - s.h/2 && y <= s.y + s.h/2) {
+          if (s.id === "inn") restAtInn();
+          else if (s.id === "quests") openQuests();
+          else openShop(s.id);
+          return;
+        }
+      }
+    }
+  }
+  if (state.scene === "combat") {
+    const gx = Math.floor(x / TILE);
+    const gy = Math.floor(y / TILE);
+    if (gx>=0 && gx<GRID_W && gy>=0 && gy<GRID_H) combatTileClick(gx, gy);
+  }
+  if (state.scene === "gameover") {
+    respawn();
+  }
+});
+
+cnv.addEventListener("mousemove", e => {
+  const r = cnv.getBoundingClientRect();
+  const x = (e.clientX - r.left) * (cnv.width / r.width);
+  const y = (e.clientY - r.top) * (cnv.height / r.height);
+  if (state.scene === "world") {
+    state._hoverLoc = null;
+    for (const k in LOCATIONS) {
+      const L = LOCATIONS[k];
+      if (Math.hypot(x - L.x, y - L.y) < 20) state._hoverLoc = k;
+    }
+  } else if (state.scene === "town") {
+    state._hoverShop = null;
+    if (state._townShops) {
+      for (const s of state._townShops) {
+        if (x >= s.x - s.w/2 && x <= s.x + s.w/2 && y >= s.y - s.h/2 && y <= s.y + s.h/2) state._hoverShop = s.id;
+      }
+    }
+  } else if (state.scene === "combat") {
+    state._hoverTile = [Math.floor(x/TILE), Math.floor(y/TILE)];
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (document.getElementById("currentModal")) {
+    if (e.key === "Escape") closeModal();
+    return;
+  }
+  const k = e.key.toLowerCase();
+  if (k === "i") openInventory();
+  else if (k === "c") openCharacter();
+  else if (k === "q") openQuests();
+  else if (k === "m") { state.scene = "world"; refreshUI(); }
+  else if (k === "escape") {
+    if (state.scene === "town" || state.scene === "combat") {
+      // no-op for combat; from town go to world
+      if (state.scene === "town") { state.scene = "world"; refreshUI(); }
+    }
+  }
+  else if (k === " ") { if (state.scene === "combat" && state.combat.turn === "player") endPlayerTurn(); }
+  // Movement in combat
+  else if (state.scene === "combat" && state.combat.turn === "player" && !state.combat.anim) {
+    const p = state.player; const c = state.combat;
+    let dx=0, dy=0;
+    if (k === "w" || e.key === "ArrowUp") dy=-1;
+    else if (k === "s" || e.key === "ArrowDown") dy=1;
+    else if (k === "a" || e.key === "ArrowLeft") dx=-1;
+    else if (k === "d" || e.key === "ArrowRight") dx=1;
+    if (dx||dy) {
+      const nx = p.gx+dx, ny = p.gy+dy;
+      if (nx>=0&&nx<GRID_W&&ny>=0&&ny<GRID_H) {
+        const en = enemyAt(nx,ny);
+        if (en) doBasicAttack(en);
+        else if (c.moveLeft > 0) {
+          c.moveLeft--;
+          animateMove(p, nx, ny, () => { refreshUI(); checkTurnEnd(); });
+          refreshUI();
+        }
+      }
+      e.preventDefault();
+    }
+  }
+  // Save/Load shortcuts
+  else if (k === "s" && e.ctrlKey) { e.preventDefault(); save(true); }
+  else if (k === "l" && e.ctrlKey) { e.preventDefault(); load(); }
+});
+
+document.getElementById("btnInv").onclick = openInventory;
+document.getElementById("btnChar").onclick = openCharacter;
+document.getElementById("btnQuests").onclick = openQuests;
+document.getElementById("btnMap").onclick = openWorldMap;
+document.getElementById("btnOptions").onclick = openOptions;
+
+// ---------- INIT ----------
+log("Welcome to the Sword Coast.", "story");
+log("Tip: from a town, take quests at the Quest Board, then travel out to wilds and dungeons to slay foes.", "system");
+refreshUI();
+
+</script>
+</body>
+</html>

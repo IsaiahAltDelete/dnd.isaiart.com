@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><title>npc placement check</title>
+<style>body{background:#12151b;color:#cbd;font:12px/1.5 monospace;margin:0;padding:10px;white-space:pre-wrap}
+.bad{color:#ff8a6a}.ok{color:#8fe07a}.warn{color:#f0c24a}</style></head><body>
+<div id="out">checking…</div>
+<script type="module">
+const V = location.search.slice(1) || Math.random();
+const out = document.getElementById('out');
+const log = (s, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.textContent = s; out.appendChild(d); };
+try {
+  const { EXTRA_CAST } = await import(`./src/data/npcs_extra.js?${V}`);
+  const { loadMap, MAP_DEFS } = await import(`./src/world/maps.js?${V}`);
+  const { TF: TILE_FLAGS } = await import(`./src/world/tilemap.js?${V}`);
+  const { hasSprite } = await import('./src/render/sprites.js');
+  const { registerCharacterSprites } = await import(`./src/render/spritedata_chars.js?${V}`);
+  registerCharacterSprites();
+  out.textContent = '';
+  const byMap = {};
+  for (const n of EXTRA_CAST) (byMap[n.map] ||= []).push(n);
+  let bad = 0, warn = 0, total = 0;
+  for (const mapId of Object.keys(byMap)) {
+    if (!MAP_DEFS[mapId]) { log(`MISSING MAP ${mapId} (${byMap[mapId].length} npcs)`, 'bad'); bad += byMap[mapId].length; continue; }
+    let m = null;
+    try { m = loadMap(mapId); } catch (e) { log(`LOAD FAIL ${mapId}: ${e.message}`, 'bad'); bad += byMap[mapId].length; continue; }
+    for (const n of byMap[mapId]) {
+      total++;
+      const oob = !m.inBounds(n.x, n.y);
+      const solid = !oob && m.solid(n.x, n.y);
+      const water = !oob && (m.flagAt(n.x, n.y) & TILE_FLAGS.WATER);
+      const trig = !oob && (m.flagAt(n.x, n.y) & TILE_FLAGS.TRIGGER);
+      const spr = hasSprite(n.sprite);
+      const probs = [];
+      if (oob) probs.push('OUT OF BOUNDS');
+      if (solid) probs.push('SOLID');
+      if (water) probs.push('WATER');
+      if (trig) {
+        const t = m.triggerAt ? m.triggerAt(n.x, n.y) : null;
+        const kind = t && t.kind ? t.kind : '?';
+        const blocking = ['warp','door','stairs','locked-door','ladder','region'].includes(kind);
+        if (blocking) probs.push('ON ' + kind.toUpperCase());
+      }
+      if (!spr) probs.push(`NO SPRITE ${n.sprite}`);
+      if (probs.length) { log(`  ${mapId} (${n.x},${n.y}) ${n.id} -> ${probs.join(', ')}  [map ${m.w}x${m.h}]`, 'bad'); bad++; }
+    }
+    log(`${mapId}: ${byMap[mapId].length} placed, map ${m.w}x${m.h}`, 'ok');
+  }
+  log('');
+  log(`TOTAL ${total} new npcs · problems: ${bad}`, bad ? 'bad' : 'ok');
+} catch (e) {
+  log('ERROR ' + e.message + '\n' + e.stack, 'bad');
+}
+</script></body></html>

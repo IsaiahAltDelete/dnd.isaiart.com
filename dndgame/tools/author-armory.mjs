@@ -1,0 +1,60 @@
+// Authoring helper: literal pixel fragments -> editable 16x24 PixelForge source.
+// Runtime loads the compiled .pxa, never this helper.
+import fs from 'node:fs';
+const frames={};
+const put=(id,x,y,rows)=>{const g=Array.from({length:24},()=>Array(16).fill('.'));for(const [dy,row]of rows.entries())for(const [dx,c]of [...row].entries())if(c!=='.'&&x+dx<16&&y+dy<24)g[y+dy][x+dx]=c;frames[id]=g.map(r=>r.join(''));};
+const repeat=(s,n)=>Array(n).fill(s);
+// The hand sits at (12,16). Different profiles, heads and proportions matter
+// more than fine engraving at the game's native scale.
+put('longsword',9,3,['...n...','..nmK..',...repeat('..nmM..',9),'.ttttt.','..TtT..','...uK..','...uK..','...tK..']);
+put('shortsword',10,8,['..n...','.nmK..',...repeat('.nmM..',5),'ttttt.','.TtT..','..uK..','..tK..']);
+put('greatsword',8,1,['....n...','...nmmK.',...repeat('...nmMK.',10),'t.tttttt','.tTTtTT.','....uK..','....uK..','....uK..','....tK..']);
+put('dagger',10,11,['..n...','.nmK..','.nmM..','.nmM..','ttttt.','..uK..','..tK..']);
+put('rapier',9,2,[...repeat('...nK..',12),'..tmt..','.t...t.','..ttt..','...uK..','...tK..']);
+put('scimitar',9,4,['.....n.','....nmK','...nmMK','..nmMK.','..nmMK.','..nmMK.','..nmMK.','..nmMK.','...nmK.','...nmK.','..tttt.','...uK..','...uK..','...tK..']);
+put('sickle',9,9,['..nnnn.','.nmMMmK','nmK..mK','nK...mK','.....mK','...mmK.','...uK..','...uK..','...tK..']);
+put('club',10,8,['.vvv..','vuuuUK','vuuuUK','.uuuUK','.uuUK.','.uuUK.','..uK..','..uK..','..uK..','..UK..']);
+put('greatclub',9,2,['..vvv..','.vuuuUK','.vuuuUK','.vuuuUK','..uuuUK','..uuuUK','..uuuUK','..uuuUK','..uuuUK','..uuuUK','..uuUK.','...uK..','...uK..','...uK..','...uK..','...UK..']);
+put('handaxe',10,8,['..u.nn','..unnm','..ummM','..u.MM','..u...','..u...','..u...','..u...','..t...']);
+put('battleaxe',8,4,['....u.nn','....unnm','....unmM','....ummM','....uMMK','....u.K.','....u...',...repeat('....uK..',9),'....tK..']);
+put('greataxe',7,3,['nn...u.nn','nmn..unnm','nmmn.ummM','.MMmnuMMK','..KK.u.K.','.....u...','.....u...','.....u...',...repeat('.....uK..',11)]);
+put('light-hammer',9,10,['nnnnnnK','nmmmmMK','.MMMKK.','...uK..','...uK..','...uK..','...uK..','...tK..']);
+put('warhammer',8,7,['.nnnnnn.','nmmMmmMn','nmmMmmMK','.MMMMKK.','....uK..',...repeat('....uK..',7),'....tK..']);
+put('maul',7,3,['nnnnnnnnK','nmmMmmmMK','nmmMmmmMK','MMMMMMMMK','..KKKKK..',...repeat('.....uK..',13)]);
+put('mace',10,7,['..n...','.nmn..','nmnmnK','nmMmMK','.MMMK.','..tK..',...repeat('..uK..',6),'..tK..']);
+put('morningstar',9,5,['...n...','.n.n.n.','..nmn..','nnmMmnK','..MMMK.','.M.M.M.','...tK..',...repeat('...uK..',7),'...tK..']);
+put('flail',8,6,['.nn...u.','nmmn..u.','nMMn..u.','.MMK..u.','..m...u.','...m..u.','....mmu.',...repeat('....uK..',7)]);
+put('war-pick',8,7,['nnnnn...','.mmMnnn.','....u..n','....u...',...repeat('....uK..',8),'....tK..']);
+put('quarterstaff',11,3,['.vt.','.ut.','.uK.',...repeat('.uK.',9),'.tK.','.uK.','.uK.','.uK.','.tK.','.uK.','.UK.']);
+put('spear',10,2,['..n...','.nmn..','.nmM..','..mK..','..tK..',...repeat('..uK..',14),'..MK..']);
+put('pike',11,0,['.n..','nmM.','nmM.','.mK.','.tK.',...repeat('.uK.',18)]);
+put('javelin',11,5,['.n..','nmK.','.mK.','.tK.',...repeat('.uK.',11),'.UK.']);
+put('trident',9,1,['.n.n.n.','.m.n.m.','.m.n.m.','.m.m.m.','.m.m.m.','..mmmK.','...tK..',...repeat('...uK..',14)]);
+put('glaive',10,0,['....n.','...nmK','..nmMK','..nmMK','..nmMK','..nmMK','..mMK.','..tK..',...repeat('..uK..',14)]);
+put('halberd',8,0,['....n...','....m...','....m.nn','..mmnmnm','...MnmMM','....uMMK','....u.K.',...repeat('....uK..',15)]);
+put('lance',10,0,['..n...','..mK..','..nmK.',...repeat('..nmMK',9),'.ttttK','..TTK.','..uK..','..uK..','..uK..','..tK..']);
+put('dart',11,12,['.n...','.mK..','.uK..','.uK..','nmn..','.mK..']);
+put('shortbow',9,7,['..u....','...u...','...tu..','...t.u.','...t.u.','...t.u.','...t.u.','...t.u.','...tu..','...u...','..u....']);
+put('longbow',9,1,['.u.....','..u....','..tu...','..t.u..','..t.u..',...repeat('..t..u.',10),'..t.u..','..t.u..','..tu...','..u....','.u.....']);
+put('light-crossbow',7,9,['.....n...','.....m...','u....u..u','.uuuuuuu.','..tttutt.','.....uK..','.....uK..','.....uK..','....uUK..','....UK...']);
+put('heavy-crossbow',6,6,['......n...','......m...','......m...','u.....u..u','u....uuu.u','.uuuuuuuu.','..ttttutt.','.....uuK..','.....uuK..','......uK..','.....uUK..','.....UK...']);
+put('hand-crossbow',9,12,['...n...','u..u..u','.uuuuu.','..tut..','...uK..','..uK...']);
+put('sling',9,10,['...u...','..u.u..','..u..u.','..u..u.','.uuu.u.','uUUUu..','.UUUK..','...u...','...u...']);
+put('whip',8,12,['....tu..','....uK..','....uK..','....uK..','.....u..','......u.','..uuu.u.','.u...uu.','.u...u..','..uuu...']);
+put('blowgun',11,5,['.tK.','.vK.',...repeat('.uK.',10),'.tK.','.UK.']);
+put('pistol',9,9,['...nnK.','...mMK.','...mMK.','...mMK.','..tumK.','..uUmK.','..uKt..','..UK...']);
+put('musket',9,1,['....nnK','....mMK',...repeat('....mMK',10),'...umMK','...umMK','..tuMK.','..uUK..','..uUK..','..uUK..','..UK...']);
+// Named silhouettes; palette accents are resolved per item at runtime.
+put('flameblade',8,1,['....x...','...xnx..','..xnmMx.',...repeat('..xnmMx.',9),'.ttttttt','..TTtTT.','....uK..','....uK..','....tK..']);
+put('dragonstaff',8,1,['...tttt.','..tmmmtt','..tmMtt.','...tmt..','....tK..','....uK..',...repeat('....uK..',14),'....tK..']);
+put('moonblade',9,3,['....n..','...nmK.',...repeat('..nmMK.',8),'.t.m.t.','..ttt..','...uK..','...uK..','...xK..']);
+put('kingknife',9,7,['...n...','..nmK..','.nmMK..','..nmMK.','..nmMK.','..nmMK.','.ttttt.','..TxT..','...uK..','...tK..']);
+put('coraltrident',9,1,['x..n..x','m..m..m','m..m..m','.m.m.m.','.m.m.m.','..mmm..','...tK..',...repeat('...uK..',14)]);
+put('stormbow',8,2,['..x.....','...t....','...tt...','...t.t..','...t..t.','...t..x.','...t..t.','...t..t.','...t..t.','...t..t.','...t..x.','...t..t.','...t.t..','...tt...','...t....','..x.....']);
+put('hookblade',9,3,['....nn.','...nmmK','...m..K','...m...','...m...','...m...','..nmK..','..nmK..','..nmK..','..nmK..','.ttttt.','...uK..','...uK..','...tK..']);
+put('hookglaive',9,0,['....nn.','...nmmK','...m..K','...m...','...tK..',...repeat('...uK..',17)]);
+put('lanternmace',9,5,['...t...','..ttt..','.tntnt.','.tnxnt.','.tnxnt.','..ttt..','...tK..',...repeat('...uK..',7),'...tK..']);
+const palette=`K #242734 outline\nn #e0e2d2 steel edge\nm #a1b4bd steel\nM #546776 steel shadow\nt #cfac65 brass\nT #795b3f brass shadow\nu #976b45 wood\nU #513d31 wood shadow\nv #c09a66 wood light\nx #8bc5ca rune\nX #4b727d rune shadow`;
+const source=`@name armory\n@size 16x24\n@anchor 8,24\n@scale 12\n@palette\n${palette}\n@lint skip=doubles,light,jaggy\n# Narrow steel edges and hooked/serrated silhouettes use deliberate one-pixel intersections.\n# Upper-left material highlights are authored; long single-pixel shafts have no planar light gradient.\n\n`+Object.entries(frames).map(([id,rows])=>`@frame ${id}\n${rows.join('\n')}\n`).join('\n');
+fs.mkdirSync('assets/pixel/weapons',{recursive:true});fs.writeFileSync('assets/pixel/weapons/armory.pxa',source);
+console.log(`${Object.keys(frames).length} authored weapon profiles`);

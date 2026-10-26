@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Monster Lab — Sword Coast Chronicles</title>
+<style>
+  body { margin: 0; background: #14131a; color: #cbb894;
+         font: 12px ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  header { position: sticky; top: 0; background: #0d0b10; border-bottom: 1px solid #3a3040;
+           padding: 8px 12px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; z-index: 5; }
+  h1 { font-size: 13px; margin: 0; color: #e3b34a; letter-spacing: 1px; }
+  label { color: #9a8f80; }
+  input, select { background: #1c1a24; color: #cbb894; border: 1px solid #3a3040; padding: 3px 6px;
+                  font: inherit; }
+  #grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; }
+  .cell { background: #1c1a24; border: 1px solid #2a2633; padding: 4px; text-align: center;
+          display: flex; flex-direction: column; align-items: center; }
+  .cell.bad { border-color: #a83a2a; }
+  .cell canvas { image-rendering: pixelated; display: block; background: #232030; }
+  .nm { font-size: 9px; color: #cbb894; margin-top: 3px; max-width: 120px; word-break: break-all; }
+  .sp { font-size: 8px; color: #6a6270; }
+  #stat { color: #9a8f80; }
+</style>
+</head>
+<body>
+<header>
+  <h1>MONSTER LAB</h1>
+  <label>zoom <input id="zoom" type="range" min="1" max="8" value="3" /></label>
+  <label>frame
+    <select id="frame">
+      <option>down-0</option><option>down-1</option><option>down-2</option><option>down-3</option>
+      <option>left-0</option><option>left-1</option><option>right-0</option><option>up-0</option>
+      <option>attack</option><option>hurt</option>
+    </select>
+  </label>
+  <label>filter <input id="filt" size="16" placeholder="id or type" /></label>
+  <label><input id="anim" type="checkbox" /> animate</label>
+  <label><input id="tint" type="checkbox" checked /> tints</label>
+  <span id="stat"></span>
+</header>
+<div id="grid"></div>
+
+<script type="module">
+import { registerMonsterSprites, monsterArtFor, MONSTER_SPRITE_MAP } from './src/render/spritedata_monsters.js';
+import { registerCharacterSprites } from './src/render/spritedata_chars.js';
+import { getSprite, spriteDef, hasSprite, drawSprite } from './src/render/sprites.js';
+import { MONSTERS } from './src/data/monsters.js';
+
+registerCharacterSprites();
+registerMonsterSprites();
+
+const grid = document.getElementById('grid');
+const zoomEl = document.getElementById('zoom');
+const frameEl = document.getElementById('frame');
+const filtEl = document.getElementById('filt');
+const animEl = document.getElementById('anim');
+const tintEl = document.getElementById('tint');
+const stat = document.getElementById('stat');
+
+const WALK = ['down-0', 'down-1', 'down-0', 'down-2'];
+let t = 0;
+
+function build() {
+  const zoom = +zoomEl.value;
+  const q = filtEl.value.trim().toLowerCase();
+  const useTint = tintEl.checked;
+  grid.innerHTML = '';
+  let shown = 0, guessed = 0;
+
+  for (const m of Object.values(MONSTERS)) {
+    if (q && !(m.id.includes(q) || String(m.type).includes(q) || String(m.size).includes(q))) continue;
+    const art = monsterArtFor(m.id, m.sprite);
+    const explicit = !!MONSTER_SPRITE_MAP[m.id];
+    const dataOk = m.sprite && hasSprite(m.sprite);
+    const isGuess = !explicit && !dataOk;
+    if (isGuess) guessed++;
+
+    const def = spriteDef(art.sprite) || { w: 16, h: 24 };
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (isGuess ? ' bad' : '');
+    const cv = document.createElement('canvas');
+    cv.width = def.w * zoom; cv.height = def.h * zoom;
+    cv.dataset.sprite = art.sprite;
+    cv.dataset.tint = useTint ? (m.tint || art.tint || '') : '';
+    cv.dataset.amt = String(art.tintAmt || (m.tint ? 0.6 : 0));
+    cv.dataset.w = def.w; cv.dataset.h = def.h;
+    cell.appendChild(cv);
+    const nm = document.createElement('div');
+    nm.className = 'nm'; nm.textContent = m.id;
+    cell.appendChild(nm);
+    const sp = document.createElement('div');
+    sp.className = 'sp'; sp.textContent = art.sprite + (art.scale !== 1 ? ' x' + art.scale : '');
+    cell.appendChild(sp);
+    grid.appendChild(cell);
+    shown++;
+  }
+  stat.textContent = `${shown} shown · ${guessed} fallback guesses (red)`;
+  paint();
+}
+
+function paint() {
+  const frame = animEl.checked ? WALK[Math.floor(t) % 4] : frameEl.value;
+  for (const cv of grid.querySelectorAll('canvas')) {
+    const g = cv.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.clearRect(0, 0, cv.width, cv.height);
+    const w = +cv.dataset.w, h = +cv.dataset.h;
+    const tmp = document.createElement('canvas');
+    tmp.width = w; tmp.height = h;
+    const tg = tmp.getContext('2d');
+    const tint = cv.dataset.tint || null;
+    drawSprite(tg, cv.dataset.sprite, frame, w / 2, h, {
+      tint, tintAmt: tint ? +cv.dataset.amt || 0.6 : 0, shadow: false,
+    });
+    g.drawImage(tmp, 0, 0, w, h, 0, 0, cv.width, cv.height);
+  }
+}
+
+zoomEl.oninput = build;
+frameEl.onchange = paint;
+filtEl.oninput = build;
+tintEl.onchange = build;
+animEl.onchange = paint;
+build();
+
+setInterval(() => { if (animEl.checked) { t += 1; paint(); } }, 160);
+window.LAB = { build, paint };
+</script>
+</body>
+</html>

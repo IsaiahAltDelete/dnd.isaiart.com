@@ -1,0 +1,70 @@
+// core/music_loudness.js — measured gated loudness of every track (dB), for per-track normalisation. GENERATED.
+//
+// Written by `tools/music-render.mjs --loudness`: each track rendered dry for up to
+// 24 s, loudness gated like BS.1770 (a sparse track is judged by its notes, not
+// its rests). audio.js lifts or trims each track toward REFERENCE (the median)
+// within a capped range, then applies the track's own `gain` as the composer's
+// intent. A track missing from the table simply plays unnormalised; re-run the
+// tool after adding tracks.
+
+export const REFERENCE = -33.3;
+
+export const LOUDNESS = Object.freeze({
+  alustrielBallade: -33.8,
+  battle: -28.9,
+  bindersMotet: -30.9,
+  blackHandHocket: -30.7,
+  boss: -26.5,
+  brokenShieldEstampie: -27.5,
+  calishiteMourisque: -27.4,
+  camp: -34.9,
+  cave: -32.0,
+  city: -27.3,
+  daggerfordPastourelle: -29.1,
+  dawnOrganum: -27.7,
+  defeat: -34.9,
+  delzounBasseDanse: -26.7,
+  dockWardIstampitta: -27.6,
+  dolphinBridgeBallata: -26.7,
+  doomguideDies: -34.5,
+  dragon: -26.1,
+  dragonspearPlanctus: -29.5,
+  drawnSteelEstampie: -28.0,
+  dungeon: -36.5,
+  elfsongTourdion: -26.8,
+  field: -33.5,
+  flamingFistSaltarello: -26.7,
+  forest: -30.2,
+  greengrassBranles: -27.3,
+  helmFaburden: -33.5,
+  highRoadPassamezzo: -28.2,
+  inn: -35.0,
+  jewelPavane: -26.1,
+  lament: -31.2,
+  mereLament: -30.4,
+  moonbridgeRondeau: -34.7,
+  mysteriesChant: -33.9,
+  mystery: -34.3,
+  neverwinterWoodCaccia: -27.2,
+  night: -33.3,
+  orchestral: -35.0,
+  phandalinEstampie: -27.6,
+  pilgrimStella: -29.1,
+  rageOfDragons: -27.1,
+  rivertune: -32.9,
+  seaOfSwordsCarole: -26.3,
+  seluneGymel: -28.1,
+  shop: -33.0,
+  temple: -27.6,
+  tempusConductus: -26.2,
+  tense: -36.8,
+  title: -31.4,
+  town: -31.0,
+  triboarEstampie: -27.6,
+  tyrConductus: -28.9,
+  undermountain: -36.7,
+  victory: -30.9,
+  wayfireSong: -32.5,
+  wilds: -35.4,
+  yawningPortalRota: -24.4,
+});

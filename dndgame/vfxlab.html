@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>VFX Lab — Sword Coast Chronicles</title>
+<!-- vfxlab.html — dev gallery for render/vfx.js: every effect style live with replay buttons, or as deterministic frame strips. -->
+<style>
+  body { margin: 0; background: #14131a; color: #cbb894;
+         font: 12px ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  header { position: sticky; top: 0; background: #0d0b10; border-bottom: 1px solid #3a3040;
+           padding: 6px 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; z-index: 5; }
+  h1 { font-size: 13px; margin: 0; color: #e3b34a; letter-spacing: 1px; }
+  label { color: #9a8f80; }
+  input, select, button { background: #1c1a24; color: #cbb894; border: 1px solid #3a3040; padding: 2px 6px; font: inherit; }
+  button { cursor: pointer; }
+  button:hover { border-color: #e3b34a; }
+  #grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .cell { background: #1c1a24; border: 1px solid #2a2633; padding: 3px; display: flex; flex-direction: column; }
+  .cell canvas, .row canvas { image-rendering: pixelated; display: block; }
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 4px; margin-top: 2px; }
+  .nm { font-size: 10px; color: #e0cfa8; }
+  .sub { font-size: 9px; color: #6f6878; }
+  .row { display: flex; align-items: center; gap: 2px; margin: 0 0 3px; }
+  .row .lbl { width: 116px; flex: none; font-size: 10px; color: #e0cfa8; overflow: hidden; }
+  .row .lbl .sub { display: block; }
+  #pg { color: #e3b34a; }
+  body.shot header { display: none; }
+  body.shot #grid { padding: 4px 6px; display: flex; flex-wrap: wrap; column-gap: 14px; align-content: flex-start; }
+</style>
+</head>
+<body>
+<header>
+  <h1>VFX LAB</h1>
+  <label>set <select id="set">
+    <option value="styles">every style</option>
+    <option value="types">data styles x damage types</option>
+    <option value="spells">one spell per look</option>
+  </select></label>
+  <label>zoom <select id="zoom"><option>1</option><option>2</option></select></label>
+  <label>ground <select id="bg"><option>grass</option><option>stone</option><option>dusk</option></select></label>
+  <label>filter <input id="filt" size="14" placeholder="style or spell" /></label>
+  <label>strip <input id="strip" size="2" value="0" title="frames per effect; 0 plays live" /></label>
+  <label>every <input id="every" size="4" value="auto" title="ms between strip frames, or auto" /></label>
+  <button id="all">replay all</button>
+  <span id="pg"></span>
+</header>
+<div id="grid"></div>
+
+<script type="module">
+// Strip mode steps VFX by hand with a fixed seed, so every frame of every
+// effect is exactly reproducible (and screenshots of it compare across runs).
+import { VFX } from './src/render/vfx.js';
+import { FX } from './src/render/fx.js';
+import { registerTiles, drawTile, tileId } from './src/render/tiles.js';
+import { registerMonsterSprites } from './src/render/spritedata_monsters.js';
+import { registerCharacterSprites } from './src/render/spritedata_chars.js';
+import { drawSprite, spriteDef } from './src/render/sprites.js';
+import { SPELLS } from './src/data/spells.js';
+
+registerTiles();
+registerCharacterSprites();
+registerMonsterSprites();
+VFX.glowMode = 'inline';
+
+const Q = new URLSearchParams(location.search);
+const $ = (id) => document.getElementById(id);
+for (const k of ['set', 'zoom', 'bg', 'filt', 'strip', 'every']) if (Q.has(k)) $(k).value = Q.get(k);
+if (Q.has('shot')) document.body.classList.add('shot');
+const SCALE = +(Q.get('scale') || 2);
+const PER = +(Q.get('per') || 0);
+let page = +(Q.get('page') || 0);
+
+// A cell is a small battlefield: the caster at left, the target at right, a
+// second foe behind for chains and areas. Points are in art px at zoom 1.
+const W = 120, H = 68, FEET = 58;
+const CASTER = { x: 22, y: FEET }, FOE = { x: 94, y: FEET }, FOE2 = { x: 80, y: FEET - 20 };
+const chest = (p, z) => ({ x: p.x * z, y: (p.y - 10) * z });
+
+// How the lab stages each style: 'ally' plays on the caster (self), 'area' on
+// the foes, anything else is caster -> foe. `dtype` shows the style's own flavour.
+const STAGE = {
+  heal: 'self', ward: 'self', buff: 'self', 'fire-aura': 'self', 'spirit-guardians': 'self', aura: 'self',
+  teleport: 'step', 'misty-step': 'step', summon: 'self', sigil: 'area',
+  nova: 'area', burst: 'area', fireball: 'area', thunder: 'area', radiant: 'area', tendrils: 'area', psychic: 'area',
+  shards: 'area', ice: 'area', acid: 'area', cloud: 'area', darkness: 'area', fog: 'area', web: 'area', vines: 'area',
+  strike: 'area', 'call-lightning': 'area', moonbeam: 'area', rain: 'area', wave: 'area', spellwave: 'area',
+  quake: 'area', 'fire-wall': 'area', blades: 'area', debuff: 'foe', charm: 'foe', spark: 'foe',
+  'hit-slash': 'foe', 'hit-pierce': 'foe', 'hit-bludgeon': 'foe', crit: 'foe', death: 'foe', slash: 'foe',
+};
+const FLAVOUR = { chain: 'lightning', tether: 'necrotic', cone: 'fire', breath: 'fire', rain: 'fire', strike: 'lightning',
+  shards: 'force', crit: 'slashing', 'hit-slash': 'slashing', 'hit-pierce': 'piercing', 'hit-bludgeon': 'bludgeoning' };
+const TYPES = ['fire', 'cold', 'lightning', 'thunder', 'acid', 'poison', 'necrotic', 'radiant', 'psychic', 'force', 'bludgeoning', 'piercing', 'slashing'];
+const DATA_STYLES = ['bolt', 'beam', 'cone', 'nova', 'burst', 'rain', 'aura', 'wave', 'chain', 'slash'];
+
+function entries() {
+  const set = $('set').value;
+  const out = [];
+  if (set === 'styles') {
+    for (const s of VFX.styles) out.push({ key: s, label: s, sub: FLAVOUR[s] || '', style: s, dtype: FLAVOUR[s] });
+  } else if (set === 'types') {
+    for (const s of DATA_STYLES) for (const d of TYPES) out.push({ key: `${s}-${d}`, label: s, sub: d, style: s, dtype: d });
+  } else {
+    // One spell for every distinct (authored style, damage type, signature) look.
+    const seen = new Set();
+    for (const sp of Object.values(SPELLS)) {
+      const sig = VFX.styleFor(sp);
+      const k = `${sp.vfx?.style}|${sp.damage?.type || '-'}|${sig}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push({ key: sp.id, label: sp.id, sub: `${sp.vfx?.style || '-'} ${sp.damage?.type || ''} -> ${sig}`, spell: sp });
+    }
+  }
+  // A comma list is exact keys, in that order ("heal,buff,cone"); one word is a substring search.
+  const q = $('filt').value.trim().toLowerCase();
+  if (q.includes(',')) return q.split(',').map((k) => out.find((e) => e.key === k.trim())).filter(Boolean);
+  return q ? out.filter((e) => (e.key + ' ' + e.sub).toLowerCase().includes(q)) : out;
+}
+
+function stageOf(en) {
+  if (en.spell) {
+    const st = VFX.baseOf(VFX.styleFor(en.spell));
+    const v = en.spell.vfx?.style;
+    if (['debuff', 'charm', 'spellwave', 'debuff-chain'].includes(st)) return st === 'spellwave' ? 'area' : 'foe';
+    if (STAGE[st]) return STAGE[st];
+    if (['bolt', 'beam', 'chain', 'cone', 'slash'].includes(v)) return v === 'slash' ? 'foe' : 'shot';
+    return en.spell.heal || !en.spell.damage ? 'self' : 'area';
+  }
+  return STAGE[en.style] || 'shot';
+}
+
+function optsFor(en, z) {
+  const where = stageOf(en);
+  const c = chest(CASTER, z), f = chest(FOE, z);
+  const o = { zoom: z, dtype: en.dtype, spell: en.spell, radius: 22 * z };
+  if (where === 'self') Object.assign(o, { from: c, to: c });
+  else if (where === 'step') Object.assign(o, { from: c, to: { x: (CASTER.x + 34) * z, y: (FEET - 22) * z } });
+  else if (where === 'foe') Object.assign(o, { from: c, to: f, dir: 0 });
+  else if (where === 'area') Object.assign(o, { from: c, to: { x: (FOE.x - 6) * z, y: (FEET - 18) * z }, victims: [f, chest(FOE2, z)] });
+  else Object.assign(o, { from: c, to: f, victims: [f, chest(FOE2, z)] });
+  if (en.style === 'death') { o.image = foeImage(); o.ground = 10 * z; }
+  return o;
+}
+
+let foeCanvas = null;
+function foeImage() {
+  if (foeCanvas) return foeCanvas;
+  const d = spriteDef('goblin');
+  foeCanvas = document.createElement('canvas');
+  foeCanvas.width = d.w; foeCanvas.height = d.h;
+  const g = foeCanvas.getContext('2d');
+  drawSprite(g, 'goblin', 'left-0', d.w / 2, d.h);
+  return foeCanvas;
+}
+
+// The ground and the figures at 1x, cached, drawn scaled by zoom: ground, then
+// VFX.drawGround (scorches and rings go under feet), then the figures, then
+// VFX.draw — the order the overworld and the battle use.
+const backs = {};
+function layerOf(key, fn) {
+  if (backs[key]) return backs[key];
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  fn(g);
+  if ($('bg').value === 'dusk') {
+    g.globalCompositeOperation = 'source-atop';
+    g.globalAlpha = 0.55; g.fillStyle = '#1a1838'; g.fillRect(0, 0, W, H);
+  }
+  return (backs[key] = c);
+}
+const groundOf = (kind) => layerOf('g-' + kind, (g) => {
+  const tile = tileId(kind === 'stone' ? 'COBBLE' : 'GRASS', 0) || tileId('GRASS', 0);
+  for (let y = 0; y < H; y += 16) for (let x = 0; x < W; x += 16) drawTile(g, tile, x, y, x / 16 + 3, y / 16 + 5);
+});
+const figuresOf = (kind, hideFoe) => layerOf(`f-${kind}-${hideFoe ? 1 : 0}`, (g) => {
+  drawSprite(g, 'goblin', 'left-0', FOE2.x, FOE2.y, { shadow: true });
+  drawSprite(g, 'mage', 'right-0', CASTER.x, CASTER.y, { shadow: true });
+  if (!hideFoe) drawSprite(g, 'goblin', 'left-0', FOE.x, FOE.y, { shadow: true });
+});
+
+function paintCell(cv, en, z, tag) {
+  const g = cv.getContext('2d');
+  const bg = $('bg').value, opt = tag == null ? undefined : { tag };
+  g.imageSmoothingEnabled = false;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.drawImage(groundOf(bg), 0, 0, W * z, H * z);
+  VFX.drawGround(g, 0, 0, opt);
+  g.drawImage(figuresOf(bg, en.style === 'death'), 0, 0, W * z, H * z);
+  VFX.draw(g, 0, 0, opt);
+  VFX.drawScreen(g, opt);
+}
+
+function play(en, z, tag) {
+  const o = optsFor(en, z);
+  o.tag = tag;
+  return en.spell ? VFX.cast(en.spell, o) : VFX.play(en.style, o);
+}
+
+function canvasFor(z) {
+  const cv = document.createElement('canvas');
+  cv.width = W * z; cv.height = H * z;
+  cv.style.width = `${W * SCALE}px`; cv.style.height = `${H * SCALE}px`;
+  return cv;
+}
+
+// --- strip mode: simulate each effect alone, deterministically -------------------------
+
+const STEP = 1 / 120;
+function simulate(en, z, times, onFrame) {
+  VFX.clear(); FX.clear();
+  VFX.reseed(7);
+  const h = play(en, z, null);
+  let t = 0, i = 0;
+  while (i < times.length) {
+    while (t + STEP <= times[i] + 1e-9) { VFX.update(STEP); t += STEP; }
+    onFrame(i++, h);
+  }
+  VFX.clear();
+}
+
+function lengthOf(en, z) {
+  VFX.clear(); VFX.reseed(7);
+  const h = play(en, z, null);
+  let t = 0;
+  while (h.playing && t < 6) { VFX.update(1 / 30); t += 1 / 30; }
+  VFX.clear();
+  return t;
+}
+
+function buildStrips(list, n) {
+  const z = +$('zoom').value;
+  const ev = $('every').value.trim();
+  for (const en of list) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const lbl = document.createElement('div');
+    lbl.className = 'lbl';
+    const len = lengthOf(en, z);
+    const step = ev === 'auto' || !+ev ? 0 : +ev / 1000;
+    lbl.innerHTML = `${en.label}<span class="sub">${en.sub}</span><span class="sub">${Math.round(len * 1000)}ms${step ? `, every ${Math.round(step * 1000)}` : ''}</span>`;
+    row.appendChild(lbl);
+    const times = [];
+    // Auto spacing crowds the frames early, where an effect does most of its
+    // changing, and leaves one or two for the tail (smoke, scorch, motes).
+    for (let i = 0; i < n; i++) times.push(!step ? Math.max(0.03, len * ((i + 0.6) / n) ** 2) : step * (i + 1));
+    const cvs = times.map(() => canvasFor(z));
+    for (const cv of cvs) row.appendChild(cv);
+    simulate(en, z, times, (i) => paintCell(cvs[i], en, z, undefined));
+    $('grid').appendChild(row);
+  }
+}
+
+// --- live mode: every cell plays at once, looping, with its own replay button ----------
+
+let live = [];
+function buildLive(list) {
+  const z = +$('zoom').value;
+  for (const en of list) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const cv = canvasFor(z);
+    cell.appendChild(cv);
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.innerHTML = `<span><span class="nm">${en.label}</span> <span class="sub">${en.sub}</span></span>`;
+    const b = document.createElement('button');
+    b.textContent = 'replay';
+    const L = { en, cv, z, tag: en.key, h: null, wait: 0 };
+    b.onclick = () => { if (L.h) L.h.cancel(); L.h = play(en, z, L.tag); };
+    bar.appendChild(b);
+    cell.appendChild(bar);
+    $('grid').appendChild(cell);
+    live.push(L);
+  }
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  if (live.length) {
+    VFX.update(dt);
+    for (const L of live) {
+      if (!L.h || !L.h.playing) {
+        L.wait -= dt;
+        if (L.wait <= 0) { L.h = play(L.en, L.z, L.tag); L.wait = 0.6; }
+      }
+      paintCell(L.cv, L.en, L.z, L.tag);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function build() {
+  VFX.clear();
+  live = [];
+  $('grid').innerHTML = '';
+  let list = entries();
+  const pages = PER ? Math.ceil(list.length / PER) : 1;
+  if (PER) list = list.slice(page * PER, page * PER + PER);
+  $('pg').textContent = PER ? `page ${page + 1}/${pages}` : `${list.length} effects`;
+  const n = +$('strip').value;
+  if (n > 0) buildStrips(list, n); else buildLive(list);
+  window.LAB.pages = pages;
+  window.LAB.count = entries().length;
+}
+
+window.LAB = {
+  ready: false, pages: 1, count: 0, build,
+  showPage(k) {
+    page = k; build();
+    if (!document.body.classList.contains('shot')) return;
+    // The page number on every shot, so a strip can be matched to its page.
+    let tag = $('shotpg');
+    if (!tag) { tag = document.createElement('div'); tag.id = 'shotpg'; tag.style.cssText = 'position:fixed;right:6px;bottom:4px;color:#e3b34a;font-size:9px'; document.body.appendChild(tag); }
+    tag.textContent = $('pg').textContent + ' ' + $('set').value;
+  },
+};
+for (const id of ['set', 'zoom', 'bg', 'strip', 'every']) $(id).onchange = () => { page = 0; for (const k in backs) delete backs[k]; build(); };
+$('filt').oninput = () => { page = 0; build(); };
+$('all').onclick = () => { for (const L of live) { if (L.h) L.h.cancel(); L.h = play(L.en, L.z, L.tag); } if (!live.length) build(); };
+window.LAB.showPage(page);
+window.LAB.ready = true;
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

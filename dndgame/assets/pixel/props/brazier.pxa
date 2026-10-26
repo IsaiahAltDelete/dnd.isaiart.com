@@ -1,0 +1,72 @@
+@name prop-brazier
+@scale 14
+@size 16x24
+# A wrought-iron tripod brazier of the kind that lights a Waterdhavian temple
+# porch or a Zhentarim guardroom: a wide riveted dish on a knotted collar, three
+# splayed legs, a bed of coals. Humanoid-sized (16x24, feet on row 23), so it
+# stands on a tile the way a person does.
+#
+# Seen from above and in front, like everything in this world: the dish's
+# mouth is an ellipse full of coals, walled by its inner face -- concave, so
+# the far RIGHT inner wall catches the upper-left light and the left one is in
+# shade -- above a bright front lip and a convex body lit on the left.
+#
+# Authored as a stack: `stand` and `bowl` are drawn once and repeated by the
+# later frames (a @layer with no rows), only `coals` animates -- a slow pulse,
+# because coals breathe while a flame dances. Put fx-torch-flame on top at
+# @point flame; the coals share the flame's @ramp, so @recolor gives
+# prop-brazier-radiant / -necrotic / -cold coals that match a recoloured flame.
+@anchor 8,24
+@point flame 7,10
+@point light 7,5
+@ramp iron iron 5 abcde
+@ramp fire fire 5 01234
+@recolor fire magic
+@palette
+K #1d1b24 outline
+@lint skip=stray emissive=fire
+
+@frame glow-0 dur=240
+@layer stand at=0,16
+......KcaK......
+.....KdcbaK.....
+....Kc.ca.bK....
+....Kc.ca.bK....
+...Kc..ca..bK...
+...Kc..ca..bK...
+..Kc...ca...bK..
+.Kcb..KcaK..baK.
+@layer bowl at=0,6
+....KKKKKKKK....
+..KKab0000cdKK..
+.Keb00000000dcK.
+Keb0000000000dcK
+Kea0000000000dbK
+KdeeeddddcccbbaK
+.KcdcbbbbbbbbaK.
+..KcdbebbbebaK..
+...KcdbbbbbaK...
+....KKcbbaKK....
+@layer coals at=3,7
+...1021...
+.02130120.
+1203423021
+0121302120
+
+@frame glow-1 dur=200
+@layer stand
+@layer bowl
+@layer coals at=3,7
+...1031...
+.03140130.
+1304434031
+0131403130
+
+@frame glow-2 dur=260
+@layer stand
+@layer bowl
+@layer coals at=3,7
+...1021...
+.02120120.
+1202322021
+0121202120

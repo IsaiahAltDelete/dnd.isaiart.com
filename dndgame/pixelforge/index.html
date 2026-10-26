@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>pixelforge | ISAIART</title>
+<meta name="description" content="A pixel-art pipeline where sprites are plain text, so an AI agent can author them. Python, no dependencies. Free download." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐉</text></svg>" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{max-width:830px;margin:0 auto;padding:32px 24px 120px;background:#fff;color:#000;
+       font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  .back{display:inline-block;margin-bottom:40px;font-size:12px;letter-spacing:.12em;
+        text-transform:uppercase;color:#666;text-decoration:none}
+  .back:hover{color:#000}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
+  .tag{color:#444;margin:0 0 8px;font-size:17px}
+  .meta{color:#666;font-size:13px;margin:0 0 44px}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.14em;margin:52px 0 16px;
+     padding-bottom:8px;border-bottom:1px solid #000}
+  h3{font-size:15px;margin:26px 0 8px}
+  p{margin:0 0 14px;max-width:68ch}
+  ol,ul{margin:0 0 14px;padding-left:22px;max-width:68ch}
+  li{margin:0 0 5px}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  code{font-size:13px;background:#f1f1f1;padding:1px 4px;border-radius:2px}
+  pre{font-size:12.5px;line-height:1.55;background:#fafafa;border:1px solid #ddd;
+      padding:14px 16px;overflow-x:auto;margin:0 0 18px}
+  pre code{background:none;padding:0;font-size:inherit}
+  a{color:#000;text-underline-offset:2px}
+  a:hover{background:#000;color:#fff;text-decoration:none}
+  table{border-collapse:collapse;width:100%;margin:0 0 8px;font-size:14px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid #e4e4e4;vertical-align:top}
+  th{border-bottom:1px solid #000;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+  td.num{text-align:right;white-space:nowrap;font-size:13px;color:#666}
+  td.note{color:#666;font-size:13px}
+  td a{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+  tr.grp td{border-bottom:1px solid #000;padding-top:22px;font-size:11px;
+            text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+  .zip{display:inline-block;background:#000;color:#fff;padding:12px 20px;margin:4px 0 10px;
+       text-decoration:none;font-size:14px;border:0;cursor:pointer;font-family:inherit}
+  .zip:hover{background:#333;color:#fff}
+  .zip[disabled]{opacity:.5;cursor:default}
+  .hint{color:#666;font-size:13px;margin:0 0 24px}
+  .gallery{display:flex;gap:26px;align-items:flex-end;flex-wrap:wrap;
+           border:1px solid #ddd;padding:24px;margin:0 0 8px}
+  .gallery figure{text-align:center}
+  .gallery img{display:block;image-rendering:pixelated;margin:0 auto 8px}
+  .gallery figcaption{font-size:11px;color:#666;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .shot{width:100%;border:1px solid #ddd;image-rendering:pixelated;margin:0 0 8px}
+  details{border-top:1px solid #ddd;padding:14px 0}
+  summary{cursor:pointer;font-size:14px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary:before{content:"+ ";font-family:ui-monospace,monospace}
+  details[open] summary:before{content:"\2212\00a0"}
+  details[open] summary{margin-bottom:14px}
+  details pre{max-height:520px;overflow:auto}
+  footer{margin-top:64px;padding-top:18px;border-top:1px solid #000;color:#666;font-size:12.5px}
+  footer a{color:#666}
+  .warn{border-left:3px solid #000;padding:2px 0 2px 14px;margin:0 0 16px;color:#333;font-size:14px}
+  @media (max-width:560px){body{padding:24px 18px 80px}h1{font-size:25px}.gallery{gap:18px;padding:16px}}
+</style>
+</head>
+<body>
+
+<a class="back" href="../">&larr; isaiart</a>
+
+<h1>pixelforge</h1>
+<p class="tag">Pixel-art sprites as plain text, so an AI agent can author them.</p>
+<p class="meta">Python 3.8+ &middot; no dependencies &middot; 18 files &middot; 106 KB</p>
+
+<p>A language model can't push pixels around a canvas, but it can write and edit a character
+grid exactly. pixelforge keeps every sprite as <code>.pxa</code> text &mdash; a palette plus an
+ASCII grid &mdash; and renders PNG or animated GIF on demand. The image is a build artifact;
+the text is the source.</p>
+
+<p>The part that makes it usable by an agent is <code>preview</code>: it renders the sprite
+large, with numbered rulers and a palette legend. The agent reads that image back, sees what's
+wrong, and the flaw maps to an exact <code>(x, y)</code> it can edit. Without coordinates, blind
+pixel work just drifts.</p>
+
+<div class="gallery">
+  <figure><img src="img/dragon.png" alt="Pixel art dragon" width="200" height="160">
+    <figcaption>dragon.pxa &mdash; 40&times;32</figcaption></figure>
+  <figure><img src="img/knight.png" alt="Pixel art knight" width="96" height="120">
+    <figcaption>knight.pxa &mdash; 16&times;20</figcaption></figure>
+  <figure><img src="img/mage.png" alt="Pixel art mage" width="96" height="120">
+    <figcaption>mage.pxa &mdash; 16&times;20</figcaption></figure>
+  <figure><img src="img/walk.png" alt="Three-frame walk cycle sheet" width="200" height="80">
+    <figcaption>walk.pxa &mdash; 3-frame sheet</figcaption></figure>
+</div>
+<p class="hint">All made with the tool. Sources are in the download.</p>
+
+<h2>Download</h2>
+<button class="zip" id="zipall" type="button">Download all &middot; pixelforge.zip</button>
+<p class="hint" id="zipnote">Extracts to a <code>pixelforge/</code> folder that runs as-is.
+Or take individual files:</p>
+
+<table>
+  <thead><tr><th>File</th><th>&nbsp;</th><th class="num">Size</th></tr></thead>
+  <tbody id="files">
+    <tr class="grp"><td colspan="3">Core</td></tr>
+    <tr><td><a href="files/pxforge.py" download>pxforge.py</a></td><td class="note">CLI entry point</td><td class="num">25.6&nbsp;KB</td></tr>
+    <tr><td><a href="files/selftest.py" download>selftest.py</a></td><td class="note">47-check self-test</td><td class="num">10.7&nbsp;KB</td></tr>
+    <tr><td><a href="files/README.md" download>README.md</a></td><td class="note">full reference</td><td class="num">7.4&nbsp;KB</td></tr>
+    <tr class="grp"><td colspan="3">Library</td></tr>
+    <tr><td><a href="files/pxlib/__init__.py" download>pxlib/__init__.py</a></td><td class="note"></td><td class="num">0.2&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/fmt.py" download>pxlib/fmt.py</a></td><td class="note">.pxa parse / validate / rasterize</td><td class="num">10.3&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/ops.py" download>pxlib/ops.py</a></td><td class="note">transforms and drawing</td><td class="num">7.4&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/render.py" download>pxlib/render.py</a></td><td class="note">canvas, preview, sheets</td><td class="num">7.2&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/png.py" download>pxlib/png.py</a></td><td class="note">PNG encoder + decoder</td><td class="num">5.3&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/gif.py" download>pxlib/gif.py</a></td><td class="note">animated GIF encoder</td><td class="num">4.1&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/watch.py" download>pxlib/watch.py</a></td><td class="note">live browser view</td><td class="num">12.6&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/palettes.py" download>pxlib/palettes.py</a></td><td class="note">built-in palettes</td><td class="num">3.3&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/templates.py" download>pxlib/templates.py</a></td><td class="note">proportion guides</td><td class="num">3.6&nbsp;KB</td></tr>
+    <tr><td><a href="files/pxlib/font.py" download>pxlib/font.py</a></td><td class="note">3x5 label font</td><td class="num">2.1&nbsp;KB</td></tr>
+    <tr class="grp"><td colspan="3">Examples</td></tr>
+    <tr><td><a href="files/examples/dragon.pxa" download>examples/dragon.pxa</a></td><td class="note">40x32</td><td class="num">1.7&nbsp;KB</td></tr>
+    <tr><td><a href="files/examples/knight.pxa" download>examples/knight.pxa</a></td><td class="note">16x20</td><td class="num">0.4&nbsp;KB</td></tr>
+    <tr><td><a href="files/examples/mage.pxa" download>examples/mage.pxa</a></td><td class="note">16x20</td><td class="num">0.4&nbsp;KB</td></tr>
+    <tr><td><a href="files/examples/walk.pxa" download>examples/walk.pxa</a></td><td class="note">16x20, 3 frames</td><td class="num">1.2&nbsp;KB</td></tr>
+    <tr class="grp"><td colspan="3">Agent skill</td></tr>
+    <tr><td><a href="files/claude-skill/SKILL.md" download>claude-skill/SKILL.md</a></td><td class="note">drop in ~/.claude/skills/pixel-art/</td><td class="num">2.7&nbsp;KB</td></tr>
+  </tbody>
+</table>
+
+<h2>Install</h2>
+<p>Unzip and run. There is nothing to install &mdash; the PNG and GIF encoders are written
+against the standard library.</p>
+<pre><code>python pxforge.py --help
+python selftest.py            # 47 checks, should print ALL PASS</code></pre>
+
+<h2>Use</h2>
+<p>The loop an agent should follow:</p>
+<ol>
+  <li><code>new</code> a canvas, optionally over a proportion guide</li>
+  <li>Write or <code>edit</code> the grid</li>
+  <li><code>preview</code> it, then <strong>read the rendered PNG back</strong> and find the flaw's coordinates</li>
+  <li>Fix that cell; repeat from 3</li>
+  <li><code>render</code>, <code>sheet</code> or <code>gif</code> for final output</li>
+</ol>
+
+<pre><code>python pxforge.py new hero.pxa --size 24x32 --template humanoid32
+python pxforge.py edit hero.pxa --replace 's=.' --outline 'K,diag'
+python pxforge.py preview hero.pxa      # read this PNG, fix, repeat
+python pxforge.py gif hero.pxa --fps 8</code></pre>
+
+<h3>What <code>preview</code> gives the agent</h3>
+<img class="shot" src="img/preview.png" alt="Annotated preview: the dragon sprite with numbered rulers, a pixel grid and a palette legend">
+<p class="hint">Numbered rulers and a palette legend, so a flaw in the image has coordinates.</p>
+
+<h3>Format</h3>
+<pre><code>@name  knight
+@use   chr16          # built-in palette: key -&gt; color
+@scale 12
+@frame idle
+....KKKK....
+...K2222K...</code></pre>
+<p><code>.</code> is transparent. Every row must be the same width &mdash;
+<code>validate</code> enforces it and <code>ascii -n</code> prints ruler-aligned rows with the
+character delta marked on any bad one.</p>
+
+<h3>Watching it draw</h3>
+<p><code>watch</code> serves a page that repaints on every save and flashes the cells that just
+changed, which is useful when a person wants to see the sprite being built.</p>
+<pre><code>python pxforge.py watch examples/dragon.pxa --port 8765</code></pre>
+
+<h2>Instructions for the agent</h2>
+<p>The download includes <code>claude-skill/SKILL.md</code>. Copy it to
+<code>~/.claude/skills/pixel-art/SKILL.md</code> and Claude Code will discover the tool on its
+own whenever a request involves sprites or pixel art &mdash; no need to explain it each time.
+Update the paths inside the file to wherever you unzipped it.</p>
+<p class="warn">The skill's own text is the agent-facing brief: the loop, the format, the ops
+list, and the craft notes that keep output from looking like noise.</p>
+
+<details data-src="files/claude-skill/SKILL.md">
+  <summary>SKILL.md &mdash; agent instructions</summary>
+  <pre><code>Loading&hellip;</code></pre>
+</details>
+
+<details data-src="files/README.md">
+  <summary>README.md &mdash; full reference</summary>
+  <pre><code>Loading&hellip;</code></pre>
+</details>
+
+<footer>
+  Built by <a href="../">isaiart</a>. Public domain &mdash; take it, change it, ship it.
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── lazy-load the markdown files into their <details> ─────────────────
+     Keeps this page small and hand-editable: the text always comes from the
+     real file in files/, so it can never drift out of sync. */
+  document.querySelectorAll('details[data-src]').forEach(function (d) {
+    var loaded = false;
+    d.addEventListener('toggle', function () {
+      if (!d.open || loaded) return;
+      loaded = true;
+      var src = d.getAttribute('data-src');
+      var box = d.querySelector('code');
+      fetch(src).then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.text();
+      }).then(function (t) {
+        box.textContent = t;
+      }).catch(function () {
+        box.textContent = '';
+        var a = document.createElement('a');
+        a.href = src;
+        a.textContent = 'Open ' + src;
+        box.appendChild(a);
+      });
+    });
+  });
+
+  /* ── zip everything in the table, in the browser ───────────────────────
+     Stored (uncompressed) entries only, which every unzip tool accepts and
+     keeps this short. The file list is read from the table above, so adding
+     a row there is all it takes to include a new file. */
+  var CRC = (function () {
+    var t = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) {
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+
+  function crc32(b) {
+    var c = 0xFFFFFFFF;
+    for (var i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  var DOS_DATE = 0x5A21;   /* 2025-01-01 */
+
+  function zip(items) {
+    var local = [], central = [], offset = 0;
+    var enc = new TextEncoder();
+    items.forEach(function (it) {
+      var name = enc.encode(it.path);
+      var data = it.bytes;
+      var crc = crc32(data);
+
+      var lh = new Uint8Array(30 + name.length);
+      var d = new DataView(lh.buffer);
+      d.setUint32(0, 0x04034b50, true);
+      d.setUint16(4, 20, true);
+      d.setUint16(6, 0x0800, true);      /* UTF-8 names */
+      d.setUint16(8, 0, true);           /* stored */
+      d.setUint16(12, DOS_DATE, true);
+      d.setUint32(14, crc, true);
+      d.setUint32(18, data.length, true);
+      d.setUint32(22, data.length, true);
+      d.setUint16(26, name.length, true);
+      lh.set(name, 30);
+      local.push(lh, data);
+
+      var ch = new Uint8Array(46 + name.length);
+      var c = new DataView(ch.buffer);
+      c.setUint32(0, 0x02014b50, true);
+      c.setUint16(4, 20, true);
+      c.setUint16(6, 20, true);
+      c.setUint16(8, 0x0800, true);
+      c.setUint16(10, 0, true);
+      c.setUint16(14, DOS_DATE, true);
+      c.setUint32(16, crc, true);
+      c.setUint32(20, data.length, true);
+      c.setUint32(24, data.length, true);
+      c.setUint16(28, name.length, true);
+      c.setUint32(42, offset, true);
+      ch.set(name, 46);
+      central.push(ch);
+      offset += lh.length + data.length;
+    });
+
+    var cdSize = central.reduce(function (a, b) { return a + b.length; }, 0);
+    var eocd = new Uint8Array(22);
+    var e = new DataView(eocd.buffer);
+    e.setUint32(0, 0x06054b50, true);
+    e.setUint16(8, items.length, true);
+    e.setUint16(10, items.length, true);
+    e.setUint32(12, cdSize, true);
+    e.setUint32(16, offset, true);
+    return new Blob(local.concat(central, [eocd]), { type: 'application/zip' });
+  }
+
+  function save(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  var btn = document.getElementById('zipall');
+  var note = document.getElementById('zipnote');
+  var label = btn.textContent;
+
+  btn.addEventListener('click', function () {
+    var links = [].slice.call(document.querySelectorAll('#files a[href]'));
+    btn.disabled = true;
+    btn.textContent = 'Zipping…';
+
+    Promise.all(links.map(function (a) {
+      var href = a.getAttribute('href');
+      return fetch(href).then(function (r) {
+        if (!r.ok) throw new Error(href + ' — ' + r.status);
+        return r.arrayBuffer();
+      }).then(function (buf) {
+        return { path: 'pixelforge/' + href.replace(/^files\//, ''),
+                 bytes: new Uint8Array(buf) };
+      });
+    })).then(function (items) {
+      save(zip(items), 'pixelforge.zip');
+      btn.disabled = false;
+      btn.textContent = label;
+    }).catch(function (err) {
+      btn.disabled = false;
+      btn.textContent = label;
+      note.innerHTML = '<strong>Could not build the zip</strong> (' + err.message +
+        '). Downloading individual files below still works.';
+    });
+  });
+})();
+</script>
+</body>
+</html>

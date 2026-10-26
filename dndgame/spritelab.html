@@ -1,0 +1,159 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Sprite Lab — Sword Coast Chronicles</title>
+<style>
+  html,body{background:#161a21;color:#cbd3dd;font:13px/1.6 ui-monospace,monospace;margin:0;padding:0}
+  header{position:sticky;top:0;background:#1c2029;border-bottom:1px solid #2e3542;padding:10px 14px;z-index:2}
+  h1{font-size:14px;margin:0 0 8px;color:#e3b34a;letter-spacing:.08em;text-transform:uppercase}
+  nav a{display:inline-block;margin-right:6px;padding:4px 10px;border:1px solid #2e3542;border-radius:3px;
+        color:#9fd6e0;text-decoration:none}
+  nav a:hover{background:#232935}
+  nav a.on{background:#e3b34a;color:#1c2029;border-color:#e3b34a;font-weight:700}
+  #cap{padding:10px 14px 0;color:#8b93a0;max-width:74ch}
+  canvas{image-rendering:pixelated;display:block;margin:10px 14px 28px}
+</style></head><body>
+<header><h1>Sprite Lab</h1><nav id="nav"></nav></header>
+<div id="cap"></div>
+<canvas id="c"></canvas>
+<script type="module">
+const V = Math.random();
+const { registerCharacterSprites } = await import(`./src/render/spritedata_chars.js?${V}`);
+const { drawActor, CLASS_PALETTE, actorPoseFrames, drawPortrait } = await import(`./src/render/actor.js?${V}`);
+const { drawSpriteAt, hasSprite } = await import('./src/render/sprites.js');
+registerCharacterSprites();
+
+const PAGES = [
+  ['beasts','Beasts','Every animal in the game. The first five - dog, cat, chicken, horse, ox - were all it had; the other nine are new.'],
+  ['folk','Townsfolk','Every NPC sprite family. Each is a stack of body / hair / outfit layers recoloured from a nine-colour seed, not separate art.'],
+  ['classes','Class dress','Every class with no armour equipped, in each of its own palettes. Cut comes from the outfit grid, colour from CLASS_PALETTE - so two clerics in one party are not twins.'],
+  ['species','Species','Snout, scales, tusks and lithoderms - all declared in the species data for months, none of them drawn until now.'],
+  ['poses','Poses','Idle, attack, cast, shoot, hurt and ko, front and side. Recipes applied to every layer in register (render/actor.js POSES), so any outfit takes every pose; the weapon turns on its own layer.'],
+  ['portraits','Portraits','The 40x40 bust render/portrait.js paints from the same appearance data as the sprite - helm, garment, class marks - for dialogue and the party rail.'],
+];
+const page = (location.hash || '#beasts').slice(1);
+document.getElementById('nav').innerHTML = PAGES
+  .map(([id,label]) => `<a href="#${id}" class="${id===page?'on':''}">${label}</a>`).join('');
+addEventListener('hashchange', () => location.reload());
+document.getElementById('cap').textContent = (PAGES.find(p=>p[0]===page)||PAGES[0])[2];
+
+const c = document.getElementById('c'), g = c.getContext('2d');
+const BASE = {
+  skin:'#e0a878', hair:'#4a3018', eye:'#37527a', outfit:'#7a3030', outfitAlt:'#2f4f7f',
+  accent:'#e3b34a', metal:'#aab2c0', leather:'#6b4a2a', cloth:'#8a9a6a', hornColor:'#8c8377',
+  hairStyle:'short', beard:'none', cloakStyle:'auto', helmStyle:'auto', bootStyle:'auto',
+};
+function sheet(items, o) {
+  const rows = Math.ceil(items.length / o.cols);
+  c.width = o.cols * o.cellW + 16;
+  c.height = rows * o.cellH + 12;
+  g.imageSmoothingEnabled = false;
+  g.fillStyle = '#39404c'; g.fillRect(0,0,c.width,c.height);
+  g.font = '11px ui-monospace, monospace';
+  items.forEach((it,i) => {
+    const x = 8 + (i % o.cols) * o.cellW, y = 6 + Math.floor(i / o.cols) * o.cellH;
+    g.fillStyle = '#9fe0c8'; g.fillText(it.label, x, y + 10);
+    o.draw(it, x, y + 14, o.Z);
+  });
+}
+const BEASTS = ['dog','cat','chicken','horse','ox','sheep','goat','pig','cow','goose','town-rat','crow','fox','deer'];
+const FOLK = ['npc-villager-m','npc-villager-f','npc-child','npc-guard','npc-smith','npc-innkeeper',
+  'npc-merchant','npc-priest','npc-farmer','npc-miner','npc-noble','npc-thug','npc-dwarf','npc-halfling',
+  'npc-elf','npc-hooded','npc-labourer','npc-porter','npc-fisher','npc-sailor','npc-herder','npc-hunter',
+  'npc-scribe','npc-scholar','npc-acolyte','npc-minstrel','npc-festhall-f','npc-festhall-m','npc-bouncer',
+  'npc-beggar','npc-watch','npc-sellsword','npc-goodwife','npc-drover'];
+const CLASSES = ['barbarian','bard','cleric','druid','fighter','monk','paladin','ranger','rogue','sorcerer','warlock','wizard'];
+const SPECIES = ['human','elf','dwarf','halfling','dragonborn','gnome','orc','tiefling','aasimar','goliath','half-elf','half-orc','tabaxi'];
+
+const flat = (name) => (it,x,y,Z) => ['down','left','up'].slice(0, it.dirs || 3).forEach((d,k) => {
+  if (!hasSprite(it.n)) return;
+  g.save(); g.translate(x + k*16*Z, y); g.scale(Z,Z);
+  drawSpriteAt(g, it.n, `${d}-0`, 0, 0, {}); g.restore();
+});
+const actorCell = (ch, dirs) => (it,x,y,Z) => dirs.forEach((d,k) => {
+  g.save(); g.translate(x + k*16*Z, y); g.scale(Z,Z);
+  try { drawActor(g, ch(it), 8, 24, { dir:d, frame:`${d}-0`, shadow:false }); } catch(e){}
+  g.restore();
+});
+
+if (page === 'beasts') {
+  const Z = 5;
+  sheet(BEASTS.map(n => ({ label:n, n, dirs:3 })),
+    { cols:3, cellW:16*Z*3+26, cellH:16*Z+26, Z, draw: flat() });
+} else if (page === 'folk') {
+  const Z = 4;
+  sheet(FOLK.map(n => ({ label:n.replace('npc-',''), n, dirs:3 })),
+    { cols:4, cellW:16*Z*3+20, cellH:24*Z+26, Z, draw: flat() });
+} else if (page === 'classes') {
+  const Z = 5, WIDEST = 3;
+  const HAIR = ['short','long','ponytail','curly','topknot','braid'];
+  // One row per class, padded to the widest palette set, so a label can never
+  // drift out of line with the class it names.
+  const items = [];
+  CLASSES.forEach((id, ci) => {
+    const sets = CLASS_PALETTE[id] || [null];
+    for (let pi = 0; pi < WIDEST; pi++) {
+      items.push(pi < sets.length
+        ? { label: pi ? '' : id, id, pal: sets[pi],
+            hair: HAIR[(ci + pi * 3) % HAIR.length],
+            beard: (ci + pi) % 4 === 0 ? 'full' : 'none' }
+        : { label: '', blank: true });
+    }
+  });
+  sheet(items, {
+    cols: WIDEST, cellW: 16 * Z * 3 + 18, cellH: 24 * Z + 26, Z,
+    draw: (it, x, y, Z2) => {
+      if (it.blank) return;
+      const ch = {
+        speciesId: 'human', classes: [{ id: it.id }],
+        appearance: {
+          ...BASE, build: 'normal', hairStyle: it.hair, beard: it.beard,
+          outfit: it.pal.main, outfitAlt: it.pal.alt, accent: it.pal.accent,
+          metal: it.pal.metal, leather: it.pal.leather, cloth: it.pal.cloth,
+        },
+      };
+      ['down','left','up'].forEach((d, k) => {
+        g.save(); g.translate(x + k * 16 * Z2, y); g.scale(Z2, Z2);
+        try { drawActor(g, ch, 8, 24, { dir: d, frame: `${d}-0`, shadow: false }); } catch (e) {}
+        g.restore();
+      });
+    },
+  });
+} else if (page === 'poses') {
+  const Z = 4, POSES = ['idle','attack','cast','shoot','hurt','ko'];
+  const KIT = { fighter:{ mainHand:'longsword', offHand:'shield', armor:'chain-mail' }, wizard:{ mainHand:'quarterstaff' },
+    ranger:{ mainHand:'longbow' }, barbarian:{ mainHand:'greataxe' }, paladin:{ mainHand:'longsword', offHand:'shield', armor:'plate-armor' } };
+  const items = [];
+  for (const id of Object.keys(KIT)) for (const dir of ['down','right']) items.push({ label: `${id} ${dir}`, id, dir });
+  sheet(items, { cols: 1, cellW: 11 * 22 * Z + 80, cellH: 24 * Z + 26, Z, draw: (it, x, y, Z2) => {
+    const p = (CLASS_PALETTE[it.id] || [{}])[0];
+    const ch = { speciesId:'human', classes:[{ id: it.id }], equipment: KIT[it.id],
+      appearance: { ...BASE, outfit:p.main, outfitAlt:p.alt, accent:p.accent, metal:p.metal, leather:p.leather, cloth:p.cloth } };
+    let cx = x;
+    for (const pose of POSES) actorPoseFrames(ch, pose, it.dir).forEach((f, k) => {
+      g.save(); g.translate(cx, y); g.scale(Z2, Z2);
+      try { drawActor(g, ch, 11, 24, { dir: it.dir, pose, poseFrame: k, shadow:false }); } catch (e) {}
+      g.restore(); cx += 22 * Z2 + (k === actorPoseFrames(ch, pose, it.dir).length - 1 ? 10 : 0);
+    });
+  } });
+} else if (page === 'portraits') {
+  const Z = 3, items = [];
+  CLASSES.forEach((id, i) => items.push({ label: id, id, i }));
+  FOLK.forEach((n) => items.push({ label: n.replace('npc-',''), n }));
+  sheet(items, { cols: 8, cellW: 40 * Z + 16, cellH: 40 * Z + 26, Z, draw: (it, x, y, Z2) => {
+    const p = it.id ? (CLASS_PALETTE[it.id] || [{}])[0] : null;
+    const ch = it.n ? { sprite: it.n, name: it.n } : { speciesId:'human', classes:[{ id: it.id }],
+      appearance: { ...BASE, hairStyle: ['short','long','curly','braid'][it.i % 4], beard: it.i % 3 ? 'none' : 'full',
+        outfit:p.main, outfitAlt:p.alt, accent:p.accent, metal:p.metal, leather:p.leather, cloth:p.cloth } };
+    g.fillStyle = '#15121a'; g.fillRect(x, y, 40 * Z2, 40 * Z2);
+    g.save(); g.scale(Z2, Z2);
+    try { drawPortrait(g, ch, x / Z2, y / Z2, 40, {}); } catch (e) {}
+    g.restore();
+  } });
+} else {
+  const Z = 5;
+  sheet(SPECIES.map(id => ({ label:id, id })),
+    { cols:4, cellW:16*Z*2+22, cellH:24*Z+26, Z,
+      draw: actorCell(it => ({ speciesId:it.id, classes:[{id:'fighter'}],
+        size:(it.id==='halfling'||it.id==='gnome')?'small':'medium',
+        appearance:{ ...BASE, beard: it.id==='dwarf'?'full':'none',
+          hornColor: it.id==='dragonborn'?'#6a8a5a':'#8c8377' } }), ['down','left']) });
+}
+</script></body></html>

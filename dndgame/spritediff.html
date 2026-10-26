@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><title>sprite before/after</title>
+<style>html,body{background:#1c2029;color:#cbd;font:12px monospace;margin:0;padding:0;overflow:hidden}
+canvas{image-rendering:pixelated;display:block}</style></head><body>
+<canvas id="c" width="700" height="230"></canvas>
+<script type="module">
+const V = location.search.slice(1) || Math.random();
+const { registerCharacterSprites } = await import(`./src/render/spritedata_chars.js?${V}`);
+const old = await import(`./devart/spritedata_chars_old.js?${V}`);
+const { actorLayers, colorwayOf } = await import(`./src/render/actor.js?${V}`);
+const { drawSpriteAt, hasSprite } = await import('./src/render/sprites.js');
+registerCharacterSprites(); old.registerCharacterSprites();
+
+const c=document.getElementById('c'),g=c.getContext('2d');
+g.imageSmoothingEnabled=false;
+g.fillStyle='#4a505a';g.fillRect(0,0,c.width,c.height);
+const base={skin:'#e0a878',hair:'#4a3018',eye:'#37527a',outfit:'#7a3030',outfitAlt:'#2f4f7f',
+ accent:'#e3b34a',metal:'#aab2c0',leather:'#6b4a2a',cloth:'#c8b58a',hornColor:'#8c8377',
+ hairStyle:'short',beard:'none',cloakStyle:'cloak-none',helmStyle:'helm-none',outfitStyle:'outfit-tunic'};
+function paint(ch, frame, x, y, z, prefix) {
+  const cw = colorwayOf(ch);
+  for (const l of actorLayers(ch, frame)) {
+    const n = prefix + l.name; if (!hasSprite(n)) continue;
+    g.save(); g.translate(x, y); g.scale(z, z);
+    drawSpriteAt(g, n, frame, 0, 0, { colorway: cw }); g.restore();
+  }
+}
+const PAGES={a:['short hair',{}],b:['bald',{hairStyle:'bald'}],
+ c:['full beard',{beard:'full',hairStyle:'long'}],d:['halfling',{bodyStyle:'body-small',hairStyle:'curly'}]};
+const [label,mods]=PAGES[(location.hash||'#a').slice(1)]||PAGES.a;
+const ch={appearance:{...base,...mods},name:label};
+const Z=7, FRAMES=[['down-0','facing you'],['left-0','in profile']];
+g.font='12px monospace'; g.fillStyle='#9fe'; g.fillText(label,6,16);
+let x=88;
+for (const [f,cap] of FRAMES){
+  g.fillStyle='#aab'; g.fillText(cap, x+40, 16);
+  g.fillStyle='#f8a05a'; g.fillText('BEFORE', x+2, 34);
+  paint(ch,f,x,42,Z,'old-');
+  const x2=x+16*Z+40;
+  g.fillStyle='#8fe07a'; g.fillText('AFTER', x2+2, 34);
+  paint(ch,f,x2,42,Z,'');
+  x = x2 + 16*Z + 44;
+}
+</script></body></html>

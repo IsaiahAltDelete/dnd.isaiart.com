@@ -1,0 +1,26 @@
+@name  mage
+@use   chr16
+@scale 12
+@size  16x20
+
+@frame idle
+.......KK.......
+......K65K......
+......K65K....MM
+.....K6655K...MW
+....K665555K..MM
+...K55444444K..m
+..KKKKKKKKKKKK.m
+....K222222K...m
+....K2e22e2K...m
+....K222222K...m
+....KWWWWWWK...m
+.....KWWWWK....m
+...KK6655556KK.m
+..K6665555554K.m
+..K6555555554K.m
+..K6566665554K.m
+..K6566665555K.m
+.K665555555554Km
+.K544444444444Km
+.KKKKKKKKKKKKKKm

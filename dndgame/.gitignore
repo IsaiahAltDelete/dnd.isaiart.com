@@ -1,0 +1,10 @@
+# Screenshot/QA scratch from playtest passes — regenerate, don't version.
+output/
+__pycache__/
+*.pyc
+*.zip
+node_modules/
+
+# Agent worktrees live inside the repo; never version them.
+.claude/worktrees/
+.worktrees/

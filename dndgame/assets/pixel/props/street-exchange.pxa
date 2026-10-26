@@ -1,0 +1,87 @@
+@name street-exchange
+@size 8x8
+@anchor 4,4
+# Square paper/parcel/cup rims and joined leaf/stem clusters are intentional.
+@lint skip=doubles
+@palette
+K #3b2d30
+r #aa503a
+R #e18955
+g #697743
+p #e4cf9e
+P #b29668
+b #9c693e
+B #d6a562
+m #6a8292
+M #adc3bf
+w #ebe1bd
+
+@frame fruit
+...g....
+..Kgg...
+.KRRrK..
+.KrrrK..
+..KrrK..
+...KK...
+........
+........
+
+@frame bread
+........
+..KKKK..
+.KBwBBK.
+.KBBwBK.
+.KbbbbK.
+..KKKK..
+........
+........
+
+@frame paper
+........
+.KKKKKK.
+.KppppK.
+.KpPPpK.
+.KppppK.
+.KpPPpK.
+..KKKK..
+........
+
+@frame parcel
+........
+.KKKKKK.
+.KBBpBK.
+.KbbpbK.
+.KppppK.
+.KbbpbK.
+.KKKKKK.
+........
+
+@frame fish
+........
+....KK..
+..KMMmK.
+.KMMKmK.
+.KmmKK..
+..KK....
+........
+........
+
+@frame flower
+........
+..KRRK..
+..RwwR..
+..KrrK..
+...g....
+...gg...
+...g....
+........
+
+@frame cup
+........
+..KKKK..
+..KMMKK.
+..KmmKmK
+..KmmKK.
+..KKKK..
+........
+........

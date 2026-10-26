@@ -1,0 +1,120 @@
+@name  fx-torch-flame
+@scale 16
+@size  9x15
+# A six-frame flame for torches, sconces, braziers and campfires. It is the
+# light, so it has no outline: the red rim is the edge. The base (rows 9-14)
+# barely moves -- it is pinned to the fuel -- while the upper body sways and
+# throws off tongues that detach and rise, so the loop reads as burning rather
+# than as a shape wobbling. The lit (left) side carries amber, the right side
+# an extra step of orange, the same upper-left light as the rest of the world.
+#
+# @recolor makes fx-torch-flame-radiant (a temple's holy fire), -necrotic
+# (a crypt's grave-light), -cold, -arcane... one sprite per damage type.
+@anchor 4,15
+@point base 4,14
+@ramp  fire fire 5 01234
+
+@recolor fire magic
+@lint skip=pillow,light,stray,jaggy
+
+@frame burn-0 dur=100
+....0....
+....1....
+...12....
+...121...
+..1221...
+..12221..
+..12321..
+.123221..
+.1223221.
+.1223221.
+.1234221.
+.1234421.
+.1223221.
+..12321..
+...121...
+
+@frame burn-1 dur=80
+...0.....
+...1.....
+..12.....
+..121..0.
+..1221.1.
+..12221..
+..12321..
+.123221..
+.1223221.
+.1223221.
+.1234221.
+.1233421.
+.1223221.
+..12321..
+...121...
+
+@frame burn-2 dur=100
+..0......
+..1......
+.......0.
+..1......
+..121....
+..1221...
+.12221...
+.123221..
+.1223221.
+.1223221.
+.1234221.
+.1234421.
+.1223221.
+..12321..
+...121...
+
+@frame burn-3 dur=80
+.........
+.........
+.........
+....1....
+...121...
+..1221...
+..12221..
+..12221..
+.1223221.
+.1223221.
+.1234221.
+.1233421.
+.1223421.
+..12321..
+...121...
+
+@frame burn-4 dur=100
+.....0...
+.....1...
+.....21..
+.0..121..
+.1.1221..
+..12221..
+..12221..
+..123221.
+.1223221.
+.1223221.
+.1234221.
+.1233421.
+.1223221.
+..12321..
+...121...
+
+@frame burn-5 dur=80
+......0..
+......1..
+.0.......
+......1..
+....121..
+...1221..
+...12221.
+..123221.
+.1223221.
+.1223221.
+.1234221.
+.1233421.
+.1223421.
+..12321..
+...121...

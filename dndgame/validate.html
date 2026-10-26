@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sword Coast — Data Integrity</title>
+<style>
+  body { background:#0d0b10; color:#cbb894; font:12px/1.55 ui-monospace,Consolas,monospace; margin:0; padding:20px 26px; }
+  h1 { color:#e3b34a; font-size:15px; letter-spacing:3px; text-transform:uppercase; margin:0 0 12px; }
+  h2 { color:#8a7a5c; font-size:12px; letter-spacing:2px; margin:20px 0 6px; text-transform:uppercase;
+       border-bottom:1px solid #241d2a; padding-bottom:3px; }
+  .ok { color:#5fd07a; } .bad { color:#e2564a; } .warn { color:#e3b34a; } .dim { color:#5c4e36; }
+  .line { padding:1px 0; }
+  #sum { padding:10px 14px; border:1px solid #3a2c18; background:#141019; margin-bottom:6px; }
+  b { color:#e3b34a; }
+  ul { margin:2px 0 8px 0; padding-left:18px; }
+  li { color:#c08a72; }
+</style>
+</head>
+<body>
+<h1>Data Integrity</h1>
+<div id="sum">running…</div>
+<div id="out"></div>
+<script type="module">
+const out = document.getElementById('out');
+let errors = 0, warnings = 0, checks = 0;
+
+function section(title) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+}
+function pass(msg) { checks++; add(`<span class="ok">✓</span> ${msg}`); }
+function fail(msg, items) { errors++; checks++; add(`<span class="bad">✗</span> ${msg}`, items); }
+function warn(msg, items) { warnings++; checks++; add(`<span class="warn">!</span> ${msg}`, items); }
+function add(html, items) {
+  const d = document.createElement('div'); d.className = 'line'; d.innerHTML = html;
+  if (items && items.length) {
+    const ul = document.createElement('ul');
+    for (const i of items.slice(0, 25)) { const li = document.createElement('li'); li.textContent = i; ul.appendChild(li); }
+    if (items.length > 25) { const li = document.createElement('li'); li.className = 'dim'; li.textContent = `…and ${items.length - 25} more`; ul.appendChild(li); }
+    d.appendChild(ul);
+  }
+  out.appendChild(d);
+}
+const BUST = '?v=' + Date.now();
+async function tryImport(p) { try { return await import(p + BUST); } catch (e) { console.warn(p, e); return null; } }
+
+// ---------------------------------------------------------------- load
+const SP = await tryImport('./src/data/species.js');
+const CL = await tryImport('./src/data/classes.js');
+const SC = await tryImport('./src/data/subclasses.js');
+const SL = await tryImport('./src/data/spells_low.js');
+const SH = await tryImport('./src/data/spells_high.js');
+const IT = await tryImport('./src/data/items_gear.js');
+const IM = await tryImport('./src/data/items_magic.js');
+const ML = await tryImport('./src/data/monsters_low.js');
+const MH = await tryImport('./src/data/monsters_high.js');
+const BG = await tryImport('./src/data/backgrounds.js');
+const AB = await tryImport('./src/rules/abilities.js');
+
+const SPELLS = { ...(SL?.SPELLS_LOW || {}), ...(SH?.SPELLS_HIGH || {}) };
+const ITEMS = { ...(IT?.GEAR || {}), ...(IM?.MAGIC_ITEMS || {}) };
+const MONSTERS = { ...(ML?.MONSTERS_LOW || {}), ...(MH?.MONSTERS_HIGH || {}), ...(MH?.BOSSES || {}) };
+const spellIds = new Set(Object.keys(SPELLS));
+const itemIds = new Set(Object.keys(ITEMS));
+const monsterIds = new Set(Object.keys(MONSTERS));
+const featIds = new Set(Object.keys(BG?.FEATS || {}));
+const skillIds = new Set(Object.keys(AB?.SKILLS || {}));
+
+// ------------------------------------------------------------ species
+section('Species');
+if (!SP) fail('species.js did not load');
+else {
+  const S = SP.SPECIES;
+  pass(`${Object.keys(S).length} species loaded`);
+  const noSpeed = [], noColor = [], badAsi = [];
+  for (const [id, s] of Object.entries(S)) {
+    if (!s.speed) noSpeed.push(id);
+    if (!s.colorways?.skin?.length) noColor.push(id);
+    // 2024 rule: species must NOT grant ability score increases.
+    const grants = (s.traits || []).some(t => t.mech?.asi);
+    if (grants) badAsi.push(id);
+  }
+  noSpeed.length ? fail('species missing speed', noSpeed) : pass('every species has a speed');
+  noColor.length ? warn('species missing skin colorway (sprite customization)', noColor) : pass('every species has customization palettes');
+  badAsi.length ? fail('2024 violation: species granting ability increases', badAsi) : pass('no species grants an ASI (2024 rule)');
+}
+
+// ------------------------------------------------------------ classes
+section('Classes');
+if (!CL) fail('classes.js did not load');
+else {
+  const C = CL.CLASSES;
+  pass(`${Object.keys(C).length} classes loaded`);
+  const gaps = [], badSub = [], noKit = [];
+  for (const [id, c] of Object.entries(C)) {
+    for (let L = 1; L <= 20; L++) if (!c.features?.[L]) gaps.push(`${id} L${L}`);
+    if (!c.startingKits?.length) noKit.push(id);
+    if (SC?.SUBCLASSES) for (const s of c.subclasses || []) if (!SC.SUBCLASSES[s]) badSub.push(`${id} -> ${s}`);
+  }
+  gaps.length ? fail('class levels with no features defined', gaps) : pass('all 12 classes populated at every level 1–20');
+  noKit.length ? fail('classes with no starting equipment kit', noKit) : pass('every class has starting equipment');
+  if (SC) badSub.length ? fail('classes referencing a missing subclass', badSub) : pass('every class subclass id resolves');
+}
+
+// --------------------------------------------------------- subclasses
+section('Subclasses');
+if (!SC) fail('subclasses.js did not load (still being written)');
+else {
+  const S = SC.SUBCLASSES || {};
+  const n = Object.keys(S).length;
+  n >= 48 ? pass(`${n} subclasses loaded`) : warn(`${n} subclasses loaded (target 48)`);
+  const orphan = [], badSpell = [];
+  const byClass = {};
+  for (const [id, s] of Object.entries(S)) {
+    byClass[s.classId] = (byClass[s.classId] || 0) + 1;
+    if (CL?.CLASSES && !CL.CLASSES[s.classId]) orphan.push(`${id} -> ${s.classId}`);
+    for (const list of Object.values(s.spells || {}))
+      for (const sp of list) if (spellIds.size && !spellIds.has(sp)) badSpell.push(`${id}: ${sp}`);
+  }
+  orphan.length ? fail('subclasses pointing at a missing class', orphan) : pass('every subclass belongs to a real class');
+  if (spellIds.size) badSpell.length ? fail('subclass spell ids not in the spell list', badSpell) : pass('every subclass spell resolves');
+  const thin = Object.entries(byClass).filter(([, v]) => v < 4).map(([k, v]) => `${k}: ${v}`);
+  thin.length ? warn('classes with fewer than 4 subclasses', thin) : pass('every class has 4+ subclasses');
+}
+
+// -------------------------------------------------------------- spells
+section('Spells');
+if (!SL) fail('spells_low.js did not load');
+else {
+  const n = spellIds.size;
+  n >= 190 ? pass(`${n} spells loaded`) : warn(`${n} spells loaded (target 190)`);
+  const noSchool = [], noLists = [], badDmg = [], noVfx = [], badLevel = [];
+  for (const [id, s] of Object.entries(SPELLS)) {
+    if (!s.school) noSchool.push(id);
+    if (!s.lists?.length) noLists.push(id);
+    if (typeof s.level !== 'number' || s.level < 0 || s.level > 9) badLevel.push(id);
+    if (s.damage && !s.damage.type) badDmg.push(id);
+    if (!s.vfx) noVfx.push(id);
+  }
+  noSchool.length ? fail('spells with no school', noSchool) : pass('every spell has a school');
+  badLevel.length ? fail('spells with an invalid level', badLevel) : pass('every spell level is 0–9');
+  noLists.length ? fail('spells on no class list (unlearnable)', noLists) : pass('every spell is on at least one class list');
+  badDmg.length ? fail('damaging spells with no damage type', badDmg) : pass('every damaging spell has a damage type');
+  noVfx.length ? warn('spells with no vfx (will render plainly)', noVfx) : pass('every spell has a visual effect');
+  // Coverage per class list
+  const lists = ['bard','cleric','druid','paladin','ranger','sorcerer','warlock','wizard'];
+  const counts = lists.map(l => `${l}: ${Object.values(SPELLS).filter(s => (s.lists||[]).includes(l)).length}`);
+  // Paladins and rangers correctly get no cantrips in 5e — exclude them.
+  const cantripLists = lists.filter(l => l !== 'paladin' && l !== 'ranger');
+  const cantrips = cantripLists.filter(l => !Object.values(SPELLS).some(s => s.level === 0 && (s.lists||[]).includes(l)));
+  add(`<span class="dim">list sizes — ${counts.join(', ')}</span>`);
+  cantrips.length ? warn('class lists with no cantrips', cantrips) : pass('every cantrip-using list has cantrips');
+}
+
+// --------------------------------------------------------------- items
+section('Items');
+if (!IT) fail('items_gear.js did not load (still being written)');
+else {
+  const n = itemIds.size;
+  n >= 250 ? pass(`${n} items loaded`) : warn(`${n} items loaded (target 250)`);
+  const noCost = [], badWeapon = [], badArmor = [], noIcon = [];
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (it.cost == null) noCost.push(id);
+    if (!it.icon) noIcon.push(id);
+    if (it.kind === 'weapon' && (!it.die || !it.dtype)) badWeapon.push(id);
+    if (it.kind === 'armor' && it.ac == null) badArmor.push(id);
+  }
+  noCost.length ? fail('items with no cost (shops will break)', noCost) : pass('every item is priced');
+  badWeapon.length ? fail('weapons missing damage die or type', badWeapon) : pass('every weapon has damage');
+  badArmor.length ? fail('armor missing AC', badArmor) : pass('every armor has AC');
+  noIcon.length ? warn('items with no icon', noIcon) : pass('every item has an icon');
+  const masteries = new Set(Object.values(ITEMS).filter(i => i.mastery).map(i => i.mastery));
+  const want = ['cleave','graze','nick','push','sap','slow','topple','vex'];
+  const missing = want.filter(m => !masteries.has(m));
+  missing.length ? warn('weapon mastery properties unused by any weapon', missing) : pass('all 8 weapon masteries appear on weapons');
+}
+
+// ------------------------------------------------------------ monsters
+section('Monsters');
+if (!ML) fail('monsters_low.js did not load (still being written)');
+else {
+  const n = monsterIds.size;
+  n >= 120 ? pass(`${n} creatures loaded`) : warn(`${n} creatures loaded (target 120)`);
+  const noAc = [], noHp = [], noActions = [], noSprite = [], noBiome = [], badLoot = [];
+  for (const [id, m] of Object.entries(MONSTERS)) {
+    if (m.ac == null) noAc.push(id);
+    if (!m.hpDice) noHp.push(id);
+    if (!m.actions?.length) noActions.push(id);
+    if (!m.sprite) noSprite.push(id);
+    if (!m.biomes?.length) noBiome.push(id);
+    for (const [iid] of (m.loot?.table || [])) if (itemIds.size && !itemIds.has(iid)) badLoot.push(`${id}: ${iid}`);
+  }
+  noAc.length ? fail('creatures with no AC', noAc) : pass('every creature has AC');
+  noHp.length ? fail('creatures with no hit dice', noHp) : pass('every creature has hit dice');
+  noActions.length ? fail('creatures with no actions (cannot fight)', noActions) : pass('every creature can act');
+  noSprite.length ? fail('creatures with no sprite', noSprite) : pass('every creature has a sprite');
+  noBiome.length ? warn('creatures in no biome (will never spawn)', noBiome) : pass('every creature spawns somewhere');
+  if (itemIds.size) badLoot.length ? fail('loot referencing missing items', badLoot) : pass('every loot drop resolves');
+  const crs = Object.values(MONSTERS).map(m => m.cr ?? 0);
+  add(`<span class="dim">CR range ${Math.min(...crs)} – ${Math.max(...crs)}, ${Object.keys(MH?.BOSSES || {}).length} named bosses</span>`);
+}
+
+// --------------------------------------------------------- backgrounds
+section('Backgrounds & Feats');
+if (!BG) fail('backgrounds.js did not load (still being written)');
+else {
+  pass(`${Object.keys(BG.BACKGROUNDS || {}).length} backgrounds, ${featIds.size} feats, ${Object.keys(BG.FIGHTING_STYLES || {}).length} fighting styles`);
+  const badFeat = [], badSkill = [], badItem = [];
+  for (const [id, b] of Object.entries(BG.BACKGROUNDS || {})) {
+    if (b.originFeat && !featIds.has(b.originFeat)) badFeat.push(`${id}: ${b.originFeat}`);
+    for (const s of b.skills || []) if (skillIds.size && !skillIds.has(s)) badSkill.push(`${id}: ${s}`);
+    for (const e of b.equipment || []) { const iid = Array.isArray(e) ? e[0] : e; if (itemIds.size && !itemIds.has(iid)) badItem.push(`${id}: ${iid}`); }
+  }
+  badFeat.length ? fail('backgrounds referencing a missing feat', badFeat) : pass('every origin feat resolves');
+  if (skillIds.size) badSkill.length ? fail('backgrounds referencing an unknown skill', badSkill) : pass('every background skill resolves');
+  if (itemIds.size) badItem.length ? fail('backgrounds referencing missing equipment', badItem) : pass('every background item resolves');
+}
+
+// ------------------------------------------------- class kit / spell refs
+section('Cross-references');
+if (CL && itemIds.size) {
+  const bad = [];
+  for (const [id, c] of Object.entries(CL.CLASSES))
+    for (const k of c.startingKits || [])
+      for (const e of k.items || []) { const iid = Array.isArray(e) ? e[0] : e; if (!itemIds.has(iid)) bad.push(`${id}/${k.id}: ${iid}`); }
+  bad.length ? fail('class starting kits referencing missing items', bad) : pass('every class starting item resolves');
+}
+if (SP && spellIds.size) {
+  const bad = [];
+  const walk = (obj, where) => {
+    for (const t of obj?.traits || []) {
+      if (t.mech?.cantrip?.spellId && !spellIds.has(t.mech.cantrip.spellId)) bad.push(`${where}: ${t.mech.cantrip.spellId}`);
+      for (const s of t.mech?.spellPerRest || []) if (s.spellId && !spellIds.has(s.spellId)) bad.push(`${where}: ${s.spellId}`);
+    }
+  };
+  for (const [id, s] of Object.entries(SP.SPECIES)) { walk(s, id); for (const l of s.lineages || []) walk(l, `${id}/${l.id}`); }
+  bad.length ? fail('species spell ids not in the spell list', bad) : pass('every species spell resolves');
+}
+
+document.getElementById('sum').innerHTML =
+  `<b>${checks}</b> checks · <span class="ok"><b>${checks - errors - warnings}</b> pass</span> · ` +
+  `<span class="warn"><b>${warnings}</b> warn</span> · <span class="bad"><b>${errors}</b> fail</span>`;
+console.log('validation complete', { checks, errors, warnings });
+</script>
+</body>
+</html>

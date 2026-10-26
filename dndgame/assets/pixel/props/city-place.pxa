@@ -1,0 +1,27 @@
+@name city-place
+@size 16x8
+@anchor 8,8
+
+@palette
+K #28202a
+p #e2cfa2
+P #aa8b60
+q #645344
+w #e9ddb8
+g #778e75
+G #b5c6a1
+r #804638
+R #c18b4d
+m #8296a0
+M #4c616e
+t #bf9b65
+
+@frame idle
+............KK..
+...........KmmK.
+..KKKKKK...KwmK.
+.KppRpppK..KwmK.
+.KpppppqK..KMMK.
+..KqqqqK....KK..
+...KKKK.........
+................
