@@ -1,340 +1,173 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>Dice / Roller</title>
-    <style>
-      :root {
-        --ink: #111;
-        --paper: #fff;
-        --wash: #f4f4f4;
-        --line: #d2d2d2;
-        --muted: #717171;
-        --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-        --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-        --ease: cubic-bezier(.2, .7, .2, 1);
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1d1712">
+<title>Dice</title>
+<meta name="description" content="Dice: a 3D dice tray for the table. Every die from d4 to d100, with a modifier and a roll log. Tap a die to poke it or drag it to throw.">
+<link rel="stylesheet" href="../assets/phb/phb.css">
+<style>
+/* ===== Dice: page-specific styling on top of phb.css ===== */
+.bar-in{max-width:1352px}
+.page.tool.dc-page{max-width:1320px}
 
-      * { box-sizing: border-box; }
-      html, body { min-height: 100%; }
+@keyframes pop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.14);opacity:1}100%{transform:scale(1)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.35}}
 
-      body {
-        margin: 0;
-        color: var(--ink);
-        background: #ececec;
-        font-family: var(--sans);
-        -webkit-font-smoothing: antialiased;
-      }
+.dc-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.05em;color:var(--head)}
+.dc-meta strong{font-family:'BookInsanity',serif;font-size:17px;letter-spacing:0;margin-left:4px}
+.dc-status{display:inline-flex;align-items:center;gap:7px}
+.dc-status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--rule)}
+.app:not([data-phase="ready"]) .dc-status::before{animation:pulse .9s ease-in-out infinite}
 
-      button, input { font: inherit; color: inherit; }
-      button { cursor: pointer; }
-      button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.dc-bench{display:grid;grid-template-columns:150px minmax(0,1fr) 260px;gap:22px;align-items:stretch}
 
-      @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-      @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 55% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
-      @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: .35; } }
-      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
-      @keyframes stripes { from { background-position: 0 0; } to { background-position: 28px 0; } }
-      @keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+/* dice rail */
+.page .dc-label{display:block;margin:0 0 8px;padding:0 0 4px;font-family:'MrEaves',serif;font-size:21px;line-height:1;color:var(--head);border-bottom:2px solid var(--gold)}
+.dice-list{display:flex;flex-direction:column;gap:5px}
+.die-option{width:100%;min-height:52px;display:grid;grid-template-columns:34px 1fr;align-items:center;gap:10px;margin:0;padding:6px 10px;text-align:left;font:inherit;color:var(--head);
+  background:rgba(255,251,238,.55);border:1px solid var(--phb-line-soft);border-radius:3px;cursor:pointer;transition:background .15s,border-color .15s}
+.die-option:hover{background:rgba(255,255,255,.8);border-color:var(--phb-line)}
+.die-option[aria-pressed="true"]{color:var(--phb-btn-ink);background:var(--head);border-color:var(--head)}
+.die-option b{display:block;font-family:'MrEaves',serif;font-weight:normal;font-size:21px;line-height:1}
+.die-option small{display:block;margin-top:1px;font-style:italic;font-size:11.5px;opacity:.8}
+.mini-die{width:32px;height:30px;display:grid;place-items:center}
+.mini-die svg{width:100%;height:100%;overflow:visible}
+.mini-die polygon{fill:#F7F1DE;stroke:currentColor;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.die-option[aria-pressed="true"] .mini-die polygon{fill:var(--head)}
+.mini-die line{stroke:currentColor;stroke-width:1;vector-effect:non-scaling-stroke}
 
-      .app {
-        width: min(1480px, calc(100vw - 28px));
-        height: min(920px, calc(100dvh - 28px));
-        min-height: 600px;
-        margin: 14px auto;
-        display: grid;
-        grid-template-rows: 64px minmax(0, 1fr);
-        overflow: hidden;
-        border: 1px solid var(--ink);
-        background: var(--paper);
-        animation: fade-in .45s var(--ease) both;
-      }
+/* tray */
+.tray{position:relative;min-width:0;height:min(68vh,640px);min-height:440px;overflow:hidden;isolation:isolate;
+  background:radial-gradient(ellipse at 50% 45%,rgba(255,251,238,.5),rgba(192,173,106,.18) 70%);border:1px solid var(--phb-line-soft);border-top:3px solid var(--rule);border-bottom:3px solid var(--rule)}
+#diceCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#diceCanvas.grabbing{cursor:grabbing}
+#diceCanvas:focus-visible{outline:2px solid var(--phb-ring);outline-offset:-4px}
+.result-hud{position:absolute;z-index:3;top:12px;left:50%;display:grid;justify-items:center;max-width:min(440px,84%);text-align:center;transform:translateX(-50%);pointer-events:none}
+.result-hud .micro{font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.06em;color:var(--head)}
+.result-hud strong{margin-top:2px;font-family:'MrEaves',serif;font-weight:normal;font-size:clamp(46px,5vw,72px);line-height:.9;color:var(--head)}
+.result-hud strong.pop{animation:pop .55s cubic-bezier(.2,.7,.2,1)}
+.result-hud strong.waiting{animation:blink 1.1s ease-in-out infinite}
+.sequence{margin:4px 0 0;font-style:italic;font-size:14px;line-height:1.35;color:#5b4a35;overflow-wrap:anywhere}
+.roll-dock{position:absolute;z-index:4;bottom:16px;left:50%;display:grid;justify-items:center;gap:7px;transform:translateX(-50%)}
+.phb .roll-button{min-width:230px}
+.phb .roll-button kbd{margin-left:4px;padding:1px 6px 0;font-family:'ScalySans',sans-serif;font-size:11px;color:var(--phb-btn-ink);border:1px solid rgba(244,236,215,.5);border-radius:2px;background:none}
+.hint{font-style:italic;font-size:12.5px;color:#5b4a35;white-space:nowrap}
 
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 22px;
-        padding: 0 20px;
-        border-bottom: 1px solid var(--ink);
-      }
+/* settings + log */
+.info-panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.phb .count-row{display:flex;width:100%}
+.phb .count-row > button{flex:1 1 0;font-family:'BookInsanity',serif;font-size:16px}
+.modifier-row{display:flex;align-items:end;gap:12px;margin-top:12px}
+.phb .modifier-row .phb-field{flex:0 0 96px}
+.roll-range{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding-top:8px;border-top:1px solid var(--phb-line-soft);font-family:'ScalySans',sans-serif;font-size:13.5px}
+.roll-range strong{font-family:'BookInsanity',serif}
+.history-list{min-height:0}
+.page table.dc-log{margin:0;font-size:13px}
+.dc-log td,.dc-log th{vertical-align:middle;padding:4px 6px}
+.dc-log td:last-child,.dc-log th:last-child{text-align:right}
+.dc-log .when{display:block;font-style:italic;font-size:11px;color:var(--caption)}
+.dc-log .tot{font-family:'BookInsanity',serif;font-weight:bold;font-size:17px;color:var(--head)}
+.dc-log tbody tr:first-child td{background:rgba(192,173,106,.32)}
+.page .history-empty{margin:0;font-style:italic;color:#5b4a35}
+.clear-button{margin-top:10px}
 
-      .eyebrow, .label, .micro, .hint, .history-meta, .top-meta, .die-option small {
-        font-family: var(--mono);
-        text-transform: uppercase;
-        letter-spacing: .12em;
-      }
+@media (max-width:1100px){
+  .dc-bench{grid-template-columns:132px minmax(0,1fr)}
+  .info-panel{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap}
+  .info-panel > section{flex:1 1 280px}
+}
+@media (max-width:760px){
+  .dc-bench{grid-template-columns:minmax(0,1fr);gap:14px}
+  .dice-list{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+  .die-option{min-height:58px;grid-template-columns:1fr;justify-items:center;gap:2px;padding:6px 2px;text-align:center}
+  .die-option b{font-size:15px}
+  .die-option small,.dc-rail .dc-label{display:none}
+  .mini-die{width:26px;height:22px}
+  .tray{height:58vh;min-height:360px}
+  .phb .roll-button{min-width:200px;min-height:46px}
+  .phb .roll-button kbd,.hint{display:none}
+  .phb .count-row > button{min-height:44px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="phb">
+<a class="skip" href="#rollButton">Skip to the roll button</a>
+<header class="bar noprint">
+  <div class="bar-in">
+    <a class="mark" href="#dice">Dice</a>
+    <nav aria-label="Tools">
+      <a href="../cs/">Characters</a>
+      <a href="../spellbook/">Spellbook</a>
+      <a href="../monsters/">Monster Maker</a>
+    </nav>
+    <a class="home" href="../">&larr; Home</a>
+  </div>
+</header>
 
-      .eyebrow { display: block; margin-bottom: 5px; color: var(--muted); font-size: 9px; }
-      h1 { margin: 0; font-size: 19px; line-height: 1; letter-spacing: -.045em; }
+<main>
+<section class="page tool dc-page app" id="dice" data-phase="ready" aria-labelledby="diceTitle">
+  <header class="tool-head">
+    <h1 id="diceTitle"><span class="chnum">Tools of the Table</span>Dice</h1>
+    <p class="sub">Every die from d4 to d100, thrown as real solids. Tap a die to poke it, or drag one to throw it.</p>
+    <div class="actions dc-meta"><span class="dc-status" id="trayStatus">ready / touch a die</span><span>Rolls<strong id="rollCount">00</strong></span></div>
+  </header>
 
-      .top-meta { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 9px; letter-spacing: .1em; }
-      .top-meta strong { color: var(--ink); }
-      .status { display: flex; align-items: center; gap: 8px; color: var(--ink); }
-      .status::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
-      .app:not([data-phase="ready"]) .status::before { animation: pulse .9s ease-in-out infinite; }
-
-      .workbench { min-height: 0; display: grid; grid-template-columns: 168px minmax(0, 1fr) 250px; }
-
-      .dice-rail, .info-panel { min-height: 0; display: flex; flex-direction: column; background: var(--paper); animation: rise .55s var(--ease) both; }
-      .dice-rail { border-right: 1px solid var(--ink); animation-delay: .06s; }
-      .info-panel { border-left: 1px solid var(--ink); animation-delay: .14s; }
-
-      .label { display: block; color: var(--muted); font-size: 9px; line-height: 1.3; }
-      .rail-head { padding: 15px 15px 11px; border-bottom: 1px solid var(--line); }
-
-      .dice-list { display: grid; }
-
-      .die-option {
-        width: 100%;
-        min-height: 58px;
-        display: grid;
-        grid-template-columns: 34px 1fr;
-        align-items: center;
-        gap: 11px;
-        padding: 8px 12px 8px 14px;
-        border: 0;
-        border-bottom: 1px solid var(--line);
-        background: var(--paper);
-        text-align: left;
-        transition: background .18s var(--ease), color .18s var(--ease), padding-left .22s var(--ease);
-      }
-
-      .die-option:hover { background: var(--wash); padding-left: 18px; }
-      .die-option[aria-pressed="true"] { background: var(--ink); color: #fff; padding-left: 18px; }
-      .die-option b { display: block; font-size: 12px; letter-spacing: -.01em; }
-      .die-option small { display: block; margin-top: 2px; font-size: 8px; opacity: .65; }
-
-      .mini-die { width: 32px; height: 30px; display: grid; place-items: center; transition: transform .28s var(--ease); }
-      .die-option:hover .mini-die { transform: rotate(-9deg) scale(1.08); }
-      .die-option[aria-pressed="true"] .mini-die { transform: scale(1.1); }
-      .mini-die svg { width: 100%; height: 100%; overflow: visible; }
-      .mini-die polygon { fill: #fff; stroke: currentColor; stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: fill .18s var(--ease); }
-      .die-option[aria-pressed="true"] .mini-die polygon { fill: var(--ink); }
-      .mini-die line { stroke: currentColor; stroke-width: 1; vector-effect: non-scaling-stroke; }
-
-      .tray {
-        position: relative;
-        min-width: 0;
-        min-height: 0;
-        overflow: hidden;
-        isolation: isolate;
-        background-image: linear-gradient(#e9e9e9 1px, transparent 1px), linear-gradient(90deg, #e9e9e9 1px, transparent 1px);
-        background-size: 40px 40px;
-        animation: fade-in .7s var(--ease) both;
-        animation-delay: .1s;
-      }
-
-      #diceCanvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-        cursor: grab;
-        touch-action: none;
-      }
-
-      #diceCanvas.grabbing { cursor: grabbing; }
-
-      .result-hud {
-        position: absolute;
-        z-index: 3;
-        top: 16px;
-        left: 50%;
-        display: grid;
-        justify-items: center;
-        max-width: min(420px, 80%);
-        text-align: center;
-        transform: translateX(-50%);
-        pointer-events: none;
-      }
-
-      .result-hud .micro { color: var(--muted); font-size: 9px; }
-      .result-hud strong { margin-top: 3px; font-family: var(--mono); font-size: clamp(34px, 4.2vw, 56px); line-height: .95; letter-spacing: -.08em; }
-      .result-hud strong.pop { animation: pop .55s var(--ease); }
-      .result-hud strong.waiting { animation: blink 1.1s ease-in-out infinite; }
-      .sequence { margin: 6px 0 0; color: var(--muted); font-family: var(--mono); font-size: 10px; line-height: 1.45; word-break: break-word; }
-
-      .roll-dock {
-        position: absolute;
-        z-index: 4;
-        bottom: 20px;
-        left: 50%;
-        display: grid;
-        justify-items: center;
-        gap: 9px;
-        transform: translateX(-50%);
-      }
-
-      .roll-button {
-        position: relative;
-        min-width: 240px;
-        height: 49px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 0 18px;
-        border: 1px solid var(--ink);
-        background: var(--ink);
-        color: #fff;
-        font-family: var(--mono);
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: .1em;
-        overflow: hidden;
-        transition: transform .14s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
-      }
-
-      .roll-button::after {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(-45deg, transparent 0 10px, rgba(255, 255, 255, .1) 10px 20px);
-        background-size: 28px 28px;
-        opacity: 0;
-        transition: opacity .3s;
-        content: "";
-      }
-
-      .app[data-phase="rolling"] .roll-button::after, .app[data-phase="cocked"] .roll-button::after { opacity: 1; animation: stripes .5s linear infinite; }
-      .roll-button:hover { background: #2b2b2b; transform: translateY(-1px); box-shadow: 0 4px 0 -1px rgba(17, 17, 17, .18); }
-      .roll-button:active { transform: translateY(2px); box-shadow: none; }
-      .roll-button kbd { padding: 3px 5px; border: 1px solid #777; color: #ccc; font-family: var(--mono); font-size: 9px; }
-      .hint { color: var(--muted); font-size: 9px; white-space: nowrap; }
-
-      .panel-section { padding: 15px 15px 17px; border-bottom: 1px solid var(--line); }
-      .panel-section > .label { margin-bottom: 12px; }
-
-      .count-row { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--ink); }
-      .count-button { height: 38px; border: 0; border-right: 1px solid var(--ink); background: var(--paper); font-family: var(--mono); font-size: 11px; transition: background .18s var(--ease), color .18s var(--ease); }
-      .count-button:last-child { border-right: 0; }
-      .count-button:hover { background: var(--wash); }
-      .count-button[aria-pressed="true"] { background: var(--ink); color: #fff; }
-
-      .modifier-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; margin-top: 14px; }
-      .modifier-row input { width: 74px; height: 38px; padding: 0 10px; border: 1px solid var(--ink); border-radius: 0; background: #fff; font-family: var(--mono); transition: background .18s var(--ease); }
-      .modifier-row input:hover { background: var(--wash); }
-      .roll-range { display: flex; justify-content: space-between; gap: 12px; margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 10px; }
-      .roll-range strong { font-weight: 700; }
-
-      .history-section { min-height: 0; flex: 1; display: flex; flex-direction: column; border-bottom: 0; }
-      .history-list { min-height: 0; overflow: auto; }
-      .history-empty { padding-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 10px; line-height: 1.6; }
-      .history-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
-      .history-row:first-child { animation: slide-in .4s var(--ease); }
-      .history-row strong { align-self: center; font-family: var(--mono); font-size: 20px; }
-      .history-roll { font-family: var(--mono); font-size: 10px; line-height: 1.4; }
-      .history-meta { margin-top: 3px; color: var(--muted); font-size: 8px; }
-
-      .clear-button { margin-top: 12px; padding: 0 0 3px; border: 0; border-bottom: 1px solid var(--ink); background: none; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; transition: letter-spacing .2s var(--ease), opacity .2s; }
-      .clear-button:hover { letter-spacing: .18em; }
-
-      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-
-      @media (max-height: 760px) and (min-width: 781px) {
-        .app { min-height: 540px; grid-template-rows: 56px minmax(0, 1fr); }
-        .die-option { min-height: 50px; }
-        .rail-head, .panel-section { padding-block: 11px; }
-        .roll-dock { bottom: 14px; }
-        .roll-button { height: 43px; }
-      }
-
-      @media (max-width: 980px) {
-        .app { width: calc(100vw - 16px); height: calc(100dvh - 16px); margin: 8px auto; }
-        .workbench { grid-template-columns: 150px minmax(0, 1fr) 218px; }
-        .topbar { padding-inline: 15px; }
-      }
-
-      @media (max-width: 780px) {
-        html, body { height: 100%; overflow: hidden; }
-        body { background: var(--paper); }
-        .app { width: 100%; height: 100dvh; min-height: 0; margin: 0; border-width: 0; grid-template-rows: 58px minmax(0, 1fr); }
-        .topbar { padding-inline: 14px; }
-        .top-meta { gap: 14px; }
-        .workbench { grid-template-columns: 1fr; min-height: 0; overflow-y: auto; }
-        .dice-rail { border-right: 0; border-bottom: 1px solid var(--ink); }
-        .rail-head { display: none; }
-        .dice-list { grid-template-columns: repeat(7, minmax(46px, 1fr)); }
-        .die-option { min-height: 58px; grid-template-columns: 1fr; justify-items: center; gap: 3px; padding: 7px 3px; border-bottom: 0; border-right: 1px solid var(--line); }
-        .die-option:last-child { border-right: 0; }
-        .die-option:hover, .die-option[aria-pressed="true"] { padding-left: 3px; }
-        .die-option small { display: none; }
-        .die-option b { font-size: 9px; }
-        .mini-die { width: 28px; height: 24px; }
-        .tray { min-height: 60dvh; border-bottom: 1px solid var(--ink); }
-        .result-hud { top: 12px; }
-        .roll-dock { bottom: 14px; }
-        .roll-button { min-width: 210px; height: 45px; }
-        .hint { display: none; }
-        .info-panel { border-left: 0; }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { animation: none !important; transition: none !important; }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="app" data-phase="ready">
-      <header class="topbar">
-        <div><span class="eyebrow">utility / tabletop</span><h1>DICE / ROLLER</h1></div>
-        <div class="top-meta"><span class="status" id="trayStatus">ready / touch a die</span><span>roll <strong id="rollCount">00</strong></span></div>
-      </header>
-
-      <div class="workbench">
-        <aside class="dice-rail" aria-label="Dice type">
-          <div class="rail-head"><span class="label">dice</span></div>
-          <div class="dice-list" id="diceList">
-            <button class="die-option" type="button" data-sides="4"><span class="mini-die"></span><span><b>D4</b><small>tetra</small></span></button>
-            <button class="die-option" type="button" data-sides="6"><span class="mini-die"></span><span><b>D6</b><small>cube</small></span></button>
-            <button class="die-option" type="button" data-sides="8"><span class="mini-die"></span><span><b>D8</b><small>octa</small></span></button>
-            <button class="die-option" type="button" data-sides="10"><span class="mini-die"></span><span><b>D10</b><small>deca</small></span></button>
-            <button class="die-option" type="button" data-sides="12"><span class="mini-die"></span><span><b>D12</b><small>dodeca</small></span></button>
-            <button class="die-option" type="button" data-sides="20" aria-pressed="true"><span class="mini-die"></span><span><b>D20</b><small>icosa</small></span></button>
-            <button class="die-option" type="button" data-sides="100"><span class="mini-die"></span><span><b>D100</b><small>percentile</small></span></button>
-          </div>
-        </aside>
-
-        <section class="tray" aria-label="Dice tray">
-          <canvas id="diceCanvas" tabindex="0" aria-label="Interactive 3D dice. Tap a die to poke it or drag a die to throw it."></canvas>
-          <div class="result-hud">
-            <span class="micro"><span id="resultKind">waiting</span> · <span id="hudFormula">3d20</span></span>
-            <strong id="hudTotal">—</strong>
-            <p class="sequence" id="rollSequence">Roll or throw the dice.</p>
-          </div>
-          <div class="roll-dock">
-            <button class="roll-button" type="button" id="rollButton">ROLL <span id="rollLabel">3D20</span><kbd>SPACE</kbd></button>
-            <span class="hint">tap a die to poke it · drag to throw</span>
-          </div>
-        </section>
-
-        <aside class="info-panel" aria-label="Roll settings and log">
-          <section class="panel-section">
-            <span class="label">quantity</span>
-            <div class="count-row" id="countRow" role="group" aria-label="How many dice">
-              <button class="count-button" type="button" data-count="1">1</button>
-              <button class="count-button" type="button" data-count="2">2</button>
-              <button class="count-button" type="button" data-count="3" aria-pressed="true">3</button>
-              <button class="count-button" type="button" data-count="4">4</button>
-              <button class="count-button" type="button" data-count="5">5</button>
-            </div>
-            <div class="modifier-row"><label class="label" for="modifierInput">modifier</label><input id="modifierInput" type="number" min="-20" max="20" step="1" value="0" /></div>
-            <div class="roll-range"><span id="rollSpec">3d20 + 0</span><strong id="rangeSpec">3—60</strong></div>
-          </section>
-
-          <section class="panel-section history-section">
-            <span class="label">log</span>
-            <div class="history-list" id="historyList"><div class="history-empty">No rolls yet.<br />Results appear after every die settles.</div></div>
-            <div><button class="clear-button" type="button" id="clearButton">reset / clear</button></div>
-          </section>
-        </aside>
+  <div class="dc-bench">
+    <aside class="dc-rail" aria-label="Dice type">
+      <span class="dc-label">Die</span>
+      <div class="dice-list" id="diceList">
+        <button class="die-option" type="button" data-sides="4"><span class="mini-die"></span><span><b>d4</b><small>tetrahedron</small></span></button>
+        <button class="die-option" type="button" data-sides="6"><span class="mini-die"></span><span><b>d6</b><small>cube</small></span></button>
+        <button class="die-option" type="button" data-sides="8"><span class="mini-die"></span><span><b>d8</b><small>octahedron</small></span></button>
+        <button class="die-option" type="button" data-sides="10"><span class="mini-die"></span><span><b>d10</b><small>decahedron</small></span></button>
+        <button class="die-option" type="button" data-sides="12"><span class="mini-die"></span><span><b>d12</b><small>dodecahedron</small></span></button>
+        <button class="die-option" type="button" data-sides="20" aria-pressed="true"><span class="mini-die"></span><span><b>d20</b><small>icosahedron</small></span></button>
+        <button class="die-option" type="button" data-sides="100"><span class="mini-die"></span><span><b>d100</b><small>percentile</small></span></button>
       </div>
-    </main>
-    <div class="sr-only" id="liveRegion" aria-live="polite"></div>
+    </aside>
+
+    <section class="tray" aria-label="Dice tray">
+      <canvas id="diceCanvas" tabindex="0" aria-label="Interactive 3D dice. Tap a die to poke it or drag a die to throw it."></canvas>
+      <div class="result-hud">
+        <span class="micro"><span id="resultKind">waiting</span> · <span id="hudFormula">3d20</span></span>
+        <strong id="hudTotal">—</strong>
+        <p class="sequence" id="rollSequence">Roll or throw the dice.</p>
+      </div>
+      <div class="roll-dock">
+        <button class="phb-btn lg roll-button" type="button" id="rollButton">Roll <span id="rollLabel">3D20</span><kbd>Space</kbd></button>
+        <span class="hint">Tap a die to poke it, drag to throw</span>
+      </div>
+    </section>
+
+    <aside class="info-panel" aria-label="Roll settings and log">
+      <section>
+        <span class="dc-label" id="qtyLabel">Quantity</span>
+        <div class="phb-seg count-row" id="countRow" role="group" aria-labelledby="qtyLabel">
+          <button class="count-button" type="button" data-count="1">1</button>
+          <button class="count-button" type="button" data-count="2">2</button>
+          <button class="count-button" type="button" data-count="3" aria-pressed="true">3</button>
+          <button class="count-button" type="button" data-count="4">4</button>
+          <button class="count-button" type="button" data-count="5">5</button>
+        </div>
+        <div class="modifier-row"><div class="phb-field"><label for="modifierInput">Modifier</label><input id="modifierInput" type="number" min="-20" max="20" step="1" value="0"></div></div>
+        <div class="roll-range"><span id="rollSpec">3d20 + 0</span><strong id="rangeSpec">3—60</strong></div>
+      </section>
+
+      <section>
+        <span class="dc-label">Roll Log</span>
+        <div class="history-list" id="historyList"><p class="history-empty">No rolls yet. Results appear after every die settles.</p></div>
+        <button class="phb-btn ghost sm clear-button" type="button" id="clearButton">Clear the log</button>
+      </section>
+    </aside>
+  </div>
+  <span class="foot">Tools of the Table | Dice</span>
+</section>
+</main>
+<div class="sr-only" id="liveRegion" aria-live="polite"></div>
     <script src="vendor/three.global.js"></script>
     <script src="vendor/cannon-es.global.js"></script>
     <script src="models/dice.js"></script>
@@ -372,7 +205,7 @@
         const STEP = 1 / 120;
         const SIZES = { 4: 1.04, 6: .8, 8: .86, 10: .86, 12: .84, 20: .88, 100: .78 };
         const D4_VERTEX_VALUES = [1, 2, 3, 4];
-        const INK = '#25272a';
+        const INK = '#2b1a10';
         const OUTLINE = .032;
         const NUMERAL_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
         const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -428,7 +261,7 @@
         const camera = new THREE.PerspectiveCamera(34, 1, .1, 80);
         const CAMERA_DIRECTION = new THREE.Vector3(0, 1.7, 1).normalize();
 
-        scene.add(new THREE.HemisphereLight(0xffffff, 0xb4b4b4, 1.7));
+        scene.add(new THREE.HemisphereLight(0xfff8ea, 0xb8a27a, 1.7));
         const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
         keyLight.position.set(-4.5, 10, 3.5);
         keyLight.castShadow = true;
@@ -444,12 +277,12 @@
         fillLight.position.set(5, 6, -4);
         scene.add(fillLight);
 
-        const floorMesh = new THREE.Mesh(new THREE.CircleGeometry(TRAY_RADIUS + WALL_THICKNESS, 96), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+        const floorMesh = new THREE.Mesh(new THREE.CircleGeometry(TRAY_RADIUS + WALL_THICKNESS, 96), new THREE.MeshStandardMaterial({ color: 0xece0c2, roughness: 1 }));
         floorMesh.rotation.x = -Math.PI / 2;
         floorMesh.receiveShadow = true;
         scene.add(floorMesh);
         const WALL_VISIBLE = .24;
-        const wallMesh = new THREE.Mesh(new THREE.CylinderGeometry(TRAY_RADIUS, TRAY_RADIUS, WALL_VISIBLE, 96, 1, true), new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: .95, side: THREE.DoubleSide }));
+        const wallMesh = new THREE.Mesh(new THREE.CylinderGeometry(TRAY_RADIUS, TRAY_RADIUS, WALL_VISIBLE, 96, 1, true), new THREE.MeshStandardMaterial({ color: 0xdccaa0, roughness: .95, side: THREE.DoubleSide }));
         wallMesh.position.y = WALL_VISIBLE / 2;
         wallMesh.receiveShadow = true;
         scene.add(wallMesh);
@@ -458,12 +291,12 @@
           for (let i = 0; i <= 160; i += 1) { const a = i / 160 * Math.PI * 2; points.push(new THREE.Vector3(Math.cos(a) * radius, y, Math.sin(a) * radius)); }
           return new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
         }
-        scene.add(ring(TRAY_RADIUS, WALL_VISIBLE + .003, 0x111111, 1), ring(TRAY_RADIUS + .004, .004, 0x111111, 1), ring(TRAY_RADIUS - .2, .004, 0x9a9a9a, .75));
+        scene.add(ring(TRAY_RADIUS, WALL_VISIBLE + .003, 0x58180d, 1), ring(TRAY_RADIUS + .004, .004, 0x58180d, 1), ring(TRAY_RADIUS - .2, .004, 0xc0ad6a, .9));
 
         // ---------- die assets: numeral atlas + beveled geometry ----------
         const assetCache = new Map();
-        const silhouetteMaterial = new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.BackSide });
-        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x1c1c1c, transparent: true, opacity: .85 });
+        const silhouetteMaterial = new THREE.MeshBasicMaterial({ color: 0x2b1a10, side: THREE.BackSide });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x3a2416, transparent: true, opacity: .85 });
         const kindFor = (sides) => `d${sides}`;
         const modelFor = (kind) => MODELS[kind === 'tens' || kind === 'units' ? '10' : kind.slice(1)];
 
@@ -507,7 +340,7 @@
           const atlasCanvas = document.createElement('canvas');
           atlasCanvas.width = SIZE; atlasCanvas.height = SIZE;
           const ctx = atlasCanvas.getContext('2d');
-          ctx.fillStyle = '#f9f9f9';
+          ctx.fillStyle = '#f8f1dc';
           ctx.fillRect(0, 0, SIZE, SIZE);
           const frames = model.faces.map((_, i) => faceFrame(model, i, kind));
           const cellFor = (i) => ({ col: i % cols, row: Math.floor(i / cols) });
@@ -967,8 +800,10 @@
         }
 
         function renderHistory() {
-          if (!state.rolls.length) { historyList.innerHTML = '<div class="history-empty">No rolls yet.<br />Results appear after every die settles.</div>'; return; }
-          historyList.innerHTML = state.rolls.slice(0, 5).map((roll) => `<div class="history-row"><div><div class="history-roll">${roll.formula} → [${roll.values.join(', ')}]</div><div class="history-meta">${roll.time}</div></div><strong>${roll.total}</strong></div>`).join('');
+          if (!state.rolls.length) { historyList.innerHTML = '<p class="history-empty">No rolls yet. Results appear after every die settles.</p>'; return; }
+          historyList.innerHTML = `<table class="dc-log"><thead><tr><th scope="col">Roll</th><th scope="col">Dice</th><th scope="col">Total</th></tr></thead><tbody>${
+            state.rolls.slice(0, 8).map((roll) => `<tr><td>${roll.formula}<span class="when">${roll.time}</span></td><td>${roll.values.join(', ')}</td><td class="tot">${roll.total}</td></tr>`).join('')
+          }</tbody></table>`;
         }
 
         function miniSvg(sides) {
