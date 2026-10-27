@@ -90,6 +90,55 @@
 .page .sb-material{margin:12px 0 0;font-style:italic;font-size:13.6px;color:#5b4a35}
 .sb-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 
+/* ---- view switch ---- */
+.sb-viewbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin:0 0 6px}
+.page .sb-viewbar .sb-summary{margin:0}
+.phb .sb-view > button{min-width:64px}
+
+/* ---- cards view: the open book becomes one wide page of spell cards ---- */
+body.sb-deck .sb-spread{grid-template-columns:minmax(0,1fr)}
+body.sb-deck .sb-spread::before,body.sb-deck .sb-table-wrap{display:none}
+body.sb-deck .sb-filters{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:10px 14px}
+body.sb-deck .sb-filters > .phb-field{flex:1 1 260px}
+body.sb-deck .sb-filters > .sb-row{flex:2 1 360px}
+body.sb-deck .sb-filters > .sb-checks{flex:1 1 100%}
+.sb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:18px;margin-top:8px}
+.sb-cards[hidden]{display:none}
+.sb-card{position:relative;display:flex;flex-direction:column;padding:6px;border-radius:10px;background:var(--school);box-shadow:0 3px 10px rgba(40,20,10,.25)}
+.sb-card-in{flex:1;display:flex;flex-direction:column;border-radius:6px;overflow:hidden;background:var(--parch) url(../assets/phb/tex/parchment.webp) center/cover}
+.sb-card-top{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:6px 4px 5px 10px;color:#F4ECD7;background:var(--school)}
+.sb-card-open{flex:1;min-width:0;margin:0;padding:2px 0;text-align:left;font-family:'MrEaves',serif;font-size:21px;line-height:1.05;color:inherit;background:none;border:0;cursor:pointer}
+.sb-card-open::after{content:"";position:absolute;inset:0;border-radius:10px}
+.sb-card-open:focus-visible{outline:none}
+.sb-card:has(.sb-card-open:focus-visible){outline:3px solid var(--hi);outline-offset:2px}
+.sb-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(40,20,10,.32)}
+.sb-card-star{position:relative;z-index:1;flex:none;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;padding:0;color:#F4ECD7;background:none;border:0;border-radius:4px;cursor:pointer}
+.sb-card-star:hover{background:rgba(255,255,255,.15)}
+.sb-card-star svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
+.sb-card-star[aria-pressed="true"] svg{fill:currentColor}
+.sb-card dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin:0;background:rgba(88,24,13,.22);border-bottom:1px solid rgba(88,24,13,.22)}
+.sb-card dl div{min-width:0;padding:4px 8px;background:#f5edd8}
+.sb-card dt{font-family:'ScalySans',sans-serif;font-weight:bold;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--head)}
+.sb-card dd{margin:0;font-size:12.8px;line-height:1.25;overflow-wrap:anywhere}
+.page .sb-card-text{flex:1;margin:0;padding:8px 10px;font-size:12.8px;line-height:1.4}
+.sb-card-foot{display:flex;justify-content:space-between;gap:8px;padding:5px 10px;font-family:'ScalySans',sans-serif;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#F4ECD7;background:var(--school)}
+.sb-more{display:flex;justify-content:center;margin-top:20px}
+.sb-more[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.sb-card:hover{transform:none}}
+
+/* in cards view a chosen spell opens over the deck */
+body.sb-deck .sb-folio{display:none}
+body.sb-deck.sb-reading{overflow:hidden}
+body.sb-deck.sb-reading .bar{display:none}
+body.sb-deck.sb-reading .sb-folio{display:block;position:fixed;z-index:140;top:24px;bottom:24px;left:50%;width:min(760px,calc(100vw - 32px));transform:translateX(-50%);
+  margin:0;padding:0 36px 32px;border:0;overflow-y:auto;overscroll-behavior:contain;
+  box-shadow:0 0 0 100vmax rgba(8,5,3,.66),0 18px 50px rgba(0,0,0,.6);
+  background:var(--parch) url(../assets/phb/tex/parchment.webp) center/cover}
+body.sb-deck.sb-reading .sb-folio-bar{position:sticky;top:0;z-index:2;margin:0 -36px 12px;padding:4px 16px;background:#120d0a;border-bottom:1px solid #3a2a1c}
+body.sb-deck.sb-reading .sb-folio-bar .sb-back{display:inline-flex!important;color:var(--hi);margin-left:0}
+body.sb-deck.sb-reading .sb-folio-bar .sb-link{color:#cfc7b0;font-size:16px}
+body.sb-deck.sb-reading .sb-pager{justify-content:flex-end;gap:14px}
+
 /* ---- my spellbook strip ---- */
 .sb-mine{max-width:1160px;margin:0 auto 34px;padding:22px 28px;display:flex;flex-wrap:wrap;gap:22px 48px;background:#2a1f17;border:1px solid #4a3626;box-shadow:0 18px 50px rgba(0,0,0,.45);color:#efe6cf;scroll-margin-top:60px}
 .sb-mine-saved{flex:1 1 340px;min-width:0}
@@ -133,6 +182,9 @@
   body.sb-reading .bar{display:none}
   .phb .sb-levels > button{min-height:44px}
   .sb-mine{padding:18px 16px}
+  .sb-cards{grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:12px}
+  body.sb-deck.sb-reading .sb-folio{top:0;bottom:0;left:0;width:auto;right:0;transform:none;padding:0 20px 96px;box-shadow:none}
+  body.sb-deck.sb-reading .sb-folio-bar{margin:0 -20px 12px}
   /* the folio becomes its own screen on phones */
   .sb-folio{display:none;margin:0;padding:0 20px 96px;border:0;position:fixed;inset:0;z-index:140;overflow-y:auto;overscroll-behavior:contain;
     background:var(--parch) url(../assets/phb/tex/parchment.webp) center/cover}

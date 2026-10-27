@@ -74,7 +74,13 @@
         </div>
       </div>
 
-      <p class="sb-summary" aria-live="polite"><span id="summary">Opening the archive&hellip;</span> <button type="button" class="sb-link" id="clear-filters" hidden>Clear filters</button></p>
+      <div class="sb-viewbar">
+        <p class="sb-summary" aria-live="polite"><span id="summary">Opening the archive&hellip;</span> <button type="button" class="sb-link" id="clear-filters" hidden>Clear filters</button></p>
+        <div class="phb-seg sb-view" id="view-seg" role="group" aria-label="Show spells as">
+          <button type="button" data-view="list" aria-pressed="true">List</button>
+          <button type="button" data-view="cards" aria-pressed="false">Cards</button>
+        </div>
+      </div>
 
       <div class="sb-table-wrap" id="table-wrap">
         <table class="sb-table">
@@ -83,11 +89,13 @@
           </thead>
           <tbody id="spell-rows"></tbody>
         </table>
-        <div class="tool-empty" id="empty" hidden>
-          <h3>The ink reveals nothing</h3>
-          <p>No spell answers those conditions. Loosen a filter or try another word.</p>
-        </div>
       </div>
+      <div class="tool-empty" id="empty" hidden>
+        <h3>The ink reveals nothing</h3>
+        <p>No spell answers those conditions. Loosen a filter or try another word.</p>
+      </div>
+      <div class="sb-cards" id="spell-cards" hidden></div>
+      <div class="sb-more" id="cards-more" hidden><button class="phb-btn ghost" type="button" id="more-btn">Deal more cards</button></div>
       <p class="sb-source">Rules text from the <a href="https://open5e.com" target="_blank" rel="noreferrer">Open5e</a> SRD 5.1 archive. <span id="data-status"></span></p>
     </section>
 

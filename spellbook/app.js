@@ -5,6 +5,8 @@
   const CACHE_KEY = "arcana-index:open5e-v2:srd-2014";
   const FAVORITES_KEY = "arcana-index:favorites";
   const SLOTS_KEY = "arcana-index:slots";
+  const VIEW_KEY = "arcana-index:view";
+  const CARD_PAGE = 48;
   const CACHE_TTL = 6 * 60 * 60 * 1000;
   const PHONE = window.matchMedia("(max-width: 760px)");
 
@@ -116,7 +118,11 @@
     slotLevel: $("#slot-level"),
     slotGrid: $("#slot-grid"),
     restBtn: $("#rest-btn"),
-    toast: $("#toast")
+    toast: $("#toast"),
+    viewSeg: $("#view-seg"),
+    cards: $("#spell-cards"),
+    cardsMore: $("#cards-more"),
+    moreBtn: $("#more-btn")
   };
 
   const state = { query: "", level: "", classKey: "", school: "", conc: false, ritual: false, mine: false };
@@ -126,6 +132,10 @@
   let current = null;
   let autoPicked = false;
   let hashHandled = false;
+  let view = readJSON(VIEW_KEY, "list", (value) => value === "list" || value === "cards");
+  let cardLimit = CARD_PAGE;
+  const cardsMode = () => view === "cards";
+  const overlayMode = () => PHONE.matches || cardsMode();
   let toastTimer = 0;
   let favorites = new Set(readJSON(FAVORITES_KEY, [], Array.isArray));
   let slots = readJSON(SLOTS_KEY, { cls: "full", level: 5, used: {} }, (value) => value && typeof value === "object");
@@ -327,7 +337,7 @@
       openSpell(fromHash.key, { ...quiet, reading: !hashHandled });
       hashHandled = true;
     } else if (current && !autoPicked && byKey.has(current.key)) openSpell(current.key, quiet);
-    else if (!PHONE.matches && filtered.length) {
+    else if (!overlayMode() && filtered.length) {
       // Nothing chosen yet: show the first spell so the right-hand page is never blank.
       openSpell(filtered[0].key, quiet);
       autoPicked = true;
@@ -367,10 +377,70 @@
     els.levelSeg.querySelectorAll("button").forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.level === state.level));
     });
+    cardLimit = CARD_PAGE;
     renderRows();
     els.tableWrap.scrollTop = 0;
     renderSummary();
     renderPager();
+  }
+
+  function renderView() {
+    document.body.classList.toggle("sb-deck", cardsMode());
+    els.viewSeg.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.view === view)));
+    if (!cardsMode()) document.body.classList.remove("sb-reading");
+    renderRows();
+  }
+
+  function setView(next) {
+    if (next === view) return;
+    view = next;
+    writeJSON(VIEW_KEY, view);
+    cardLimit = CARD_PAGE;
+    renderView();
+    renderPager();
+    // Leaving the deck on a wide screen, put the last spell back on the right-hand page.
+    if (!cardsMode() && !PHONE.matches && !current && filtered.length) openSpell(filtered[0].key, { reading: false, scroll: false, hash: false });
+  }
+
+  // The first sentences of a spell, short enough for a card face.
+  function cardText(spell) {
+    const plain = spell.desc.split(/\r?\n/).find((line) => line.trim() && !line.trim().startsWith("|")) || "";
+    const text = plain.replace(/\*\*|__|[*_#]/g, "").trim();
+    if (text.length <= 170) return text;
+    const cut = text.slice(0, 170);
+    return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
+  }
+
+  const CLASS_SHORT = { Bard: "Brd", Cleric: "Clr", Druid: "Drd", Paladin: "Pal", Ranger: "Rgr", Sorcerer: "Sor", Warlock: "Wlk", Wizard: "Wiz" };
+  const STAR = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2l2 4.3 4.7.6-3.4 3.3.9 4.7L8 11.8l-4.2 2.3.9-4.7L1.3 6.1 6 5.5z"/></svg>';
+
+  function renderCards() {
+    const shown = filtered.slice(0, cardLimit);
+    els.cards.innerHTML = shown.map((spell) => {
+      const meta = schoolMeta(spell.school.key);
+      const saved = favorites.has(spell.key);
+      const classes = spell.classes.length > 4 ? `${spell.classes.length} classes` : spell.classes.map((item) => CLASS_SHORT[item.name] || item.name).join(" · ");
+      const stats = [
+        ["Casting", castingTime(spell, true)],
+        ["Range", rangeText(spell, true)],
+        ["Components", components(spell)],
+        ["Duration", spell.concentration ? `Conc., ${spell.duration.replace(/^up to /i, "")}` : capitalize(spell.duration)]
+      ];
+      return `<article class="sb-card" style="--school:${meta.color}">
+        <div class="sb-card-in">
+          <div class="sb-card-top">
+            <button type="button" class="sb-card-open" data-open="${escapeHtml(spell.key)}">${escapeHtml(spell.name)}</button>
+            <button type="button" class="sb-card-star" data-star="${escapeHtml(spell.key)}" aria-pressed="${saved}" aria-label="${saved ? "Remove" : "Add"} ${escapeHtml(spell.name)} ${saved ? "from" : "to"} my spellbook">${STAR}</button>
+          </div>
+          <dl>${stats.map(([label, value]) => `<div><dt>${label}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>
+          <p class="sb-card-text">${escapeHtml(cardText(spell))}</p>
+          <div class="sb-card-foot"><span>${escapeHtml(levelLine(spell))}</span><span>${escapeHtml(classes)}</span></div>
+        </div>
+      </article>`;
+    }).join("");
+    const left = filtered.length - shown.length;
+    els.cardsMore.hidden = left <= 0;
+    els.moreBtn.textContent = `Deal ${Math.min(left, CARD_PAGE)} more ${Math.min(left, CARD_PAGE) === 1 ? "card" : "cards"}`;
   }
 
   function renderRows() {
@@ -391,6 +461,9 @@
       </tr>`;
     }).join("");
     els.empty.hidden = filtered.length > 0;
+    els.cards.hidden = !cardsMode();
+    if (cardsMode()) renderCards();
+    else els.cardsMore.hidden = true;
   }
 
   function renderSummary() {
@@ -461,7 +534,7 @@
     if (hash) history.replaceState(null, "", `#${slug(spell)}`);
     document.title = `${spell.name} · The Grand Spellbook`;
 
-    if (PHONE.matches) {
+    if (overlayMode()) {
       if (reading) {
         document.body.classList.add("sb-reading");
         els.folio.scrollTop = 0;
@@ -485,7 +558,8 @@
   function closeReading() {
     if (!document.body.classList.contains("sb-reading")) return;
     document.body.classList.remove("sb-reading");
-    const button = current && els.rows.querySelector(`[data-open="${CSS.escape(current.key)}"]`);
+    const list = cardsMode() ? els.cards : els.rows;
+    const button = current && list.querySelector(`[data-open="${CSS.escape(current.key)}"]`);
     if (button) {
       button.scrollIntoView({ block: "center" });
       button.focus({ preventScroll: true });
@@ -514,14 +588,14 @@
     const parts = [];
     if (state.classKey) parts.push(els.classFilter.selectedOptions[0]?.textContent);
     if (state.level !== "") parts.push(state.level === "0" ? "Cantrips" : ordinal(Number(state.level)));
-    els.backLabel.textContent = parts.length ? parts.join(" · ") : "Index";
+    els.backLabel.textContent = cardsMode() ? "Cards" : parts.length ? parts.join(" · ") : "Index";
   }
 
   function stepSpell(offset) {
     const [prev, next] = neighbours();
     const target = offset < 0 ? prev : next;
     if (target) openSpell(target.key, { reading: false, scroll: false });
-    if (PHONE.matches) els.folio.scrollTop = 0;
+    if (overlayMode()) els.folio.scrollTop = 0;
   }
 
   function spellFromHash() {
@@ -544,17 +618,21 @@
     els.saveLabel.textContent = saved ? "In My Spellbook" : "Add to My Spellbook";
   }
 
-  function toggleSaved() {
-    if (!current) return;
-    const saved = favorites.has(current.key);
-    if (saved) favorites.delete(current.key);
-    else favorites.add(current.key);
+  function toggleSaved(spell = current) {
+    if (!spell) return;
+    const saved = favorites.has(spell.key);
+    if (saved) favorites.delete(spell.key);
+    else favorites.add(spell.key);
     writeJSON(FAVORITES_KEY, [...favorites]);
     renderSave();
     renderMine();
-    if (state.mine) applyFilters();
-    else renderRows();
-    showToast(saved ? `${current.name} removed from your spellbook.` : `${current.name} added to your spellbook.`);
+    if (state.mine) {
+      const keep = cardLimit;
+      applyFilters();
+      cardLimit = keep;
+      if (cardsMode()) renderCards();
+    } else renderRows();
+    showToast(saved ? `${spell.name} removed from your spellbook.` : `${spell.name} added to your spellbook.`);
   }
 
   function renderMine() {
@@ -685,11 +763,31 @@
       const button = event.target.closest("[data-open]");
       if (button) openSpell(button.dataset.open);
     });
+    els.cards.addEventListener("click", (event) => {
+      const star = event.target.closest("[data-star]");
+      if (star) {
+        toggleSaved(byKey.get(star.dataset.star));
+        els.cards.querySelector(`[data-star="${CSS.escape(star.dataset.star)}"]`)?.focus();
+        return;
+      }
+      const button = event.target.closest("[data-open]");
+      if (button) openSpell(button.dataset.open);
+    });
+    els.moreBtn.addEventListener("click", () => {
+      const first = cardLimit;
+      cardLimit += CARD_PAGE;
+      renderCards();
+      els.cards.querySelectorAll(".sb-card-open")[first]?.focus();
+    });
+    els.viewSeg.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-view]");
+      if (button) setView(button.dataset.view);
+    });
 
     els.prevBtn.addEventListener("click", () => stepSpell(-1));
     els.nextBtn.addEventListener("click", () => stepSpell(1));
     els.backBtn.addEventListener("click", closeReading);
-    els.saveBtn.addEventListener("click", toggleSaved);
+    els.saveBtn.addEventListener("click", () => toggleSaved());
     els.copyBtn.addEventListener("click", copySpell);
     els.printBtn.addEventListener("click", () => window.print());
     els.randomBtn.addEventListener("click", randomSpell);
@@ -703,7 +801,7 @@
       if (spell && spell !== current) openSpell(spell.key, { hash: false });
     });
     PHONE.addEventListener("change", () => {
-      if (!PHONE.matches) document.body.classList.remove("sb-reading");
+      if (!overlayMode()) document.body.classList.remove("sb-reading");
     });
 
     els.slotClass.addEventListener("change", () => {
@@ -751,6 +849,8 @@
     if (!slots.used || typeof slots.used !== "object") slots.used = {};
     bindEvents();
     renderSlots();
+    document.body.classList.toggle("sb-deck", cardsMode());
+    els.viewSeg.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.view === view)));
     const cached = readCache();
     if (cached) setArchive(cached.spells, "");
     else setArchive(FALLBACK_SPELLS, "Fetching the full archive…");
