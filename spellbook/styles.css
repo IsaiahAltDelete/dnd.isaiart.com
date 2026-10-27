@@ -24,6 +24,16 @@
 .sb-link:disabled{visibility:hidden}
 
 .sb-table-wrap{max-height:min(68vh,760px);overflow:auto;border-top:2px solid var(--gold);border-bottom:2px solid var(--gold);overscroll-behavior:contain}
+/* an inked scrollbar on a gold margin rule, instead of the browser's white one */
+.sb-table-wrap::-webkit-scrollbar,.sb-folio::-webkit-scrollbar{width:12px;height:12px}
+.sb-table-wrap::-webkit-scrollbar-track,.sb-folio::-webkit-scrollbar-track{background:linear-gradient(to right,transparent 5px,rgba(192,173,106,.55) 5px,rgba(192,173,106,.55) 7px,transparent 7px)}
+.sb-table-wrap::-webkit-scrollbar-thumb,.sb-folio::-webkit-scrollbar-thumb{background:rgba(88,24,13,.55);border:3px solid transparent;border-radius:6px;background-clip:padding-box}
+.sb-table-wrap::-webkit-scrollbar-thumb:hover,.sb-folio::-webkit-scrollbar-thumb:hover{background-color:var(--head)}
+.sb-table-wrap::-webkit-scrollbar-button,.sb-folio::-webkit-scrollbar-button{display:none}
+.sb-table-wrap::-webkit-scrollbar-corner{background:transparent}
+@supports not selector(::-webkit-scrollbar){
+  .sb-table-wrap,.sb-folio{scrollbar-width:thin;scrollbar-color:rgba(88,24,13,.55) transparent}
+}
 .page table.sb-table{margin:0;font-size:13.4px}
 .sb-table thead th{position:sticky;top:0;z-index:1;padding:6px 6px 5px;background:#E9DFC4;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--head);box-shadow:0 1px 0 var(--gold)}
 .sb-table td{padding:0 6px;vertical-align:middle;white-space:nowrap}
