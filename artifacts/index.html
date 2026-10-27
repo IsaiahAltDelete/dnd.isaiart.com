@@ -1,1767 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arcane Artifact Generator</title>
-  <meta name="description" content="Roll sourcebook-ready magic items for D&amp;D 5e, each with a pixel-art portrait forged from its own materials. Seeded, shareable, and tuned so low-level parties stay unbroken." />
-  <meta name="color-scheme" content="light" />
-  <link rel="icon" href="sprites/forge-crest.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0&display=block" rel="stylesheet">
-  <style>
-    :root {
-      --bg-parchment: #e6cf9f;
-      --ink: #000000;
-      --header: #58180D;
-      --accent: #c9ad6a;
-      --accent-deep: #9a6a2f;
-      --charcoal: #2b2b2b;
-      --callout: #FDF1DC;
-      --line: rgba(88, 24, 13, 0.36);
-      --radius: 22px;
-      /* Set per roll by the renderer. */
-      --rarity: #6f6a63;
-      --rarity-2: #6f6a63;
-      --gemglow: rgba(109, 89, 176, 0.35);
-      --font-body: "Bookinsanity", "Cormorant Garamond", Georgia, serif;
-      --font-header: "Mr Eaves Small Caps", "Cinzel", Georgia, serif;
-      --font-callout: "Scaly Sans", "Inter", system-ui, sans-serif;
-      --font-drop: "Solberry", "Cinzel Decorative", Georgia, serif;
-    }
-
-    * { box-sizing: border-box; }
-
-    /* Until the icon face is confirmed loaded the ligature source text would
-       paint as literal words ("military_tech"), and offline it would never stop.
-       Hide the glyphs and only reveal them once the font really is there. */
-    .icons-pending .material-symbols-outlined { visibility: hidden; }
-
-    /* A word behind the one icon-only control, shown only while the icon face
-       is missing, so it never renders as an empty box. */
-    .icon-fallback {
-      position: absolute;
-      width: 1px; height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-      white-space: nowrap;
-    }
-    .icons-pending .icon-fallback {
-      position: static;
-      width: auto; height: auto;
-      clip: auto;
-      font: 700 0.86rem var(--font-callout);
-    }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      color: var(--ink);
-      font-family: var(--font-body);
-      background-color: var(--bg-parchment);
-      background-image:
-        radial-gradient(circle at 18% 14%, rgba(255,255,255,0.42) 0, rgba(255,255,255,0.16) 13%, transparent 26%),
-        radial-gradient(circle at 80% 12%, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.06) 11%, transparent 24%),
-        radial-gradient(circle at 16% 78%, rgba(124,82,38,0.14) 0, rgba(124,82,38,0.08) 11%, transparent 26%),
-        radial-gradient(circle at 84% 68%, rgba(124,82,38,0.16) 0, rgba(124,82,38,0.06) 12%, transparent 24%),
-        linear-gradient(135deg, rgba(255,255,255,0.10), rgba(0,0,0,0.03)),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.06'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.85'/%3E%3C/svg%3E"),
-        linear-gradient(180deg, #f0ddb4 0%, #e4ca96 100%);
-      background-size: auto, auto, auto, auto, auto, 260px 260px, auto;
-      background-repeat: repeat;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      box-shadow: inset 0 0 180px rgba(43, 43, 43, 0.22);
-      z-index: 0;
-    }
-
-    .app {
-      position: relative;
-      z-index: 1;
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 28px 18px 60px;
-    }
-
-    .skip {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: var(--callout);
-      color: var(--header);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font: 700 0.9rem var(--font-callout);
-      z-index: 20;
-    }
-    .skip:focus { left: 8px; top: 8px; }
-
-    .title-block {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin: 4px auto 18px;
-      color: var(--header);
-    }
-
-    .title-block .material-symbols-outlined {
-      font-size: 3rem;
-      color: var(--accent-deep);
-      text-shadow: 0 2px 0 rgba(255,255,255,0.35);
-    }
-
-    h1 {
-      margin: 0;
-      font-family: var(--font-header);
-      font-size: clamp(2rem, 4vw, 3.6rem);
-      font-variant: small-caps;
-      letter-spacing: 0.04em;
-      text-wrap: balance;
-      text-shadow: 0 2px 0 rgba(255,255,255,0.45);
-    }
-
-    .subhead {
-      max-width: 760px;
-      margin: 0 auto 22px;
-      text-align: center;
-      font-family: var(--font-callout);
-      color: rgba(43,43,43,0.78);
-      line-height: 1.55;
-      font-size: 0.95rem;
-    }
-
-    .toolbar {
-      width: min(1000px, 100%);
-      margin: 0 auto 22px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(88,24,13,0.22);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.14)),
-        linear-gradient(180deg, rgba(253,241,220,0.88), rgba(240,220,180,0.72));
-      box-shadow:
-        0 12px 28px rgba(63, 35, 10, 0.10),
-        inset 0 1px 0 rgba(255,255,255,0.55);
-      display: grid;
-      gap: 14px;
-      backdrop-filter: blur(4px);
-    }
-
-    .filters {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .field {
-      display: grid;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .field label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--header);
-      font-family: var(--font-callout);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .field select,
-    .field input {
-      width: 100%;
-      min-width: 0;
-      appearance: none;
-      border: 1px solid rgba(88,24,13,0.35);
-      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
-      color: var(--charcoal);
-      border-radius: 12px;
-      padding: 11px 14px;
-      font: 600 0.98rem var(--font-callout);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-      outline: none;
-    }
-
-    .field select {
-      background-image:
-        linear-gradient(45deg, transparent 50%, rgba(88,24,13,0.6) 50%),
-        linear-gradient(135deg, rgba(88,24,13,0.6) 50%, transparent 50%),
-        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,248,232,0.84));
-      background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%, 0 0;
-      background-size: 6px 6px, 6px 6px, auto;
-      background-repeat: no-repeat;
-      padding-right: 32px;
-    }
-
-    :is(select, input, button, a):focus-visible {
-      outline: 3px solid var(--accent-deep);
-      outline-offset: 2px;
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .actions .hint {
-      flex: 1 1 240px;
-      min-width: 0;
-      margin: 0;
-      font: 500 0.84rem var(--font-callout);
-      color: rgba(43,43,43,0.82);
-    }
-    .actions .hint kbd {
-      font: 700 0.78rem var(--font-callout);
-      background: rgba(255,255,255,0.75);
-      border: 1px solid rgba(88,24,13,0.24);
-      border-bottom-width: 2px;
-      border-radius: 5px;
-      padding: 1px 6px;
-    }
-
-    button {
-      border: 1px solid rgba(88,24,13,0.45);
-      border-radius: 14px;
-      padding: 10px 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(246,229,194,0.92));
-      color: var(--header);
-      font: 700 0.95rem var(--font-callout);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow:
-        0 6px 18px rgba(83, 43, 12, 0.10),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow:
-        0 8px 22px rgba(83, 43, 12, 0.14),
-        inset 0 1px 0 rgba(255,255,255,0.9);
-      border-color: rgba(88,24,13,0.65);
-    }
-
-    button:active { transform: translateY(0); }
-
-    button.primary {
-      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(232,205,152,0.94));
-      border-color: rgba(88,24,13,0.6);
-    }
-
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined';
-      font-weight: normal;
-      font-style: normal;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      font-feature-settings: 'liga';
-      font-variant: normal;
-      font-variant-ligatures: normal;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .artifact-shell {
-      position: relative;
-      width: min(1000px, 100%);
-      margin: 0 auto;
-      padding: 16px;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(121,80,33,0.18), rgba(255,255,255,0.10));
-      box-shadow: 0 20px 46px rgba(59, 34, 12, 0.18);
-    }
-
-    .artifact-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius);
-      border: 1px solid rgba(88,24,13,0.35);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.48), rgba(255,255,255,0.16)),
-        linear-gradient(180deg, rgba(253,241,220,0.94), rgba(236,216,171,0.92));
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.68),
-        inset 0 -1px 0 rgba(88,24,13,0.08),
-        0 12px 30px rgba(59,34,12,0.09);
-    }
-
-    /* A rarity-colored ribbon down the binding edge, so the tier of the item is
-       readable before a single word is. */
-    .artifact-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 6px;
-      background: linear-gradient(180deg, var(--rarity) 0%, var(--rarity-2) 55%, rgba(0,0,0,0.3) 100%);
-      opacity: 0.95;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .artifact-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at top left, rgba(201,173,106,0.26), transparent 15%),
-        radial-gradient(circle at top right, rgba(201,173,106,0.22), transparent 15%),
-        radial-gradient(circle at bottom left, rgba(201,173,106,0.22), transparent 14%),
-        radial-gradient(circle at bottom right, rgba(201,173,106,0.20), transparent 14%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%2358180D' stroke-opacity='.04'%3E%3Cpath d='M0 40h240M0 120h240M0 200h240'/%3E%3Cpath d='M40 0v240M120 0v240M200 0v240'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: auto, auto, auto, auto, 240px 240px;
-      mix-blend-mode: multiply;
-      opacity: 0.7;
-    }
-
-    .artifact-inner {
-      position: relative;
-      z-index: 1;
-      padding: 32px 32px 28px;
-    }
-
-    .header-band {
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 18px;
-    }
-
-    .eyebrow {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-family: var(--font-callout);
-      font-size: 0.86rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(88,24,13,0.72);
-    }
-
-    .eyebrow .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(253,241,220,0.72);
-      border: 1px solid rgba(88,24,13,0.20);
-    }
-
-    .eyebrow .pill.rarity {
-      border-color: color-mix(in srgb, var(--rarity) 55%, transparent);
-      background: color-mix(in srgb, var(--rarity) 12%, rgba(253,241,220,0.8));
-      /* Mixing further toward the ink keeps every band, Legendary included,
-         above 4.5:1 on the pill's own tinted ground. */
-      color: color-mix(in srgb, var(--rarity) 58%, #241a12);
-      font-weight: 700;
-    }
-
-    h2 {
-      margin: 0;
-      text-align: center;
-      font-family: var(--font-header);
-      font-size: clamp(2rem, 4vw, 3.1rem);
-      line-height: 1.05;
-      color: var(--header);
-      text-shadow: 0 2px 0 rgba(255,255,255,0.42), 0 6px 18px rgba(88,24,13,0.10);
-      font-variant: small-caps;
-      letter-spacing: 0.03em;
-      text-wrap: balance;
-    }
-
-    .meta-grid {
-      margin: 0 0 4px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .meta-card,
-    .info-card,
-    .section,
-    .callout,
-    .summary-box,
-    .reliquary {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.06)),
-        rgba(253,241,220,0.58);
-      border: 1px solid rgba(88,24,13,0.16);
-      border-radius: 16px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
-    }
-
-    .meta-card {
-      padding: 12px 14px;
-      min-height: 88px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-    }
-
-    .meta-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-callout);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(88,24,13,0.75);
-    }
-
-    .meta-value {
-      font-size: 1.1rem;
-      color: var(--charcoal);
-      font-weight: 700;
-      line-height: 1.25;
-    }
-
-    .meta-note {
-      /* Pin the note to the bottom so a two-line value doesn't leave this row
-         of four cards with ragged baselines. */
-      margin-top: auto;
-      font-family: var(--font-callout);
-      font-size: 0.82rem;
-      color: rgba(43,43,43,0.78);
-    }
-
-    /* --- the reliquary: pixel portrait + materials + surface ---------------- */
-
-    .surface-grid {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 14px;
-      margin: 18px 0 20px;
-      align-items: stretch;
-    }
-
-    .reliquary {
-      padding: 14px;
-      display: grid;
-      gap: 10px;
-      justify-items: center;
-      align-content: space-between;
-    }
-
-    .plinth {
-      position: relative;
-      width: 176px;
-      height: 236px;
-      display: grid;
-      place-items: center;
-      border-radius: 14px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 40%, var(--gemglow) 0, transparent 64%),
-        linear-gradient(180deg, #33261c 0%, #1d1510 62%, #120c09 100%);
-      border: 1px solid rgba(88,24,13,0.45);
-      box-shadow:
-        inset 0 2px 14px rgba(0,0,0,0.55),
-        inset 0 0 0 1px rgba(201,173,106,0.22),
-        0 2px 6px rgba(59,34,12,0.18);
-    }
-
-    /* Summoning circle behind the item: a solid outer ring and a slowly
-       turning dashed inner one, both tinted by the item's rarity. */
-    .plinth::before,
-    .plinth::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .plinth::before {
-      width: 152px;
-      height: 152px;
-      border: 1px solid color-mix(in srgb, var(--rarity) 75%, transparent);
-      box-shadow: 0 0 22px color-mix(in srgb, var(--rarity) 30%, transparent);
-      opacity: 0.7;
-    }
-
-    .plinth::after {
-      width: 118px;
-      height: 118px;
-      border: 2px dashed color-mix(in srgb, var(--rarity) 80%, transparent);
-      opacity: 0.42;
-      animation: turn 52s linear infinite;
-    }
-
-    @keyframes turn { to { transform: rotate(360deg); } }
-
-    #relicCanvas {
-      position: relative;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      filter: drop-shadow(0 5px 7px rgba(0,0,0,0.6));
-    }
-
-    .relic-caption {
-      font: 600 0.76rem var(--font-callout);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(88,24,13,0.88);
-      text-align: center;
-    }
-
-    .relic-actions { display: flex; gap: 8px; }
-    .relic-actions button { padding: 7px 10px; font-size: 0.84rem; border-radius: 11px; }
-
-    .info-card { padding: 16px 18px; }
-
-    .signature-card {
-      display: grid;
-      grid-template-rows: auto auto auto 1fr;
-      gap: 12px;
-    }
-
-    .signature-card .pattern-label { margin: -6px 0 0; }
-
-    .signature-card .section-title { margin: 0; }
-
-    .signature-text {
-      margin: 0;
-      font-size: 1.02rem;
-      line-height: 1.4;
-      color: var(--charcoal);
-    }
-
-    .section-title {
-      margin: 0 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-header);
-      font-variant: small-caps;
-      color: var(--header);
-      letter-spacing: 0.03em;
-      font-size: 1.1rem;
-    }
-
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(88,24,13,0.16);
-      background: rgba(255,255,255,0.42);
-      font: 600 0.85rem var(--font-callout);
-      color: var(--charcoal);
-    }
-
-    .swatch {
-      width: 15px;
-      height: 15px;
-      border-radius: 4px;
-      border: 1px solid rgba(43,43,43,0.45);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.44);
-      flex: 0 0 auto;
-    }
-
-    .pattern-preview {
-      min-height: 104px;
-      border-radius: 16px;
-      border: 1px solid rgba(88,24,13,0.20);
-      background:
-        linear-gradient(160deg, rgba(255,255,255,0.28), rgba(60,36,14,0.10)),
-        var(--pattern-bg, linear-gradient(45deg, rgba(201,173,106,0.15), rgba(88,24,13,0.08))),
-        linear-gradient(180deg, #f0dfba, #ddc79a);
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
-    }
-
-    .pattern-preview::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: var(--pattern-overlay, none);
-      opacity: 1;
-      mix-blend-mode: multiply;
-    }
-
-    .pattern-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin: 8px 0 0;
-      font: 600 0.82rem var(--font-callout);
-      color: rgba(88,24,13,0.9);
-    }
-    .pattern-label .material-symbols-outlined { font-size: 1.05rem; }
-
-    .columns {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-      gap: 16px;
-    }
-
-    .stack { display: grid; gap: 14px; align-content: start; }
-
-    .section { padding: 16px 18px; }
-
-    .section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 10px;
-    }
-
-    .section li {
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(88,24,13,0.18);
-      font-size: 1.06rem;
-      line-height: 1.38;
-    }
-
-    .section li:last-child { border-bottom: 0; padding-bottom: 0; }
-
-    .rule-prefix {
-      font-family: var(--font-callout);
-      font-weight: 700;
-      color: var(--header);
-      margin-right: 5px;
-    }
-
-    .callout {
-      padding: 16px 18px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.08)),
-        var(--callout);
-    }
-
-    .lore-hook { font-size: 1.05rem; line-height: 1.5; }
-
-    .lore-hook::first-letter {
-      font-family: var(--font-drop);
-      font-size: 2.7rem;
-      line-height: 1;
-      float: left;
-      margin: 0 8px 0 0;
-      color: var(--header);
-    }
-
-    .summary-box {
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .summary-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-callout);
-      color: rgba(43,43,43,0.82);
-      font-size: 0.94rem;
-    }
-
-    .summary-line strong { color: var(--header); }
-
-    .warning-note {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid color-mix(in srgb, var(--rarity) 40%, rgba(88,24,13,0.22));
-      background: color-mix(in srgb, var(--rarity) 8%, rgba(253,241,220,0.72));
-      font-family: var(--font-callout);
-      font-size: 0.94rem;
-      color: var(--header);
-    }
-
-    .warning-note.is-visible { display: flex; gap: 8px; align-items: flex-start; }
-
-    /* --- the shelf: recent rolls ------------------------------------------- */
-
-    .shelf {
-      width: min(1000px, 100%);
-      margin: 20px auto 0;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(88,24,13,0.18);
-      background: rgba(253,241,220,0.5);
-      display: none;
-      gap: 10px;
-      align-items: center;
-    }
-    .shelf.is-visible { display: flex; }
-
-    .shelf h3 {
-      margin: 0;
-      font: 600 0.74rem var(--font-callout);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: rgba(88,24,13,0.7);
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-      align-self: stretch;
-      display: grid;
-      place-items: center;
-      padding-right: 4px;
-      border-right: 1px solid rgba(88,24,13,0.18);
-    }
-
-    .shelf-rail {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 2px;
-      flex: 1;
-      scrollbar-width: thin;
-    }
-
-    .shelf-item {
-      flex: 0 0 auto;
-      width: 74px;
-      padding: 6px 4px 5px;
-      border-radius: 12px;
-      border: 1px solid rgba(88,24,13,0.18);
-      border-bottom: 3px solid var(--slot-rarity, #6f6a63);
-      background: rgba(255,255,255,0.42);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      cursor: pointer;
-      font: inherit;
-      color: inherit;
-      box-shadow: none;
-    }
-    .shelf-item:hover { transform: translateY(-2px); background: rgba(255,255,255,0.7); }
-    .shelf-item canvas { image-rendering: pixelated; display: block; }
-    .shelf-item span {
-      font: 600 0.62rem var(--font-callout);
-      color: rgba(43,43,43,0.82);
-      text-align: center;
-      line-height: 1.2;
-      max-width: 100%;
-      height: 2.4em;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow-wrap: anywhere;
-    }
-
-    .footer-note {
-      margin: 18px auto 0;
-      width: min(1000px, 100%);
-      text-align: center;
-      color: rgba(43,43,43,0.72);
-      font: 500 0.88rem var(--font-callout);
-      line-height: 1.6;
-    }
-    .footer-note a { color: var(--header); }
-
-    .sr-only {
-      position: absolute;
-      width: 1px; height: 1px;
-      padding: 0; margin: -1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    @media (max-width: 1000px) {
-      .surface-grid { grid-template-columns: auto minmax(0, 1fr); }
-      .surface-grid > .info-card:last-child { grid-column: 1 / -1; }
-    }
-
-    @media (max-width: 860px) {
-      .filters { grid-template-columns: 1fr 1fr; }
-      .meta-grid { grid-template-columns: 1fr 1fr; }
-      .columns { grid-template-columns: 1fr; }
-      .surface-grid { grid-template-columns: 1fr; justify-items: stretch; }
-      .reliquary { justify-items: center; }
-    }
-
-    @media (max-width: 620px) {
-      .app { padding-inline: 10px; }
-      .artifact-inner { padding: 22px 18px 20px; display: flex; flex-direction: column; }
-      /* On a phone the four meta cards stacked into a screenful of low-density
-         text before the portrait, which is the thing worth seeing first. */
-      .header-band { order: 1; }
-      .surface-grid { order: 2; margin-top: 0; }
-      .meta-grid { order: 3; }
-      .columns { order: 4; }
-      .summary-box { order: 5; }
-      .warning-note { order: 6; }
-      .meta-grid { grid-template-columns: 1fr; }
-      .filters { gap: 10px; }
-      .field label { font-size: 0.72rem; letter-spacing: 0.04em; }
-      .field select, .field input { padding: 9px 11px; font-size: 0.9rem; }
-      .field select { padding-right: 26px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%, 0 0; }
-      .subhead { margin-bottom: 16px; }
-      .toolbar { padding: 13px 13px; }
-      .actions { justify-content: stretch; }
-      .actions button { flex: 1; justify-content: center; }
-      .actions .hint { display: none; }
-      .title-block { gap: 10px; }
-      .subhead { font-size: 0.9rem; }
-      .shelf h3 { display: none; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-      }
-    }
-
-    /* A DM printing the entry should get the card, not the chrome. */
-    @media print {
-      body { background: #fff; }
-      body::before, .toolbar, .shelf, .relic-actions, .skip, .footer-note { display: none !important; }
-      .app { padding: 0; max-width: none; }
-      .artifact-shell { box-shadow: none; padding: 0; }
-      .artifact-card { border-color: #999; box-shadow: none; }
-      .columns { grid-template-columns: 1fr 1fr; }
-      .section li { font-size: 0.95rem; }
-    }
-
-    /* -----------------------------------------------------------------------
-       Pixel reliquary pass: the item sprites were forged with Pixelforge, so
-       the surrounding chrome follows the same hard-edged, limited-palette
-       language instead of reading like a separate parchment theme.
-    ----------------------------------------------------------------------- */
-    :root {
-      --bg-parchment: #110e18;
-      --ink: #f4efe2;
-      --header: #f0cf91;
-      --accent: #c58b4d;
-      --accent-deep: #e0a75e;
-      --charcoal: #eadfce;
-      --callout: #292035;
-      --line: rgba(226, 182, 105, 0.28);
-      --font-body: "Cormorant Garamond", Georgia, serif;
-      --font-header: "MedievalSharp", "Cinzel", Georgia, serif;
-      --font-callout: "VT323", "Inter", system-ui, sans-serif;
-      --font-drop: "MedievalSharp", "Cinzel Decorative", Georgia, serif;
-    }
-
-    html, body {
-      background-color: #110e18;
-      color: var(--ink);
-      background-image:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
-        radial-gradient(circle at 14% 8%, rgba(105, 74, 151, 0.32), transparent 29%),
-        radial-gradient(circle at 88% 20%, rgba(175, 104, 53, 0.18), transparent 26%),
-        linear-gradient(150deg, #151020 0%, #0d0b13 72%, #17101b 100%);
-      background-size: 12px 12px, 12px 12px, auto, auto, auto;
-      background-attachment: fixed;
-    }
-
-    body::before {
-      box-shadow: inset 0 0 220px rgba(0,0,0,0.74);
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.23;
-      background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(255,255,255,0.025) 4px, transparent 5px);
-      mix-blend-mode: screen;
-    }
-
-    .app {
-      max-width: 1240px;
-      padding: 30px 18px 72px;
-    }
-
-    header {
-      position: relative;
-      margin: 0 auto 24px;
-      padding: 16px 10px 4px;
-      text-align: center;
-    }
-
-    header::before,
-    header::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      width: min(420px, 62vw);
-      height: 1px;
-      transform: translateX(-50%);
-      background: linear-gradient(90deg, transparent, rgba(224,167,94,0.62), transparent);
-    }
-    header::before { top: 0; }
-    header::after { bottom: -8px; }
-
-    .title-block {
-      gap: 18px;
-      margin: 0 auto 12px;
-      color: var(--header);
-    }
-
-    .brand-mark {
-      width: 76px;
-      height: 76px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      background: #251b31;
-      border: 2px solid #a8794e;
-      box-shadow: 0 0 0 4px rgba(197,139,77,0.10), 0 12px 28px rgba(0,0,0,0.36), inset 0 0 0 2px rgba(240,207,145,0.12);
-      clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
-      animation: crest-float 5s ease-in-out infinite;
-    }
-
-    .brand-mark img {
-      display: block;
-      width: 58px;
-      height: 58px;
-      image-rendering: pixelated;
-    }
-
-    .title-copy { min-width: 0; text-align: left; }
-
-    .hero-kicker {
-      margin: 0 0 6px;
-      color: #b69ac7;
-      font: 1rem/1 "VT323", monospace;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-family: var(--font-header);
-      color: #f7d99d;
-      font-size: clamp(2.25rem, 5vw, 4.25rem);
-      line-height: 0.98;
-      letter-spacing: 0.02em;
-      text-shadow: 0 3px 0 #37243e, 0 7px 22px rgba(0,0,0,0.46);
-    }
-
-    h1 span { color: #bc9ae9; }
-
-    .subhead {
-      max-width: 710px;
-      margin: 0 auto;
-      color: #c5b7cb;
-      font: 1.16rem/1.34 var(--font-body);
-    }
-
-    .toolbar,
-    .artifact-shell,
-    .shelf {
-      border-radius: 5px;
-    }
-
-    .toolbar {
-      position: relative;
-      width: min(1120px, 100%);
-      padding: 20px;
-      margin-bottom: 26px;
-      border: 1px solid #63476d;
-      background: linear-gradient(180deg, rgba(39,29,52,0.98), rgba(24,18,33,0.98));
-      box-shadow: 0 18px 42px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.06);
-      overflow: hidden;
-    }
-
-    .toolbar::before {
-      content: "FORGE CONTROLS";
-      position: absolute;
-      top: 0;
-      left: 20px;
-      padding: 0 8px 3px;
-      background: #1b1425;
-      color: #e2ab64;
-      font: 0.92rem/1.1 "Press Start 2P", monospace;
-      letter-spacing: 0.04em;
-      transform: translateY(-1px);
-    }
-
-    .filters { gap: 13px; margin-top: 8px; }
-
-    .field label {
-      color: #e0b571;
-      font: 1rem/1 var(--font-callout);
-      letter-spacing: 0.08em;
-    }
-
-    .field label .material-symbols-outlined { color: #b796e2; }
-
-    .field select,
-    .field input {
-      border: 1px solid #5a4264;
-      border-radius: 3px;
-      background: #15111e;
-      color: #f6ead6;
-      padding: 12px 14px;
-      font: 1.15rem/1 var(--font-callout);
-      box-shadow: inset 0 2px 0 rgba(0,0,0,0.24), 0 0 0 1px rgba(255,255,255,0.025);
-      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
-    }
-
-    .field select {
-      background-image:
-        linear-gradient(45deg, transparent 50%, #d5a667 50%),
-        linear-gradient(135deg, #d5a667 50%, transparent 50%),
-        linear-gradient(180deg, #20172b, #15111e);
-    }
-
-    .field select:hover,
-    .field input:hover,
-    .field select:focus,
-    .field input:focus { border-color: #c596de; box-shadow: 0 0 0 2px rgba(197,150,222,0.16); }
-
-    :is(select, input, button, a):focus-visible {
-      outline: 2px solid #f0c779;
-      outline-offset: 3px;
-    }
-
-    .actions { gap: 10px; }
-    .actions .hint { color: #bcaec3; font-size: 1rem; }
-    .actions .hint kbd { color: #f2d293; background: #2b2039; border-color: #6a4b75; border-radius: 3px; }
-
-    button {
-      border: 1px solid #725273;
-      border-radius: 3px;
-      padding: 11px 14px;
-      background: linear-gradient(180deg, #3a294b, #241a30);
-      color: #f3e3c6;
-      font: 1.08rem/1 var(--font-callout);
-      box-shadow: 0 5px 0 #120c18, inset 0 1px 0 rgba(255,255,255,0.08);
-      transition: transform 160ms cubic-bezier(.2,.8,.2,1), box-shadow 160ms ease, border-color 160ms ease, filter 160ms ease;
-    }
-
-    button:hover { transform: translateY(-2px); border-color: #d1a1df; box-shadow: 0 7px 0 #120c18, 0 0 18px rgba(199,151,231,0.16), inset 0 1px 0 rgba(255,255,255,0.12); filter: brightness(1.1); }
-    button:active { transform: translateY(2px); box-shadow: 0 2px 0 #120c18; }
-    button.primary { background: linear-gradient(180deg, #d6a15b, #8d552d); border-color: #f2ce88; color: #1a1116; text-shadow: none; }
-
-    .artifact-shell {
-      width: min(1120px, 100%);
-      padding: 9px;
-      background: linear-gradient(135deg, #4b3157, #17101f 26%, #33203f 76%, #6b432c);
-      box-shadow: 0 26px 70px rgba(0,0,0,0.42), 0 0 0 1px rgba(227,176,99,0.18);
-    }
-
-    .artifact-card {
-      border: 1px solid #74537b;
-      border-radius: 4px;
-      background: linear-gradient(180deg, rgba(37,27,50,0.98), rgba(21,16,29,0.98));
-      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.02), inset 0 0 50px rgba(122,73,146,0.08), 0 10px 28px rgba(0,0,0,0.28);
-    }
-
-    .artifact-card::before { width: 7px; background: linear-gradient(180deg, var(--rarity), var(--rarity-2), #17101e); }
-    .artifact-card::after { opacity: 0.34; mix-blend-mode: screen; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(255,255,255,0.028) 12px), repeating-linear-gradient(90deg, transparent 0 11px, rgba(255,255,255,0.02) 12px); background-size: 12px 12px; }
-    .artifact-inner { padding: 34px 36px 30px; }
-
-    .header-band { border-bottom: 1px dashed rgba(224,167,94,0.38); }
-    .eyebrow .pill { border-color: #5c4267; background: #2a1e38; color: #d7bfdf; border-radius: 3px; font: 1rem/1 var(--font-callout); letter-spacing: 0.06em; }
-    .eyebrow .pill.rarity { border-color: color-mix(in srgb, var(--rarity) 80%, #e0b071); background: color-mix(in srgb, var(--rarity) 25%, #261b33); color: #fae4b4; }
-
-    h2 { color: #f1d294; font-family: var(--font-header); font-size: clamp(2.2rem, 5vw, 3.8rem); text-shadow: 0 3px 0 #37233f, 0 10px 28px rgba(0,0,0,0.35); }
-
-    .meta-card,
-    .info-card,
-    .section,
-    .callout,
-    .summary-box,
-    .reliquary,
-    .ledger {
-      border-color: #4f3a5b;
-      border-radius: 4px;
-      background: linear-gradient(180deg, rgba(49,36,61,0.92), rgba(30,23,40,0.92));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 22px rgba(0,0,0,0.12);
-    }
-
-    .meta-card { min-height: 96px; padding: 13px 15px; }
-    .meta-top { color: #d2a866; font: 1rem/1 var(--font-callout); }
-    .meta-top .material-symbols-outlined { color: #ae8dd8; }
-    .meta-value { color: #f5e7cf; font-size: 1.3rem; }
-    .meta-note { color: #b8a9bd; font: 0.96rem/1.15 var(--font-callout); }
-
-    .surface-grid { grid-template-columns: 200px minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; }
-    .reliquary { padding: 14px; }
-    .plinth { width: 188px; height: 246px; border-radius: 3px; background: radial-gradient(circle at 50% 40%, var(--gemglow), transparent 60%), linear-gradient(180deg, #2c2039, #120d18 78%); border-color: #76527d; box-shadow: inset 0 0 0 2px rgba(216,165,89,0.16), inset 0 0 24px rgba(0,0,0,0.72), 0 12px 24px rgba(0,0,0,0.24); }
-    .plinth::before { border-color: color-mix(in srgb, var(--rarity) 80%, #e0b071); animation: rune-pulse 3.6s ease-in-out infinite; }
-    .plinth::after { border-color: color-mix(in srgb, var(--rarity) 88%, #e0b071); animation-duration: 32s; }
-    .relic-caption { color: #d5ae70; font: 1rem/1 var(--font-callout); }
-    .relic-actions button { padding: 8px 11px; font-size: 1rem; }
-
-    .section-title { margin-bottom: 13px; color: #f0ca87; font-family: var(--font-header); font-size: 1.45rem; }
-    .section-title .material-symbols-outlined { color: #bb96e4; }
-    .chip { border-color: #5c4267; background: #241a31; color: #dfd0de; border-radius: 3px; font: 1rem/1 var(--font-callout); }
-    .swatch { border-radius: 2px; }
-    .pattern-preview { min-height: 118px; border-color: #6a4b74; border-radius: 3px; background-size: 9px 9px, auto, auto; box-shadow: inset 0 0 22px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.14); }
-    .pattern-label { color: #d5ae70; font: 1rem/1 var(--font-callout); }
-    .signature-text, .lore-hook { color: #dfd1df; }
-    .section li { border-bottom-color: #493653; color: #e0d5df; font-size: 1.15rem; }
-    .rule-prefix { color: #d7a964; font: 1.12rem var(--font-callout); }
-    .callout { background: linear-gradient(180deg, rgba(55,39,65,0.95), rgba(34,24,45,0.96)), #292035; }
-    .lore-hook { font-size: 1.2rem; }
-
-    .ledger {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
-      gap: 18px;
-      margin: 0 0 18px;
-      padding: 17px 18px;
-    }
-
-    .ledger-title { margin-bottom: 10px; }
-    .forge-table { width: 100%; border-collapse: collapse; font: 1.08rem/1.15 var(--font-callout); }
-    .forge-table th,
-    .forge-table td { padding: 9px 10px; border-bottom: 1px solid #493653; text-align: left; }
-    .forge-table th { width: 16%; color: #c89458; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; }
-    .forge-table td { width: 34%; color: #f0e3cf; }
-    .forge-table tr:last-child th,
-    .forge-table tr:last-child td { border-bottom: 0; }
-
-    .resonance-panel { display: grid; align-content: center; gap: 10px; padding: 12px 14px; border: 1px solid #5d4167; background: #20162b; }
-    .resonance-kicker { margin: 0; color: #b892d9; font: 0.95rem/1 var(--font-callout); letter-spacing: 0.1em; text-transform: uppercase; }
-    .resonance-value { margin: 0; color: #f1cd8d; font: 2rem/1 var(--font-header); }
-    .resonance-track { height: 13px; padding: 2px; background: #130e19; border: 1px solid #5d4167; }
-    .resonance-fill { height: 100%; width: var(--resonance, 0%); background: linear-gradient(90deg, #8b5ac0, #e1a55c); box-shadow: 0 0 12px rgba(203,145,226,0.45); transition: width 500ms cubic-bezier(.2,.8,.2,1); }
-    .resonance-note { margin: 0; color: #b9a9c1; font: 1rem/1.1 var(--font-callout); }
-
-    .summary-box { padding: 16px 18px; border-color: #65456e; }
-    .summary-line { color: #c5b6c9; font: 1rem/1 var(--font-callout); }
-    .summary-line strong { color: #f0c985; }
-    .warning-note { border-radius: 3px; background: #30233b; color: #f3d39a; font: 1.08rem/1.25 var(--font-callout); }
-
-    .shelf { width: min(1120px, 100%); padding: 13px 15px; border-color: #4f3a5b; background: rgba(31,23,42,0.9); box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
-    .shelf h3 { color: #d0a466; font: 1rem/1 var(--font-callout); border-right-color: #4f3a5b; }
-    .shelf-item { border-color: #4f3a5b; border-bottom-color: var(--slot-rarity, #6f6a63); border-radius: 3px; background: #241a31; color: #ead9c8; }
-    .shelf-item:hover { background: #322241; }
-    .shelf-item span { color: #d8c4d9; font: 0.82rem/1.1 var(--font-callout); }
-    .footer-note { color: #9f8faa; font: 1rem/1.2 var(--font-callout); }
-    .footer-note a { color: #dbad6a; }
-
-    .artifact-card.is-rolling { animation: forge-in 460ms cubic-bezier(.2,.8,.2,1); }
-    .toolbar, .artifact-shell { animation: forge-in 620ms both; }
-
-    @keyframes forge-in {
-      from { opacity: 0; transform: translateY(14px) scale(0.992); filter: saturate(0.7); }
-      to { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
-    }
-    @keyframes crest-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-    @keyframes rune-pulse { 0%, 100% { opacity: 0.42; transform: scale(0.98); } 50% { opacity: 0.82; transform: scale(1.02); } }
-
-    @media (max-width: 1000px) {
-      .surface-grid { grid-template-columns: 200px minmax(0, 1fr); }
-      .surface-grid > .info-card:last-child { grid-column: 1 / -1; }
-    }
-
-    @media (max-width: 860px) {
-      .ledger { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 620px) {
-      .app { padding: 20px 10px 48px; }
-      .title-block { align-items: flex-start; gap: 12px; }
-      .brand-mark { width: 56px; height: 56px; }
-      .brand-mark img { width: 43px; height: 43px; }
-      .title-copy { flex: 1; }
-      .hero-kicker { font-size: 0.78rem; }
-      h1 { font-size: clamp(2rem, 9vw, 3rem); }
-      .subhead { font-size: 1.05rem; }
-      .toolbar { padding: 16px 13px 13px; }
-      .toolbar::before { left: 13px; font-size: 0.72rem; }
-      .artifact-inner { padding: 24px 18px 20px; }
-      .surface-grid { grid-template-columns: 1fr; }
-      .surface-grid > .info-card:last-child { grid-column: auto; }
-      .ledger { order: 4; overflow: hidden; }
-      .columns { order: 5; }
-      .summary-box { order: 6; }
-      .warning-note { order: 7; }
-      .forge-table { width: 100%; table-layout: fixed; font-size: 0.94rem; }
-      .forge-table th, .forge-table td { padding: 8px 6px; }
-      .forge-table th { width: 22%; }
-      .forge-table td { width: 28%; }
-      .forge-table th, .forge-table td { overflow-wrap: anywhere; word-break: break-word; }
-      .summary-box { align-items: flex-start; flex-direction: column; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .brand-mark, .artifact-card.is-rolling, .toolbar, .artifact-shell, .plinth::before { animation: none !important; }
-    }
-
-    /* Warm vellum pass: cream is the field, coffee-brown is the ink, and
-       violet survives only as a small arcane accent. */
-    :root {
-      --bg-parchment: #ead9b9;
-      --ink: #2c211b;
-      --header: #65351f;
-      --accent: #b97838;
-      --accent-deep: #8c4f28;
-      --charcoal: #3b2b21;
-      --callout: #fff4dc;
-      --line: rgba(101,53,31,0.28);
-    }
-
-    html, body {
-      color: var(--ink);
-      background-color: #ead9b9;
-      background-image:
-        linear-gradient(rgba(91,56,30,0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(91,56,30,0.045) 1px, transparent 1px),
-        radial-gradient(circle at 12% 4%, rgba(255,250,235,0.92), transparent 31%),
-        radial-gradient(circle at 86% 17%, rgba(214,164,98,0.25), transparent 25%),
-        linear-gradient(145deg, #f1e4c8 0%, #dfc695 72%, #ebd7af 100%);
-      background-size: 12px 12px, 12px 12px, auto, auto, auto;
-    }
-
-    body::before { box-shadow: inset 0 0 200px rgba(79,43,25,0.22); }
-    body::after { opacity: 0.07; background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(75,43,25,0.20) 4px, transparent 5px); mix-blend-mode: multiply; }
-
-    header::before,
-    header::after { background: linear-gradient(90deg, transparent, rgba(138,79,40,0.62), transparent); }
-    .brand-mark { background: #fff0d0; border-color: #9a6436; box-shadow: 0 0 0 4px rgba(137,80,40,0.10), 0 12px 28px rgba(73,38,19,0.22), inset 0 0 0 2px rgba(101,53,31,0.12); }
-    .hero-kicker { color: #8a5a3c; }
-    h1 { color: #5d301f; text-shadow: 0 3px 0 #f8ebd2, 0 7px 18px rgba(83,44,23,0.20); }
-    h1 span { color: #7a5590; }
-    .subhead { color: #6c5846; }
-
-    .toolbar { border-color: #b17a49; background: linear-gradient(180deg, rgba(255,247,229,0.98), rgba(234,208,164,0.98)); box-shadow: 0 18px 42px rgba(79,43,23,0.18), inset 0 1px 0 rgba(255,255,255,0.72); }
-    .toolbar::before { background: #fff0d0; color: #93552d; }
-    .field label { color: #704025; }
-    .field label .material-symbols-outlined { color: #7c5b8b; }
-    .field select,
-    .field input { border-color: #b27d4e; background: #fff9ec; color: #3c2b20; box-shadow: inset 0 2px 0 rgba(106,63,31,0.07), 0 0 0 1px rgba(255,255,255,0.45); }
-    .field select { color-scheme: light; appearance: auto; background: #fff9ec !important; background-image: none !important; }
-    .field select:hover,
-    .field input:hover,
-    .field select:focus,
-    .field input:focus { border-color: #82548f; box-shadow: 0 0 0 2px rgba(122,85,144,0.16); }
-    .actions .hint { color: #725c4b; }
-    .actions .hint kbd { color: #704025; background: #f8e7c5; border-color: #c19460; }
-    button { border-color: #ae7950; background: linear-gradient(180deg, #fff8e9, #e7c793); color: #5b321f; box-shadow: 0 5px 0 #9a6437, inset 0 1px 0 rgba(255,255,255,0.92); }
-    button:hover { border-color: #7c5590; box-shadow: 0 7px 0 #9a6437, 0 0 18px rgba(125,87,146,0.12), inset 0 1px 0 rgba(255,255,255,0.98); }
-    button:active { box-shadow: 0 2px 0 #9a6437; }
-    button.primary { background: linear-gradient(180deg, #dca15f, #a96432); border-color: #f0c77f; color: #2d1c15; }
-
-    .artifact-shell { background: linear-gradient(135deg, #c28c50, #6e422d 26%, #b67a43 76%, #e2bb7b); box-shadow: 0 26px 70px rgba(75,39,19,0.25), 0 0 0 1px rgba(107,57,29,0.18); }
-    .artifact-card { border-color: #b18156; background: linear-gradient(180deg, rgba(255,247,228,0.99), rgba(239,216,177,0.99)); box-shadow: inset 0 0 0 3px rgba(255,255,255,0.30), inset 0 0 50px rgba(135,83,39,0.08), 0 10px 28px rgba(76,39,19,0.16); }
-    .artifact-card::after { opacity: 0.32; mix-blend-mode: multiply; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(101,53,31,0.045) 12px), repeating-linear-gradient(90deg, transparent 0 11px, rgba(101,53,31,0.035) 12px); }
-    .eyebrow .pill { border-color: #bb8b5b; background: #fff1d3; color: #70442b; }
-    .eyebrow .pill.rarity { border-color: color-mix(in srgb, var(--rarity) 80%, #b07b43); background: color-mix(in srgb, var(--rarity) 17%, #fff1d3); color: #5a301f; }
-    h2 { color: #65351f; text-shadow: 0 3px 0 rgba(255,248,230,0.86), 0 10px 28px rgba(88,46,23,0.18); }
-
-    .meta-card,
-    .info-card,
-    .section,
-    .callout,
-    .summary-box,
-    .reliquary,
-    .ledger { border-color: #c49a6c; background: linear-gradient(180deg, rgba(255,247,229,0.90), rgba(241,218,179,0.90)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.64), 0 10px 22px rgba(92,48,23,0.10); }
-    .meta-top { color: #83502e; }
-    .meta-top .material-symbols-outlined { color: #79558b; }
-    .meta-value { color: #3d2a20; }
-    .meta-note { color: #745d4a; }
-    .plinth { background: radial-gradient(circle at 50% 40%, var(--gemglow), transparent 60%), linear-gradient(180deg, #584334, #241a15 78%); border-color: #9e704e; box-shadow: inset 0 0 0 2px rgba(244,202,127,0.20), inset 0 0 24px rgba(47,25,16,0.64), 0 12px 24px rgba(78,40,19,0.18); }
-    .relic-caption { color: #83512f; }
-    .section-title { color: #6a3821; }
-    .section-title .material-symbols-outlined { color: #7c5b8b; }
-    .chip { border-color: #c09668; background: #fff1d3; color: #59402e; }
-    .pattern-preview { border-color: #bd8d5d; background-color: #f1dbb0; box-shadow: inset 0 0 22px rgba(100,55,26,0.14), inset 0 1px 0 rgba(255,255,255,0.76); }
-    .pattern-label { color: #83512f; }
-    .signature-text, .lore-hook { color: #594536; }
-    .section li { border-bottom-color: #d0ab7d; color: #513c2e; }
-    .rule-prefix { color: #824d2b; }
-    .callout { background: linear-gradient(180deg, rgba(255,247,229,0.96), rgba(239,215,174,0.96)), #fff0d0; }
-    .ledger-title { color: #6a3821; }
-    .forge-table th, .forge-table td { border-bottom-color: #d0ab7d; }
-    .forge-table th { color: #8b542e; }
-    .forge-table td { color: #4b3628; }
-    .resonance-panel { border-color: #c09668; background: #f7e5c2; }
-    .resonance-kicker { color: #7e568e; }
-    .resonance-value { color: #6b3921; }
-    .resonance-track { background: #e1c18f; border-color: #b98552; }
-    .resonance-fill { background: linear-gradient(90deg, #9d6aae, #c57a38); box-shadow: 0 0 12px rgba(157,106,174,0.24); }
-    .resonance-note { color: #755d49; }
-    .summary-line { color: #705947; }
-    .summary-line strong { color: #713d23; }
-    .warning-note { background: #f4dfb6; color: #6a3821; }
-    .shelf { border-color: #c49a6c; background: rgba(255,244,220,0.82); box-shadow: 0 12px 30px rgba(85,44,20,0.16); }
-    .shelf h3 { color: #8a542e; border-right-color: #c49a6c; }
-    .shelf-item { border-color: #c49a6c; background: #fff0d0; color: #59402e; }
-    .shelf-item:hover { background: #f7dfb6; }
-    .shelf-item span { color: #704d35; }
-    .footer-note { color: #765f4d; }
-    .footer-note a { color: #7b4a2a; }
-
-    @media (min-width: 1001px) { .filters { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-    @media (max-width: 1000px) and (min-width: 621px) { .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-    /* Full pixel system: every readable face, control and surface now belongs
-       to the same late-medieval game UI instead of mixing print and web styles. */
-    :root {
-      --radius: 0;
-      --font-body: "VT323", ui-monospace, monospace;
-      --font-header: "Press Start 2P", ui-monospace, monospace;
-      --font-callout: "VT323", ui-monospace, monospace;
-      --font-drop: "Press Start 2P", ui-monospace, monospace;
-      --pixel-border: #6b3b25;
-      --pixel-shadow: #9a6437;
-      --pixel-highlight: rgba(255, 255, 255, 0.68);
-    }
-
-    html,
-    body,
-    button,
-    input,
-    select,
-    textarea,
-    table {
-      font-family: var(--font-body);
-      -webkit-font-smoothing: none;
-      font-smooth: never;
-      text-rendering: geometricPrecision;
-    }
-
-    body { font-size: 21px; line-height: 1.34; }
-    ::selection { color: #fff6dd; background: #7b4a2a; }
-    img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
-
-    h1,
-    h2,
-    h3,
-    .hero-kicker,
-    .section-title,
-    .toolbar::before,
-    .eyebrow .pill,
-    .field label,
-    button,
-    .ledger-title,
-    .pattern-label,
-    .relic-caption,
-    .resonance-kicker {
-      font-family: var(--font-header);
-      font-weight: 400;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      font-size: clamp(1.62rem, 4vw, 3rem);
-      line-height: 1.3;
-      letter-spacing: -0.055em;
-      text-shadow: 3px 3px 0 #e3bd7c;
-    }
-    h2 {
-      font-size: clamp(1.22rem, 3vw, 2rem);
-      line-height: 1.45;
-      letter-spacing: -0.035em;
-      text-shadow: 3px 3px 0 #e3bd7c;
-    }
-    h3,
-    .section-title,
-    .ledger-title { font-size: 0.78rem; line-height: 1.55; letter-spacing: 0.02em; }
-    .hero-kicker { font-size: 0.58rem; line-height: 1.7; letter-spacing: 0.08em; }
-    .subhead { font-size: 1.28rem; line-height: 1.3; }
-    .field label { font-size: 0.61rem; line-height: 1.55; letter-spacing: 0; }
-    .toolbar::before { font-size: 0.58rem; letter-spacing: 0.04em; }
-    .eyebrow .pill,
-    .chip { font-size: 1.02rem; line-height: 1; letter-spacing: 0.045em; }
-    .meta-value { font-family: var(--font-body); font-size: 1.35rem; }
-    .meta-note,
-    .pattern-label,
-    .relic-caption,
-    .resonance-kicker { font-size: 0.57rem; line-height: 1.6; letter-spacing: 0.03em; }
-    .forge-table { font-size: 1.08rem; line-height: 1.2; }
-
-    .toolbar,
-    .artifact-shell,
-    .artifact-card,
-    .meta-card,
-    .info-card,
-    .section,
-    .callout,
-    .summary-box,
-    .reliquary,
-    .ledger,
-    .plinth,
-    .pattern-preview,
-    .eyebrow .pill,
-    .chip,
-    .shelf,
-    .shelf-item,
-    .warning-note,
-    .resonance-panel,
-    .resonance-track,
-    .swatch,
-    button,
-    input,
-    select,
-    kbd,
-    .brand-mark {
-      border-radius: 0 !important;
-    }
-
-    .toolbar,
-    .artifact-card,
-    .meta-card,
-    .info-card,
-    .section,
-    .callout,
-    .summary-box,
-    .reliquary,
-    .ledger,
-    .shelf {
-      border-width: 2px;
-      box-shadow: 5px 5px 0 rgba(100, 58, 30, 0.22), inset 2px 2px 0 var(--pixel-highlight);
-    }
-
-    .toolbar { box-shadow: 7px 7px 0 rgba(100, 58, 30, 0.24), inset 2px 2px 0 var(--pixel-highlight); }
-    .artifact-shell {
-      padding: 6px;
-      background: linear-gradient(135deg, #e4bc78 0 10%, #77472c 10% 18%, #b8753d 18% 82%, #f1d49b 82% 90%, #78462d 90%);
-      box-shadow: 10px 10px 0 rgba(91, 52, 28, 0.27);
-    }
-    .artifact-card { box-shadow: inset 3px 3px 0 rgba(255,255,255,0.56), inset -3px -3px 0 rgba(116,70,36,0.17); }
-
-    /* Nested surfaces use different parchment weights, like stacked windows
-       in a classic inventory screen, so the page does not become one box grid. */
-    .meta-card {
-      background: #f2d6a5;
-      border-color: #a66b3d;
-      box-shadow: 3px 3px 0 rgba(100,58,30,0.18), inset 2px 2px 0 rgba(255,255,255,0.46);
-    }
-    .reliquary,
-    .info-card {
-      background: #fff5df;
-      border-width: 3px;
-      border-style: double;
-      box-shadow: 3px 3px 0 rgba(100,58,30,0.17);
-    }
-    .ledger {
-      background: #efd5a5;
-      border-top: 4px solid #79558b;
-      box-shadow: 4px 4px 0 rgba(100,58,30,0.19), inset 2px 2px 0 rgba(255,255,255,0.4);
-    }
-    .section {
-      background: #f8e5bf;
-      border-left: 4px solid #a96a3b;
-      box-shadow: 3px 3px 0 rgba(100,58,30,0.17), inset 2px 2px 0 rgba(255,255,255,0.42);
-    }
-    .callout {
-      background: #fff3d9;
-      border-top: 4px solid #79558b;
-      box-shadow: 3px 3px 0 rgba(100,58,30,0.17), inset 2px 2px 0 rgba(255,255,255,0.52);
-    }
-    .summary-box { background: #eed09a; box-shadow: 3px 3px 0 rgba(100,58,30,0.18), inset 2px 2px 0 rgba(255,255,255,0.4); }
-
-    .brand-mark,
-    .plinth,
-    .pattern-preview,
-    .resonance-panel {
-      clip-path: polygon(7px 0, calc(100% - 7px) 0, calc(100% - 7px) 3px, 100% 3px, 100% calc(100% - 7px), calc(100% - 3px) calc(100% - 7px), calc(100% - 3px) 100%, 7px 100%, 7px calc(100% - 3px), 0 calc(100% - 3px), 0 7px, 3px 7px, 3px 3px, 7px 3px);
-    }
-
-    .brand-mark { border-width: 3px; box-shadow: 5px 5px 0 rgba(93,54,30,0.28), inset 2px 2px 0 #fff8e7; }
-    .brand-mark img { transform: scale(1.05); }
-    .toolbar::after,
-    .artifact-card::before {
-      border-radius: 0;
-      background-size: 8px 8px;
-      image-rendering: pixelated;
-    }
-
-    .field input,
-    .field select {
-      min-height: 48px;
-      border: 2px solid #9d683c;
-      color: #3c2b20;
-      background-color: #fff9ec !important;
-      box-shadow: inset 3px 3px 0 rgba(119, 73, 38, 0.12), 3px 3px 0 rgba(111, 65, 35, 0.18);
-      font-size: 1.15rem;
-      line-height: 1;
-      transition: transform 110ms steps(2, end), border-color 110ms steps(2, end), box-shadow 110ms steps(2, end);
-    }
-    .field select {
-      appearance: none;
-      padding-right: 38px;
-      background-image:
-        linear-gradient(45deg, transparent 50%, #6a3821 50%),
-        linear-gradient(135deg, #6a3821 50%, transparent 50%) !important;
-      background-position: calc(100% - 17px) 52%, calc(100% - 10px) 52% !important;
-      background-size: 7px 7px, 7px 7px !important;
-      background-repeat: no-repeat !important;
-    }
-    .field input:hover,
-    .field select:hover,
-    .field input:focus,
-    .field select:focus {
-      transform: translate(-1px, -1px);
-      border-color: #79558b;
-      box-shadow: inset 3px 3px 0 rgba(119, 73, 38, 0.10), 4px 4px 0 rgba(111, 65, 35, 0.20);
-    }
-
-    button {
-      min-height: 44px;
-      border-width: 2px;
-      padding: 10px 15px;
-      font-size: 0.61rem;
-      line-height: 1.5;
-      box-shadow: 4px 4px 0 var(--pixel-shadow), inset 2px 2px 0 rgba(255,255,255,0.8);
-      transition: transform 100ms steps(2, end), box-shadow 100ms steps(2, end), filter 100ms steps(2, end);
-    }
-    button:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0 var(--pixel-shadow), inset 2px 2px 0 rgba(255,255,255,0.9);
-      filter: saturate(1.08);
-    }
-    button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--pixel-shadow); }
-    button.primary {
-      color: #21140e;
-      background: linear-gradient(180deg, #f3ca7f, #c78945);
-      border-color: #8f572e;
-    }
-    .relic-actions button { border-radius: 0; font-size: 0.52rem; }
-
-    .eyebrow .pill,
-    .chip,
-    .warning-note,
-    .shelf-item {
-      border-width: 2px;
-      box-shadow: 2px 2px 0 rgba(108,64,36,0.17);
-    }
-    .swatch { width: 13px; height: 13px; border-width: 2px; }
-    .actions .hint kbd { font-family: var(--font-header); font-size: 0.55rem; box-shadow: 2px 2px 0 rgba(106,63,31,0.2); }
-
-    .plinth::before,
-    .plinth::after {
-      border-radius: 0;
-      clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
-    }
-    .plinth::before { animation: rune-pulse 2.8s steps(4, end) infinite; }
-    .resonance-fill {
-      box-shadow: 3px 0 0 rgba(105,61,33,0.22);
-      transition: width 420ms steps(8, end);
-    }
-    .shelf-item { transition: transform 100ms steps(2, end), background-color 100ms steps(2, end); }
-    .shelf-item:hover { transform: translate(-2px, -2px); }
-    .footer-note { color: #5f4736; font-size: 1.08rem; line-height: 1.16; }
-    .footer-note a { color: #65351f; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-
-    .artifact-card.is-rolling { animation: forge-in 420ms steps(6, end); }
-    .toolbar,
-    .artifact-shell { animation: forge-in 560ms steps(7, end) both; }
-    .brand-mark { animation: crest-float 3.2s steps(5, end) infinite; }
-
-    @media (max-width: 620px) {
-      body { font-size: 19px; }
-      h1 { font-size: clamp(1.28rem, 7vw, 1.8rem); line-height: 1.45; }
-      h2 { font-size: clamp(1.05rem, 6vw, 1.42rem); }
-      .subhead { font-size: 1.15rem; }
-      .toolbar::before { font-size: 0.49rem; }
-      .section-title,
-      .ledger-title { font-size: 0.78rem; line-height: 1.7; }
-      .field label { font-size: 0.68rem; line-height: 1.7; }
-      .hero-kicker { font-size: 0.62rem; }
-      .artifact-shell { padding: 4px; box-shadow: 6px 6px 0 rgba(91,52,28,0.24); }
-      .artifact-inner { padding: 22px 14px 18px; }
-      .forge-table { font-size: 0.98rem; }
-      button { font-size: 0.68rem; }
-      .toolbar::before { font-size: 0.55rem; }
-      .meta-note,
-      .pattern-label,
-      .relic-caption,
-      .resonance-kicker { font-size: 0.66rem; }
-    }
-
-    @media (max-width: 350px) {
-      .app { width: calc(100% - 16px); }
-      .toolbar { padding-inline: 10px; }
-      .artifact-inner { padding-inline: 10px; }
-      .filters .field:last-child { grid-column: 1 / -1; }
-      .field label,
-      button { font-size: 0.66rem; }
-      .section-title,
-      .ledger-title { font-size: 0.73rem; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arcane Artifact Forge</title>
+<meta name="description" content="Roll sourcebook-ready magic items for D&amp;D 5e, each with a pixel-art portrait forged from its own materials. Seeded, shareable, and tuned so low-level parties stay unbroken.">
+<link rel="icon" href="sprites/forge-crest.png">
+<link rel="stylesheet" href="../assets/phb/phb.css">
+<style>
+/* ===== Arcane Artifact Forge: page-specific styling on top of phb.css ===== */
+:root{--rarity:#6f6a63;--rarity-2:#6f6a63;--gemglow:rgba(192,173,106,.35);--resonance:0%}
+.bar-in{max-width:1192px}
+/* the generator still writes icon ligatures; the handbook look sets them aside */
+.material-symbols-outlined{display:none!important}
+.phb main{padding-top:30px}
+
+.af-controls .phb-field{flex:1 1 150px}
+.af-controls #rerollButton{flex:0 0 auto}
+.page .af-hint{margin:-4px 0 18px;font-family:'ScalySans',sans-serif;font-style:italic;font-size:12.5px;color:var(--caption)}
+.af-hint kbd{display:inline-block;padding:1px 6px 0;font-family:'ScalySans',sans-serif;font-style:normal;font-size:11px;border:1px solid var(--phb-line);border-radius:2px;background:rgba(255,251,238,.7)}
+
+/* the entry */
+.artifact-card{position:relative;outline:none}
+.artifact-card:focus-visible{outline:2px solid var(--phb-ring);outline-offset:6px}
+.artifact-card.is-rolling .artifact-inner{animation:af-reveal .45s ease-out}
+@keyframes af-reveal{from{transform:translateY(6px)}to{transform:none}}
+.header-band{margin:0 0 12px;padding:0 0 8px;border-bottom:3px solid var(--rarity)}
+.eyebrow{display:flex;flex-wrap:wrap;align-items:baseline;margin:0 0 4px;font-family:'MrEaves',serif;font-size:18px;letter-spacing:.06em;text-transform:uppercase;color:var(--rule)}
+.eyebrow .pill + .pill::before{content:"\25C6";display:inline-block;margin:0 .55em;font-family:sans-serif;font-size:.55em;vertical-align:.25em;color:var(--gold)}
+.eyebrow .pill.rarity{color:var(--head)}
+.eyebrow .pill.rarity::after{content:"";display:inline-block;width:.6em;height:.6em;margin-left:.35em;border-radius:50%;background:var(--rarity);box-shadow:0 0 0 2px var(--rarity-2);vertical-align:.08em}
+.page h2#artifactName{margin:0;font-size:46px;line-height:1;color:var(--head)}
+
+.meta-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 18px}
+.meta-card{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:8px 8px 7px;text-align:center;
+  background:rgba(255,251,238,.6);border:1px solid var(--phb-line-soft);border-top:3px solid var(--rarity);border-radius:3px}
+.meta-top{font-family:'ScalySansCaps',sans-serif;font-size:12px;letter-spacing:.06em;color:var(--head)}
+.meta-value{margin-top:2px;font-family:'BookInsanity',serif;font-size:19px;line-height:1.15;color:var(--ink);overflow-wrap:anywhere}
+.meta-note{margin-top:2px;font-family:'ScalySans',sans-serif;font-style:italic;font-size:11.5px;line-height:1.2;color:var(--caption)}
+
+.surface-grid{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-bottom:6px}
+.reliquary{display:flex;flex-direction:column;align-items:center;gap:6px}
+.plinth{position:relative;width:188px;height:246px;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,var(--gemglow) 0,transparent 62%),radial-gradient(ellipse at 50% 50%,#f6eed8 0%,#e3d4ad 78%);
+  border:1px solid var(--phb-line);box-shadow:inset 0 0 0 4px rgba(255,251,238,.6),inset 0 0 0 5px var(--gold),0 2px 8px rgba(60,30,10,.2)}
+.plinth::before,.plinth::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.plinth::before{width:156px;height:156px;border:1px solid color-mix(in srgb,var(--rarity) 70%,transparent);opacity:.75}
+.plinth::after{width:120px;height:120px;border:2px dashed color-mix(in srgb,var(--rarity) 70%,transparent);opacity:.4;animation:af-turn 52s linear infinite}
+@keyframes af-turn{to{transform:rotate(360deg)}}
+#relicCanvas{position:relative;image-rendering:pixelated;image-rendering:crisp-edges;filter:drop-shadow(0 4px 5px rgba(60,30,10,.45))}
+.page .relic-caption{margin:0;max-width:200px;font-family:'ScalySans',sans-serif;font-style:italic;font-size:12px;line-height:1.3;text-align:center;color:var(--caption)}
+
+.page .section-title{margin:0 0 6px;font-family:'MrEaves',serif;font-weight:normal;font-size:23px;line-height:1.05;color:var(--head);border-bottom:2px solid var(--gold)}
+.af-chips{display:flex;flex-direction:column;margin:0;font-family:'ScalySans',sans-serif;font-size:13.4px}
+.af-chips .chip{display:flex;align-items:center;gap:6px;padding:3px 6px;line-height:1.25}
+.af-chips .chip:nth-child(odd){background:var(--accent)}
+.swatch{flex:none;width:12px;height:12px;border:1px solid var(--phb-line);border-radius:50%}
+.pattern-preview{position:relative;min-height:96px;overflow:hidden;border:1px solid var(--phb-line-soft);border-radius:3px;
+  background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(60,36,14,.1)),var(--pattern-bg,linear-gradient(45deg,rgba(201,173,106,.15),rgba(88,24,13,.08))),linear-gradient(180deg,#f0dfba,#ddc79a)}
+.pattern-preview::before{content:"";position:absolute;inset:0;background:var(--pattern-overlay,none);mix-blend-mode:multiply}
+.page .pattern-label{margin:6px 0 2px;font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.04em;color:var(--head)}
+.page .signature-text{margin:0;font-style:italic;line-height:1.4}
+
+.ledger{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:24px;align-items:start;margin:14px 0 4px}
+.page table.forge-table{margin:0}
+.forge-table th{font-family:'ScalySansCaps',sans-serif;font-weight:normal;letter-spacing:.04em;color:var(--head);white-space:nowrap}
+.resonance-panel{padding:10px 12px}
+.page .resonance-kicker{margin:0;font-family:'MrEaves',serif;font-size:19px;color:var(--head)}
+.page .resonance-value{margin:0;font-family:'BookInsanity',serif;font-size:28px;line-height:1.1}
+.resonance-track{height:10px;margin:4px 0 6px;padding:1px;background:rgba(255,251,238,.7);border:1px solid var(--phb-line)}
+.resonance-fill{height:100%;width:var(--resonance,0%);background:var(--rarity);transition:width .5s ease}
+.page .resonance-note{margin:0;font-family:'ScalySans',sans-serif;font-style:italic;font-size:12px;color:#5b4a35}
+
+.columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin-top:10px}
+.page .columns h3.section-title{margin-top:14px}
+.page .columns ul{margin:0 0 6px;padding-left:1.15em;line-height:1.4}
+.page .columns li{margin:0 0 4px}
+.rule-prefix{font-weight:bold;font-style:italic}
+.page .callout{margin:18px 0 6px}
+.page .callout .section-title{border-bottom:0;font-size:20px}
+.page .lore-hook{margin:0;font-family:'ScalySans',sans-serif;font-size:13.6px;line-height:1.45}
+
+.summary-box{display:flex;flex-wrap:wrap;gap:4px 22px;margin:16px 0 0;padding:8px 0 0;border-top:1px solid var(--phb-line-soft);font-family:'ScalySans',sans-serif;font-size:13px;color:#5b4a35}
+.summary-box strong{font-family:'ScalySansCaps',sans-serif;letter-spacing:.04em;color:var(--head)}
+.warning-note{display:none}
+.warning-note.is-visible{display:block;margin:12px 0 0;padding:9px 12px;font-family:'ScalySans',sans-serif;font-size:13.4px;line-height:1.35;color:#5b1a10;background:rgba(156,43,27,.08);border:1px solid rgba(156,43,27,.35);border-left:0;border-top:3px solid var(--rule)}
+
+/* shelf */
+.shelf{display:none;align-items:center;gap:12px;margin-top:22px;padding-top:12px;border-top:2px solid var(--gold)}
+.shelf.is-visible{display:flex}
+.page .shelf h3{flex:none;margin:0;font-family:'MrEaves',serif;font-weight:normal;font-size:22px;color:var(--head)}
+.shelf-rail{flex:1;display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px}
+.shelf-item{flex:none;width:92px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;font:inherit;cursor:pointer;
+  background:rgba(255,251,238,.6);border:1px solid var(--phb-line-soft);border-bottom:3px solid var(--slot-rarity,#6f6a63);border-radius:3px}
+.shelf-item:hover{background:#fff;border-color:var(--phb-line)}
+.shelf-item canvas{display:block;image-rendering:pixelated}
+.shelf-item span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:'ScalySans',sans-serif;font-size:11.5px;line-height:1.15;text-align:center;color:var(--head)}
+.icon-fallback{font-family:'MrEaves',serif;font-size:16px}
+
+.page .footer-note{margin:22px 0 0;font-family:'ScalySans',sans-serif;font-style:italic;font-size:11.5px;line-height:1.35;text-align:center;color:var(--caption)}
+
+@media (max-width:980px){
+  .surface-grid{grid-template-columns:auto minmax(0,1fr)}
+  .signature-card{grid-column:1 / -1}
+  .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .surface-grid,.ledger,.columns{grid-template-columns:minmax(0,1fr)}
+  .reliquary{justify-self:center}
+  .page h2#artifactName{font-size:36px}
+  .af-controls #rerollButton{flex:1 1 100%}
+  .shelf{flex-direction:column;align-items:stretch}
+  .shelf-item{min-height:44px}
+}
+@media print{.af-controls,.af-hint,.tool-head .actions,.relic-actions,.shelf{display:none!important}}
+@media (prefers-reduced-motion:reduce){.plinth::after,.artifact-card.is-rolling .artifact-inner{animation:none}}
+</style>
 </head>
-<body>
-  <a class="skip" href="#artifactCard">Skip to the generated item</a>
-    <main class="app">
-      <header>
-        <div class="title-block">
-        <span class="brand-mark"><img src="sprites/forge-crest.png" width="58" height="58" alt="" /></span>
-        <div class="title-copy">
-          <p class="hero-kicker">The lost guild // Pixelforge reliquary</p>
-          <h1>Arcane Artifact <span>Forge</span></h1>
+<body class="phb">
+<a class="skip" href="#artifactCard">Skip to the generated item</a>
+<header class="bar noprint">
+  <div class="bar-in">
+    <a class="mark" href="#forge">Artifact <span>Forge</span></a>
+    <nav aria-label="Sections">
+      <a href="#forge">Forge</a>
+      <a href="#artifactCard">Entry</a>
+      <a href="../handbooks/artifacts/">Compendium</a>
+    </nav>
+    <a class="home" href="../">&larr; Home</a>
+  </div>
+</header>
+
+<main class="app">
+<section class="page tool broad" id="forge" aria-labelledby="forgeTitle">
+  <header class="tool-head">
+    <h1 id="forgeTitle"><span class="chnum">Chapter VII: Treasure</span>Arcane Artifact Forge</h1>
+    <p class="sub">Sourcebook-ready relics with restrained power and a pixel portrait forged from the item&rsquo;s own materials. Legendary pieces can surface at low tiers, but they arrive dormant until a stronger wielder wakes them.</p>
+    <div class="actions">
+      <button class="phb-btn ghost sm" id="copyButton" type="button">Copy entry</button>
+      <button class="phb-btn ghost sm" id="linkButton" type="button">Copy link</button>
+    </div>
+  </header>
+
+  <div class="phb-toolbar af-controls" role="group" aria-label="Forge settings">
+    <div class="phb-field"><label for="schoolSelect">Arcane School</label><select id="schoolSelect"></select></div>
+    <div class="phb-field"><label for="raritySelect">Rarity</label><select id="raritySelect"></select></div>
+    <div class="phb-field"><label for="tierSelect">Party Tier</label><select id="tierSelect"></select></div>
+    <div class="phb-field"><label for="seedInput">Seed</label><input id="seedInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="random" aria-describedby="seedHelp"></div>
+    <div class="phb-field"><label for="paletteSelect">Forge Palette</label><select id="paletteSelect"></select></div>
+    <button class="phb-btn lg" id="rerollButton" type="button">&#9670; Forge &#9670;</button>
+  </div>
+  <p class="af-hint" id="seedHelp">The same seed and settings always forge the same item. Press <kbd>R</kbd> to forge another.</p>
+
+  <p id="liveStatus" class="sr-only" role="status" aria-live="polite"></p>
+
+  <article class="artifact-card" id="artifactCard" tabindex="-1" aria-labelledby="artifactName">
+    <div class="artifact-inner">
+      <div class="header-band">
+        <div class="eyebrow" id="eyebrow"></div>
+        <h2 id="artifactName">Loading Relic&hellip;</h2>
+      </div>
+
+      <div class="meta-grid" id="metaGrid"></div>
+
+      <div class="surface-grid">
+        <section class="reliquary" aria-labelledby="relicCaption">
+          <div class="plinth">
+            <canvas id="relicCanvas" width="168" height="224" role="img" aria-label="Pixel-art portrait of the generated item"></canvas>
+          </div>
+          <p class="relic-caption" id="relicCaption"></p>
+          <div class="relic-actions">
+            <button class="phb-btn ghost sm" id="spriteButton" type="button" title="Download the portrait as a PNG">Download PNG</button>
+          </div>
+        </section>
+        <section class="info-card">
+          <h3 class="section-title">Materials &amp; Palette</h3>
+          <div class="af-chips" id="appearanceChips"></div>
+        </section>
+        <section class="info-card signature-card">
+          <h3 class="section-title">Signature &amp; Surface</h3>
+          <div class="pattern-preview" id="patternPreview"></div>
+          <p class="pattern-label"><span id="patternLabel"></span></p>
+          <p class="signature-text" id="signatureText"></p>
+        </section>
+      </div>
+
+      <section class="ledger" aria-labelledby="ledgerTitle">
+        <div>
+          <h3 class="section-title" id="ledgerTitle">Forge Ledger</h3>
+          <table class="forge-table"><tbody id="ledgerTable"></tbody></table>
+        </div>
+        <aside class="note resonance-panel" aria-label="Arcane resonance">
+          <p class="resonance-kicker">Arcane Resonance</p>
+          <p class="resonance-value" id="resonanceValue">—</p>
+          <div class="resonance-track" aria-hidden="true"><div class="resonance-fill" id="resonanceFill"></div></div>
+          <p class="resonance-note" id="resonanceNote">Waiting for a forge roll.</p>
+        </aside>
+      </section>
+
+      <div class="columns">
+        <div class="stack">
+          <section class="section"><h3 class="section-title">Spellcraft &amp; Rules</h3><ul id="rulesList"></ul></section>
+          <section class="section"><h3 class="section-title">Enhancements</h3><ul id="boonsList"></ul></section>
+        </div>
+        <div class="stack">
+          <section class="section"><h3 class="section-title">Costs, Drawbacks &amp; Quirks</h3><ul id="drawbacksList"></ul></section>
+          <section class="descriptive callout"><h3 class="section-title">Lore Hook</h3><p class="lore-hook" id="loreHook"></p></section>
         </div>
       </div>
-      <p class="subhead">Roll sourcebook-ready relics with restrained power scaling and a pixel portrait forged from the item&rsquo;s own materials. Legendary pieces can still surface at low tiers, but they arrive dormant until a stronger wielder wakes them.</p>
-    </header>
 
-    <section class="toolbar" aria-label="Artifact generation controls">
-      <div class="filters">
-        <div class="field">
-          <label for="schoolSelect"><span class="material-symbols-outlined" aria-hidden="true">local_library</span> Arcane school</label>
-          <select id="schoolSelect"></select>
-        </div>
-        <div class="field">
-          <label for="raritySelect"><span class="material-symbols-outlined" aria-hidden="true">military_tech</span> Rarity</label>
-          <select id="raritySelect"></select>
-        </div>
-        <div class="field">
-          <label for="tierSelect"><span class="material-symbols-outlined" aria-hidden="true">shield</span> Party tier</label>
-          <select id="tierSelect"></select>
-        </div>
-        <div class="field">
-          <label for="seedInput"><span class="material-symbols-outlined" aria-hidden="true">token</span> Seed</label>
-          <input id="seedInput" type="text" inputmode="text" autocomplete="off" spellcheck="false"
-                 placeholder="random" aria-describedby="seedHelp" />
-        </div>
-        <div class="field">
-          <label for="paletteSelect"><span class="material-symbols-outlined" aria-hidden="true">palette</span> Forge palette</label>
-          <select id="paletteSelect"></select>
-        </div>
+      <div class="summary-box">
+        <div class="summary-line"><strong id="summaryPower">Power band</strong></div>
+        <div class="summary-line"><span id="summaryBalance"></span></div>
+        <div class="summary-line"><span id="summarySeed"></span></div>
       </div>
-      <div class="actions">
-        <p class="hint" id="seedHelp">Same seed and filters always roll the same item. <kbd>R</kbd> rerolls.</p>
-        <button id="rerollButton" class="primary" type="button"><span class="material-symbols-outlined" aria-hidden="true">casino</span> Generate</button>
-        <button id="copyButton" type="button"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span> Copy entry</button>
-        <button id="linkButton" type="button"><span class="material-symbols-outlined" aria-hidden="true">link</span> Copy link</button>
-      </div>
-    </section>
+      <div class="warning-note" id="dormantNote"></div>
+    </div>
+  </article>
 
-    <p id="liveStatus" class="sr-only" role="status" aria-live="polite"></p>
+  <section class="shelf" id="shelf" aria-label="Recently forged items">
+    <h3>The Shelf</h3>
+    <div class="shelf-rail" id="shelfRail"></div>
+    <button class="phb-btn ghost sm" id="clearShelf" type="button" title="Clear the shelf"><span class="icon-fallback">Clear</span></button>
+  </section>
 
-    <section class="artifact-shell">
-      <article class="artifact-card" id="artifactCard" tabindex="-1">
-        <div class="artifact-inner">
-          <div class="header-band">
-            <div class="eyebrow" id="eyebrow"></div>
-            <h2 id="artifactName">Loading Relic&hellip;</h2>
-          </div>
-
-          <div class="meta-grid" id="metaGrid"></div>
-
-          <div class="surface-grid">
-            <section class="reliquary" aria-labelledby="relicCaption">
-              <div class="plinth">
-                <canvas id="relicCanvas" width="168" height="224" role="img"
-                        aria-label="Pixel-art portrait of the generated item"></canvas>
-              </div>
-              <p class="relic-caption" id="relicCaption"></p>
-              <div class="relic-actions">
-                <button id="spriteButton" type="button" title="Download the portrait as a PNG">
-                  <span class="material-symbols-outlined" aria-hidden="true">download</span> PNG
-                </button>
-              </div>
-            </section>
-            <section class="info-card">
-              <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">diamond</span> Materials &amp; palette</h3>
-              <div class="chips" id="appearanceChips"></div>
-            </section>
-            <section class="info-card signature-card">
-              <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">star</span> Signature &amp; surface</h3>
-              <div class="pattern-preview" id="patternPreview"></div>
-              <p class="pattern-label"><span class="material-symbols-outlined" aria-hidden="true">gesture</span><span id="patternLabel"></span></p>
-              <p class="signature-text" id="signatureText"></p>
-            </section>
-          </div>
-
-          <section class="ledger" aria-labelledby="ledgerTitle">
-            <div>
-              <h3 class="section-title ledger-title" id="ledgerTitle"><span class="material-symbols-outlined">table_rows</span> Forge ledger</h3>
-              <table class="forge-table">
-                <tbody id="ledgerTable"></tbody>
-              </table>
-            </div>
-            <aside class="resonance-panel" aria-label="Arcane resonance">
-              <p class="resonance-kicker">Arcane resonance</p>
-              <p class="resonance-value" id="resonanceValue">—</p>
-              <div class="resonance-track" aria-hidden="true"><div class="resonance-fill" id="resonanceFill"></div></div>
-              <p class="resonance-note" id="resonanceNote">Waiting for a forge roll.</p>
-            </aside>
-          </section>
-
-          <div class="columns">
-            <div class="stack">
-              <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">menu_book</span> Spellcraft &amp; rules</h3>
-                <ul id="rulesList"></ul>
-              </section>
-              <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">bolt</span> Enhancements</h3>
-                <ul id="boonsList"></ul>
-              </section>
-            </div>
-            <div class="stack">
-              <section class="section">
-                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">warning</span> Costs, drawbacks &amp; quirks</h3>
-                <ul id="drawbacksList"></ul>
-              </section>
-              <section class="callout">
-                <h3 class="section-title"><span class="material-symbols-outlined" aria-hidden="true">history_edu</span> Lore hook</h3>
-                <p class="lore-hook" id="loreHook"></p>
-              </section>
-            </div>
-          </div>
-
-          <div class="summary-box">
-            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">star</span> <strong id="summaryPower">Power band</strong></div>
-            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">info</span> <span id="summaryBalance"></span></div>
-            <div class="summary-line"><span class="material-symbols-outlined" aria-hidden="true">token</span> <span id="summarySeed"></span></div>
-          </div>
-          <div class="warning-note" id="dormantNote"></div>
-        </div>
-      </article>
-    </section>
-
-    <section class="shelf" id="shelf" aria-label="Recently generated items">
-      <h3>Shelf</h3>
-      <div class="shelf-rail" id="shelfRail"></div>
-      <button id="clearShelf" type="button" title="Clear the shelf">
-        <span class="material-symbols-outlined" aria-hidden="true">delete_sweep</span>
-        <span class="icon-fallback">Clear</span>
-      </button>
-    </section>
-
-    <p class="footer-note">
-      Single-file compendium page. The portraits are
-      <a href="https://isaiart.com/pixelforge/">pixelforge</a> sprites &mdash; 24&times;32 text grids
-      with a semantic palette, recolored in the browser from whatever material and gemstone the roll
-      produced, so no two relics render the same.
-    </p>
-  </main>
+  <p class="footer-note">The portraits are <a href="https://isaiart.com/pixelforge/">pixelforge</a> sprites: 24&times;32 text grids with a semantic palette, recoloured in the browser from whatever material and gemstone the roll produced, so no two relics render the same.</p>
+  <span class="foot">Chapter VII | Treasure</span>
+</section>
+</main>
 
   <script>
   (function () {
