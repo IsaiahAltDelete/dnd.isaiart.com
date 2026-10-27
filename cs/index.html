@@ -1,900 +1,784 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="onyx">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Characters — Sheet &amp; Roster</title>
-    <meta name="description" content="Characters: a roster of saved D&amp;D 5e character sheets and heroes from the Archives of the Forgotten. Open any hero, roll a new one, or start a blank sheet with dice roller, rests, gear and spells.">
-    <link rel="canonical" href="https://dnd.isaiart.com/cs/">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗡️</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;900&display=swap" rel="stylesheet">
-    <style>
-        /* --- THEME VARIABLES --- */
-        :root[data-theme="onyx"] {
-            --bg-body: #09090b;
-            --bg-surface: #121212;
-            --bg-element: #1e1e20;
-            --line: #27272a;
-            --text-main: #ffffff;
-            --text-muted: #52525b;
-            --accent: #ff3b30;
-            --accent-fg: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Characters</title>
+<meta name="description" content="Characters: a roster of saved D&amp;D 5e character sheets and heroes from the Archives of the Forgotten. Open any hero, roll a new one, or start a blank sheet with dice roller, rests, gear and spells.">
+<link rel="canonical" href="https://dnd.isaiart.com/cs/">
+<link rel="stylesheet" href="../assets/phb/phb.css">
+<style>
+/* ===== Characters: page-specific styling on top of phb.css ===== */
+.bar-in{max-width:1192px}
+.phb .hidden,.phb .view.hidden{display:none!important}
+.phb svg.ic,.phb .phb-btn svg.ic{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.cs-back{display:inline-flex;align-items:center;gap:4px;margin:0 0 6px;padding:2px 0;font-family:'MrEaves',serif;font-size:17px;color:var(--head);background:none;border:0;cursor:pointer;text-decoration:none}
+.cs-back:hover{color:var(--rule)}
 
-        :root[data-theme="polar"] {
-            --bg-body: #f5f5f7;
-            --bg-surface: #ffffff;
-            --bg-element: #f2f2f7;
-            --line: #d1d1d6;
-            --text-main: #1c1c1e;
-            --text-muted: #8e8e93;
-            --accent: #007aff;
-            --accent-fg: #ffffff;
-        }
+/* roster */
+.cs-sec{margin:26px 0 0}
+.cs-sec:first-of-type{margin-top:6px}
+.cs-sec > header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 14px;margin:0 0 12px;padding-bottom:4px;border-bottom:2px solid var(--gold)}
+.page .cs-sec h2{margin:0;font-size:30px}
+.page .cs-sec > header p{margin:0;font-style:italic;color:#5b4a35}
+.r-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:14px}
+.r-card{position:relative;display:flex;flex-direction:column;gap:3px;min-height:132px;margin:0;padding:12px 14px 10px;text-align:left;font:inherit;color:inherit;text-decoration:none;
+  background:rgba(255,251,238,.55);border:1px solid var(--phb-line-soft);border-top:3px solid var(--rule);box-shadow:0 1px 3px rgba(60,30,10,.12);cursor:pointer}
+.r-card:hover,.r-card:focus-visible{background:rgba(255,255,255,.72);border-color:var(--phb-line);border-top-color:var(--rule)}
+.r-feat{border-top-color:var(--gold)}
+.r-kind{font-family:'ScalySans',sans-serif;font-weight:bold;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--rule)}
+.r-name{padding-right:30px;font-family:'MrEaves',serif;font-size:25px;line-height:1;color:var(--head);overflow-wrap:anywhere}
+.r-sub{font-style:italic;font-size:13.5px;color:#5b4a35}
+.r-meta{font-family:'ScalySans',sans-serif;font-size:13px;line-height:1.3}
+.r-foot{margin-top:auto;padding-top:4px;font-family:'ScalySans',sans-serif;font-style:italic;font-size:11.5px;color:var(--caption)}
+.r-go{position:absolute;top:12px;right:12px;color:var(--caption)}
+.r-del{position:absolute;top:4px;right:4px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;color:var(--caption);background:none;border:0;border-radius:3px;cursor:pointer}
+.r-del:hover{color:var(--rule);background:rgba(88,24,13,.08)}
+.r-new{align-items:center;justify-content:center;text-align:center;background:transparent;border:1px dashed var(--phb-line);border-top:1px dashed var(--phb-line);box-shadow:none}
+.r-new svg.ic{width:26px;height:26px;color:var(--head)}
+.r-new .r-name{padding:0;font-size:22px}
+.page .r-empty{margin:12px 0 0;font-style:italic;color:#5b4a35}
 
-        :root[data-theme="midnight"] {
-            --bg-body: #020617;
-            --bg-surface: #0f172a;
-            --bg-element: #1e293b;
-            --line: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --accent: #38bdf8;
-            --accent-fg: #0f172a;
-        }
+/* archive hero */
+.cs-hero-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 18px}
+.cs-hero-head .actions{display:flex;flex-wrap:wrap;gap:6px}
+.phb .abil .sub{margin-top:4px}
+.cs-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
+.phb .kv .k{font-family:'ScalySansCaps',sans-serif;letter-spacing:.04em;color:var(--head)}
+.swatch{display:inline-block;width:12px;height:12px;margin-left:6px;border:1px solid var(--phb-line);border-radius:50%;vertical-align:-1px}
 
-        :root[data-theme="botanical"] {
-            --bg-body: #f1f8e9;
-            --bg-surface: #ffffff;
-            --bg-element: #dcedc8;
-            --line: #aed581;
-            --text-main: #33691e;
-            --text-muted: #689f38;
-            --accent: #558b2f;
-            --accent-fg: #ffffff;
-        }
+/* sheet header */
+.cs-ident{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px 18px;margin-bottom:4px}
+.phb #charName{display:block;width:100%;margin:0;padding:0 0 2px;font-family:'MrEaves',serif;font-size:46px;line-height:1;color:var(--head);background:none;border:0;border-bottom:1px dashed var(--phb-line-soft);border-radius:0}
+.phb #charName::placeholder{color:rgba(88,24,13,.35);font-style:normal}
+.phb #charName:focus{outline:none;border-bottom-color:var(--head)}
+.cs-ident-row{flex:1 1 440px;display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:10px}
+.cs-ident-row .phb-field{flex:0 1 170px}
+.cs-ident-row .phb-field.lvl{flex:0 0 76px}
+.cs-ident .actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.phb .phb-tabs{margin-top:16px}
 
-        /* --- GLOBAL RESET & TYPOGRAPHY --- */
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+/* steppers and sheet inputs */
+.step{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--phb-line);border-radius:3px;background:var(--phb-field);overflow:hidden}
+.step button{width:30px;margin:0;padding:0;font-family:'MrEaves',serif;font-size:20px;line-height:1;color:var(--head);background:none;border:0;cursor:pointer}
+.step button:hover{background:rgba(88,24,13,.1)}
+.phb .step input{width:3.4em;min-width:0;margin:0;padding:0 2px;text-align:center;font-family:'BookInsanity',serif;font-size:16px;color:var(--ink);background:transparent;border:0;border-left:1px solid var(--phb-line-soft);border-right:1px solid var(--phb-line-soft);border-radius:0}
+.phb .step.solo input{border:0;width:3.6em}
+.phb .cs-num{width:100%;margin:0;padding:0;text-align:center;font-family:'BookInsanity',serif;font-size:24px;line-height:1.1;color:var(--ink);background:transparent;border:0;border-bottom:1px dotted rgba(88,24,13,.35);border-radius:0}
+.phb .cs-num:focus,.phb .step input:focus{outline:none;background:rgba(255,255,255,.55)}
+.phb .cs-num:focus-visible,.phb .step input:focus-visible{outline:2px solid var(--phb-ring);outline-offset:1px}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+.phb .stat-row.vitals{align-items:stretch}
+.phb .stat-row.vitals .stat{gap:4px;flex:1 1 110px}
+.phb .stat-row.vitals .stat.x2{flex:2 1 210px}
+.phb .vitals .step button{width:24px}
+.phb .vitals .step input{width:2.6em}
+.phb .stat .hp{display:flex;align-items:center;justify-content:center;gap:6px}
+.phb .stat .hp .of{font-family:'MrEaves',serif;font-size:20px;color:var(--caption)}
+.phb .stat .hp .step.solo input{color:#5b4a35}
 
-        input, select, textarea {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-family: inherit;
-            width: 100%;
-            transition: color 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { outline: none; color: var(--accent); }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        select { -webkit-appearance: none; cursor: pointer; }
+.phb .abil .score{width:100%}
+.phb .abil input.score{margin-top:3px;padding:0;text-align:center;font-family:'BookInsanity',serif;font-size:27px;line-height:1.05;color:var(--ink);background:transparent;border:0;border-radius:0}
+.phb .abil input.score:focus{outline:none;background:rgba(255,255,255,.55)}
+.phb .abil input.score:focus-visible{outline:2px solid var(--phb-ring)}
 
-        .label-mono {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 600;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 4px;
-        }
+.cs-prof{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px}
+.phb .cs-skill{display:flex;width:100%;min-height:32px;padding:0 4px;border-bottom:1px dotted rgba(88,24,13,.25)}
+.phb .cs-skill .nm{flex:1}
+.phb .cs-skill small{margin-left:4px;font-family:'ScalySansCaps',sans-serif;font-size:11px;letter-spacing:.05em;color:var(--caption)}
+.phb .cs-skill b{font-family:'BookInsanity',serif;font-weight:bold;font-size:14px;color:var(--head);min-width:2.2em;text-align:right}
+.cs-saves{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 30px}
+.cs-pb{font-family:'ScalySansCaps',sans-serif;font-size:13px;letter-spacing:.05em;color:var(--head)}
+.cs-pb b{font-family:'BookInsanity',serif;font-size:18px;margin-left:4px}
+.page .cs-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 
-        /* --- UI COMPONENTS --- */
-        .swiss-panel { background: var(--bg-surface); border: 1px solid var(--line); padding: 24px; }
-        
-        .swiss-check {
-            display: flex; align-items: center; cursor: pointer; gap: 12px; padding: 4px 8px; border-radius: 4px; transition: background 0.1s;
-        }
-        .swiss-check:hover { background: var(--bg-element); }
-        .swiss-check input { display: none; }
-        .swiss-check-box { width: 14px; height: 14px; border: 2px solid var(--line); display: inline-block; position: relative; transition: all 0.2s; }
-        .swiss-check input:checked + .swiss-check-box { background: var(--accent); border-color: var(--accent); }
-        .swiss-check-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); transition: color 0.2s; }
-        .swiss-check input:checked ~ .swiss-check-label { color: var(--text-main); }
+/* gear */
+.cs-gear{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:start}
+.cs-box{padding:12px 14px;background:rgba(224,229,193,.55);border:1px solid var(--phb-line-soft);border-top:3px solid var(--gold)}
+.cs-coin{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cs-coin span{font-family:'ScalySansCaps',sans-serif;font-size:14px;letter-spacing:.05em;color:var(--head)}
+.cs-load{margin-top:12px;padding-top:10px;border-top:1px solid var(--phb-line-soft);text-align:center}
+.cs-load b{display:block;font-family:'BookInsanity',serif;font-size:26px;font-weight:normal}
+.cs-load span{font-family:'ScalySansCaps',sans-serif;font-size:12px;letter-spacing:.05em;color:var(--head)}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px}
+.inv-slot{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;margin:0;padding:0;font-size:24px;line-height:1;color:var(--caption);
+  background:rgba(255,251,238,.55);border:1px solid var(--phb-line-soft);border-radius:3px;cursor:pointer}
+.inv-slot:hover{background:rgba(255,255,255,.8);border-color:var(--head)}
+.inv-slot.empty svg.ic{width:14px;height:14px;opacity:.45}
+.inv-qty{position:absolute;right:2px;bottom:2px;padding:0 3px;font-family:'ScalySans',sans-serif;font-weight:bold;font-size:10px;line-height:1.4;color:var(--phb-btn-ink);background:var(--head);border-radius:2px}
 
-        .swiss-stepper {
-            display: flex; align-items: center; background: var(--bg-element); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; height: 32px;
-        }
-        .swiss-stepper btn {
-            width: 32px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.1s; font-size: 0.8rem; user-select: none;
-        }
-        .swiss-stepper btn:hover { background: var(--line); color: var(--text-main); }
-        .swiss-stepper btn:active { background: var(--accent); color: var(--accent-fg); }
-        .swiss-stepper input { text-align: center; font-weight: 700; font-size: 0.9rem; height: 100%; }
+/* combat and spells */
+.page table.cs-attacks{margin:0 0 6px}
+.cs-attacks td{vertical-align:middle;padding:2px 4px}
+.phb .cs-attacks input{width:100%;margin:0;padding:5px 4px;font-family:'BookInsanity',serif;font-size:14px;color:var(--ink);background:transparent;border:0;border-bottom:1px dotted transparent;border-radius:0}
+.phb .cs-attacks input:focus{outline:none;border-bottom-color:var(--head);background:rgba(255,255,255,.5)}
+.cs-attacks .nm input{font-weight:bold;color:var(--head)}
+.cs-attacks .del{width:34px;text-align:right}
+.cs-attacks .del button{width:32px;height:32px;padding:0;color:var(--caption);background:none;border:0;cursor:pointer}
+.cs-attacks .del button:hover{color:var(--rule)}
+.phb textarea.cs-text{min-height:180px}
+.cs-slots{display:flex;flex-direction:column;gap:6px}
+.cs-slot{display:grid;grid-template-columns:40px auto auto auto minmax(0,1fr);align-items:center;gap:8px}
+.cs-slot .lv{font-family:'MrEaves',serif;font-size:19px;color:var(--head)}
+.cs-slot .of{font-family:'MrEaves',serif;color:var(--caption)}
+.phb .cs-slot input[type=text]{min-height:32px}
 
-        /* --- HEADER & NAV --- */
-        header { background: var(--bg-surface); border-bottom: 1px solid var(--line); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; z-index: 50; }
-        
-        .nav-strip { display: flex; background: var(--bg-surface); border-bottom: 1px solid var(--line); padding: 0 24px; gap: 4px; }
-        .nav-btn {
-            padding: 12px 16px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
-        }
-        .nav-btn:hover { color: var(--text-main); background: var(--bg-element); }
-        .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* modals */
+.cs-modal{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(8,5,3,.62)}
+.cs-card{position:relative;width:100%;max-width:420px;max-height:calc(100vh - 32px);overflow:auto;padding:22px 22px 20px;
+  background:var(--parch) url(../assets/phb/tex/parchment.webp) center/cover;box-shadow:0 18px 50px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:14px}
+.cs-card > header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+.cs-card h3{margin:0;font-family:'MrEaves',serif;font-weight:normal;font-size:26px;color:var(--head)}
+.cs-x{width:36px;height:36px;padding:0;font-size:26px;line-height:1;color:var(--head);background:none;border:0;cursor:pointer}
+.cs-x:hover{color:var(--rule)}
+.cs-card p{margin:0;font-style:italic;color:#5b4a35}
+.cs-item-top{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:end}
+.phb #itemIcon{width:56px;height:56px;padding:0;text-align:center;font-size:30px;background:rgba(255,251,238,.7);border:1px solid var(--phb-line-soft);border-radius:3px}
+.emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:2px;max-height:118px;overflow-y:auto;padding:4px;background:rgba(255,251,238,.55);border:1px solid var(--phb-line-soft)}
+.emoji-grid button{height:36px;padding:0;font-size:20px;background:none;border:0;border-radius:3px;cursor:pointer}
+.emoji-grid button:hover,.emoji-grid button[aria-pressed="true"]{background:rgba(88,24,13,.12)}
+.cs-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cs-foot{display:flex;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--phb-line-soft)}
+.align-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.align-grid button{min-height:64px;padding:6px 4px;font-family:'MrEaves',serif;font-size:17px;line-height:1.05;color:var(--head);background:rgba(255,251,238,.6);border:1px solid var(--phb-line-soft);border-radius:3px;cursor:pointer}
+.align-grid button b{display:block;font-family:'BookInsanity',serif;font-size:20px}
+.align-grid button:hover{background:#fff;border-color:var(--head)}
+.align-grid button[aria-pressed="true"]{color:var(--phb-btn-ink);background:var(--head);border-color:var(--head)}
+.dice-log{height:120px;overflow-y:auto;padding:6px 10px;font-family:'ScalySans',sans-serif;font-size:13.5px;background:rgba(255,251,238,.6);border:1px solid var(--phb-line-soft)}
+.dice-log div{padding:2px 0;border-bottom:1px dotted rgba(88,24,13,.2)}
+.dice-log b{font-family:'BookInsanity',serif;font-size:16px;color:var(--rule)}
+.dice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cs-rest{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:12px 14px;text-align:left;background:rgba(255,251,238,.6);border:1px solid var(--phb-line-soft);border-top:3px solid var(--rule);cursor:pointer;font:inherit;color:inherit}
+.cs-rest:hover{background:#fff;border-color:var(--head)}
+.cs-rest b{font-family:'MrEaves',serif;font-weight:normal;font-size:22px;color:var(--head)}
+.cs-rest span{font-style:italic;font-size:13.5px;color:#5b4a35}
 
-        /* --- GRID --- */
-        .layout-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-        .cell { background: var(--bg-surface); padding: 16px; }
-        
-        .stat-block { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; background: var(--bg-surface); transition: background 0.2s; }
-        .stat-block:hover { background: var(--bg-element); }
-        .stat-val { font-size: 1.75rem; font-weight: 900; line-height: 1; letter-spacing: -0.05em; }
-        .stat-mod { font-size: 0.7rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
-
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 2px; padding: 2px; }
-        .inv-slot {
-            aspect-ratio: 1; background: var(--bg-surface); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; position: relative; transition: all 0.2s;
-        }
-        .inv-slot:hover { background: var(--bg-element); border-color: var(--accent); z-index: 10; }
-        .inv-qty {
-            position: absolute; bottom: 2px; right: 2px; font-size: 0.6rem; font-weight: 700; color: var(--accent); background: var(--bg-surface); padding: 0 3px; border-radius: 2px; border: 1px solid var(--line);
-        }
-
-        /* --- MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; }
-        .modal-card { background: var(--bg-surface); border: 1px solid var(--line); width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 16px; }
-        
-        /* Alignment Grid */
-        .align-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 8px; }
-        .align-cell {
-            aspect-ratio: 1; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; font-weight: 900; cursor: pointer; transition: all 0.2s;
-            text-align: center; color: rgba(255,255,255,0.7);
-        }
-        .align-cell:hover { transform: scale(1.05); color: #fff; border-color: #fff; }
-        
-        /* Dice Grid */
-        .dice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .dice-btn {
-            background: var(--bg-element); border: 1px solid var(--line); padding: 12px;
-            font-weight: 900; color: var(--text-muted); transition: all 0.1s; text-transform: uppercase;
-        }
-        .dice-btn:hover { color: var(--accent); border-color: var(--accent); }
-        .dice-btn:active { transform: scale(0.95); }
-        .dice-log {
-            height: 100px; overflow-y: auto; background: var(--bg-body); border: 1px solid var(--line);
-            padding: 8px; font-family: 'Courier New', monospace; font-size: 0.8rem;
-        }
-
-        /* Alignment Colors */
-        .lg { background: #1e3a8a; } .ng { background: #3b82f6; } .cg { background: #10b981; }
-        .ln { background: #854d0e; } .nn { background: #52525b; } .cn { background: #064e3b; }
-        .le { background: #7f1d1d; } .ne { background: #450a0a; } .ce { background: #991b1b; }
-
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none; }
-
-        /* --- VIEWS (roster / sheet / archive hero) --- */
-        .view { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
-        .view.hidden { display: none; }
-        .view-scroll { flex: 1 1 auto; overflow-y: auto; background: var(--bg-body); padding: 24px 16px 80px; }
-        .icon-btn { width: 32px; height: 32px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); color: var(--text-muted); transition: all 0.2s; background: transparent; cursor: pointer; }
-        .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
-        .text-btn { height: 32px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--bg-element); color: var(--text-main); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .text-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .text-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-        .text-btn.primary:hover { opacity: 0.9; color: var(--accent-fg); }
-        .text-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
-        .page-title { font-size: 2rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 1; }
-        .page-sub { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--text-muted); margin-top: 6px; }
-
-        .r-section { margin-bottom: 40px; }
-        .r-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 16px; }
-        .r-head .label-mono { margin: 0; }
-        .r-head p { font-size: 0.75rem; color: var(--text-muted); }
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-        .r-card { background: var(--bg-surface); border: 1px solid var(--line); padding: 16px; cursor: pointer; position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 128px; color: inherit; text-decoration: none; text-align: left; transition: background 0.2s, border-color 0.2s; font: inherit; }
-        .r-card:hover, .r-card:focus-visible { background: var(--bg-element); border-color: var(--accent); outline: none; }
-        .r-kind { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
-        .r-name { font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; font-size: 1.1rem; line-height: 1.1; padding-right: 24px; word-break: break-word; }
-        .r-sub { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-        .r-meta { font-size: 0.75rem; color: var(--text-main); opacity: 0.85; }
-        .r-foot { margin-top: auto; font-size: 0.6rem; font-family: 'Courier New', monospace; color: var(--text-muted); }
-        .r-del { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.7rem; opacity: 0.5; transition: all 0.2s; }
-        .r-card:hover .r-del { opacity: 1; }
-        .r-del:hover { color: #ef4444; }
-        .r-new { border-style: dashed; align-items: center; justify-content: center; text-align: center; color: var(--text-muted); }
-        .r-new i { font-size: 1.4rem; margin-bottom: 4px; }
-        .r-new:hover { color: var(--accent); }
-        .r-feat { border-left: 3px solid var(--accent); }
-        .r-feat .r-go { position: absolute; top: 14px; right: 14px; font-size: 0.7rem; color: var(--text-muted); }
-        .r-empty { font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-top: 12px; }
-
-        /* Archive hero detail */
-        .kv { list-style: none; }
-        .kv li { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 0.85rem; line-height: 1.4; }
-        .kv li:last-child { border-bottom: none; }
-        .kv li i { width: 16px; color: var(--text-muted); margin-top: 3px; flex: 0 0 auto; text-align: center; }
-        .kv li .k { flex: 0 0 auto; min-width: 96px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding-top: 3px; }
-        .kv li .v { flex: 1 1 auto; word-break: break-word; }
-        .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
-        .chip { background: var(--bg-element); border: 1px solid var(--line); padding: 3px 8px; font-size: 0.75rem; }
-        .swatch { display: inline-block; width: 12px; height: 12px; border: 1px solid var(--line); border-radius: 50%; margin-left: 6px; vertical-align: middle; }
-        .stat-break { font-size: 0.55rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-    </style>
+@media (max-width:760px){
+  .phb #charName{font-size:36px}
+  .cs-ident .actions{justify-content:flex-start}
+  .phb .vitals .step button{width:36px}
+  .cs-two,.cs-prof,.cs-gear{grid-template-columns:minmax(0,1fr)}
+  .cs-saves{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .phb .cs-skill{min-height:44px}
+  .step{height:44px}
+  .step button{width:40px}
+  .cs-slot{grid-template-columns:34px auto auto auto;row-gap:4px}
+  .cs-slot input[type=text]{grid-column:1 / -1}
+  .r-del{width:44px;height:44px;top:0;right:0}
+  .cs-back{min-height:44px}
+}
+@media print{
+  .cs-ident .actions,.phb-tabs,.cs-modal,.r-del{display:none!important}
+}
+</style>
 </head>
-<body>
+<body class="phb">
+<a class="skip" href="#content">Skip to content</a>
+<header class="bar noprint">
+  <div class="bar-in">
+    <a class="mark" href="#/">Characters</a>
+    <nav aria-label="Sections">
+      <a href="#/">Roster</a>
+      <a href="#/new">New Sheet</a>
+      <a href="#/rolled" data-act="roll">Roll a Hero</a>
+    </nav>
+    <a class="home" href="../">&larr; Home</a>
+  </div>
+</header>
 
-    <!-- ============ ROSTER VIEW ============ -->
-    <section id="rosterView" class="view" aria-label="Character roster">
-        <header>
-            <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <a href="../" class="label-mono hover:text-[var(--accent)] transition" style="margin-bottom:8px"><i class="fas fa-arrow-left mr-1"></i> dnd.isaiart.com</a>
-                    <h1 class="page-title">Characters</h1>
-                    <div class="page-sub">Sheets you play from &middot; The Archives of the Forgotten</div>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button class="text-btn primary" data-act="new"><i class="fas fa-plus"></i> New character</button>
-                    <button class="text-btn" data-act="roll"><i class="fas fa-dice-d20"></i> Roll a hero</button>
-                    <button class="icon-btn" data-act="import" title="Import sheet (.json)"><i class="fas fa-upload"></i></button>
-                    <button class="icon-btn" onclick="toggleTheme()" title="Theme"><i class="fas fa-adjust"></i></button>
-                </div>
-            </div>
-        </header>
-        <div class="view-scroll">
-            <div class="max-w-6xl mx-auto">
-                <div class="r-section">
-                    <div class="r-head"><span class="label-mono text-[var(--accent)]">Featured heroes</span><p>Full handbook pages</p></div>
-                    <div class="roster-grid">
-                        <a class="r-card r-feat" href="../fousio/">
-                            <span class="r-kind">Featured</span>
-                            <span class="r-go"><i class="fas fa-arrow-up-right-from-square"></i></span>
-                            <div class="r-name">Fousio</div>
-                            <div class="r-meta">Abjuration wizard, level 12 &middot; staff, circlet &amp; full sheet</div>
-                            <div class="r-foot">/fousio/</div>
-                        </a>
-                        <a class="r-card r-feat" href="../vision/">
-                            <span class="r-kind">Featured</span>
-                            <span class="r-go"><i class="fas fa-arrow-up-right-from-square"></i></span>
-                            <div class="r-name">Vision</div>
-                            <div class="r-meta">The Synthezoid Avenger &middot; level 20 sheet, species, subclass &amp; stat block</div>
-                            <div class="r-foot">/vision/</div>
-                        </a>
-                    </div>
-                </div>
-                <div class="r-section">
-                    <div class="r-head"><span class="label-mono text-[var(--accent)]">Your sheets</span><p>Saved in this browser</p></div>
-                    <div class="roster-grid" id="sheetGrid"></div>
-                </div>
-                <div class="r-section">
-                    <div class="r-head"><span class="label-mono text-[var(--accent)]">The Archives of the Forgotten</span><p>Rolled heroes, scribed to the archive</p></div>
-                    <div class="roster-grid" id="archiveGrid"></div>
-                    <p class="r-empty hidden" id="archiveEmpty">The archives are empty. Roll a hero and scribe them here.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<main id="content">
 
-    <!-- ============ ARCHIVE HERO VIEW (read-only) ============ -->
-    <section id="heroView" class="view hidden" aria-label="Archive hero">
-        <header>
-            <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
-                <div class="flex gap-3 items-start min-w-0">
-                    <button class="icon-btn" data-act="roster" title="Back to roster"><i class="fas fa-arrow-left"></i></button>
-                    <div class="min-w-0">
-                        <div class="r-kind" id="heroKind">The Archives of the Forgotten</div>
-                        <h1 class="page-title" id="heroName" style="word-break:break-word">Unknown Hero</h1>
-                        <div class="page-sub" id="heroSub"></div>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-2" id="heroActions"></div>
-            </div>
-        </header>
-        <div class="view-scroll">
-            <div class="max-w-6xl mx-auto fade-in" id="heroContent"></div>
-        </div>
-    </section>
-
-    <!-- ============ SHEET VIEW ============ -->
-    <div id="sheetView" class="view hidden">
-    <!-- HEADER -->
-    <header>
-        <div class="flex flex-col w-full max-w-6xl mx-auto md:flex-row md:items-end justify-between gap-4">
-            <div class="flex-grow flex gap-3 items-start min-w-0">
-                <button data-act="roster" class="icon-btn mt-1" title="Back to roster"><i class="fas fa-arrow-left"></i></button>
-            <div class="flex-grow min-w-0">
-                <input type="text" id="charName" class="text-3xl font-black uppercase tracking-tighter w-full" placeholder="CHARACTER NAME">
-                <div class="flex gap-4 mt-2 border-t border-[var(--line)] pt-2 w-max">
-                    <select id="charClass" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateClassDefaults()"></select>
-                    <input type="number" id="charLevel" class="text-xs font-bold uppercase text-[var(--text-muted)] w-8 text-center" value="1">
-                    <select id="charRace" class="text-xs font-bold uppercase text-[var(--text-muted)] w-24 bg-transparent cursor-pointer" onchange="updateRaceDefaults()"></select>
-                </div>
-            </div>
-            </div>
-
-            <div class="flex gap-2">
-                 <button onclick="openModal('restModal')" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-orange-500 hover:border-orange-500 transition" title="Rest">
-                    <i class="fas fa-campground"></i>
-                </button>
-                <button onclick="openModal('diceModal')" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-red-500 hover:border-red-500 transition" title="Dice Roller">
-                    <i class="fas fa-dice-d20"></i>
-                </button>
-                <div class="w-px h-8 bg-[var(--line)] mx-1"></div>
-                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition" title="Theme">
-                    <i class="fas fa-adjust"></i>
-                </button>
-                <button onclick="saveData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-green-500 hover:border-green-500 transition" title="Save">
-                    <i class="fas fa-save"></i>
-                </button>
-                <button onclick="document.getElementById('fileInput').click()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-blue-500 hover:border-blue-500 transition" title="Import">
-                    <i class="fas fa-upload"></i>
-                </button>
-                <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center border border-[var(--line)] text-[var(--text-muted)] hover:text-purple-500 hover:border-purple-500 transition" title="Export">
-                    <i class="fas fa-download"></i>
-                </button>
-            </div>
-        </div>
+  <!-- ============ ROSTER VIEW ============ -->
+  <section id="rosterView" class="page tool broad view" aria-labelledby="rosterTitle">
+    <header class="tool-head">
+      <h1 id="rosterTitle"><span class="chnum">Chapter I: Adventurers</span>Characters</h1>
+      <p class="sub">The sheets you play from, and the heroes of the Archives of the Forgotten.</p>
+      <div class="actions">
+        <button class="phb-btn sm" type="button" data-act="new"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>New Character</button>
+        <button class="phb-btn ghost sm" type="button" data-act="roll"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l5.6 3.2v6.6L8 14.5l-5.6-3.2V4.7zM5 10.5l3-5 3 5zM2.4 4.7L5 10.5M13.6 4.7L11 10.5M8 14.5v-4"/></svg>Roll a Hero</button>
+        <button class="phb-btn ghost sm" type="button" data-act="import"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 11v2.5h11V11"/></svg>Import</button>
+      </div>
     </header>
 
-    <!-- NAVIGATION -->
-    <nav class="nav-strip justify-center">
-        <button onclick="switchTab('main')" class="nav-btn active" data-tab="main">Stats</button>
-        <button onclick="switchTab('combat')" class="nav-btn" data-tab="combat">Combat</button>
-        <button onclick="switchTab('inventory')" class="nav-btn" data-tab="inventory">Gear</button>
-        <button onclick="switchTab('spells')" class="nav-btn" data-tab="spells">Spells</button>
-        <button onclick="switchTab('bio')" class="nav-btn" data-tab="bio">Bio</button>
-    </nav>
+    <section class="cs-sec" aria-labelledby="featTitle">
+      <header><h2 id="featTitle">Featured Heroes</h2><p>Full handbook pages</p></header>
+      <div class="r-grid">
+        <a class="r-card r-feat" href="../fousio/">
+          <span class="r-kind">Featured</span>
+          <span class="r-go" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16"><path d="M9 2.5h4.5V7M13.5 2.5L7.5 8.5M12 9.5v4H2.5V4h4"/></svg></span>
+          <span class="r-name">Fousio</span>
+          <span class="r-sub">Abjuration wizard, level 12</span>
+          <span class="r-meta">Staff, circlet and the full sheet</span>
+          <span class="r-foot">dnd.isaiart.com/fousio</span>
+        </a>
+        <a class="r-card r-feat" href="../vision/">
+          <span class="r-kind">Featured</span>
+          <span class="r-go" aria-hidden="true"><svg class="ic" viewBox="0 0 16 16"><path d="M9 2.5h4.5V7M13.5 2.5L7.5 8.5M12 9.5v4H2.5V4h4"/></svg></span>
+          <span class="r-name">Vision</span>
+          <span class="r-sub">The Synthezoid Avenger</span>
+          <span class="r-meta">Level 20 sheet, species, subclass and stat block</span>
+          <span class="r-foot">dnd.isaiart.com/vision</span>
+        </a>
+      </div>
+    </section>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-grow overflow-y-auto bg-[var(--bg-body)] p-4">
-        <div class="max-w-6xl mx-auto pb-20">
+    <section class="cs-sec" aria-labelledby="sheetsTitle">
+      <header><h2 id="sheetsTitle">Your Sheets</h2><p>Saved in this browser</p></header>
+      <div class="r-grid" id="sheetGrid"></div>
+    </section>
 
-            <!-- TAB 1: STATS -->
-            <div id="main" class="tab-content active fade-in">
-                <!-- Vitals Grid (Expanded to 7 cols for HD) -->
-                <div class="layout-grid grid-cols-2 md:grid-cols-7 mb-6 border border-[var(--line)]">
-                    
-                    <!-- HP -->
-                    <div class="cell col-span-2 md:col-span-2 flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="label-mono">Hit Points</label>
-                            <span class="text-xs text-[var(--text-muted)] font-mono">CUR / MAX</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <div class="swiss-stepper flex-grow">
-                                <btn onclick="adj('currentHp', -1)">-</btn>
-                                <input type="number" id="currentHp" value="0">
-                                <btn onclick="adj('currentHp', 1)">+</btn>
-                            </div>
-                            <div class="swiss-stepper w-20 border-[var(--line)]">
-                                <input type="number" id="maxHp" value="0" class="text-[var(--text-muted)]">
-                            </div>
-                        </div>
-                    </div>
+    <section class="cs-sec" aria-labelledby="archiveTitle">
+      <header><h2 id="archiveTitle">The Archives of the Forgotten</h2><p>Rolled heroes, scribed to the archive</p></header>
+      <div class="r-grid" id="archiveGrid"></div>
+      <p class="r-empty hidden" id="archiveEmpty">The archives are empty. Roll a hero and scribe them here.</p>
+    </section>
+    <span class="foot">Chapter I | Characters</span>
+  </section>
 
-                    <!-- Hit Dice (New) -->
-                    <div class="cell col-span-1 md:col-span-1">
-                        <label class="label-mono">Hit Dice</label>
-                        <div class="swiss-stepper mt-2">
-                            <btn onclick="adj('currentHd', -1)">-</btn>
-                            <input type="number" id="currentHd" value="1">
-                            <btn onclick="adj('currentHd', 1)">+</btn>
-                        </div>
-                    </div>
+  <!-- ============ ARCHIVE HERO VIEW (read-only) ============ -->
+  <section id="heroView" class="page tool broad view hidden" aria-labelledby="heroName">
+    <button class="cs-back" type="button" data-act="roster"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Roster</button>
+    <header class="tool-head">
+      <h1 id="heroName"><span class="chnum" id="heroKind">The Archives of the Forgotten</span><span id="heroNameText">Unknown Hero</span></h1>
+      <p class="sub" id="heroSub"></p>
+      <div class="actions" id="heroActions"></div>
+    </header>
+    <div id="heroContent"></div>
+    <span class="foot">The Archives of the Forgotten</span>
+  </section>
 
-                    <!-- Temp HP -->
-                    <div class="cell col-span-1 md:col-span-1">
-                        <label class="label-mono">Temp HP</label>
-                        <div class="swiss-stepper mt-2 border-[var(--accent)]">
-                            <btn onclick="adj('tempHp', -1)">-</btn>
-                            <input type="number" id="tempHp" value="0" class="text-[var(--accent)]">
-                            <btn onclick="adj('tempHp', 1)">+</btn>
-                        </div>
-                    </div>
-
-                    <!-- AC -->
-                    <div class="cell col-span-1 md:col-span-1 text-center">
-                        <label class="label-mono">AC</label>
-                        <input type="number" id="armorClass" class="stat-val text-center mt-1" value="10">
-                    </div>
-
-                    <!-- Init -->
-                    <div class="cell col-span-1 md:col-span-1 text-center">
-                        <label class="label-mono">Init</label>
-                        <input type="number" id="initiative" class="stat-val text-center mt-1" value="0">
-                    </div>
-
-                    <!-- Speed -->
-                    <div class="cell col-span-1 md:col-span-1 text-center">
-                        <label class="label-mono">Speed</label>
-                        <input type="text" id="speed" class="stat-val text-center mt-1 text-xl" value="30">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="md:col-span-1 flex flex-col gap-px bg-[var(--line)] border border-[var(--line)]" id="abilitiesContainer"></div>
-                    <div class="md:col-span-3 swiss-panel">
-                        <div class="flex justify-between border-b border-[var(--line)] pb-2 mb-4">
-                            <span class="label-mono text-[var(--accent)]">PROFICIENCY MATRIX</span>
-                            <div class="text-xs font-bold">PB: <span id="profBonusDisplay" class="text-[var(--text-main)]">+2</span></div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                            <div id="skillsListLeft" class="flex flex-col gap-1"></div>
-                            <div id="skillsListRight" class="flex flex-col gap-1"></div>
-                        </div>
-                        <div class="mt-8 pt-4 border-t border-[var(--line)]">
-                            <label class="label-mono mb-3">Saving Throws</label>
-                            <div class="flex flex-wrap gap-4" id="savesContainer"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: INVENTORY -->
-            <div id="inventory" class="tab-content hidden fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div class="swiss-panel h-min">
-                        <label class="label-mono mb-4 border-b border-[var(--line)] pb-2">Liquid Assets</label>
-                        <div class="flex items-center justify-between mb-3"><span class="text-xs font-bold text-yellow-500">GP</span><div class="swiss-stepper w-24"><btn onclick="adj('gp', -1)">-</btn><input type="number" id="gp" value="0"><btn onclick="adj('gp', 1)">+</btn></div></div>
-                        <div class="flex items-center justify-between mb-3"><span class="text-xs font-bold text-gray-400">SP</span><div class="swiss-stepper w-24"><btn onclick="adj('sp', -1)">-</btn><input type="number" id="sp" value="0"><btn onclick="adj('sp', 1)">+</btn></div></div>
-                        <div class="flex items-center justify-between mb-6"><span class="text-xs font-bold text-orange-700">CP</span><div class="swiss-stepper w-24"><btn onclick="adj('cp', -1)">-</btn><input type="number" id="cp" value="0"><btn onclick="adj('cp', 1)">+</btn></div></div>
-                        <div class="text-center pt-4 border-t border-[var(--line)]"><label class="label-mono">Load (lbs)</label><div id="totalWeightDisplay" class="text-2xl font-black mt-1">0</div></div>
-                    </div>
-                    <div class="lg:col-span-3">
-                        <div class="swiss-panel">
-                            <div class="flex justify-between items-center mb-4 border-b border-[var(--line)] pb-2">
-                                <label class="label-mono text-[var(--accent)]">GEAR GRID</label>
-                                <button onclick="addInvItem()" class="text-[10px] bg-[var(--bg-element)] px-2 py-1 uppercase font-bold hover:text-[var(--accent)] transition border border-[var(--line)]"><i class="fas fa-plus mr-1"></i> Add Item</button>
-                            </div>
-                            <div class="inv-grid" id="inventoryGrid"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: COMBAT -->
-            <div id="combat" class="tab-content hidden fade-in">
-                <div class="swiss-panel mb-6">
-                    <div class="flex justify-between items-center mb-4 border-b border-[var(--line)] pb-2">
-                        <span class="label-mono text-[var(--accent)]">OFFENSIVE CAPABILITIES</span>
-                        <button onclick="addAttack()" class="text-[10px] bg-[var(--bg-element)] px-2 py-1 uppercase font-bold hover:text-[var(--accent)]">+ Add</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm"><tbody id="attacksList"></tbody></table>
-                    </div>
-                </div>
-                <div class="swiss-panel">
-                    <label class="label-mono mb-2">Class Features & Traits</label>
-                    <textarea id="features" class="w-full h-64 bg-[var(--bg-element)] p-4 font-mono text-xs border border-[var(--line)] resize-y focus:border-[var(--accent)]"></textarea>
-                </div>
-            </div>
-
-            <!-- TAB 4: SPELLS -->
-            <div id="spells" class="tab-content hidden fade-in">
-                <div class="swiss-panel">
-                    <div class="grid grid-cols-3 gap-1 bg-[var(--line)] border border-[var(--line)] mb-8">
-                        <div class="stat-block"><label class="label-mono">Mod</label><select id="spellAbility" class="text-center font-bold uppercase" onchange="calculateSpells()"><option value="int">INT</option><option value="wis">WIS</option><option value="cha">CHA</option></select></div>
-                        <div class="stat-block"><label class="label-mono">DC</label><div id="spellSaveDC" class="stat-val text-[var(--accent)]">8</div></div>
-                        <div class="stat-block"><label class="label-mono">Atk</label><div id="spellAtkBonus" class="stat-val">+0</div></div>
-                    </div>
-                    <div id="spellSlotsContainer" class="space-y-2"></div>
-                </div>
-            </div>
-
-            <!-- TAB 5: BIO -->
-            <div id="bio" class="tab-content hidden fade-in">
-                <div class="swiss-panel">
-                    <div class="grid grid-cols-2 gap-6 mb-6">
-                        <div><label class="label-mono">Alignment</label><input type="text" id="alignment" class="border-b border-[var(--line)] py-1 cursor-pointer" onclick="openModal('alignmentModal')" readonly placeholder="Select..."></div>
-                        <div><label class="label-mono">XP</label><input type="text" id="xp" class="border-b border-[var(--line)] py-1"></div>
-                    </div>
-                    <label class="label-mono">Backstory</label>
-                    <textarea id="backstory" class="w-full h-40 bg-[var(--bg-element)] p-3 mb-6 font-mono text-xs border border-[var(--line)]"></textarea>
-                    <label class="label-mono">Notes</label>
-                    <textarea id="allies" class="w-full h-40 bg-[var(--bg-element)] p-3 font-mono text-xs border border-[var(--line)]"></textarea>
-                </div>
-            </div>
-
-        </div>
-    </main>
-    </div><!-- /sheetView -->
-
-    <input type="file" id="fileInput" class="hidden" accept=".json,application/json" onchange="importData(this)">
-
-    <!-- ITEM MODAL -->
-    <div id="itemModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header-grid">
-                <div class="h-14 w-14 bg-[var(--bg-element)] border border-[var(--line)] flex items-center justify-center text-3xl rounded"><input type="text" id="itemIcon" class="text-center w-full h-full bg-transparent cursor-default" readonly></div>
-                <div class="flex flex-col justify-center h-full"><label class="label-mono">Designation</label><input type="text" id="itemName" class="text-lg font-bold border-b border-[var(--line)] pb-1 focus:border-[var(--accent)]" placeholder="Item Name"></div>
-                <button onclick="closeModal('itemModal')" class="text-2xl text-[var(--text-muted)] hover:text-[var(--accent)] self-start">&times;</button>
-            </div>
-            <div><label class="label-mono mb-2">Preset Icon</label><div class="emoji-grid grid grid-cols-8 gap-1 h-24 overflow-y-auto bg-[var(--bg-element)] p-2 border border-[var(--line)]"></div></div>
-            <div class="grid grid-cols-2 gap-4">
-                <div><label class="label-mono">Weight</label><div class="swiss-stepper mt-1"><btn onclick="adj('itemWeight', -1)">-</btn><input type="number" id="itemWeight" value="0"><btn onclick="adj('itemWeight', 1)">+</btn></div></div>
-                <div><label class="label-mono">Qty</label><div class="swiss-stepper mt-1"><btn onclick="adj('itemQty', -1)">-</btn><input type="number" id="itemQty" value="1"><btn onclick="adj('itemQty', 1)">+</btn></div></div>
-            </div>
-            <div><label class="label-mono">Specs</label><textarea id="itemDesc" class="w-full h-20 bg-[var(--bg-element)] border border-[var(--line)] p-2 text-xs font-mono mt-1"></textarea></div>
-            <div class="flex justify-between pt-4 border-t border-[var(--line)]"><input type="hidden" id="modalSlotIndex"><button onclick="deleteItemAction()" id="btnDelete" class="text-xs font-bold text-red-500 uppercase">Delete</button><button onclick="saveItemAction()" class="bg-[var(--text-main)] text-[var(--bg-body)] px-6 py-2 text-xs font-bold uppercase hover:opacity-90">Confirm</button></div>
-        </div>
+  <!-- ============ SHEET VIEW ============ -->
+  <section id="sheetView" class="page tool broad view hidden" aria-label="Character sheet">
+    <button class="cs-back" type="button" data-act="roster"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Roster</button>
+    <label class="sr-only" for="charName">Character name</label>
+    <input type="text" id="charName" placeholder="Character Name" autocomplete="off" spellcheck="false">
+    <div class="cs-ident">
+      <div class="cs-ident-row">
+        <div class="phb-field"><label for="charClass">Class</label><select id="charClass" onchange="updateClassDefaults()"></select></div>
+        <div class="phb-field lvl"><label for="charLevel">Level</label><input type="number" id="charLevel" value="1" min="1" max="20"></div>
+        <div class="phb-field"><label for="charRace">Species</label><select id="charRace" onchange="updateRaceDefaults()"></select></div>
+      </div>
+      <div class="actions">
+        <button class="phb-btn ghost sm" type="button" onclick="openModal('restModal')"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 13.5L8 3l6.5 10.5zM8 3v10.5M6 13.5L8 10l2 3.5"/></svg>Rest</button>
+        <button class="phb-btn ghost sm" type="button" onclick="openModal('diceModal')"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l5.6 3.2v6.6L8 14.5l-5.6-3.2V4.7zM5 10.5l3-5 3 5zM2.4 4.7L5 10.5M13.6 4.7L11 10.5M8 14.5v-4"/></svg>Dice</button>
+        <button class="phb-btn ghost sm" type="button" onclick="saveData(); showToast('Sheet saved.')"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h8l2 2v9H3zM5.5 2.5v3h4v-3M5 13.5v-4h6v4"/></svg>Save</button>
+        <button class="phb-btn ghost sm" type="button" onclick="document.getElementById('fileInput').click()"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 11v2.5h11V11"/></svg>Import</button>
+        <button class="phb-btn ghost sm" type="button" onclick="exportData()"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5V11M4.5 7.5L8 11l3.5-3.5M2.5 11v2.5h11V11"/></svg>Export</button>
+      </div>
     </div>
 
-    <!-- ALIGNMENT MODAL -->
-    <div id="alignmentModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 320px;">
-            <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">SELECT ALIGNMENT</span><button onclick="closeModal('alignmentModal')" class="text-xl">&times;</button></div>
-            <div class="align-grid">
-                <div class="align-cell lg" onclick="setAlignment('Lawful Good')">LG</div><div class="align-cell ng" onclick="setAlignment('Neutral Good')">NG</div><div class="align-cell cg" onclick="setAlignment('Chaotic Good')">CG</div>
-                <div class="align-cell ln" onclick="setAlignment('Lawful Neutral')">LN</div><div class="align-cell nn" onclick="setAlignment('True Neutral')">N</div><div class="align-cell cn" onclick="setAlignment('Chaotic Neutral')">CN</div>
-                <div class="align-cell le" onclick="setAlignment('Lawful Evil')">LE</div><div class="align-cell ne" onclick="setAlignment('Neutral Evil')">NE</div><div class="align-cell ce" onclick="setAlignment('Chaotic Evil')">CE</div>
-            </div>
-        </div>
+    <div class="phb-tabs" role="tablist" aria-label="Sheet sections">
+      <button type="button" role="tab" class="nav-btn" data-tab="main" aria-controls="main" aria-selected="true" onclick="switchTab('main')">Stats</button>
+      <button type="button" role="tab" class="nav-btn" data-tab="combat" aria-controls="combat" aria-selected="false" onclick="switchTab('combat')">Combat</button>
+      <button type="button" role="tab" class="nav-btn" data-tab="inventory" aria-controls="inventory" aria-selected="false" onclick="switchTab('inventory')">Gear</button>
+      <button type="button" role="tab" class="nav-btn" data-tab="spells" aria-controls="spells" aria-selected="false" onclick="switchTab('spells')">Spells</button>
+      <button type="button" role="tab" class="nav-btn" data-tab="bio" aria-controls="bio" aria-selected="false" onclick="switchTab('bio')">Bio</button>
     </div>
 
-    <!-- DICE MODAL -->
-    <div id="diceModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">DICE ROLLER</span><button onclick="closeModal('diceModal')" class="text-xl">&times;</button></div>
-            <div class="dice-log" id="diceLog"></div>
-            <div class="dice-grid">
-                <button class="dice-btn" onclick="rollDice(4)">d4</button>
-                <button class="dice-btn" onclick="rollDice(6)">d6</button>
-                <button class="dice-btn" onclick="rollDice(8)">d8</button>
-                <button class="dice-btn" onclick="rollDice(10)">d10</button>
-                <button class="dice-btn" onclick="rollDice(12)">d12</button>
-                <button class="dice-btn" onclick="rollDice(20)">d20</button>
-            </div>
+    <!-- TAB 1: STATS -->
+    <div id="main" class="tab-content" role="tabpanel" aria-label="Stats">
+      <div class="stat-row vitals">
+        <div class="stat x2">
+          <div class="hp">
+            <span class="step"><button type="button" aria-label="Lower hit points" onclick="adj('currentHp', -1)">&minus;</button><input type="number" id="currentHp" value="0" aria-label="Current hit points"><button type="button" aria-label="Raise hit points" onclick="adj('currentHp', 1)">+</button></span>
+            <span class="of">/</span>
+            <span class="step solo"><input type="number" id="maxHp" value="0" aria-label="Maximum hit points"></span>
+          </div>
+          <span class="name">Hit Points</span>
         </div>
+        <div class="stat">
+          <span class="step"><button type="button" aria-label="Spend a hit die" onclick="adj('currentHd', -1)">&minus;</button><input type="number" id="currentHd" value="1" aria-label="Hit dice remaining"><button type="button" aria-label="Regain a hit die" onclick="adj('currentHd', 1)">+</button></span>
+          <span class="name">Hit Dice</span>
+        </div>
+        <div class="stat">
+          <span class="step"><button type="button" aria-label="Lower temporary hit points" onclick="adj('tempHp', -1)">&minus;</button><input type="number" id="tempHp" value="0" aria-label="Temporary hit points"><button type="button" aria-label="Raise temporary hit points" onclick="adj('tempHp', 1)">+</button></span>
+          <span class="name">Temp HP</span>
+        </div>
+        <div class="stat shield"><input type="number" id="armorClass" class="cs-num" value="10" aria-label="Armor class"><span class="name">Armor Class</span></div>
+        <div class="stat"><input type="number" id="initiative" class="cs-num" value="0" aria-label="Initiative"><span class="name">Initiative</span></div>
+        <div class="stat"><input type="text" id="speed" class="cs-num" value="30" aria-label="Speed"><span class="name">Speed</span></div>
+      </div>
+
+      <div class="abil-row" id="abilitiesContainer"></div>
+
+      <h3 class="cs-h">Skills <span class="cs-pb">Proficiency<b id="profBonusDisplay">+2</b></span></h3>
+      <div class="cs-prof">
+        <div id="skillsListLeft"></div>
+        <div id="skillsListRight"></div>
+      </div>
+      <h3>Saving Throws</h3>
+      <div class="cs-saves" id="savesContainer"></div>
     </div>
 
-    <!-- REST MODAL -->
-    <div id="restModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 350px;">
-             <div class="flex justify-between items-center"><span class="label-mono text-[var(--accent)]">REST MENU</span><button onclick="closeModal('restModal')" class="text-xl">&times;</button></div>
-             <p class="text-xs text-[var(--text-muted)]">Take a moment to catch your breath or sleep for the night.</p>
-             <div class="flex flex-col gap-4 mt-2">
-                 <button onclick="performShortRest()" class="bg-[var(--bg-element)] border border-[var(--line)] p-4 text-left hover:border-[var(--accent)] transition group">
-                     <div class="font-bold text-sm text-[var(--text-main)] group-hover:text-[var(--accent)]">SHORT REST</div>
-                     <div class="text-[10px] text-[var(--text-muted)]">Spend 1 Hit Die to heal.</div>
-                 </button>
-                 <button onclick="performLongRest()" class="bg-[var(--bg-element)] border border-[var(--line)] p-4 text-left hover:border-[var(--accent)] transition group">
-                     <div class="font-bold text-sm text-[var(--text-main)] group-hover:text-[var(--accent)]">LONG REST</div>
-                     <div class="text-[10px] text-[var(--text-muted)]">Regain all HP, ½ HD, Spell Slots.</div>
-                 </button>
-             </div>
-        </div>
+    <!-- TAB 2: COMBAT -->
+    <div id="combat" class="tab-content hidden" role="tabpanel" aria-label="Combat">
+      <h3 class="cs-h">Attacks <button class="phb-btn ghost sm" type="button" onclick="addAttack(); debouncedSave()"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Add attack</button></h3>
+      <div style="overflow-x:auto">
+        <table class="cs-attacks">
+          <thead><tr><th scope="col">Weapon or spell</th><th scope="col" style="width:22%">To hit</th><th scope="col" style="width:30%">Damage</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead>
+          <tbody id="attacksList"></tbody>
+        </table>
+      </div>
+      <div class="phb-field" style="margin-top:14px"><label for="features">Class Features &amp; Traits</label><textarea id="features" class="cs-text"></textarea></div>
     </div>
 
-    <!-- LOGIC -->
-    <script>
-        /* =========================================================
-           STORAGE (all localStorage access goes through these)
-           ---------------------------------------------------------
-           dndCharacters_v1 : { v:1, chars:[ <v7 sheet object> + id, updated, src? ] }
-           dndSheetTheme    : 'onyx' | 'polar' | 'midnight' | 'botanical'
-           dndRoster        : [ archive hero ]  (shared with the old /characters/ page)
-           dndSheet_v7_Isaiah : legacy single sheet, read once and migrated (left in place as a backup)
-           ========================================================= */
-        const STORE_KEY = 'dndCharacters_v1';
-        const LEGACY_KEY = 'dndSheet_v7_Isaiah';
-        const THEME_KEY = 'dndSheetTheme';
-        const ARCHIVE_KEY = 'dndRoster';
+    <!-- TAB 3: GEAR -->
+    <div id="inventory" class="tab-content hidden" role="tabpanel" aria-label="Gear">
+      <div class="cs-gear">
+        <div class="cs-box">
+          <h4 style="margin-top:0">Coin</h4>
+          <div class="cs-coin"><span>Gold</span><span class="step"><button type="button" aria-label="Less gold" onclick="adj('gp', -1)">&minus;</button><input type="number" id="gp" value="0" aria-label="Gold pieces"><button type="button" aria-label="More gold" onclick="adj('gp', 1)">+</button></span></div>
+          <div class="cs-coin"><span>Silver</span><span class="step"><button type="button" aria-label="Less silver" onclick="adj('sp', -1)">&minus;</button><input type="number" id="sp" value="0" aria-label="Silver pieces"><button type="button" aria-label="More silver" onclick="adj('sp', 1)">+</button></span></div>
+          <div class="cs-coin"><span>Copper</span><span class="step"><button type="button" aria-label="Less copper" onclick="adj('cp', -1)">&minus;</button><input type="number" id="cp" value="0" aria-label="Copper pieces"><button type="button" aria-label="More copper" onclick="adj('cp', 1)">+</button></span></div>
+          <div class="cs-load"><b id="totalWeightDisplay">0</b><span>Load (lb.)</span></div>
+        </div>
+        <div>
+          <h3 class="cs-h" style="margin-top:0">Equipment <button class="phb-btn ghost sm" type="button" onclick="addInvItem()"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Add item</button></h3>
+          <div class="inv-grid" id="inventoryGrid"></div>
+        </div>
+      </div>
+    </div>
 
-        function readRaw(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
-        function writeRaw(key, val) { try { localStorage.setItem(key, val); return true; } catch (e) { console.warn('Storage unavailable:', e); return false; } }
-        function readJSON(key, fallback) { const raw = readRaw(key); if (raw == null) return fallback; try { return JSON.parse(raw); } catch (e) { return fallback; } }
-        function writeJSON(key, val) { return writeRaw(key, JSON.stringify(val)); }
+    <!-- TAB 4: SPELLS -->
+    <div id="spells" class="tab-content hidden" role="tabpanel" aria-label="Spells">
+      <div class="stat-row">
+        <div class="stat"><select id="spellAbility" class="phb-select" onchange="calculateSpells()" aria-label="Spellcasting ability" style="max-width:110px"><option value="int">Intelligence</option><option value="wis">Wisdom</option><option value="cha">Charisma</option></select><span class="name">Spellcasting Ability</span></div>
+        <div class="stat"><span class="val" id="spellSaveDC">8</span><span class="name">Spell Save DC</span></div>
+        <div class="stat"><span class="val" id="spellAtkBonus">+0</span><span class="name">Spell Attack</span></div>
+      </div>
+      <h3>Spell Slots &amp; Prepared Spells</h3>
+      <div id="spellSlotsContainer" class="cs-slots"></div>
+    </div>
 
-        let store = { v: 1, chars: [] };
-        function loadStore() {
-            const s = readJSON(STORE_KEY, null);
-            if (s && Array.isArray(s.chars)) return s;
-            const fresh = { v: 1, chars: [] };
-            const legacy = readJSON(LEGACY_KEY, null);
-            if (legacy && legacy.meta) {
-                fresh.chars.push(Object.assign({}, legacy, { id: 'legacy_v7', updated: Date.now(), migratedFrom: LEGACY_KEY }));
-                if (!readRaw(THEME_KEY) && legacy.theme) writeRaw(THEME_KEY, legacy.theme);
+    <!-- TAB 5: BIO -->
+    <div id="bio" class="tab-content hidden" role="tabpanel" aria-label="Bio">
+      <div class="cs-two" style="margin-bottom:12px">
+        <div class="phb-field"><label for="alignment">Alignment</label><input type="text" id="alignment" readonly placeholder="Choose an alignment" onclick="openModal('alignmentModal')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('alignmentModal')}" style="cursor:pointer"></div>
+        <div class="phb-field"><label for="xp">Experience Points</label><input type="text" id="xp"></div>
+      </div>
+      <div class="phb-field" style="margin-bottom:12px"><label for="backstory">Backstory</label><textarea id="backstory" class="cs-text"></textarea></div>
+      <div class="phb-field"><label for="allies">Notes, Allies &amp; Organizations</label><textarea id="allies" class="cs-text"></textarea></div>
+    </div>
+    <span class="foot">Character Sheet</span>
+  </section>
+</main>
+
+<input type="file" id="fileInput" class="hidden" accept=".json,application/json" onchange="importData(this)">
+
+<!-- ITEM MODAL -->
+<div id="itemModal" class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="itemTitle">
+  <div class="cs-card">
+    <header><h3 id="itemTitle">Equipment</h3><button class="cs-x" type="button" aria-label="Close" onclick="closeModal('itemModal')">&times;</button></header>
+    <div class="cs-item-top">
+      <input type="text" id="itemIcon" readonly aria-label="Chosen icon" tabindex="-1">
+      <div class="phb-field"><label for="itemName">Name</label><input type="text" id="itemName" placeholder="Item name"></div>
+    </div>
+    <div class="phb-field"><span class="lbl">Icon</span><div class="emoji-grid" role="group" aria-label="Icons"></div></div>
+    <div class="cs-pair">
+      <div class="phb-field"><label for="itemWeight">Weight (lb.)</label><span class="step"><button type="button" aria-label="Less weight" onclick="adj('itemWeight', -1)">&minus;</button><input type="number" id="itemWeight" value="0"><button type="button" aria-label="More weight" onclick="adj('itemWeight', 1)">+</button></span></div>
+      <div class="phb-field"><label for="itemQty">Quantity</label><span class="step"><button type="button" aria-label="Fewer" onclick="adj('itemQty', -1)">&minus;</button><input type="number" id="itemQty" value="1"><button type="button" aria-label="More" onclick="adj('itemQty', 1)">+</button></span></div>
+    </div>
+    <div class="phb-field"><label for="itemDesc">Description</label><textarea id="itemDesc"></textarea></div>
+    <div class="cs-foot"><input type="hidden" id="modalSlotIndex"><button class="phb-btn ghost sm" type="button" id="btnDelete" onclick="deleteItemAction()">Remove</button><button class="phb-btn sm" type="button" onclick="saveItemAction()">Keep</button></div>
+  </div>
+</div>
+
+<!-- ALIGNMENT MODAL -->
+<div id="alignmentModal" class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="alignTitle">
+  <div class="cs-card" style="max-width:360px">
+    <header><h3 id="alignTitle">Alignment</h3><button class="cs-x" type="button" aria-label="Close" onclick="closeModal('alignmentModal')">&times;</button></header>
+    <div class="align-grid" id="alignGrid">
+      <button type="button" onclick="setAlignment('Lawful Good')"><b>LG</b>Lawful Good</button><button type="button" onclick="setAlignment('Neutral Good')"><b>NG</b>Neutral Good</button><button type="button" onclick="setAlignment('Chaotic Good')"><b>CG</b>Chaotic Good</button>
+      <button type="button" onclick="setAlignment('Lawful Neutral')"><b>LN</b>Lawful Neutral</button><button type="button" onclick="setAlignment('True Neutral')"><b>N</b>True Neutral</button><button type="button" onclick="setAlignment('Chaotic Neutral')"><b>CN</b>Chaotic Neutral</button>
+      <button type="button" onclick="setAlignment('Lawful Evil')"><b>LE</b>Lawful Evil</button><button type="button" onclick="setAlignment('Neutral Evil')"><b>NE</b>Neutral Evil</button><button type="button" onclick="setAlignment('Chaotic Evil')"><b>CE</b>Chaotic Evil</button>
+    </div>
+  </div>
+</div>
+
+<!-- DICE MODAL -->
+<div id="diceModal" class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="diceTitle">
+  <div class="cs-card">
+    <header><h3 id="diceTitle">Dice</h3><button class="cs-x" type="button" aria-label="Close" onclick="closeModal('diceModal')">&times;</button></header>
+    <div class="dice-log" id="diceLog" aria-live="polite"></div>
+    <div class="dice-grid">
+      <button class="phb-btn ghost" type="button" onclick="rollDice(4)">d4</button>
+      <button class="phb-btn ghost" type="button" onclick="rollDice(6)">d6</button>
+      <button class="phb-btn ghost" type="button" onclick="rollDice(8)">d8</button>
+      <button class="phb-btn ghost" type="button" onclick="rollDice(10)">d10</button>
+      <button class="phb-btn ghost" type="button" onclick="rollDice(12)">d12</button>
+      <button class="phb-btn" type="button" onclick="rollDice(20)">d20</button>
+    </div>
+    <p>For the full 3D dice tray, see <a href="../dice/">Dice</a>.</p>
+  </div>
+</div>
+
+<!-- REST MODAL -->
+<div id="restModal" class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="restTitle">
+  <div class="cs-card" style="max-width:380px">
+    <header><h3 id="restTitle">Rest</h3><button class="cs-x" type="button" aria-label="Close" onclick="closeModal('restModal')">&times;</button></header>
+    <p>Catch your breath, or sleep for the night.</p>
+    <button class="cs-rest" type="button" onclick="performShortRest()"><b>Short Rest</b><span>Spend one Hit Die to heal.</span></button>
+    <button class="cs-rest" type="button" onclick="performLongRest()"><b>Long Rest</b><span>Regain all hit points, half your Hit Dice and your spell slots.</span></button>
+  </div>
+</div>
+
+<div class="phb-toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+    /* =========================================================
+       STORAGE (all localStorage access goes through these)
+       ---------------------------------------------------------
+       dndCharacters_v1 : { v:1, chars:[ <v7 sheet object> + id, updated, src? ] }
+       dndRoster        : [ archive hero ]  (shared with the old /characters/ page)
+       dndSheet_v7_Isaiah : legacy single sheet, read once and migrated (left in place as a backup)
+       ========================================================= */
+    const STORE_KEY = 'dndCharacters_v1';
+    const LEGACY_KEY = 'dndSheet_v7_Isaiah';
+    const ARCHIVE_KEY = 'dndRoster';
+
+    function readRaw(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+    function writeRaw(key, val) { try { localStorage.setItem(key, val); return true; } catch (e) { console.warn('Storage unavailable:', e); return false; } }
+    function readJSON(key, fallback) { const raw = readRaw(key); if (raw == null) return fallback; try { return JSON.parse(raw); } catch (e) { return fallback; } }
+    function writeJSON(key, val) { return writeRaw(key, JSON.stringify(val)); }
+
+    let store = { v: 1, chars: [] };
+    function loadStore() {
+        const s = readJSON(STORE_KEY, null);
+        if (s && Array.isArray(s.chars)) return s;
+        const fresh = { v: 1, chars: [] };
+        const legacy = readJSON(LEGACY_KEY, null);
+        if (legacy && legacy.meta) fresh.chars.push(Object.assign({}, legacy, { id: 'legacy_v7', updated: Date.now(), migratedFrom: LEGACY_KEY }));
+        writeJSON(STORE_KEY, fresh);
+        return fresh;
+    }
+    function saveStore() { return writeJSON(STORE_KEY, store); }
+    function findChar(id) { return store.chars.find(c => c.id === id); }
+    function readArchive() { const r = readJSON(ARCHIVE_KEY, []); return Array.isArray(r) ? r : []; }
+    function writeArchive(list) { return writeJSON(ARCHIVE_KEY, list); }
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+    function genId() { return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function fmtDate(t) { if (!t) return ''; try { return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return ''; } }
+
+    let toastTimer = 0;
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        clearTimeout(toastTimer); t.textContent = msg; t.classList.add('show');
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // Stroke icons for markup built in script (16px grid).
+    const ICON = {
+        plus: 'M8 3v10M3 8h10',
+        dice: 'M8 1.5l5.6 3.2v6.6L8 14.5l-5.6-3.2V4.7zM5 10.5l3-5 3 5zM2.4 4.7L5 10.5M13.6 4.7L11 10.5M8 14.5v-4',
+        trash: 'M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 9h5.8l.6-9',
+        copy: 'M5.5 5.5h8v8h-8zM3 10.5V2.5h8',
+        feather: 'M13.5 2.5C8 3 4.5 6.5 3 13.5M3.2 12.5C7 12 11 10 12.8 5M6 9.5h4',
+        play: 'M5 3l8 5-8 5z',
+        arrow: 'M3 8h10M9 4l4 4-4 4'
+    };
+    const ic = name => `<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="${ICON[name]}"/></svg>`;
+
+    /* =========================================================
+       SHEET DATA
+       ========================================================= */
+    const MAX_SLOTS = 35;
+    const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+    const ABILITY_LABEL = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
+    const skills = [{n:'Acrobatics', s:'dex'}, {n:'Animal Handling', s:'wis'}, {n:'Arcana', s:'int'}, {n:'Athletics', s:'str'}, {n:'Deception', s:'cha'}, {n:'History', s:'int'}, {n:'Insight', s:'wis'}, {n:'Intimidation', s:'cha'}, {n:'Investigation', s:'int'}, {n:'Medicine', s:'wis'}, {n:'Nature', s:'int'}, {n:'Perception', s:'wis'}, {n:'Performance', s:'cha'}, {n:'Persuasion', s:'cha'}, {n:'Religion', s:'int'}, {n:'Sleight of Hand', s:'dex'}, {n:'Stealth', s:'dex'}, {n:'Survival', s:'wis'}];
+    const emojiList = ["⚔️","🛡️","🏹","🧪","📜","🎒","🍞","🕯️","🗝️","💍","🧿","💎","💰","🔨","🪓","🧥","👞","🪖","🎵","📓","🧊","🔥","☠️","🥩","🍷","🛌","🪵","🏺","🧬","🗡️","🔮","🦠","🦴","🧲","🧱"];
+
+    const dbClasses = {
+        "Barbarian": { hd: 12, saves: ['str','con'] }, "Bard": { hd: 8, saves: ['dex','cha'] }, "Cleric": { hd: 8, saves: ['wis','cha'] },
+        "Druid": { hd: 8, saves: ['int','wis'] }, "Fighter": { hd: 10, saves: ['str','con'] }, "Monk": { hd: 8, saves: ['str','dex'] },
+        "Paladin": { hd: 10, saves: ['wis','cha'] }, "Ranger": { hd: 10, saves: ['str','dex'] }, "Rogue": { hd: 8, saves: ['dex','int'] },
+        "Sorcerer": { hd: 6, saves: ['con','cha'] }, "Warlock": { hd: 8, saves: ['wis','cha'] }, "Wizard": { hd: 6, saves: ['int','wis'] },
+        "Artificer": { hd: 8, saves: ['con','int'] }
+    };
+    const dbRaces = {
+        "Dragonborn": { spd: 30, bonus: "+2 STR, +1 CHA" }, "Dwarf": { spd: 25, bonus: "+2 CON" }, "Elf": { spd: 30, bonus: "+2 DEX" },
+        "Gnome": { spd: 25, bonus: "+2 INT" }, "Half-Elf": { spd: 30, bonus: "+2 CHA, +1 to two others" }, "Halfling": { spd: 25, bonus: "+2 DEX" },
+        "Half-Orc": { spd: 30, bonus: "+2 STR, +1 CON" }, "Human": { spd: 30, bonus: "+1 to All" }, "Tiefling": { spd: 30, bonus: "+2 CHA, +1 INT" }
+    };
+
+    let inventoryData = new Array(MAX_SLOTS).fill(null);
+    let activeId = null;      // id of the character open in the sheet
+    let BLANK = null;         // snapshot of an empty sheet, used for "New character"
+
+    function populateSelects() {
+        Object.keys(dbClasses).forEach(k => document.getElementById('charClass').add(new Option(k,k)));
+        Object.keys(dbRaces).forEach(k => document.getElementById('charRace').add(new Option(k,k)));
+    }
+
+    // --- DICE & REST ---
+    function rollDice(sides) {
+        const res = Math.floor(Math.random() * sides) + 1;
+        const entry = document.createElement('div');
+        entry.innerHTML = `d${sides}: <b>${res}</b>`;
+        document.getElementById('diceLog').prepend(entry);
+    }
+
+    function performShortRest() {
+        const curHd = parseInt(document.getElementById('currentHd').value) || 0;
+        const curHp = parseInt(document.getElementById('currentHp').value) || 0;
+        const maxHp = parseInt(document.getElementById('maxHp').value) || 0;
+        const cls = document.getElementById('charClass').value;
+        const conMod = getMod(parseInt(document.getElementById('con').value)||10);
+
+        if (curHd <= 0) { showToast('No Hit Dice left to spend.'); return; }
+        if (curHp >= maxHp) { showToast('Hit points are already full.'); return; }
+
+        const hdType = dbClasses[cls] ? dbClasses[cls].hd : 8;
+        const roll = Math.floor(Math.random() * hdType) + 1;
+        const totalHeal = Math.max(1, roll + conMod);
+
+        document.getElementById('currentHd').value = curHd - 1;
+        document.getElementById('currentHp').value = Math.min(maxHp, curHp + totalHeal);
+
+        showToast(`Short rest: d${hdType} rolled ${roll}, ${fmt(conMod)} Con. Healed ${totalHeal} HP.`);
+        closeModal('restModal'); calculateAll(); debouncedSave();
+    }
+
+    function performLongRest() {
+        const maxHp = document.getElementById('maxHp').value;
+        const lvl = parseInt(document.getElementById('charLevel').value) || 1;
+        const curHd = parseInt(document.getElementById('currentHd').value) || 0;
+        document.getElementById('currentHp').value = maxHp;
+        const regain = Math.max(1, Math.floor(lvl / 2));
+        document.getElementById('currentHd').value = Math.min(lvl, curHd + regain);
+        for(let i=1; i<=9; i++) {
+            const el = document.getElementById(`sp_u_${i}`);
+            if(el) el.value = 0;
+        }
+        showToast('Long rest: hit points restored, spell slots and Hit Dice recovered.');
+        closeModal('restModal'); calculateAll(); debouncedSave();
+    }
+
+    // --- STANDARD LOGIC ---
+    function updateClassDefaults() {
+        const cls = document.getElementById('charClass').value;
+        const data = dbClasses[cls];
+        if(data) {
+            if(parseInt(document.getElementById('maxHp').value) === 0) {
+                 document.getElementById('maxHp').value = data.hd;
+                 document.getElementById('currentHp').value = data.hd;
             }
-            writeJSON(STORE_KEY, fresh);
-            return fresh;
+            abilities.forEach(a => document.getElementById(`sv_${a}_p`).checked = data.saves.includes(a));
+            calculateAll(); debouncedSave();
         }
-        function saveStore() { return writeJSON(STORE_KEY, store); }
-        function findChar(id) { return store.chars.find(c => c.id === id); }
-        function readArchive() { const r = readJSON(ARCHIVE_KEY, []); return Array.isArray(r) ? r : []; }
-        function writeArchive(list) { return writeJSON(ARCHIVE_KEY, list); }
-
-        function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
-        function genId() { return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-        function fmtDate(t) { if (!t) return ''; try { return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return ''; } }
-
-        /* =========================================================
-           SHEET DATA
-           ========================================================= */
-        const MAX_SLOTS = 35;
-        const themes = ['onyx', 'polar', 'midnight', 'botanical'];
-        let currentThemeIndex = 0;
-        const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
-        const skills = [{n:'Acrobatics', s:'dex'}, {n:'Animal Handling', s:'wis'}, {n:'Arcana', s:'int'}, {n:'Athletics', s:'str'}, {n:'Deception', s:'cha'}, {n:'History', s:'int'}, {n:'Insight', s:'wis'}, {n:'Intimidation', s:'cha'}, {n:'Investigation', s:'int'}, {n:'Medicine', s:'wis'}, {n:'Nature', s:'int'}, {n:'Perception', s:'wis'}, {n:'Performance', s:'cha'}, {n:'Persuasion', s:'cha'}, {n:'Religion', s:'int'}, {n:'Sleight of Hand', s:'dex'}, {n:'Stealth', s:'dex'}, {n:'Survival', s:'wis'}];
-        const emojiList = ["⚔️","🛡️","🏹","🧪","📜","🎒","🍞","🕯️","🗝️","💍","🧿","💎","💰","🔨","🪓","🧥","👞","🪖","🎵","📓","🧊","🔥","☠️","🥩","🍷","🛌","🪵","🏺","🧬","🗡️","🔮","🦠","🦴","🧲","🧱"];
-
-        const dbClasses = {
-            "Barbarian": { hd: 12, saves: ['str','con'] }, "Bard": { hd: 8, saves: ['dex','cha'] }, "Cleric": { hd: 8, saves: ['wis','cha'] },
-            "Druid": { hd: 8, saves: ['int','wis'] }, "Fighter": { hd: 10, saves: ['str','con'] }, "Monk": { hd: 8, saves: ['str','dex'] },
-            "Paladin": { hd: 10, saves: ['wis','cha'] }, "Ranger": { hd: 10, saves: ['str','dex'] }, "Rogue": { hd: 8, saves: ['dex','int'] },
-            "Sorcerer": { hd: 6, saves: ['con','cha'] }, "Warlock": { hd: 8, saves: ['wis','cha'] }, "Wizard": { hd: 6, saves: ['int','wis'] },
-            "Artificer": { hd: 8, saves: ['con','int'] }
-        };
-        const dbRaces = {
-            "Dragonborn": { spd: 30, bonus: "+2 STR, +1 CHA" }, "Dwarf": { spd: 25, bonus: "+2 CON" }, "Elf": { spd: 30, bonus: "+2 DEX" },
-            "Gnome": { spd: 25, bonus: "+2 INT" }, "Half-Elf": { spd: 30, bonus: "+2 CHA, +1 to two others" }, "Halfling": { spd: 25, bonus: "+2 DEX" },
-            "Half-Orc": { spd: 30, bonus: "+2 STR, +1 CON" }, "Human": { spd: 30, bonus: "+1 to All" }, "Tiefling": { spd: 30, bonus: "+2 CHA, +1 INT" }
-        };
-
-        let inventoryData = new Array(MAX_SLOTS).fill(null);
-        let activeId = null;      // id of the character open in the sheet
-        let BLANK = null;         // snapshot of an empty sheet, used for "New character"
-
-        function populateSelects() {
-            Object.keys(dbClasses).forEach(k => document.getElementById('charClass').add(new Option(k,k)));
-            Object.keys(dbRaces).forEach(k => document.getElementById('charRace').add(new Option(k,k)));
+    }
+    function updateRaceDefaults() {
+        const race = document.getElementById('charRace').value;
+        const data = dbRaces[race];
+        if(data) {
+            document.getElementById('speed').value = data.spd;
+            const featArea = document.getElementById('features');
+            featArea.value += `\n[${new Date().toLocaleTimeString()}] Race: ${race}. Bonus: ${data.bonus}.`;
+            debouncedSave();
         }
+    }
 
-        // --- DICE & REST ---
-        function rollDice(sides) {
-            const res = Math.floor(Math.random() * sides) + 1;
-            const log = document.getElementById('diceLog');
-            const entry = document.createElement('div');
-            entry.innerHTML = `Rolled d${sides}: <span class="font-bold text-[var(--accent)]">${res}</span>`;
-            entry.style.marginBottom = "4px";
-            log.prepend(entry);
+    let modalReturn = null;
+    function openModal(id) {
+        modalReturn = document.activeElement;
+        const m = document.getElementById(id);
+        m.style.display = 'flex';
+        if (id === 'alignmentModal') {
+            const cur = document.getElementById('alignment').value;
+            m.querySelectorAll('.align-grid button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent.slice(b.querySelector('b').textContent.length) === cur)));
         }
+        const first = m.querySelector('input:not([readonly]):not([type=hidden]), button:not(.cs-x), .cs-x');
+        if (first) first.focus();
+    }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        if (modalReturn && document.contains(modalReturn)) modalReturn.focus();
+        modalReturn = null;
+    }
+    function setAlignment(val) { document.getElementById('alignment').value = val; closeModal('alignmentModal'); debouncedSave(); }
 
-        function performShortRest() {
-            const curHd = parseInt(document.getElementById('currentHd').value) || 0;
-            const curHp = parseInt(document.getElementById('currentHp').value) || 0;
-            const maxHp = parseInt(document.getElementById('maxHp').value) || 0;
-            const cls = document.getElementById('charClass').value;
-            const conMod = getMod(parseInt(document.getElementById('con').value)||10);
+    function renderUI() {
+        document.getElementById('abilitiesContainer').innerHTML = abilities.map(s => `
+            <div class="abil"><label class="name" for="${s}">${ABILITY_LABEL[s]}</label><input type="number" id="${s}" value="10" class="score"><span class="mod" id="${s}Mod">+0</span></div>`).join('');
 
-            if (curHd <= 0) { alert("No Hit Dice remaining!"); return; }
-            if (curHp >= maxHp) { alert("HP is already full."); return; }
+        const makeRow = (sk, i) => `<label class="phb-check cs-skill"><input type="checkbox" id="sk_${i}_p" onchange="calculateAll(); debouncedSave()"><span class="nm">${sk.n}<small>${sk.s}</small></span><b id="sk_${i}_v">+0</b></label>`;
+        const mid = Math.ceil(skills.length/2);
+        document.getElementById('skillsListLeft').innerHTML = skills.slice(0,mid).map((s,i) => makeRow(s,i)).join('');
+        document.getElementById('skillsListRight').innerHTML = skills.slice(mid).map((s,i) => makeRow(s,i+mid)).join('');
 
-            const hdType = dbClasses[cls] ? dbClasses[cls].hd : 8;
-            const roll = Math.floor(Math.random() * hdType) + 1;
-            const totalHeal = Math.max(1, roll + conMod);
+        document.getElementById('savesContainer').innerHTML = abilities.map(s => `<label class="phb-check cs-skill"><input type="checkbox" id="sv_${s}_p" onchange="calculateAll(); debouncedSave()"><span class="nm">${ABILITY_LABEL[s]}</span><b id="sv_${s}">+0</b></label>`).join('');
 
-            document.getElementById('currentHd').value = curHd - 1;
-            document.getElementById('currentHp').value = Math.min(maxHp, curHp + totalHeal);
-
-            alert(`Short Rest: Rolled d${hdType} (${roll}) + CON (${conMod}). Healed ${totalHeal} HP.`);
-            closeModal('restModal'); calculateAll(); debouncedSave();
+        const step = (id, label) => `<span class="step"><button type="button" aria-label="Lower ${label}" onclick="adj('${id}', -1)">&minus;</button><input type="number" id="${id}" value="0" aria-label="${label}"><button type="button" aria-label="Raise ${label}" onclick="adj('${id}', 1)">+</button></span>`;
+        let spellsHtml = '';
+        for(let i=1; i<=9; i++) {
+            const lv = i === 1 ? '1st' : i === 2 ? '2nd' : i === 3 ? '3rd' : `${i}th`;
+            spellsHtml += `<div class="cs-slot"><span class="lv">${lv}</span>${step(`sp_u_${i}`, `${lv}-level slots used`)}<span class="of">of</span>${step(`sp_m_${i}`, `${lv}-level slots`)}<input type="text" class="phb-input" id="sp_n_${i}" placeholder="Prepared ${lv}-level spells" aria-label="Prepared ${lv}-level spells"></div>`;
         }
+        document.getElementById('spellSlotsContainer').innerHTML = spellsHtml;
 
-        function performLongRest() {
-            const maxHp = document.getElementById('maxHp').value;
-            const lvl = parseInt(document.getElementById('charLevel').value) || 1;
-            const curHd = parseInt(document.getElementById('currentHd').value) || 0;
-            document.getElementById('currentHp').value = maxHp;
-            const regain = Math.max(1, Math.floor(lvl / 2));
-            document.getElementById('currentHd').value = Math.min(lvl, curHd + regain);
-            for(let i=1; i<=9; i++) {
-                const el = document.getElementById(`sp_u_${i}`);
-                if(el) el.value = 0;
+        const eGrid = document.querySelector('.emoji-grid');
+        emojiList.forEach(e => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.textContent = e; b.setAttribute('aria-label', `Use ${e}`);
+            b.onclick = () => { document.getElementById('itemIcon').value = e; eGrid.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); };
+            eGrid.appendChild(b);
+        });
+    }
+
+    function renderInventory() {
+        const grid = document.getElementById('inventoryGrid'); grid.innerHTML = ''; let totalWt = 0;
+        inventoryData.forEach((item, idx) => {
+            const slot = document.createElement('button'); slot.type = 'button';
+            slot.className = `inv-slot ${!item ? 'empty' : ''}`; slot.onclick = () => openItemModal(idx);
+            if (item) {
+                slot.title = item.name || '';
+                slot.setAttribute('aria-label', `${item.name || 'Item'}${item.qty > 1 ? `, ${item.qty}` : ''}`);
+                slot.innerHTML = `<span aria-hidden="true">${esc(item.icon)}</span>${item.qty > 1 ? `<span class="inv-qty" aria-hidden="true">${esc(item.qty)}</span>` : ''}`;
+                totalWt += (parseFloat(item.weight)||0) * (parseFloat(item.qty)||1);
+            } else {
+                slot.setAttribute('aria-label', 'Empty slot, add an item');
+                slot.innerHTML = ic('plus');
             }
-            alert("Long Rest Complete: HP restored, Spell slots cleared, Hit Dice recovered.");
-            closeModal('restModal'); calculateAll(); debouncedSave();
-        }
+            grid.appendChild(slot);
+        });
+        document.getElementById('totalWeightDisplay').textContent = totalWt.toFixed(1);
+    }
 
-        // --- STANDARD LOGIC ---
-        function updateClassDefaults() {
-            const cls = document.getElementById('charClass').value;
-            const data = dbClasses[cls];
-            if(data) {
-                if(parseInt(document.getElementById('maxHp').value) === 0) {
-                     document.getElementById('maxHp').value = data.hd;
-                     document.getElementById('currentHp').value = data.hd;
-                }
-                abilities.forEach(a => document.getElementById(`sv_${a}_p`).checked = data.saves.includes(a));
-                calculateAll(); debouncedSave();
-            }
-        }
-        function updateRaceDefaults() {
-            const race = document.getElementById('charRace').value;
-            const data = dbRaces[race];
-            if(data) {
-                document.getElementById('speed').value = data.spd;
-                const featArea = document.getElementById('features');
-                featArea.value += `\n[${new Date().toLocaleTimeString()}] Race: ${race}. Bonus: ${data.bonus}.`;
-                debouncedSave();
-            }
-        }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function setAlignment(val) { document.getElementById('alignment').value = val; closeModal('alignmentModal'); debouncedSave(); }
+    function addInvItem() { const idx = inventoryData.findIndex(x => x === null); if(idx === -1) { showToast('Every slot is full.'); return; } openItemModal(idx); }
+    function adj(id, delta) { const el = document.getElementById(id); let v = parseInt(el.value) || 0; el.value = v + delta; el.dispatchEvent(new Event('input', { bubbles: true })); }
+    function getMod(val) { return Math.floor((val - 10) / 2); }
+    function fmt(val) { return (val >= 0 ? '+' : '') + val; }
 
-        function renderUI() {
-            document.getElementById('abilitiesContainer').innerHTML = abilities.map(s => `
-                <div class="stat-block group flex-grow"><label class="label-mono group-hover:text-[var(--text-main)] transition">${s}</label><input type="number" id="${s}" value="10" class="stat-val text-center w-full bg-transparent"><div class="stat-mod" id="${s}Mod">+0</div></div>`).join('');
+    function calculateAll() {
+        const lvl = parseInt(document.getElementById('charLevel').value) || 1;
+        const pb = Math.ceil(lvl / 4) + 1;
+        document.getElementById('profBonusDisplay').textContent = `+${pb}`;
+        const mods = {};
+        abilities.forEach(s => {
+            const val = parseInt(document.getElementById(s).value) || 10;
+            mods[s] = getMod(val);
+            document.getElementById(`${s}Mod`).textContent = fmt(mods[s]);
+            const prof = document.getElementById(`sv_${s}_p`).checked;
+            document.getElementById(`sv_${s}`).textContent = fmt(mods[s] + (prof ? pb : 0));
+        });
+        skills.forEach((sk, i) => {
+            const prof = document.getElementById(`sk_${i}_p`).checked;
+            document.getElementById(`sk_${i}_v`).textContent = fmt(mods[sk.s] + (prof ? pb : 0));
+        });
+        const spellAbi = document.getElementById('spellAbility').value || 'int';
+        const spellMod = mods[spellAbi] || 0;
+        document.getElementById('spellSaveDC').textContent = 8 + pb + spellMod;
+        document.getElementById('spellAtkBonus').textContent = fmt(pb + spellMod);
+    }
+    function calculateSpells() { calculateAll(); debouncedSave(); }
 
-            const makeRow = (sk, i) => `<label class="swiss-check"><input type="checkbox" id="sk_${i}_p" onchange="calculateAll(); debouncedSave()"><span class="swiss-check-box"></span><span class="swiss-check-label flex-grow">${sk.n}</span><span id="sk_${i}_v" class="font-mono text-xs font-bold text-[var(--text-muted)]">+0</span></label>`;
-            const mid = Math.ceil(skills.length/2);
-            document.getElementById('skillsListLeft').innerHTML = skills.slice(0,mid).map((s,i) => makeRow(s,i)).join('');
-            document.getElementById('skillsListRight').innerHTML = skills.slice(mid).map((s,i) => makeRow(s,i+mid)).join('');
+    function switchTab(id) {
+        document.querySelectorAll('.tab-content').forEach(e => e.classList.toggle('hidden', e.id !== id));
+        document.querySelectorAll('.nav-btn').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    }
+    function addAttack(data={}) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class="nm"><input type="text" value="${esc(data.n||'Weapon')}" aria-label="Attack name"></td><td><input type="text" value="${esc(data.h||'+0')}" aria-label="To hit"></td><td><input type="text" value="${esc(data.d||'1d6')}" aria-label="Damage"></td><td class="del"><button type="button" aria-label="Remove attack" onclick="this.closest('tr').remove(); debouncedSave()">${ic('trash')}</button></td>`;
+        document.getElementById('attacksList').appendChild(row);
+    }
+    function openItemModal(idx) {
+        const item = inventoryData[idx]; document.getElementById('modalSlotIndex').value = idx;
+        document.getElementById('itemIcon').value = item ? item.icon : emojiList[0]; document.getElementById('itemName').value = item ? item.name : "";
+        document.getElementById('itemWeight').value = item ? item.weight : ""; document.getElementById('itemQty').value = item ? item.qty : 1;
+        document.getElementById('itemDesc').value = item ? item.desc : "";
+        const icon = document.getElementById('itemIcon').value;
+        document.querySelectorAll('.emoji-grid button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === icon)));
+        document.getElementById('btnDelete').classList.toggle('hidden', !item);
+        openModal('itemModal');
+    }
+    function saveItemAction() {
+        const idx = document.getElementById('modalSlotIndex').value;
+        inventoryData[idx] = { icon: document.getElementById('itemIcon').value, name: document.getElementById('itemName').value || "Item", weight: parseFloat(document.getElementById('itemWeight').value) || 0, qty: parseInt(document.getElementById('itemQty').value) || 1, desc: document.getElementById('itemDesc').value };
+        renderInventory(); saveData(); closeModal('itemModal');
+    }
+    function deleteItemAction() { inventoryData[document.getElementById('modalSlotIndex').value] = null; renderInventory(); saveData(); closeModal('itemModal'); }
 
-            document.getElementById('savesContainer').innerHTML = abilities.map(s => `<label class="swiss-check" style="padding:0"><input type="checkbox" id="sv_${s}_p" onchange="calculateAll(); debouncedSave()"><span class="swiss-check-box"></span><span class="swiss-check-label">${s}</span><span id="sv_${s}" class="font-mono text-xs font-bold ml-1 text-[var(--text-main)]">+0</span></label>`).join('');
+    /* --- SAVE / LOAD (multi-character) --- */
+    let saveTimer = null;
+    function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
+    function flushSave() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; saveData(); } }
 
-            let spellsHtml = '';
-            for(let i=1; i<=9; i++) spellsHtml += `<div class="flex items-center gap-2 py-1"><span class="w-6 text-xs font-bold text-[var(--text-muted)]">L${i}</span><div class="swiss-stepper w-20"><btn onclick="adj('sp_u_${i}', -1)">-</btn><input type="number" id="sp_u_${i}" value="0"><btn onclick="adj('sp_u_${i}', 1)">+</btn></div><span class="text-xs text-[var(--text-muted)]">/</span><div class="swiss-stepper w-20"><btn onclick="adj('sp_m_${i}', -1)">-</btn><input type="number" id="sp_m_${i}" value="0"><btn onclick="adj('sp_m_${i}', 1)">+</btn></div><input type="text" class="flex-grow text-xs ml-2 font-mono text-[var(--text-muted)] border-b border-transparent focus:border-[var(--line)]" id="sp_n_${i}" placeholder="..."></div>`;
-            document.getElementById('spellSlotsContainer').innerHTML = spellsHtml;
+    function collectData() {
+        const $ = id => document.getElementById(id);
+        const data = { v: 7, meta: { name: $('charName').value, cls: $('charClass').value, lvl: $('charLevel').value, race: $('charRace').value, xp: $('xp').value, align: $('alignment').value }, stats: abilities.map(s => $(s).value), saves: abilities.map(s => $(`sv_${s}_p`).checked), skills: skills.map((_,i) => $(`sk_${i}_p`).checked), vitals: { ac: $('armorClass').value, init: $('initiative').value, spd: $('speed').value, hpC: $('currentHp').value, hpM: $('maxHp').value, hpT: $('tempHp').value, hdC: $('currentHd').value }, money: [$('gp').value, $('sp').value, $('cp').value], inv: inventoryData.slice(), text: { bg: $('backstory').value, feat: $('features').value, notes: $('allies').value }, attacks: [], spellAbi: $('spellAbility').value };
+        document.querySelectorAll('#attacksList tr').forEach(row => { const i = row.querySelectorAll('input'); data.attacks.push({ n: i[0].value, h: i[1].value, d: i[2].value }); });
+        data.spells = []; for(let i=1;i<=9;i++) { data.spells.push({ m: $(`sp_m_${i}`).value, u: $(`sp_u_${i}`).value, n: $(`sp_n_${i}`).value }); }
+        return data;
+    }
 
-            const eGrid = document.querySelector('.emoji-grid');
-            emojiList.forEach(e => {
-                const d = document.createElement('div');
-                d.className = 'text-center p-1 text-xl cursor-pointer hover:bg-[var(--line)] rounded';
-                d.textContent = e;
-                d.onclick = () => document.getElementById('itemIcon').value = e;
-                eGrid.appendChild(d);
-            });
-        }
+    // Writes only the fields present in `data`, so partial / older objects are safe.
+    function applyRaw(data) {
+        if (!data) return;
+        const set = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).value = v; };
+        const chk = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).checked = !!v; };
+        const m = data.meta || {}, vt = data.vitals || {}, tx = data.text || {};
+        set('charName', m.name); set('charClass', m.cls); set('charLevel', m.lvl); set('charRace', m.race); set('xp', m.xp); set('alignment', m.align);
+        if (Array.isArray(data.stats)) abilities.forEach((s,i) => set(s, data.stats[i]));
+        if (Array.isArray(data.saves)) abilities.forEach((s,i) => chk(`sv_${s}_p`, data.saves[i]));
+        if (Array.isArray(data.skills)) skills.forEach((_,i) => chk(`sk_${i}_p`, data.skills[i]));
+        set('armorClass', vt.ac); set('initiative', vt.init); set('speed', vt.spd); set('currentHp', vt.hpC); set('maxHp', vt.hpM); set('tempHp', vt.hpT); set('currentHd', vt.hdC);
+        if (Array.isArray(data.money)) { set('gp', data.money[0]); set('sp', data.money[1]); set('cp', data.money[2]); }
+        if (Array.isArray(data.inv)) { inventoryData = new Array(MAX_SLOTS).fill(null); data.inv.slice(0, MAX_SLOTS).forEach((it, i) => inventoryData[i] = it || null); }
+        set('backstory', tx.bg); set('features', tx.feat); set('allies', tx.notes);
+        if (Array.isArray(data.attacks)) { document.getElementById('attacksList').innerHTML = ''; data.attacks.forEach(a => addAttack(a)); }
+        if (Array.isArray(data.spells)) data.spells.forEach((s, i) => { const idx = i+1; if (idx > 9 || !s) return; set(`sp_u_${idx}`, s.u); set(`sp_m_${idx}`, s.m); set(`sp_n_${idx}`, s.n); });
+        if (data.spellAbi) set('spellAbility', data.spellAbi);
+    }
+    function applyData(data) { applyRaw(BLANK); applyRaw(data); renderInventory(); calculateAll(); }
 
-        function renderInventory() {
-            const grid = document.getElementById('inventoryGrid'); grid.innerHTML = ''; let totalWt = 0;
-            inventoryData.forEach((item, idx) => {
-                const slot = document.createElement('div'); slot.className = `inv-slot ${!item ? 'empty' : ''}`; slot.onclick = () => openItemModal(idx);
-                if (item) {
-                    slot.title = item.name || '';
-                    slot.innerHTML = `<span>${esc(item.icon)}</span>${item.qty > 1 ? `<span class="inv-qty">${esc(item.qty)}</span>` : ''}`;
-                    totalWt += (parseFloat(item.weight)||0) * (parseFloat(item.qty)||1);
-                } else { slot.innerHTML = `<i class="fas fa-plus text-[var(--text-muted)] text-sm opacity-50 hover:opacity-100 transition"></i>`; }
-                grid.appendChild(slot);
-            });
-            document.getElementById('totalWeightDisplay').textContent = totalWt.toFixed(1);
-        }
+    function saveData() {
+        clearTimeout(saveTimer); saveTimer = null;
+        if (!activeId) return;
+        const prev = findChar(activeId);
+        const rec = Object.assign(collectData(), { id: activeId, updated: Date.now() });
+        if (prev && prev.src) rec.src = prev.src;
+        if (prev && prev.migratedFrom) rec.migratedFrom = prev.migratedFrom;
+        const i = store.chars.findIndex(c => c.id === activeId);
+        if (i === -1) store.chars.push(rec); else store.chars[i] = rec;
+        saveStore();
+    }
 
-        function addInvItem() { const idx = inventoryData.findIndex(x => x === null); if(idx === -1) return alert("Grid Full"); openItemModal(idx); }
-        function adj(id, delta) { const el = document.getElementById(id); let v = parseInt(el.value) || 0; el.value = v + delta; el.dispatchEvent(new Event('input', { bubbles: true })); }
-        function getMod(val) { return Math.floor((val - 10) / 2); }
-        function fmt(val) { return (val >= 0 ? '+' : '') + val; }
+    function openSheet(id) {
+        if (activeId !== id) flushSave();
+        activeId = id;
+        applyData(findChar(id) || null);
+        switchTab('main');
+        window.scrollTo(0, 0);
+        const name = document.getElementById('charName').value;
+        document.title = name ? `${name} · Characters` : 'New Character · Characters';
+    }
 
-        function calculateAll() {
-            const lvl = parseInt(document.getElementById('charLevel').value) || 1;
-            const pb = Math.ceil(lvl / 4) + 1;
-            document.getElementById('profBonusDisplay').textContent = `+${pb}`;
-            const mods = {};
-            abilities.forEach(s => {
-                const val = parseInt(document.getElementById(s).value) || 10;
-                mods[s] = getMod(val);
-                document.getElementById(`${s}Mod`).textContent = fmt(mods[s]);
-                const prof = document.getElementById(`sv_${s}_p`).checked;
-                document.getElementById(`sv_${s}`).textContent = fmt(mods[s] + (prof ? pb : 0));
-            });
-            skills.forEach((sk, i) => {
-                const prof = document.getElementById(`sk_${i}_p`).checked;
-                document.getElementById(`sk_${i}_v`).textContent = fmt(mods[sk.s] + (prof ? pb : 0));
-            });
-            const spellAbi = document.getElementById('spellAbility').value || 'int';
-            const spellMod = mods[spellAbi] || 0;
-            document.getElementById('spellSaveDC').textContent = 8 + pb + spellMod;
-            document.getElementById('spellAtkBonus').textContent = fmt(pb + spellMod);
-        }
-
-        function applyTheme(t) {
-            const i = themes.indexOf(t);
-            currentThemeIndex = i === -1 ? 0 : i;
-            document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]);
-        }
-        function toggleTheme() { applyTheme(themes[(currentThemeIndex + 1) % themes.length]); writeRaw(THEME_KEY, themes[currentThemeIndex]); }
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(e => { e.classList.add('hidden'); e.classList.remove('active'); });
-            document.getElementById(id).classList.remove('hidden');
-            setTimeout(() => document.getElementById(id).classList.add('active'), 10);
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`[data-tab="${id}"]`).classList.add('active');
-        }
-        function addAttack(data={}) {
-            const row = document.createElement('tr'); row.className = "border-b border-[var(--line)] group";
-            row.innerHTML = `<td class="py-2"><input type="text" class="font-bold text-sm uppercase" value="${esc(data.n||'Weapon')}"></td><td class="py-2"><input type="text" class="text-center font-mono text-xs text-[var(--accent)]" value="${esc(data.h||'+0')}"></td><td class="py-2"><input type="text" class="font-mono text-xs text-[var(--text-muted)]" value="${esc(data.d||'1d6')}"></td><td class="py-2 text-right"><button onclick="this.closest('tr').remove(); debouncedSave()" class="text-[var(--text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button></td>`;
-            document.getElementById('attacksList').appendChild(row);
-        }
-        function openItemModal(idx) {
-            const item = inventoryData[idx]; document.getElementById('modalSlotIndex').value = idx;
-            document.getElementById('itemIcon').value = item ? item.icon : emojiList[0]; document.getElementById('itemName').value = item ? item.name : "";
-            document.getElementById('itemWeight').value = item ? item.weight : ""; document.getElementById('itemQty').value = item ? item.qty : 1;
-            document.getElementById('itemDesc').value = item ? item.desc : "";
-            document.getElementById('btnDelete').classList.toggle('hidden', !item); document.getElementById('itemModal').style.display = 'flex';
-        }
-        function saveItemAction() {
-            const idx = document.getElementById('modalSlotIndex').value;
-            inventoryData[idx] = { icon: document.getElementById('itemIcon').value, name: document.getElementById('itemName').value || "Item", weight: parseFloat(document.getElementById('itemWeight').value) || 0, qty: parseInt(document.getElementById('itemQty').value) || 1, desc: document.getElementById('itemDesc').value };
-            renderInventory(); saveData(); closeModal('itemModal');
-        }
-        function deleteItemAction() { inventoryData[document.getElementById('modalSlotIndex').value] = null; renderInventory(); saveData(); closeModal('itemModal'); }
-
-        /* --- SAVE / LOAD (multi-character) --- */
-        let saveTimer = null;
-        function debouncedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1000); }
-        function flushSave() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; saveData(); } }
-
-        function collectData() {
-            const $ = id => document.getElementById(id);
-            const data = { v: 7, theme: document.documentElement.getAttribute('data-theme'), meta: { name: $('charName').value, cls: $('charClass').value, lvl: $('charLevel').value, race: $('charRace').value, xp: $('xp').value, align: $('alignment').value }, stats: abilities.map(s => $(s).value), saves: abilities.map(s => $(`sv_${s}_p`).checked), skills: skills.map((_,i) => $(`sk_${i}_p`).checked), vitals: { ac: $('armorClass').value, init: $('initiative').value, spd: $('speed').value, hpC: $('currentHp').value, hpM: $('maxHp').value, hpT: $('tempHp').value, hdC: $('currentHd').value }, money: [$('gp').value, $('sp').value, $('cp').value], inv: inventoryData.slice(), text: { bg: $('backstory').value, feat: $('features').value, notes: $('allies').value }, attacks: [], spellAbi: $('spellAbility').value };
-            document.querySelectorAll('#attacksList tr').forEach(row => { const i = row.querySelectorAll('input'); data.attacks.push({ n: i[0].value, h: i[1].value, d: i[2].value }); });
-            data.spells = []; for(let i=1;i<=9;i++) { data.spells.push({ m: $(`sp_m_${i}`).value, u: $(`sp_u_${i}`).value, n: $(`sp_n_${i}`).value }); }
-            return data;
-        }
-
-        // Writes only the fields present in `data`, so partial / older objects are safe.
-        function applyRaw(data) {
-            if (!data) return;
-            const set = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).value = v; };
-            const chk = (id, v) => { if (v !== undefined && v !== null) document.getElementById(id).checked = !!v; };
-            const m = data.meta || {}, vt = data.vitals || {}, tx = data.text || {};
-            set('charName', m.name); set('charClass', m.cls); set('charLevel', m.lvl); set('charRace', m.race); set('xp', m.xp); set('alignment', m.align);
-            if (Array.isArray(data.stats)) abilities.forEach((s,i) => set(s, data.stats[i]));
-            if (Array.isArray(data.saves)) abilities.forEach((s,i) => chk(`sv_${s}_p`, data.saves[i]));
-            if (Array.isArray(data.skills)) skills.forEach((_,i) => chk(`sk_${i}_p`, data.skills[i]));
-            set('armorClass', vt.ac); set('initiative', vt.init); set('speed', vt.spd); set('currentHp', vt.hpC); set('maxHp', vt.hpM); set('tempHp', vt.hpT); set('currentHd', vt.hdC);
-            if (Array.isArray(data.money)) { set('gp', data.money[0]); set('sp', data.money[1]); set('cp', data.money[2]); }
-            if (Array.isArray(data.inv)) { inventoryData = new Array(MAX_SLOTS).fill(null); data.inv.slice(0, MAX_SLOTS).forEach((it, i) => inventoryData[i] = it || null); }
-            set('backstory', tx.bg); set('features', tx.feat); set('allies', tx.notes);
-            if (Array.isArray(data.attacks)) { document.getElementById('attacksList').innerHTML = ''; data.attacks.forEach(a => addAttack(a)); }
-            if (Array.isArray(data.spells)) data.spells.forEach((s, i) => { const idx = i+1; if (idx > 9 || !s) return; set(`sp_u_${idx}`, s.u); set(`sp_m_${idx}`, s.m); set(`sp_n_${idx}`, s.n); });
-            if (data.spellAbi) set('spellAbility', data.spellAbi);
-        }
-        function applyData(data) { applyRaw(BLANK); applyRaw(data); renderInventory(); calculateAll(); }
-
-        function saveData() {
-            clearTimeout(saveTimer); saveTimer = null;
-            if (!activeId) return;
-            const prev = findChar(activeId);
-            const rec = Object.assign(collectData(), { id: activeId, updated: Date.now() });
-            if (prev && prev.src) rec.src = prev.src;
-            if (prev && prev.migratedFrom) rec.migratedFrom = prev.migratedFrom;
-            const i = store.chars.findIndex(c => c.id === activeId);
-            if (i === -1) store.chars.push(rec); else store.chars[i] = rec;
+    function exportData() {
+        saveData();
+        const rec = findChar(activeId) || collectData();
+        const blob = new Blob([JSON.stringify(rec)], {type: "application/json"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `agent_${(document.getElementById('charName').value || 'character').replace(/[^\w\- ]+/g, '')}.json`; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    // Import always adds a NEW character (never overwrites one you already have).
+    function importData(input) {
+        const file = input.files && input.files[0]; if (!file) return;
+        const r = new FileReader();
+        r.onload = e => {
+            input.value = '';
+            let data; try { data = JSON.parse(e.target.result); } catch (err) { showToast('That file is not valid JSON.'); return; }
+            if (!data || typeof data !== 'object' || Array.isArray(data) || !data.meta) { showToast('That file is not a character sheet export.'); return; }
+            flushSave();
+            const id = genId();
+            store.chars.push(Object.assign({}, data, { id, updated: Date.now() }));
             saveStore();
-        }
-
-        function openSheet(id) {
-            if (activeId !== id) flushSave();
-            activeId = id;
-            applyData(findChar(id) || null);
-            switchTab('main');
-            document.querySelector('#sheetView main').scrollTop = 0;
-        }
-
-        function exportData() {
-            saveData();
-            const rec = findChar(activeId) || collectData();
-            const blob = new Blob([JSON.stringify(rec)], {type: "application/json"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = `agent_${(document.getElementById('charName').value || 'character').replace(/[^\w\- ]+/g, '')}.json`; a.click();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        }
-        // Import always adds a NEW character (never overwrites one you already have).
-        function importData(input) {
-            const file = input.files && input.files[0]; if (!file) return;
-            const r = new FileReader();
-            r.onload = e => {
-                input.value = '';
-                let data; try { data = JSON.parse(e.target.result); } catch (err) { alert('That file is not valid JSON.'); return; }
-                if (!data || typeof data !== 'object' || Array.isArray(data) || !data.meta) { alert('That file is not a character sheet export.'); return; }
-                flushSave();
-                const id = genId();
-                store.chars.push(Object.assign({}, data, { id, updated: Date.now() }));
-                saveStore();
-                location.hash = '#/sheet/' + encodeURIComponent(id);
-            };
-            r.readAsText(file);
-        }
+            location.hash = '#/sheet/' + encodeURIComponent(id);
+        };
+        r.readAsText(file);
+    }
 
         /* =========================================================
            THE ARCHIVES OF THE FORGOTTEN (hero generator data)
@@ -1053,74 +937,81 @@
           const c = currentHero; if (!c) return;
           const ap = c.appearance || {}, pe = c.personality || {}, bs = c.backstory || {}, st = c.stats || {}, br = c.statBreakdown || {};
           const skin = ap.skin || {};
-          document.getElementById('heroKind').textContent = heroMode === 'rolled' ? 'Freshly rolled · not yet scribed' : 'The Archives of the Forgotten';
-          document.getElementById('heroName').textContent = c.name || 'Unknown Hero';
+          document.getElementById('heroKind').textContent = heroMode === 'rolled' ? 'Freshly rolled, not yet scribed' : 'The Archives of the Forgotten';
+          document.getElementById('heroNameText').textContent = c.name || 'Unknown Hero';
           document.getElementById('heroSub').textContent = `Level ${c.level} ${c.race} ${c.cls}${c.subcls ? ` (${c.subcls})` : ''}`;
+          document.title = `${c.name || 'Unknown Hero'} · Characters`;
 
           const existing = sheetForHero(c);
           let acts = '';
           if (heroMode === 'rolled') {
-            acts += `<button class="text-btn" data-act="roll"><i class="fas fa-dice-d20"></i> Reroll</button>`;
-            acts += `<button class="text-btn" data-act="scribe"><i class="fas fa-feather-pointed"></i> Scribe to archive</button>`;
+            acts += `<button class="phb-btn ghost sm" type="button" data-act="roll">${ic('dice')}Reroll</button>`;
+            acts += `<button class="phb-btn ghost sm" type="button" data-act="scribe">${ic('feather')}Scribe to Archive</button>`;
           }
-          acts += `<button class="text-btn primary" data-act="play"><i class="fas fa-${existing ? 'arrow-right' : 'play'}"></i> ${existing ? 'Open sheet' : 'Play in sheet'}</button>`;
-          acts += `<button class="text-btn" data-act="copy"><i class="fas fa-scroll"></i> Copy</button>`;
-          if (heroMode === 'saved') acts += `<button class="text-btn danger" data-act="delete-hero"><i class="fas fa-trash"></i> Delete</button>`;
+          acts += `<button class="phb-btn sm" type="button" data-act="play">${ic(existing ? 'arrow' : 'play')}${existing ? 'Open Sheet' : 'Play in Sheet'}</button>`;
+          acts += `<button class="phb-btn ghost sm" type="button" data-act="copy">${ic('copy')}Copy</button>`;
+          if (heroMode === 'saved') acts += `<button class="phb-btn ghost sm" type="button" data-act="delete-hero">${ic('trash')}Delete</button>`;
           document.getElementById('heroActions').innerHTML = acts;
 
-          const li = (icon, k, v) => `<li><i class="fas fa-${icon}"></i><span class="k">${k}</span><span class="v">${v}</span></li>`;
+          const li = (k, v) => `<li><span class="k">${k}</span><span class="v">${v}</span></li>`;
+          const chips = list => `<ul class="chips">${list.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
           let html = `
-            <div class="layout-grid grid-cols-3 md:grid-cols-6 mb-6">
+            <div class="abil-row">
               ${ABILITY_NAMES.map(key => { const val = st[key]; const b = br[key] || {}; return `
-                <div class="stat-block"><label class="label-mono">${key.substring(0,3)}</label><div class="stat-val">${esc(val)}</div><div class="stat-mod">${fmt(getMod(val))}</div>
-                <div class="stat-break">Base ${esc(b.base)}${b.race ? ` · Race +${esc(b.race)}` : ''}</div></div>`; }).join('')}
+                <div class="abil"><span class="name">${key}</span><span class="score">${esc(val)}</span><span class="sub">Base ${esc(b.base)}${b.race ? `, race +${esc(b.race)}` : ''}</span><span class="mod">${fmt(getMod(val))}</span></div>`; }).join('')}
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Identity</label><ul class="kv">
-                ${li('venus-mars', 'Gender', esc(c.gender))}
-                ${li('balance-scale', 'Alignment', esc(c.align))}
-                ${li('landmark', 'Background', esc(c.bg))}
-                ${li('dna', 'Subrace', esc(c.subrace || 'None'))}
-                ${li('hat-wizard', 'Subclass', esc(c.subcls))}
-              </ul></div>
-              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Appearance</label><ul class="kv">
-                ${li('ruler-vertical', 'Height', `${esc(ap.height)} (${esc(ap.build)})`)}
-                ${li('hourglass-half', 'Age', `${esc(ap.age)} years`)}
-                ${li('eye', 'Eyes', esc(ap.eyes))}
-                ${li('cut', 'Hair', esc(ap.hair))}
-                ${li('palette', 'Skin', `${esc(skin.name)}${skin.c ? `<span class="swatch" style="background-color:${esc(skin.c)}"></span>` : ''}`)}
-                ${li('microphone-alt', 'Voice', esc(ap.voice))}
-                ${li('signature', 'Mark', esc(ap.mark))}
-              </ul></div>
-              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">The Soul</label><ul class="kv">
-                ${li('star', 'Trait', `&ldquo;${esc(pe.trait)}&rdquo;`)}
-                ${li('bullseye', 'Ideal', `&ldquo;${esc(pe.ideal)}&rdquo;`)}
-                ${li('link', 'Bond', `&ldquo;${esc(pe.bond)}&rdquo;`)}
-                ${li('heart-broken', 'Flaw', `&ldquo;${esc(pe.flaw)}&rdquo;`)}
-              </ul></div>
-              <div class="swiss-panel"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-2">Legend</label><ul class="kv">
-                ${li('child', 'Origin', esc(bs.childhood))}
-                ${li('meteor', 'Defining moment', esc(bs.event))}
-                ${li('mask', 'Secret', esc(bs.secret))}
-              </ul></div>
+            <div class="cs-two">
+              <div>
+                <h3>Identity</h3>
+                <ul class="kv">
+                  ${li('Gender', esc(c.gender))}
+                  ${li('Alignment', esc(c.align))}
+                  ${li('Background', esc(c.bg))}
+                  ${li('Subrace', esc(c.subrace || 'None'))}
+                  ${li('Subclass', esc(c.subcls))}
+                </ul>
+                <h3>The Soul</h3>
+                <ul class="kv">
+                  ${li('Trait', `&ldquo;${esc(pe.trait)}&rdquo;`)}
+                  ${li('Ideal', `&ldquo;${esc(pe.ideal)}&rdquo;`)}
+                  ${li('Bond', `&ldquo;${esc(pe.bond)}&rdquo;`)}
+                  ${li('Flaw', `&ldquo;${esc(pe.flaw)}&rdquo;`)}
+                </ul>
+              </div>
+              <div>
+                <h3>Appearance</h3>
+                <ul class="kv">
+                  ${li('Height', `${esc(ap.height)} (${esc(ap.build)})`)}
+                  ${li('Age', `${esc(ap.age)} years`)}
+                  ${li('Eyes', esc(ap.eyes))}
+                  ${li('Hair', esc(ap.hair))}
+                  ${li('Skin', `${esc(skin.name)}${skin.c ? `<span class="swatch" style="background-color:${esc(skin.c)}"></span>` : ''}`)}
+                  ${li('Voice', esc(ap.voice))}
+                  ${li('Mark', esc(ap.mark))}
+                </ul>
+                <h3>Legend</h3>
+                <ul class="kv">
+                  ${li('Origin', esc(bs.childhood))}
+                  ${li('Defining moment', esc(bs.event))}
+                  ${li('Secret', esc(bs.secret))}
+                </ul>
+              </div>
             </div>
-            <div class="swiss-panel mb-6"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-3">Inventory</label>
-              <div class="chip-row">${(c.gear || []).map(g => `<span class="chip">${esc(g)}</span>`).join('') || '<span class="r-empty">Nothing carried.</span>'}</div>
-            </div>`;
+            <h3>Equipment</h3>
+            ${(c.gear || []).length ? chips(c.gear) : '<p class="r-empty">Nothing carried.</p>'}`;
           if (c.spells) {
-            html += `<div class="swiss-panel mb-6"><label class="label-mono text-[var(--accent)] border-b border-[var(--line)] pb-2 mb-3">Grimoire</label>`;
-            if (c.spells.cantrips) html += `<div class="mb-4"><label class="label-mono">Cantrips (0 level)</label><div class="chip-row">${c.spells.cantrips.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div></div>`;
+            html += `<h3>Grimoire</h3>`;
+            if (c.spells.cantrips) html += `<h4>Cantrips</h4>${chips(c.spells.cantrips)}`;
             for (const [lvl, list] of Object.entries(c.spells)) {
               if (lvl === 'cantrips' || !Array.isArray(list)) continue;
-              html += `<div class="mb-4"><label class="label-mono">Level ${esc(lvl)} spells</label><div class="chip-row">${list.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div></div>`;
+              const n = Number(lvl);
+              html += `<h4>${n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : `${esc(lvl)}th`} Level</h4>${chips(list)}`;
             }
-            html += `</div>`;
           }
-          const box = document.getElementById('heroContent');
-          box.innerHTML = html;
-          box.classList.remove('fade-in'); void box.offsetWidth; box.classList.add('fade-in');
-          box.closest('.view-scroll').scrollTop = 0;
+          document.getElementById('heroContent').innerHTML = html;
+          window.scrollTo(0, 0);
         }
+
 
         function heroText(c) {
           const ap = c.appearance || {}, pe = c.personality || {}, bs = c.backstory || {}, st = c.stats || {};
@@ -1155,7 +1046,7 @@ GEAR: ${(c.gear || []).join(', ')}
         function copyHero() {
           if (!currentHero) return;
           const text = heroText(currentHero);
-          const done = () => alert("Character transcribed to clipboard.");
+          const done = () => showToast("Hero copied to the clipboard.");
           if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => prompt('Copy the hero:', text));
           else prompt('Copy the hero:', text);
         }
@@ -1243,34 +1134,36 @@ GEAR: ${(c.gear || []).join(', ')}
            ROSTER
            ========================================================= */
         function renderRoster() {
+          document.title = 'Characters';
           const sheets = store.chars.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0));
           document.getElementById('sheetGrid').innerHTML =
-            `<button class="r-card r-new" data-act="new"><i class="fas fa-plus"></i><span class="r-sub">New character</span><span class="r-foot" style="margin-top:0">Blank sheet</span></button>` +
+            `<button class="r-card r-new" type="button" data-act="new">${ic('plus')}<span class="r-name">New Character</span><span class="r-sub">A blank sheet</span></button>` +
             sheets.map(c => {
               const m = c.meta || {}, v = c.vitals || {};
               return `<div class="r-card" role="link" tabindex="0" data-open-sheet="${esc(c.id)}">
-                <span class="r-kind">${c.src ? 'Sheet · from the Archives' : 'Sheet'}</span>
-                <div class="r-name">${esc(m.name || 'Unnamed character')}</div>
-                <div class="r-sub">Lvl ${esc(m.lvl || 1)} ${esc(m.race || '')} ${esc(m.cls || '')}</div>
-                <div class="r-meta">HP ${esc(v.hpC ?? 0)} / ${esc(v.hpM ?? 0)} &middot; AC ${esc(v.ac ?? 10)}${m.align ? ` &middot; ${esc(m.align)}` : ''}</div>
-                <div class="r-foot">${c.updated ? 'Edited ' + esc(fmtDate(c.updated)) : ''}</div>
-                <button class="r-del" data-del-sheet="${esc(c.id)}" title="Delete sheet" aria-label="Delete sheet"><i class="fas fa-trash"></i></button>
+                <span class="r-kind">${c.src ? 'Sheet, from the Archives' : 'Sheet'}</span>
+                <span class="r-name">${esc(m.name || 'Unnamed character')}</span>
+                <span class="r-sub">Level ${esc(m.lvl || 1)} ${esc(m.race || '')} ${esc(m.cls || '')}</span>
+                <span class="r-meta">HP ${esc(v.hpC ?? 0)} / ${esc(v.hpM ?? 0)} &middot; AC ${esc(v.ac ?? 10)}${m.align ? ` &middot; ${esc(m.align)}` : ''}</span>
+                <span class="r-foot">${c.updated ? 'Edited ' + esc(fmtDate(c.updated)) : ''}</span>
+                <button class="r-del" type="button" data-del-sheet="${esc(c.id)}" aria-label="Delete ${esc(m.name || 'this sheet')}">${ic('trash')}</button>
               </div>`;
             }).join('');
 
           const archive = readArchive();
           document.getElementById('archiveGrid').innerHTML =
-            `<button class="r-card r-new" data-act="roll"><i class="fas fa-dice-d20"></i><span class="r-sub">Roll a hero</span><span class="r-foot" style="margin-top:0">Random level 1-12 adventurer</span></button>` +
+            `<button class="r-card r-new" type="button" data-act="roll">${ic('dice')}<span class="r-name">Roll a Hero</span><span class="r-sub">A random level 1 to 12 adventurer</span></button>` +
             archive.slice().reverse().map(h => `<div class="r-card" role="link" tabindex="0" data-open-hero="${esc(h.id)}">
                 <span class="r-kind">Archive</span>
-                <div class="r-name">${esc(h.name || 'Unknown Hero')}</div>
-                <div class="r-sub">Lvl ${esc(h.level)} ${esc(h.race)} ${esc(h.cls)}</div>
-                <div class="r-meta">${esc(h.subcls || '')}${h.bg ? ` &middot; ${esc(h.bg)}` : ''}</div>
-                <div class="r-foot">${esc(h.align || '')}</div>
-                <button class="r-del" data-del-hero="${esc(h.id)}" title="Remove from archive" aria-label="Remove from archive"><i class="fas fa-trash"></i></button>
+                <span class="r-name">${esc(h.name || 'Unknown Hero')}</span>
+                <span class="r-sub">Level ${esc(h.level)} ${esc(h.race)} ${esc(h.cls)}</span>
+                <span class="r-meta">${esc(h.subcls || '')}${h.bg ? ` &middot; ${esc(h.bg)}` : ''}</span>
+                <span class="r-foot">${esc(h.align || '')}</span>
+                <button class="r-del" type="button" data-del-hero="${esc(h.id)}" aria-label="Remove ${esc(h.name || 'this hero')} from the archive">${ic('trash')}</button>
               </div>`).join('');
           document.getElementById('archiveEmpty').classList.toggle('hidden', archive.length > 0);
         }
+
 
         function deleteSheet(id) {
           const c = findChar(id); if (!c) return;
@@ -1333,7 +1226,6 @@ GEAR: ${(c.gear || []).join(', ')}
             populateSelects(); renderUI();
             BLANK = JSON.parse(JSON.stringify(collectData()));
             store = loadStore();
-            applyTheme(readRaw(THEME_KEY) || 'onyx');
             renderInventory(); calculateAll();
 
             const sheetView = document.getElementById('sheetView');
@@ -1342,11 +1234,17 @@ GEAR: ${(c.gear || []).join(', ')}
             document.body.addEventListener('keydown', e => {
                 if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-open-sheet],[data-open-hero]')) { e.preventDefault(); onAction(e); }
             });
+            document.addEventListener('keydown', e => {
+                if (e.key !== 'Escape') return;
+                const open = [...document.querySelectorAll('.cs-modal')].find(m => m.style.display === 'flex');
+                if (open) closeModal(open.id);
+            });
+            document.querySelectorAll('.cs-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
             window.addEventListener('hashchange', route);
             window.addEventListener('pagehide', flushSave);
             document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
             route();
         });
-    </script>
+</script>
 </body>
 </html>
