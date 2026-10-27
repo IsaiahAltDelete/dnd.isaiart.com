@@ -1,9 +1,13 @@
 (() => {
   "use strict";
 
-  const API_URL = "https://api.open5e.com/v2/spells/?document__key__in=srd-2014&limit=500&fields=key,name,desc,level,higher_level,school,classes,range_text,ritual,casting_time,reaction_condition,verbal,somatic,material,material_specified,duration,concentration,attack_roll,damage_roll,damage_types,saving_throw_ability";
-  const CACHE_KEY = "arcana-index:open5e-v2:srd-2014";
+  const API_URL = "https://api.open5e.com/v2/spells/?document__key=srd-2024&limit=500&fields=key,name,desc,level,higher_level,school,classes,range_text,ritual,casting_time,reaction_condition,verbal,somatic,material,material_specified,duration,concentration,attack_roll,damage_roll,damage_types,saving_throw_ability";
+  const CACHE_KEY = "arcana-index:open5e-v2:srd-2024";
+  const OLD_CACHE_KEY = "arcana-index:open5e-v2:srd-2014";
   const FAVORITES_KEY = "arcana-index:favorites";
+  const KEY_PREFIX = "srd-2024_";
+  // SRD 5.1 spells that SRD 5.2 renamed, so saved spells and old links still find them.
+  const RENAMED = { feeblemind: "befuddlement", "branding-smite": "shining-smite" };
   const SLOTS_KEY = "arcana-index:slots";
   const VIEW_KEY = "arcana-index:view";
   const CARD_PAGE = 48;
@@ -34,11 +38,11 @@
   ];
 
   const offlineSpell = (key, name, level, school, classes, desc, options = {}) => ({
-    key: `srd_${key}`,
+    key: `${KEY_PREFIX}${key}`,
     name,
     level,
     school: { key: school, name: SCHOOL_META[school].name },
-    classes: classes.map((className) => ({ key: `srd_${className.toLowerCase()}`, name: className })),
+    classes: classes.map((className) => ({ key: `${KEY_PREFIX}${className.toLowerCase()}`, name: className })),
     desc,
     higher_level: options.higher || "",
     range_text: options.range || "Varies",
@@ -59,12 +63,12 @@
 
   // A small offline folio, shown until (or if never) the live archive answers.
   const FALLBACK_SPELLS = [
-    offlineSpell("fireball", "Fireball", 3, "evocation", ["Sorcerer", "Wizard"], "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.", { range: "150 feet", damage: "8d6", damageType: "fire", save: "dexterity", material: true, materialText: "A tiny ball of bat guano and sulfur.", higher: "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd." }),
+    offlineSpell("fireball", "Fireball", 3, "evocation", ["Sorcerer", "Wizard"], "A bright streak flashes from you to a point you choose within range and then blossoms with a low roar into a fiery explosion. Each creature in a 20-foot-radius Sphere centered on that point makes a Dexterity saving throw, taking 8d6 Fire damage on a failed save or half as much damage on a successful one.", { range: "150 feet", damage: "8d6", damageType: "fire", save: "dexterity", material: true, materialText: "a ball of bat guano and sulfur", higher: "The damage increases by 1d6 for each spell slot level above 3." }),
     offlineSpell("mage-hand", "Mage Hand", 0, "conjuration", ["Bard", "Sorcerer", "Warlock", "Wizard"], "A spectral, floating hand appears at a point you choose within range. You can use your action to control the hand to manipulate an object, open an unlocked door or container, or retrieve an item from an open container.", { range: "30 feet", duration: "1 minute" }),
     offlineSpell("shield", "Shield", 1, "abjuration", ["Sorcerer", "Wizard"], "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack.", { time: "reaction", reaction: "which you take when you are hit by an attack or targeted by the magic missile spell", duration: "1 round", range: "Self" }),
-    offlineSpell("cure-wounds", "Cure Wounds", 1, "evocation", ["Bard", "Cleric", "Druid", "Paladin", "Ranger"], "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.", { range: "Touch", higher: "When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st." }),
+    offlineSpell("cure-wounds", "Cure Wounds", 1, "abjuration", ["Bard", "Cleric", "Druid", "Paladin", "Ranger"], "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier.", { range: "Touch", damage: "2d8", higher: "The healing increases by 2d8 for each spell slot level above 1." }),
     offlineSpell("misty-step", "Misty Step", 2, "conjuration", ["Sorcerer", "Warlock", "Wizard"], "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.", { time: "bonus-action", range: "Self", somatic: false }),
-    offlineSpell("counterspell", "Counterspell", 3, "abjuration", ["Sorcerer", "Warlock", "Wizard"], "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect.", { time: "reaction", reaction: "which you take when you see a creature within 60 feet of you casting a spell", range: "60 feet", verbal: false }),
+    offlineSpell("counterspell", "Counterspell", 3, "abjuration", ["Sorcerer", "Warlock", "Wizard"], "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect.", { time: "reaction", reaction: "which you take when you see a creature within 60 feet of yourself casting a spell with Verbal, Somatic, or Material components", range: "60 feet", verbal: false, save: "constitution" }),
     offlineSpell("detect-magic", "Detect Magic", 1, "divination", ["Bard", "Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Wizard"], "For the duration, you sense the presence of magic within 30 feet of you.", { range: "Self", duration: "10 minutes", ritual: true, concentration: true }),
     offlineSpell("invisibility", "Invisibility", 2, "illusion", ["Bard", "Sorcerer", "Warlock", "Wizard"], "A creature you touch becomes invisible until the spell ends. The spell ends for a target that attacks or casts a spell.", { range: "Touch", duration: "1 hour", concentration: true, material: true, materialText: "An eyelash encased in gum arabic." }),
     offlineSpell("polymorph", "Polymorph", 4, "transmutation", ["Bard", "Druid", "Sorcerer", "Wizard"], "This spell transforms a creature that you can see within range into a new form.", { range: "60 feet", duration: "1 hour", concentration: true, save: "wisdom", material: true, materialText: "A caterpillar cocoon." }),
@@ -137,7 +141,7 @@
   const cardsMode = () => view === "cards";
   const overlayMode = () => PHONE.matches || cardsMode();
   let toastTimer = 0;
-  let favorites = new Set(readJSON(FAVORITES_KEY, [], Array.isArray));
+  let favorites = new Set(readJSON(FAVORITES_KEY, [], Array.isArray).map(migrateKey));
   let slots = readJSON(SLOTS_KEY, { cls: "full", level: 5, used: {} }, (value) => value && typeof value === "object");
 
   /* ---------- storage ---------- */
@@ -157,6 +161,12 @@
     } catch {
       // Storage is a convenience; the page still works for this visit without it.
     }
+  }
+
+  // Saved spells from the SRD 5.1 version of this page ("srd_fireball") point at their 5.2 entries.
+  function migrateKey(key) {
+    const old = String(key).match(/^srd_(.+)$/);
+    return old ? `${KEY_PREFIX}${RENAMED[old[1]] || old[1]}` : String(key);
   }
 
   function readCache() {
@@ -196,7 +206,7 @@
     };
   }
 
-  const slug = (spell) => spell.key.replace(/^srd_/, "");
+  const slug = (spell) => spell.key.replace(/^srd(?:-2024)?_/, "");
   const capitalize = (value) => String(value).charAt(0).toUpperCase() + String(value).slice(1);
   const ordinal = (n) => `${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"}`;
   const schoolMeta = (key) => SCHOOL_META[key] || { name: "Unknown", color: "#766649" };
@@ -280,7 +290,11 @@
 
   function glance(spell) {
     const items = [];
-    if (spell.damage_roll) items.push(`${spell.damage_roll} ${spell.damage_types.join(" or ")}`.trim());
+    if (spell.damage_roll) {
+      // SRD 5.2 also puts healing dice in damage_roll, with no damage type.
+      const kind = spell.damage_types.join(" or ") || (/regains?\b[^.]*Hit Points/i.test(spell.desc) ? "healing" : "");
+      items.push(`${spell.damage_roll} ${kind}`.trim());
+    }
     if (spell.attack_roll) items.push("Spell attack");
     if (spell.saving_throw_ability) {
       const half = /half as much/i.test(spell.desc) ? ", half on success" : "";
@@ -293,30 +307,35 @@
     return items;
   }
 
-  // Damage at every slot (or, for cantrips, every tier), when the text states a plain dice increase.
+  // Damage or healing at every slot (or, for cantrips, every tier), when the text states a plain dice increase.
+  // Matches both SRD 5.2 wording ("for each spell slot level above 3", "levels 5 (2d10), 11 ...")
+  // and the older 5.1 wording ("for each slot level above 3rd", "5th level (2d10), 11th level ...").
   function scalingTable(spell) {
     const base = spell.damage_roll.match(/^(\d+)d(\d+)(?:\s*\+\s*(\d+))?$/);
     if (!base) return "";
     const [, count, die, bonus] = base;
     const plus = bonus ? ` + ${bonus}` : "";
+    const healing = /the healing increases/i.test(spell.higher_level);
+    const noun = healing ? "Healing" : "Damage";
     if (spell.level === 0) {
-      const tiers = spell.higher_level.match(/5th level \((\d+d\d+)\),\s*11th level \((\d+d\d+)\),\s*and 17th level \((\d+d\d+)\)/i);
+      const tiers = spell.higher_level.match(/5(?:th level)? \((\d+d\d+)\),\s*11(?:th level)? \((\d+d\d+)\),\s*and 17(?:th level)? \((\d+d\d+)\)/i);
       if (!tiers) return "";
       const cols = [["1st", spell.damage_roll], ["5th", tiers[1]], ["11th", tiers[2]], ["17th", tiers[3]]];
-      return table("Damage by character level", "Level", cols);
+      return table(`${noun} by character level`, "Level", cols);
     }
-    const step = spell.higher_level.match(/the damage (?:\([^)]*\) )?increases by (\d+)d(\d+) for each slot level above/i);
+    const step = spell.higher_level.match(/the (?:damage|healing) (?:\([^)]*\) )?increases by (\d+)d(\d+) for each (?:spell )?slot level above/i);
     if (!step || step[2] !== die) return "";
     const cols = [];
     for (let slot = spell.level; slot <= 9; slot++) {
       cols.push([ordinal(slot), `${Number(count) + Number(step[1]) * (slot - spell.level)}d${die}${plus}`]);
     }
-    return table("Damage by slot", "Slot", cols);
+    return table(`${noun} by slot`, "Slot", cols);
 
     function table(caption, label, cols) {
+      const rowLabel = healing ? "Healing" : capitalize(spell.damage_types[0] || "Damage");
       return `<table><caption>${caption}</caption><tbody>
         <tr><th scope="row">${label}</th>${cols.map(([head], index) => `<td class="${index === 0 ? "base" : ""}">${head}</td>`).join("")}</tr>
-        <tr><th scope="row">${escapeHtml(capitalize(spell.damage_types[0] || "Damage"))}</th>${cols.map(([, dice], index) => `<td${index === 0 ? ' style="font-weight:bold"' : ""}>${dice}</td>`).join("")}</tr>
+        <tr><th scope="row">${escapeHtml(rowLabel)}</th>${cols.map(([, dice], index) => `<td${index === 0 ? ' style="font-weight:bold"' : ""}>${dice}</td>`).join("")}</tr>
       </tbody></table>`;
     }
   }
@@ -517,9 +536,9 @@
     els.text.innerHTML = renderText(spell.desc || "No description survives for this spell.");
     const first = els.text.firstElementChild;
     if (first?.tagName === "P" && spell.desc.length > 220 && /^[A-Za-z]/.test(first.textContent)) first.classList.add("dropcap");
-    els.higher.innerHTML = spell.higher_level ? renderText(`**${spell.level === 0 ? "Cantrip Upgrade." : "At Higher Levels."}** ${spell.higher_level}`) : "";
+    els.higher.innerHTML = spell.higher_level ? renderText(`**${spell.level === 0 ? "Cantrip Upgrade." : "Using a Higher-Level Spell Slot."}** ${spell.higher_level}`) : "";
     els.scale.innerHTML = spell.damage_roll && spell.higher_level ? scalingTable(spell) : "";
-    els.material.textContent = spell.material && spell.material_specified ? `Material: ${spell.material_specified}` : "";
+    els.material.textContent = spell.material && spell.material_specified ? `Material: ${capitalize(spell.material_specified).replace(/([^.])$/, "$1.")}` : "";
 
     renderSave();
     renderPager();
@@ -601,7 +620,7 @@
   function spellFromHash() {
     const id = decodeURIComponent(location.hash.slice(1)).toLowerCase();
     if (!id || ["index", "mine", "book", "random", "folio"].includes(id)) return null;
-    return byKey.get(`srd_${id}`) || byKey.get(id) || null;
+    return byKey.get(`${KEY_PREFIX}${RENAMED[id] || id}`) || byKey.get(id) || null;
   }
 
   function randomSpell() {
@@ -847,6 +866,12 @@
     els.slotLevel.innerHTML = Array.from({ length: 20 }, (_, index) => `<option value="${index + 1}">Level ${index + 1}</option>`).join("");
     if (!["full", "half", "pact"].includes(slots.cls)) slots.cls = "full";
     if (!slots.used || typeof slots.used !== "object") slots.used = {};
+    writeJSON(FAVORITES_KEY, [...favorites]);
+    try {
+      localStorage.removeItem(OLD_CACHE_KEY);
+    } catch {
+      // Nothing to clear when storage is unavailable.
+    }
     bindEvents();
     renderSlots();
     document.body.classList.toggle("sb-deck", cardsMode());
