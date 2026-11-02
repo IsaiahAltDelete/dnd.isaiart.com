@@ -1,5 +1,8 @@
 # Sword Coast Chronicles
 
+Plays at <https://dnd.isaiart.com/sword-coast-chronicles/>; the old `/dndgame/`
+address redirects there.
+
 A top-down pixel-art RPG set in the Forgotten Realms, running a full D&D 5.5e
 (2024 rules) engine in the browser. Walk the Sword Coast from Phandalin to
 Baldur's Gate with a party trailing behind you, talk to the people who live

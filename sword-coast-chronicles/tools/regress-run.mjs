@@ -2,8 +2,8 @@
 //
 //   $NODE tools/regress-run.mjs
 //
-// regress.mjs expects the game at <BASE>/dndgame/ (the deployed path) and a
-// Playwright + Chromium it can find. This serves the checkout at /dndgame/ on a
+// regress.mjs expects the game at <BASE>/sword-coast-chronicles/ (the deployed
+// path) and a Playwright + Chromium it can find. This serves the checkout there on a
 // private port, points it at the machine's Playwright and browser, and relays the
 // suite's output and exit code. Works from any git worktree.
 
@@ -16,10 +16,13 @@ import { acquireBrowserSlot } from './browserlock.mjs';
 import { playwrightUrl, browserCandidates } from './pwlocate.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The folder the suite expects the game under: its path on dnd.isaiart.com.
+const GAME = 'sword-coast-chronicles';
+const PREFIX = `/${GAME}/`;
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.png': 'image/png' };
 const server = http.createServer((req, res) => {
   const u = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  const rel = u.startsWith('/dndgame/') ? u.slice('/dndgame/'.length) : u.replace(/^\//, '');
+  const rel = u.startsWith(PREFIX) ? u.slice(PREFIX.length) : u.replace(/^\//, '');
   let f = path.join(ROOT, rel || 'index.html');
   if (!f.startsWith(ROOT) || !fs.existsSync(f)) { res.writeHead(404); res.end(); return; }
   if (fs.statSync(f).isDirectory()) f = path.join(f, 'index.html');
@@ -33,7 +36,7 @@ if (!pw && !process.env.PLAYWRIGHT) { console.error('Playwright not found. Insta
 const env = {
   ...process.env,
   BASE: `http://127.0.0.1:${server.address().port}`,
-  GAME: 'dndgame',
+  GAME,
   PLAYWRIGHT: process.env.PLAYWRIGHT || pw,
   CHROME: process.env.CHROME || chrome,
 };

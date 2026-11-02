@@ -20,15 +20,15 @@
  * A module whose own bytes did not change keeps its URL and stays cached, but
  * its imports are re-resolved through the fresh map, so it picks up new versions
  * of everything it depends on. Keys are written relative to the document, so the
- * same map works at isaiart.com/dndgame/, at a domain root, and on localhost.
+ * same map works at dnd.isaiart.com/sword-coast-chronicles/, at a domain root, and on localhost.
  *
  * Browsers without import map support ignore the block and load unversioned
  * URLs — exactly the behaviour we had before, so nothing gets worse.
  *
  * Run it after changing anything under src/:
  *
- *     node dndgame/tools/stamp.mjs            # rewrite index.html
- *     node dndgame/tools/stamp.mjs --check    # exit 1 if it is out of date
+ *     node sword-coast-chronicles/tools/stamp.mjs            # rewrite index.html
+ *     node sword-coast-chronicles/tools/stamp.mjs --check    # exit 1 if it is out of date
  *
  * Forgetting to run it is not a hazard: the stale entry keeps its old URL, which
  * is just the pre-import-map behaviour for that one file.
@@ -82,7 +82,7 @@ const next = html.slice(0, a) + block + html.slice(b + CLOSE.length);
 
 if (process.argv.includes('--check')) {
   if (next !== html) {
-    console.error(`stamp: index.html is out of date — run: node dndgame/tools/stamp.mjs`);
+    console.error(`stamp: index.html is out of date — run: node sword-coast-chronicles/tools/stamp.mjs`);
     process.exit(1);
   }
   console.log(`stamp: index.html is up to date (${files.length} modules).`);

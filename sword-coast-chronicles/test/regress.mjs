@@ -22,7 +22,7 @@ const check = (name, ok, detail) => R.push(`${ok ? 'PASS' : 'FAIL'}  ${name}${de
 const BASE = process.env.BASE || 'http://127.0.0.1:8099';
 // GAME lets the same suite run against a copy of the game at another path, so a
 // duplicate deployed to dodge a stale CDN is proved working rather than assumed.
-const GAME = process.env.GAME || 'dndgame';
+const GAME = process.env.GAME || 'sword-coast-chronicles';
 await page.goto(`${BASE}/${GAME}/index.html`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(1500);
 check('boots with no errors', errs.length === 0, errs[0] || '');
@@ -40,7 +40,7 @@ check('boots with no errors', errs.length === 0, errs[0] || '');
 
   const { spawnSync } = await import('node:child_process');
   const { fileURLToPath } = await import('node:url');
-  // stamp.mjs owns dndgame/; a copy at another path carries the map it was copied with.
+  // stamp.mjs owns sword-coast-chronicles/; a copy at another path carries the map it was copied with.
   // fileURLToPath, not .pathname: on Windows the latter yields "/C:/…", which node
   // cannot resolve, so this check failed for a reason that had nothing to do with
   // the import map.
@@ -128,7 +128,7 @@ await page.waitForTimeout(500);
 const px = await page.evaluate(async () => {
   SC.FX.weather('snow', 1);
   await new Promise(r => setTimeout(r, 700));
-  const m = await import('/dndgame/src/ui/menus.js');
+  const m = await import('./src/ui/menus.js');
   SC.Game.push(new m.InventoryScene());
   await new Promise(r => setTimeout(r, 500));
   // sample the top strip of the inventory panel for stray white weather motes.
@@ -159,8 +159,8 @@ check('overworld: exits resolve a destination name', !!ow.named, ow.named);
 
 // --- carried lights across time and map changes -----------------------------
 const lamps = await page.evaluate(async () => {
-  const { Lighting } = await import('/dndgame/src/render/lighting.js');
-  const { NPCEntity, Entity } = await import('/dndgame/src/world/entity.js');
+  const { Lighting } = await import('./src/render/lighting.js');
+  const { NPCEntity, Entity } = await import('./src/world/entity.js');
   const s = SC.Game.top;
   const guard = new NPCEntity({ id: 'lamp-test', role: 'guard', x: 2, y: 2 });
   const lamp = new Entity({ x: 3, y: 2, heldLight: 'torch' });
@@ -217,7 +217,7 @@ check('lighting: party hand items follow torch, lantern, spell and daylight',
   lamps.torch && lamps.lantern && lamps.magic && lamps.stowed);
 
 // --- casting outside combat ------------------------------------------------
-const cast = await page.evaluate(() => import('/dndgame/src/rules/fieldcast.js').then(fc => {
+const cast = await page.evaluate(() => import('./src/rules/fieldcast.js').then(fc => {
   const ch = SC.Party.members[0];
   ch.spells.known = Array.from(new Set([...(ch.spells.known||[]), 'mage-armor','magic-missile']));
   ch.spells.prepared = Array.from(new Set([...(ch.spells.prepared||[]), 'mage-armor','magic-missile']));
@@ -298,7 +298,7 @@ const bar = await page.evaluate(async () => {
   const c = SC.Stage.ctx('hud');
   const model = ow._hotbarModel();
   ow.hotbar.draw(c, model);
-  const HB = await import('/dndgame/src/ui/hotbar.js');
+  const HB = await import('./src/ui/hotbar.js');
   out.slotCount = HB.SLOT_COUNT;
   out.menuCount = (model.menus || []).length;
   out.hitRects = ow.hotbar.hot.length;
@@ -350,7 +350,7 @@ check('hud: minimal hides the map and quest, keeps the belt', hud.minimalHides);
 // the authored title now, and every NPC in the game has one.
 const caps = await page.evaluate(async () => {
   const ow = SC.Game.top;
-  const mod = await import('/dndgame/src/ui/dialogue.js');
+  const mod = await import('./src/ui/dialogue.js');
   const probe = new mod.DialogueScene('none', null, {});
   const rows = ow.entities.list.filter((e) => e.kind === 'npc')
     .map((e) => ({ name: e.name, caption: probe._captionFor(e) }));
