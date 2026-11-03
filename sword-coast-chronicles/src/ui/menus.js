@@ -16,6 +16,7 @@ import { planCanvas } from './hudmap.js';
 import { Input } from '../core/input.js';
 import { Audio } from '../core/audio.js';
 import { Save } from '../core/save.js';
+import { exportSlotToFile, pickSaveFile, importSaveText, listenForSaves, stopListening } from '../core/savefile.js';
 import { Game } from '../engine.js';
 import { FX } from '../render/fx.js';
 import { Stage } from '../render/stage.js';
@@ -4994,7 +4995,11 @@ export class SaveMenuScene extends MenuScene {
       this.slots = [0, 1, 2, 3, 4].map((slot) => ({ slot, label: slot === 0 ? 'Autosave' : `Slot ${slot}`, empty: true }));
     }
     this.index = clamp(this.index, 0, this.slots.length - 1);
+    // A save file dropped on the window, or a save code pasted, goes straight in.
+    listenForSaves((text) => this._importText(text));
   }
+
+  exit() { super.exit(); stopListening(); }
 
   /** Deserialise the highlighted slot's party, lazily, so we can show real busts. */
   _partyFor(slot) {
@@ -5019,6 +5024,9 @@ export class SaveMenuScene extends MenuScene {
     this.index = navV(this.index, n);
 
     const m = Input.mouse;
+    const fb = this._fileButtons();
+    if (clicked(m, fb.exp.x, fb.exp.y, fb.exp.w, fb.exp.h)) { this._export(); return; }
+    if (clicked(m, fb.imp.x, fb.imp.y, fb.imp.w, fb.imp.h)) { this._importPick(); return; }
     for (const r of this.rowRects) {
       if (hit(m, r.x, r.y, r.w, r.h)) {
         if (this.index !== r.i) { this.index = r.i; sfx('cursor'); }
@@ -5026,8 +5034,15 @@ export class SaveMenuScene extends MenuScene {
       }
     }
     if (Input.consume('interact')) { this._delete(); return; }
+    if (Input.consume('inventory')) { this._importPick(); return; }
     if (Input.consume('confirm')) { this._choose(); return; }
     if (Input.consume('cancel')) this.close();
+  }
+
+  /** The Export / Import plates at the right end of the key strip. */
+  _fileButtons() {
+    const w = 60, h = 12, gap = 4, y = HINT_Y + 3, right = VIEW_W - 6;
+    return { imp: { x: right - w, y, w, h }, exp: { x: right - w * 2 - gap, y, w, h } };
   }
 
   _slot() { return this.slots[clamp(this.index, 0, this.slots.length - 1)] || null; }
@@ -5040,16 +5055,18 @@ export class SaveMenuScene extends MenuScene {
       if (s.corrupt) { this.say('That journal is water-damaged beyond reading.', true); return; }
       this.ask('Read this journal?', `${s.name || 'Adventurer'} — ${s.mapName || ''}. Anything unsaved is lost.`, [
         { label: 'Load it', value: 'yes' },
+        { label: 'Export to a file', value: 'export' },
         { label: 'Back', value: null },
-      ], (v) => { if (v === 'yes') this._load(s.slot); });
+      ], (v) => { if (v === 'yes') this._load(s.slot); else if (v === 'export') this._export(); });
       return;
     }
     if (s.slot === 0) { this.say('The autosave writes itself. Choose another slot.', true); return; }
     if (!s.empty) {
       this.ask('Overwrite?', `Slot ${s.slot} holds ${s.name || 'a campaign'} at level ${num(s.level, 1)}.`, [
         { label: 'Write over it', value: 'yes', color: C.warn },
+        { label: 'Export it to a file first', value: 'export' },
         { label: 'Back', value: null },
-      ], (v) => { if (v === 'yes') this._write(s.slot); });
+      ], (v) => { if (v === 'yes') this._write(s.slot); else if (v === 'export') this._export(); });
       return;
     }
     this._write(s.slot);
@@ -5113,6 +5130,44 @@ export class SaveMenuScene extends MenuScene {
         Game.replace(new ow.OverworldScene(st.mapId, { x: st.x, y: st.y, dir: st.dir }));
       });
     });
+  }
+
+  // --- save files ---------------------------------------------------------
+  // Journals live in this browser's storage, so a new machine (or the site
+  // moving domains, as it did) starts blank. Export writes a slot to a small
+  // text file; Import reads one back, or takes a drop onto the window or a paste.
+
+  _export() {
+    const s = this._slot();
+    if (!s || s.empty || s.corrupt) { this.say('There is nothing on that page to copy out.', true); return; }
+    exportSlotToFile(s.slot).then((r) => {
+      if (!r.ok) { this.say('The browser would not hand over the file.', true); return; }
+      sfx('quest');
+      this.say(r.copied ? 'Saved to your downloads; the code is on your clipboard too.' : 'Saved to your downloads.');
+    });
+  }
+
+  _importPick() {
+    sfx('select');
+    this.say('Choose a Sword Coast Chronicles save file.');
+    pickSaveFile().then((text) => { if (text) this._importText(text); });
+  }
+
+  /** A save code from a file, a drop or a paste: into the chosen slot if it is free, else the first free one. */
+  _importText(text) {
+    const s = this._slot();
+    const r = importSaveText(text, s ? s.slot : 1);
+    if (!r.ok) {
+      this.say(r.reason === 'bad' ? 'That is not a Sword Coast Chronicles save.'
+        : r.reason === 'full' ? 'Every page is written on. Burn one first.'
+          : 'That save would not take ink here.', true);
+      return;
+    }
+    delete this._party[r.slot];
+    this.slots = arr(safe(() => Save.list(), this.slots)) || this.slots;
+    this.index = clamp(r.slot, 0, this.slots.length - 1);
+    sfx('quest');
+    this.say(`${(r.meta && r.meta.name) || 'The campaign'} is written into slot ${r.slot}.`);
   }
 
   // --- drawing ------------------------------------------------------------
@@ -5188,7 +5243,12 @@ export class SaveMenuScene extends MenuScene {
       [keyFor('cancel'), 'Back'],
       [keyFor('confirm'), this.mode === 'load' ? 'Load' : 'Save'],
       [keyFor('interact'), 'Delete'],
+      [keyFor('inventory'), 'Import'],
     ]);
+    const fb = this._fileButtons();
+    const mm = Input.mouse;
+    UI.button(ctx, fb.exp.x, fb.exp.y, fb.exp.w, fb.exp.h, 'Export', { hover: hit(mm, fb.exp.x, fb.exp.y, fb.exp.w, fb.exp.h), t: this.t });
+    UI.button(ctx, fb.imp.x, fb.imp.y, fb.imp.w, fb.imp.h, 'Import', { hover: hit(mm, fb.imp.x, fb.imp.y, fb.imp.w, fb.imp.h), t: this.t });
     this.drawPrompt(ctx);
   }
 }

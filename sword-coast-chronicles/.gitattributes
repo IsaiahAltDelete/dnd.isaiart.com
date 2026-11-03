@@ -1,0 +1,4 @@
+# The import map in index.html pins each module to a hash of its LF bytes, and
+# tools/stamp.mjs --check compares against those. Keep this folder LF on every
+# platform so a Windows checkout agrees with the committed map.
+* text=auto eol=lf

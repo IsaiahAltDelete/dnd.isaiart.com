@@ -3,6 +3,12 @@
 Plays at <https://dnd.isaiart.com/sword-coast-chronicles/>; the old `/dndgame/`
 address redirects there.
 
+Saves live in the browser that made them. The Load Game screen (and the
+in-game journal) can export a campaign to a small text file and import one
+back, by file picker, by dropping the file on the window or by pasting its
+code. Found a bug? The Report a Problem button on the Credits screen opens a
+prefilled GitHub issue.
+
 A top-down pixel-art RPG set in the Forgotten Realms, running a full D&D 5.5e
 (2024 rules) engine in the browser. Walk the Sword Coast from Phandalin to
 Baldur's Gate with a party trailing behind you, talk to the people who live

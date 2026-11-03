@@ -1,12 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="data:,">
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>Sword Coast Chronicles</title>
 <meta name="description" content="A top-down Forgotten Realms RPG running a full D&amp;D 5.5e rules engine." />
 <link rel="canonical" href="https://dnd.isaiart.com/sword-coast-chronicles/" />
+<meta name="theme-color" content="#0b0d16" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Isaiart's D&amp;D Resources" />
+<meta property="og:title" content="Sword Coast Chronicles" />
+<meta property="og:description" content="A top-down Forgotten Realms RPG running a full D&amp;D 5.5e rules engine. Roll a hero and ride the Triboar Trail, in your browser." />
+<meta property="og:url" content="https://dnd.isaiart.com/sword-coast-chronicles/" />
+<meta property="og:image" content="https://dnd.isaiart.com/sword-coast-chronicles/assets/title-card.png" />
+<meta property="og:image:width" content="1600" />
+<meta property="og:image:height" content="840" />
+<meta property="og:image:alt" content="The Sword Coast Chronicles logotype over the coast at dusk, with the lights of Neverwinter across the bay." />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="assets/icon-192.png" sizes="192x192" type="image/png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="manifest" href="site.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
 
   <!-- Module URLs are pinned to their content hash so a deploy can never serve a
        half-old graph. Regenerate with: node sword-coast-chronicles/tools/stamp.mjs -->
@@ -27,11 +42,12 @@
         "./src/core/music_sacred.js": "./src/core/music_sacred.js?v=93596a94",
         "./src/core/music_secular.js": "./src/core/music_secular.js?v=2ec8b35c",
         "./src/core/rng.js": "./src/core/rng.js?v=bb29dfa4",
-        "./src/core/save.js": "./src/core/save.js?v=de62b700",
+        "./src/core/save.js": "./src/core/save.js?v=9e9c0043",
+        "./src/core/savefile.js": "./src/core/savefile.js?v=f4e1b513",
         "./src/core/synth.js": "./src/core/synth.js?v=5db7c25e",
-        "./src/data/academy.js": "./src/data/academy.js?v=09164586",
+        "./src/data/academy.js": "./src/data/academy.js?v=3201ffb1",
         "./src/data/backgrounds.js": "./src/data/backgrounds.js?v=1bbc2283",
-        "./src/data/blackstaff.js": "./src/data/blackstaff.js?v=67ae4d15",
+        "./src/data/blackstaff.js": "./src/data/blackstaff.js?v=84742602",
         "./src/data/classes.js": "./src/data/classes.js?v=7dca65d8",
         "./src/data/companion-moments.js": "./src/data/companion-moments.js?v=a5fc1d85",
         "./src/data/dialogue.js": "./src/data/dialogue.js?v=03eea330",
@@ -49,7 +65,7 @@
         "./src/data/npcs.js": "./src/data/npcs.js?v=ea2ebf57",
         "./src/data/npcs_extra.js": "./src/data/npcs_extra.js?v=8e588dca",
         "./src/data/npcs_south.js": "./src/data/npcs_south.js?v=3fa4bcc7",
-        "./src/data/place-life.js": "./src/data/place-life.js?v=f3e156db",
+        "./src/data/place-life.js": "./src/data/place-life.js?v=da2c6beb",
         "./src/data/quests.js": "./src/data/quests.js?v=d23e356e",
         "./src/data/rumors.js": "./src/data/rumors.js?v=893ea822",
         "./src/data/species.js": "./src/data/species.js?v=8f2d09c2",
@@ -62,7 +78,7 @@
         "./src/data/worldevents.js": "./src/data/worldevents.js?v=144a3960",
         "./src/engine.js": "./src/engine.js?v=21023e50",
         "./src/main.js": "./src/main.js?v=55122dba",
-        "./src/render/actor.js": "./src/render/actor.js?v=1ce46b44",
+        "./src/render/actor.js": "./src/render/actor.js?v=9d02b3ce",
         "./src/render/art/armory.js": "./src/render/art/armory.js?v=60dea8f1",
         "./src/render/art/city-arcana.js": "./src/render/art/city-arcana.js?v=cc93e331",
         "./src/render/art/city-civic-banner.js": "./src/render/art/city-civic-banner.js?v=49b7ec5f",
@@ -113,15 +129,15 @@
         "./src/render/journey.js": "./src/render/journey.js?v=fc9a11c8",
         "./src/render/lighting.js": "./src/render/lighting.js?v=fc009570",
         "./src/render/palette.js": "./src/render/palette.js?v=6d646578",
-        "./src/render/pixelfilter.js": "./src/render/pixelfilter.js?v=e4f8b8cc",
+        "./src/render/pixelfilter.js": "./src/render/pixelfilter.js?v=fb8a2dae",
         "./src/render/place-life.js": "./src/render/place-life.js?v=dcb12933",
-        "./src/render/portrait.js": "./src/render/portrait.js?v=80a819b3",
+        "./src/render/portrait.js": "./src/render/portrait.js?v=60b375d5",
         "./src/render/prop-art.js": "./src/render/prop-art.js?v=d81dffab",
         "./src/render/satchel-art.js": "./src/render/satchel-art.js?v=68be0846",
-        "./src/render/spritedata_chars.js": "./src/render/spritedata_chars.js?v=bf028dd1",
+        "./src/render/spritedata_chars.js": "./src/render/spritedata_chars.js?v=35a5e850",
         "./src/render/spritedata_monsters.js": "./src/render/spritedata_monsters.js?v=7b0e838f",
-        "./src/render/sprites.js": "./src/render/sprites.js?v=ef42d717",
-        "./src/render/stage.js": "./src/render/stage.js?v=5234e06c",
+        "./src/render/sprites.js": "./src/render/sprites.js?v=ce163cf4",
+        "./src/render/stage.js": "./src/render/stage.js?v=3ecafb93",
         "./src/render/tiles.js": "./src/render/tiles.js?v=af2334fc",
         "./src/render/tiles_arch.js": "./src/render/tiles_arch.js?v=be2e07c6",
         "./src/render/tiles_terrain.js": "./src/render/tiles_terrain.js?v=1695f8af",
@@ -154,23 +170,23 @@
         "./src/ui/combatui.js": "./src/ui/combatui.js?v=59ed4251",
         "./src/ui/dialogue.js": "./src/ui/dialogue.js?v=b0c55e18",
         "./src/ui/glyphs.js": "./src/ui/glyphs.js?v=a9584fb7",
-        "./src/ui/hotbar.js": "./src/ui/hotbar.js?v=653948df",
+        "./src/ui/hotbar.js": "./src/ui/hotbar.js?v=08d17a1e",
         "./src/ui/hud.js": "./src/ui/hud.js?v=88d5213f",
-        "./src/ui/hudmap.js": "./src/ui/hudmap.js?v=d7d1ff2e",
-        "./src/ui/hudparts.js": "./src/ui/hudparts.js?v=f5a822f2",
-        "./src/ui/inspector.js": "./src/ui/inspector.js?v=71149c77",
-        "./src/ui/kit.js": "./src/ui/kit.js?v=b87501fe",
-        "./src/ui/layout.js": "./src/ui/layout.js?v=19ba6cdc",
+        "./src/ui/hudmap.js": "./src/ui/hudmap.js?v=4df881ad",
+        "./src/ui/hudparts.js": "./src/ui/hudparts.js?v=2e98c975",
+        "./src/ui/inspector.js": "./src/ui/inspector.js?v=7045691c",
+        "./src/ui/kit.js": "./src/ui/kit.js?v=5303d78d",
+        "./src/ui/layout.js": "./src/ui/layout.js?v=931274c1",
         "./src/ui/levelup.js": "./src/ui/levelup.js?v=695b2a10",
         "./src/ui/menukit.js": "./src/ui/menukit.js?v=e1d03e72",
-        "./src/ui/menus.js": "./src/ui/menus.js?v=a958ae8c",
+        "./src/ui/menus.js": "./src/ui/menus.js?v=22e57460",
         "./src/ui/noticeboard.js": "./src/ui/noticeboard.js?v=73e783dc",
         "./src/ui/ornament.js": "./src/ui/ornament.js?v=7ade4ca9",
         "./src/ui/restui.js": "./src/ui/restui.js?v=2fda46b2",
         "./src/ui/roadnotice.js": "./src/ui/roadnotice.js?v=7123a961",
         "./src/ui/shop.js": "./src/ui/shop.js?v=baabd34a",
         "./src/ui/standoff.js": "./src/ui/standoff.js?v=ba5dc40e",
-        "./src/ui/title.js": "./src/ui/title.js?v=9282f425",
+        "./src/ui/title.js": "./src/ui/title.js?v=fc628ecb",
         "./src/ui/title_logo.js": "./src/ui/title_logo.js?v=a4003891",
         "./src/ui/title_vista.js": "./src/ui/title_vista.js?v=e1b45c60",
         "./src/ui/topics.js": "./src/ui/topics.js?v=15148e10",

@@ -57,21 +57,28 @@ const files = walk(join(ROOT, 'src'));
 const imports = {};
 for (const abs of files) {
   const rel = './' + relative(ROOT, abs).split(/[\\/]/).join('/');
-  const hash = createHash('sha256').update(readFileSync(abs)).digest('hex').slice(0, 8);
+  // Hash the text with Windows line endings folded away: a checkout made with
+  // core.autocrlf=true would otherwise disagree with every stamp made on LF.
+  const text = readFileSync(abs, 'utf8').replace(/\r\n/g, '\n');
+  const hash = createHash('sha256').update(text).digest('hex').slice(0, 8);
   imports[rel] = `${rel}?v=${hash}`;
 }
 
+const html = readFileSync(HTML, 'utf8');
+// Keep whatever line ending the document already has, so a CRLF checkout is
+// neither reported out of date nor rewritten over line endings alone.
+const EOL = html.includes('\r\n') ? '\r\n' : '\n';
+
 // Two-space indent inside the <script>, matching the rest of the document.
-const json = JSON.stringify({ imports }, null, 2).split('\n').map((l) => '    ' + l).join('\n');
+const json = JSON.stringify({ imports }, null, 2).split('\n').map((l) => '    ' + l).join(EOL);
 const block = [
   OPEN,
   '  <script type="importmap">',
   json,
   '  </script>',
   '  ' + CLOSE,
-].join('\n');
+].join(EOL);
 
-const html = readFileSync(HTML, 'utf8');
 const a = html.indexOf(OPEN);
 const b = html.indexOf(CLOSE);
 if (a < 0 || b < 0) {

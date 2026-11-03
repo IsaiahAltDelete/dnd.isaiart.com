@@ -12,6 +12,7 @@ import { UI, drawGlyphs } from './kit.js';
 import { Input } from '../core/input.js';
 import { Audio } from '../core/audio.js';
 import { Save, SLOT_COUNT } from '../core/save.js';
+import { exportSlotToFile, pickSaveFile, importSaveText, listenForSaves, stopListening } from '../core/savefile.js';
 import { toast } from '../core/events.js';
 import { makeRNG } from '../core/rng.js';
 import {
@@ -194,6 +195,24 @@ const MENU_X = 24, MENU_Y = 112, MENU_W = 136, ROW_H = 15;
 const LOGO_Y = 8;
 /** Seconds idle before night starts to fall, how long it takes, and how long dusk takes to come back. */
 const NIGHT_AFTER = 20, NIGHT_FALL = 24, NIGHT_LIFT = 5;
+/** Where a problem goes: a prefilled issue on the site's GitHub repository. */
+const REPORT_URL = 'https://github.com/IsaiahAltDelete/dnd.isaiart.com/issues/new';
+/** The Export / Import plates in the Load Game header (logical px). */
+const LOAD_BTN = { y: 21, w: 60, h: 12, gap: 4, right: 364 };
+/** The two buttons at the foot of the Credits panel. */
+const CREDIT_BTN = { w: 150, wb: 70, h: 13, gap: 8, y: 203 };
+
+/** The first key bound to an action, printed the way the Options screen prints it. */
+function keyLabel(action) {
+  try {
+    const code = String(((Input.bindings && Input.bindings[action]) || [])[0] || '');
+    if (code.startsWith('Key')) return code.slice(3);
+    if (code.startsWith('Digit')) return code.slice(5);
+    if (code === 'Escape') return 'Esc';
+    if (code === 'Enter' || code === 'NumpadEnter') return 'Enter';
+    return code.slice(0, 5) || '—';
+  } catch (e) { return '—'; }
+}
 
 export class TitleScene {
   /**
@@ -238,7 +257,7 @@ export class TitleScene {
     if (this.gated || Audio.ready) { this.gated = true; try { Audio.music('title'); } catch (e) { /* ignore */ } }
   }
 
-  exit() { this.busy = true; }
+  exit() { this.busy = true; stopListening(); }
 
   _buildScenery() {
     this.vista = new TitleVista();
@@ -345,7 +364,7 @@ export class TitleScene {
     sfx('select');
     if (id === 'new') this._newGame();
     else if (id === 'continue') this._continue();
-    else if (id === 'load') { this.mode = 'load'; this.slots = safeSlots(); this.slotIndex = Math.max(0, safeNewest()); }
+    else if (id === 'load') this._openLoad();
     else if (id === 'settings') this._settings();
     else if (id === 'bestiary') { this.mode = 'bestiary'; this._buildBestiary(); }
     else if (id === 'credits') { this.mode = 'credits'; this.creditScroll = 0; }
@@ -433,6 +452,14 @@ export class TitleScene {
 
   // --- load sub-screen ----------------------------------------------------
 
+  _openLoad() {
+    this.mode = 'load';
+    this.slots = safeSlots();
+    this.slotIndex = Math.max(0, safeNewest());
+    // A save file dropped on the window, or a save code pasted, goes straight in.
+    listenForSaves((text) => this._importText(text));
+  }
+
   _updateLoad() {
     const n = Math.max(1, this.slots.length);
     if (Input.repeatConsume('up')) { this.slotIndex = (this.slotIndex - 1 + n) % n; sfx('cursor'); }
@@ -440,6 +467,9 @@ export class TitleScene {
 
     const m = Input.mouse;
     if (m && m.over) {
+      const b = this._loadButtons();
+      if (m.clicked && this._in(m, b.exp)) { m.clicked = false; this._exportSelected(); return; }
+      if (m.clicked && this._in(m, b.imp)) { m.clicked = false; this._importPick(); return; }
       for (let i = 0; i < n; i++) {
         const cy = 40 + i * 35;
         if (m.x >= 38 && m.x <= 362 && m.y >= cy && m.y < cy + 33) {
@@ -451,7 +481,56 @@ export class TitleScene {
     }
 
     if (Input.consume('confirm')) this._tryLoadSelected();
-    if (Input.consume('cancel')) { this.mode = 'menu'; sfx('back'); }
+    else if (Input.consume('interact')) this._exportSelected();
+    else if (Input.consume('inventory')) this._importPick();
+    if (Input.consume('cancel')) { this.mode = 'menu'; stopListening(); sfx('back'); }
+  }
+
+  /** The Export / Import plates in the Load Game header. */
+  _loadButtons() {
+    const { y, w, h, gap, right } = LOAD_BTN;
+    return { imp: { x: right - w, y, w, h }, exp: { x: right - w * 2 - gap, y, w, h } };
+  }
+
+  _in(m, r) { return !!m && m.x >= r.x && m.x < r.x + r.w && m.y >= r.y && m.y < r.y + r.h; }
+
+  // --- save files: a campaign out of this browser, or into it -------------
+  // Saves live in this browser's storage, so a new machine (or the site moving
+  // domains, as it did) starts with nothing. Export writes the chosen slot to a
+  // small text file; Import reads one back, or takes a drop or a paste.
+
+  _exportSelected() {
+    const s = this.slots[this.slotIndex];
+    if (!s || s.empty || s.corrupt) { sfx('error'); toast('Choose a saved campaign to export.'); return; }
+    exportSlotToFile(s.slot).then((r) => {
+      if (!r.ok) { sfx('error'); toast('The browser would not hand over the save file.'); return; }
+      sfx('select');
+      toast(r.copied ? 'Save file downloaded, and its code copied.' : 'Save file downloaded.');
+    });
+  }
+
+  _importPick() {
+    sfx('select');
+    toast('Choose a Sword Coast Chronicles save file.');
+    pickSaveFile().then((text) => { if (text && this.mode === 'load') this._importText(text); });
+  }
+
+  /** A save code from a file, a drop or a paste: into the chosen slot if it is free, else the first free one. */
+  _importText(text) {
+    const s = this.slots[this.slotIndex];
+    const r = importSaveText(text, s ? s.slot : 1);
+    if (!r.ok) {
+      sfx('error');
+      toast(r.reason === 'bad' ? 'That is not a Sword Coast Chronicles save.'
+        : r.reason === 'full' ? 'Every slot is taken. Load a game and burn one from its journal first.'
+          : 'That save could not be written here.');
+      return;
+    }
+    this.slots = safeSlots();
+    this.slotIndex = r.slot;
+    this.hasSave = true;
+    sfx('quest');
+    toast(`${(r.meta && r.meta.name) || 'The campaign'} is now in slot ${r.slot}.`);
   }
 
   _tryLoadSelected() {
@@ -515,7 +594,35 @@ export class TitleScene {
   }
 
   _updateCredits() {
+    const m = Input.mouse;
+    if (m && m.over && m.clicked) {
+      const b = this._creditButtons();
+      if (this._in(m, b.report)) { m.clicked = false; this._report(); return; }
+      if (this._in(m, b.back)) { m.clicked = false; this.mode = 'menu'; sfx('back'); return; }
+    }
+    if (Input.consume('next')) { this._report(); return; }
     if (Input.consume('cancel') || Input.consume('confirm')) { this.mode = 'menu'; sfx('back'); }
+  }
+
+  _creditButtons() {
+    const { w, wb, h, gap, y } = CREDIT_BTN;
+    const x0 = Math.round((VIEW_W - (w + wb + gap)) / 2);
+    return { report: { x: x0, y, w, h }, back: { x: x0 + w + gap, y, w: wb, h } };
+  }
+
+  /** Open a prefilled GitHub issue in a new tab; when the browser blocks that, say where to go. */
+  _report() {
+    sfx('select');
+    const body = [
+      '**What happened**', '', '',
+      '**Where in the game (map, menu or battle)**', '', '',
+      '**Browser and device**', '', '',
+      `_Sword Coast Chronicles v${VERSION}_`,
+    ].join('\n');
+    const url = `${REPORT_URL}?title=${encodeURIComponent('Sword Coast Chronicles: ')}&body=${encodeURIComponent(body)}`;
+    let win = null;
+    try { win = window.open(url, '_blank'); if (win) win.opener = null; } catch (e) { win = null; }
+    if (!win) toast('Pop-ups are blocked here. Go to github.com/IsaiahAltDelete/dnd.isaiart.com/issues');
   }
 
   // --- draw ---------------------------------------------------------------
@@ -622,7 +729,17 @@ export class TitleScene {
   _drawLoad(ctx) {
     panel(ctx, 30, 18, 340, 204, { style: 'window' });
     heading(ctx, 40, 24, 'Load Game');
-    txtR(ctx, 360, 26, 'Z load    X back', { size: 'fine', color: C('dim') });
+    // Export / Import plates: a campaign can leave this browser as a small text
+    // file and come back through the picker, a drop onto the window or a paste.
+    const lb = this._loadButtons();
+    const mm = Input.mouse;
+    const over = (r) => !!(mm && mm.over && this._in(mm, r));
+    try {
+      UI.button(ctx, lb.exp.x, lb.exp.y, lb.exp.w, lb.exp.h, 'Export', { hover: over(lb.exp), t: this.t });
+      UI.button(ctx, lb.imp.x, lb.imp.y, lb.imp.w, lb.imp.h, 'Import', { hover: over(lb.imp), t: this.t });
+    } catch (e) { /* kit not ready */ }
+    const keysLine = `${keyLabel('confirm')} load · ${keyLabel('interact')} export · ${keyLabel('inventory')} import · drop or paste a save file · ${keyLabel('cancel')} back`;
+    txt(ctx, 40, 215, fit(keysLine, 322, 'fine'), { size: 'fine', color: C('dim') });
 
     for (let i = 0; i < this.slots.length; i++) {
       const s = this.slots[i];
@@ -779,23 +896,33 @@ export class TitleScene {
   // --- credits ------------------------------------------------------------
 
   _drawCredits(ctx) {
-    panel(ctx, 62, 22, 276, 196, { style: 'window' });
-    heading(ctx, 200, 29, 'Sword Coast Chronicles', 'center');
-    txtC(ctx, 200, 42, 'A Tale of the Forgotten Realms — 1496 DR', { size: 'fine', color: C('dim') });
+    panel(ctx, 62, 14, 276, 212, { style: 'window' });
+    heading(ctx, 200, 21, 'Sword Coast Chronicles', 'center');
+    txtC(ctx, 200, 34, 'A Tale of the Forgotten Realms — 1496 DR', { size: 'fine', color: C('dim') });
     ctx.fillStyle = 'rgba(92,74,42,0.7)';
-    ctx.fillRect(74, 52, 252, 1);
+    ctx.fillRect(74, 44, 252, 1);
 
-    let y = 60;
+    let y = 51;
     for (const [head, lines] of CREDITS) {
       txt(ctx, 76, y, head, { size: 'sm', color: C('gold') });
       y += 10;
       for (const ln of lines) { txt(ctx, 84, y, ln, { size: 'fine', color: C('ink') }); y += 7; }
-      y += 4;
+      y += 3;
     }
     ctx.fillStyle = 'rgba(92,74,42,0.7)';
-    ctx.fillRect(74, 196, 252, 1);
-    txtC(ctx, 200, 201, 'May Tymora smile on you, and Beshaba look away.', { size: 'fineb', color: C('gold') });
-    txtC(ctx, 200, 209, 'X  back', { size: 'fine', color: C('dim') });
+    ctx.fillRect(74, 184, 252, 1);
+    txtC(ctx, 200, 189, 'May Tymora smile on you, and Beshaba look away.', { size: 'fineb', color: C('gold') });
+
+    // Something broken, or a wish? The report button opens a prefilled issue
+    // on the site's GitHub in a new tab.
+    const b = this._creditButtons();
+    const m = Input.mouse;
+    const over = (r) => !!(m && m.over && this._in(m, r));
+    try {
+      UI.button(ctx, b.report.x, b.report.y, b.report.w, b.report.h, 'Report a Problem', { hover: over(b.report), t: this.t });
+      UI.button(ctx, b.back.x, b.back.y, b.back.w, b.back.h, 'Back', { hover: over(b.back), t: this.t });
+    } catch (e) { /* kit not ready */ }
+    txtC(ctx, 200, 219, `${keyLabel('next')} report a problem · ${keyLabel('cancel')} back`, { size: 'fine', color: C('dim') });
   }
 }
 
